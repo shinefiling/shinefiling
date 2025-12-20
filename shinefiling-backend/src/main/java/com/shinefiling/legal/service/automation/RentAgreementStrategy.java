@@ -1,0 +1,25 @@
+package com.shinefiling.legal.service.automation;
+
+import com.shinefiling.legal.model.LegalApplication;
+import org.springframework.stereotype.Component;
+import java.util.*;
+
+@Component
+public class RentAgreementStrategy implements ILegalStrategy {
+    @Override
+    public String getServiceType() {
+        return "RENT_AGREEMENT";
+    }
+
+    @Override
+    public List<String> getRequiredInputs() {
+        return Arrays.asList("LANDLORD_DETAILS", "TENANT_DETAILS", "PROPERTY_ADDRESS", "RENT_AMOUNT");
+    }
+
+    @Override
+    public Map<String, String> generateDrafts(LegalApplication app) {
+        Map<String, String> m = new HashMap<>();
+        m.put("RENT_AGREEMENT_DRAFT", "/uploads/legal/" + app.getSubmissionId() + "_Rent.docx");
+        return m;
+    }
+}

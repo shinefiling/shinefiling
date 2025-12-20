@@ -1,0 +1,126 @@
+[
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_notification.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_notification.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_support.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_support.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_users.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_users.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_shield.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_shield.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_document.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_document.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_business.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_business.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_calculator.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_calculator.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_bg_circle_gold.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/bg_circle_gold.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_logo.png.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/logo.png"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_services.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_services.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_hero_bg.png.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/hero_bg.png"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/color_nav_item_colors.xml.flat",
+        "source": "com.shinefiling.app-main-33:/color/nav_item_colors.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_chart.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_chart.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/layout_item_quick_action.xml.flat",
+        "source": "com.shinefiling.app-main-33:/layout/item_quick_action.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_shield_check.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_shield_check.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_rocket.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_rocket.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_bg_rounded_square.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/bg_rounded_square.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_bg_search_bar.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/bg_search_bar.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_bg_circle_gold_light.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/bg_circle_gold_light.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/layout_activity_loader.xml.flat",
+        "source": "com.shinefiling.app-main-33:/layout/activity_loader.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_orders.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_orders.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_home.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_home.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/menu_bottom_nav_menu.xml.flat",
+        "source": "com.shinefiling.app-main-33:/menu/bottom_nav_menu.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_clock.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_clock.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_profile.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_profile.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_gavel.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_gavel.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/layout_activity_client_home.xml.flat",
+        "source": "com.shinefiling.app-main-33:/layout/activity_client_home.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_arrow_back.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_arrow_back.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/layout_activity_service_catalog.xml.flat",
+        "source": "com.shinefiling.app-main-33:/layout/activity_service_catalog.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_ic_search.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/ic_search.xml"
+    },
+    {
+        "merged": "com.shinefiling.app-merged_res-31:/drawable_shape_ring_thin.xml.flat",
+        "source": "com.shinefiling.app-main-33:/drawable/shape_ring_thin.xml"
+    }
+]

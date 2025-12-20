@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_icon_blue">#E3F2FD</color>
+    <color name="bg_icon_gold">#FFF8E1</color>
+    <color name="bg_icon_green">#E8F5E9</color>
+    <color name="bg_icon_orange">#FFF3E0</color>
+    <color name="bg_icon_purple">#F3E5F5</color>
+    <color name="black">#FF000000</color>
+    <color name="brand_accent">#B58863</color>
+    <color name="brand_background">#F5F7FA</color>
+    <color name="brand_primary">#10232A</color>
+    <color name="brand_text_dark">#10232A</color>
+    <color name="brand_text_light">#78909C</color>
+    <color name="icon_blue">#1976D2</color>
+    <color name="icon_gold">#FFA000</color>
+    <color name="icon_green">#388E3C</color>
+    <color name="icon_orange">#F57C00</color>
+    <color name="icon_purple">#7B1FA2</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="status_in_progress_bg">#FEF3C7</color>
+    <color name="status_in_progress_text">#D97706</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="teal_700">#018786</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">ShineFiling</string>
+    <style name="Base.Theme.ShineFiling" parent="Theme.Material3.DayNight.NoActionBar">
+        
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/brand_accent</item>
+        <item name="colorOnSecondary">@color/brand_primary</item>
+        <item name="android:statusBarColor">@color/brand_primary</item>
+        <item name="android:windowBackground">@color/brand_background</item>
+    </style>
+    <style name="RoundedCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+    <style name="Theme.ShineFiling" parent="Base.Theme.ShineFiling"/>
+    <style name="Theme.ShineFiling.NoActionBar" parent="Theme.ShineFiling">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+</resources>
