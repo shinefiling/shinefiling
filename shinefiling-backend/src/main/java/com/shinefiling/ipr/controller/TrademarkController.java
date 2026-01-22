@@ -32,12 +32,9 @@ public class TrademarkController {
             // Logic: Govt Fee Estimation
             // Individual / Startup / SME: ₹4500
             // Others: ₹9000
-            double govtFee = 9000.0;
-            if ("INDIVIDUAL".equalsIgnoreCase(requestDTO.getApplicantType()) ||
-                    "STARTUP".equalsIgnoreCase(requestDTO.getApplicantType()) ||
-                    "SMALL_ENTERPRISE".equalsIgnoreCase(requestDTO.getApplicantType())) {
-                govtFee = 4500.0;
-            }
+            // Logic: Govt Fee Estimation
+            // Individual / Startup / SME: ₹4500
+            // Others: ₹9000
 
             // Automation Tasks
             List<TrademarkRequest.AutomationTaskDTO> tasks = new ArrayList<>();
@@ -66,10 +63,8 @@ public class TrademarkController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            // Pricing Logic (Professional Fee + approx Govt Fee)
-            double professionalFee = 1999.0;
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(professionalFee + govtFee);
+            createdRequest.setPlan(requestDTO.getPlan());
+            createdRequest.setAmount(requestDTO.getAmountPaid());
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 
@@ -90,5 +85,3 @@ public class TrademarkController {
         return t;
     }
 }
-
-

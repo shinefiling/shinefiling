@@ -44,11 +44,11 @@ public class ServiceRequestService {
 
         paymentRepository.save(payment);
 
-        // Automated Handover to Intelligent Agent
-        if ("Rent Agreement".equalsIgnoreCase(serviceName)) {
-            request.setStatus("PROCESSING_AI");
-            serviceRequestRepository.save(request);
-        }
+        // Automated Handover to Intelligent Agent - REMOVED per user request
+        // if ("Rent Agreement".equalsIgnoreCase(serviceName)) {
+        // request.setStatus("PROCESSING_AI");
+        // serviceRequestRepository.save(request);
+        // }
 
         return request;
     }
@@ -79,9 +79,18 @@ public class ServiceRequestService {
         return serviceRequestRepository.findByAgentEmail(email);
     }
 
+    @Autowired
+    private CommissionService commissionService;
+
     public ServiceRequest updateStatus(Long requestId, String status) {
         ServiceRequest request = serviceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        // Check if transitioning to COMPLETED
+        if ("COMPLETED".equalsIgnoreCase(status) && !"COMPLETED".equalsIgnoreCase(request.getStatus())) {
+            commissionService.processCommission(request);
+        }
+
         request.setStatus(status);
         return serviceRequestRepository.save(request);
     }
@@ -94,5 +103,22 @@ public class ServiceRequestService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return serviceRequestRepository.findByUserAndServiceName(user, serviceName);
+    }
+
+    public ServiceRequest submitApplication(String email, String serviceName, String formDataJson, String documentsJson,
+            String plan, Double amount, String status) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User with email " + email + " not found"));
+
+        ServiceRequest request = new ServiceRequest();
+        request.setUser(user);
+        request.setServiceName(serviceName);
+        request.setFormData(formDataJson);
+        request.setDocumentUrl(documentsJson);
+        request.setPlan(plan);
+        request.setAmount(amount);
+        request.setStatus(status != null ? status : "PENDING");
+
+        return serviceRequestRepository.save(request);
     }
 }

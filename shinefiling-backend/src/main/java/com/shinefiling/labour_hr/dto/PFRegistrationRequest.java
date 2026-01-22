@@ -9,6 +9,8 @@ public class PFRegistrationRequest {
     private String userEmail;
     private String businessName;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private PFRegFormData formData;
     private List<UploadedDocumentDTO> documents;
@@ -36,5 +38,3 @@ public class PFRegistrationRequest {
         private String description;
     }
 }
-
-

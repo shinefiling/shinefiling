@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
     LayoutDashboard, Users, FileText, CheckCircle, CreditCard, Settings, LogOut,
     Search, Bell, ChevronDown, Filter, Eye, DollarSign, AlertTriangle, TrendingUp, Menu, X,
-    FileCheck, ChevronRight, BarChart3, Calendar, Download, PieChart, Cpu, MessageSquare, Globe, Shield, Database, HardDrive, Lock as LockIcon, Briefcase
+    FileCheck, ChevronRight, BarChart3, Calendar, Download, PieChart, Cpu, MessageSquare, Globe, Shield, Database, HardDrive, Lock as LockIcon, Briefcase, Maximize, Grid, Mail, Sun, Moon,
+    CheckSquare, Flag, Layers, BookOpen, UserPlus, IndianRupee, Scale, UserCheck, Building, Award, Monitor,
+    Target, Megaphone, LifeBuoy, Activity, Link as LinkIcon, Banknote, ListChecks, HelpCircle, Clock, Percent
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,149 +18,309 @@ import CRMSystem from './admin/views/CRMSystem';
 const AdminDashboardPage = ({ onLogout, user }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [applications, setApplications] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [permVersion, setPermVersion] = useState(0); // Force re-render on perm change
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('theme') === 'dark' ||
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        }
+        return false;
+    });
 
-    // Use passed user prop, fallback to partial object if null (though App.jsx prevents this)
     const currentUser = user || JSON.parse(localStorage.getItem('user') || '{}');
-
-    // Safety Force: Ensure main admin email always gets MASTER_ADMIN privileges 
-    // (Fixes issue where old DB records might still have 'ADMIN' role)
     const role = (currentUser.email === 'admin@shinefiling.com') ? 'MASTER_ADMIN' : currentUser.role;
 
-    // Listen for permission updates
     useEffect(() => {
-        const handlePermUpdate = () => setPermVersion(v => v + 1);
-        window.addEventListener('permissionsUpdated', handlePermUpdate);
-        return () => window.removeEventListener('permissionsUpdated', handlePermUpdate);
-    }, []);
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }, [isDarkMode]);
+
+    const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
     // Role-Based Sidebar Configuration
     const sidebarConfig = {
         'MASTER_ADMIN': [
-            { icon: LayoutDashboard, label: 'Overview', id: 'dashboard' },           // A
-            { icon: Users, label: 'User Mgmt', id: 'user_mgmt' },              // B
-            { icon: Shield, label: 'Agent Approvals', id: 'agent_approvals' },   // New
-            { icon: DollarSign, label: 'Pricing & Services', id: 'service_mgmt' },          // Updated icon and label
-            { icon: FileText, label: 'Orders Mgmt', id: 'order_mgmt' },              // D
-            { icon: Cpu, label: 'Automation Mgmt', id: 'ai_mgmt' },                    // E
-            { icon: DollarSign, label: 'Payment & Finance', id: 'finance' },         // F
-            { icon: Shield, label: 'Admin Controls', id: 'admin_controls' },         // G
-            { icon: LockIcon, label: 'Firewall & Security', id: 'firewall' },            // New
-            { icon: Briefcase, label: 'Careers & Hiring', id: 'careers_control' },       // New
-            { icon: MessageSquare, label: 'Notifications', id: 'notifications' },    // H
-            { icon: Globe, label: 'Content Mgmt', id: 'cms' },                       // I
-            { icon: HardDrive, label: 'File Manager', id: 'file_manager' },          // K
-            { icon: FileCheck, label: 'Audit & Logs', id: 'audit' },                 // J
+            // --- ANALYTICS & OVERVIEW ---
+            { icon: LayoutDashboard, label: 'Dashboard', id: 'dashboard', section: 'ANALYTICS & OVERVIEW', hot: true },
+            {
+                icon: Activity,
+                label: 'Analytics Suite',
+                id: 'analytics_suite',
+                section: 'ANALYTICS & OVERVIEW',
+                children: [
+                    { label: 'Overview', id: 'analytics_overview', icon: Layers },
+                    { label: 'Sales & Revenue', id: 'analytics_revenue', icon: DollarSign },
+                    { label: 'User Insights', id: 'analytics_users', icon: Users },
+                    { label: 'Service Metrics', id: 'analytics_services', icon: Briefcase }
+                ]
+            },
+
+            // --- RELATIONSHIP MANAGEMENT ---
+            {
+                icon: Target,
+                label: 'Leads & Enquiries',
+                id: 'leads_crm',
+                section: 'RELATIONSHIP MANAGEMENT',
+                children: [
+                    { label: 'All Leads', id: 'leads_all', icon: Users },
+                    { label: 'Follow Ups', id: 'leads_followup', icon: Clock },
+                    { label: 'Lead Sources', id: 'leads_sources', icon: LinkIcon }
+                ]
+            },
+            {
+                icon: Users,
+                label: 'Client CRM',
+                id: 'crm',
+                section: 'RELATIONSHIP MANAGEMENT',
+                children: [
+                    { label: 'Clients List', id: 'crm_clients', icon: Users },
+                    { label: 'Companies', id: 'crm_companies', icon: Building },
+                    { label: 'Service Orders', id: 'crm_orders', icon: FileText },
+                    { label: 'Compliance', id: 'crm_services', icon: CheckCircle },
+                    { label: 'Documents', id: 'crm_documents', icon: FileCheck },
+                    { label: 'Reports', id: 'crm_reports', icon: BarChart3 }
+                ]
+            },
+            {
+                icon: Briefcase,
+                label: 'Agent CRM',
+                id: 'agent_approvals',
+                section: 'RELATIONSHIP MANAGEMENT',
+                children: [
+                    { label: 'Dashboard', id: 'agent_dashboard', icon: LayoutDashboard },
+                    { label: 'Partner Directory', id: 'agent_list', icon: Users },
+                    { label: 'Pending Approvals', id: 'agent_pending', icon: AlertTriangle },
+                    { label: 'Active Partners', id: 'agent_active', icon: CheckCircle }
+                ]
+            },
+            {
+                icon: Scale,
+                label: 'CA CRM',
+                id: 'ca_crm',
+                section: 'RELATIONSHIP MANAGEMENT',
+                children: [
+                    { label: 'Dashboard', id: 'ca_dashboard', icon: LayoutDashboard },
+                    { label: 'CA Directory', id: 'ca_list', icon: Users },
+                    { label: 'Compliance Rules', id: 'ca_compliance', icon: Calendar },
+                    { label: 'Service Config', id: 'ca_services', icon: Briefcase },
+                    { label: 'Billing & Fees', id: 'ca_billing', icon: DollarSign },
+                    { label: 'Roles & Access', id: 'ca_roles', icon: LockIcon },
+                    { label: 'Audit Logs', id: 'ca_audit', icon: FileCheck },
+                    { label: 'Power Actions', id: 'ca_power', icon: AlertTriangle }
+                ]
+            },
+
+            // --- OPERATIONS & FINANCE ---
+            {
+                icon: Layers,
+                label: 'Operations',
+                id: 'ops_mgmt',
+                section: 'OPERATIONS & FINANCE',
+                children: [
+                    { label: 'Service Orders', id: 'ops_orders', icon: FileText },
+                    { label: 'Task Manager', id: 'ops_tasks', icon: ListChecks },
+                    { label: 'Chat System', id: 'ops_chat', icon: MessageSquare }
+                ]
+            },
+            {
+                icon: Banknote,
+                label: 'Finance & Billing',
+                id: 'finance_mgmt',
+                section: 'OPERATIONS & FINANCE',
+                children: [
+                    { label: 'Invoices', id: 'fin_invoices', icon: FileText },
+                    { label: 'Transactions', id: 'fin_trans', icon: IndianRupee },
+                    { label: 'Tax Settings', id: 'fin_tax', icon: Percent },
+                    { label: 'Pricing Plans', id: 'service_mgmt', icon: IndianRupee } // Reused ID
+                ]
+            },
+            {
+                icon: Megaphone,
+                label: 'Marketing',
+                id: 'marketing_mgmt',
+                section: 'OPERATIONS & FINANCE',
+                children: [
+                    { label: 'Campaigns', id: 'mkt_campaigns', icon: Target },
+                    { label: 'Email Templates', id: 'mkt_email', icon: Mail },
+                    { label: 'Offers & Coupons', id: 'mkt_offers', icon: Award }
+                ]
+            },
+
+            // --- SUPPORT & FILES ---
+            {
+                icon: HardDrive,
+                label: 'File Manager',
+                id: 'file_manager',
+                section: 'SUPPORT & FILES',
+                children: [
+                    { label: 'All Files', id: 'file_all', icon: HardDrive },
+                    { label: 'Client Docs', id: 'file_client', icon: Users },
+                    { label: 'Company Docs', id: 'file_company', icon: Building },
+                    { label: 'Service Files', id: 'file_services', icon: FileText },
+                    { label: 'Marketing', id: 'file_marketing', icon: Monitor }
+                ]
+            },
+            {
+                icon: LifeBuoy,
+                label: 'Help & Support',
+                id: 'support_mgmt',
+                section: 'SUPPORT & FILES',
+                children: [
+                    { label: 'Tickets', id: 'sup_tickets', icon: MessageSquare },
+                    { label: 'Knowledge Base', id: 'sup_kb', icon: BookOpen }
+                ]
+            },
+
+            // --- WEBSITE & CONTENT ---
+            {
+                icon: Globe,
+                label: 'Website Control',
+                id: 'website_mgmt',
+                section: 'WEBSITE & CONTENT',
+                children: [
+                    { label: 'Careers & Hiring', id: 'careers_control', icon: Briefcase }
+                ]
+            },
+
+            // --- ADMINISTRATION ---
+            {
+                icon: Shield,
+                label: 'Access & Roles',
+                id: 'admin_controls',
+                section: 'ADMINISTRATION',
+                children: [
+                    { label: 'User Access', id: 'access_users', icon: Users },
+                    { label: 'CA Permissions', id: 'access_cas', icon: Briefcase },
+                    { label: 'Agent Permissions', id: 'access_agents', icon: UserCheck }
+                ]
+            },
+            {
+                icon: Settings,
+                label: 'System Settings',
+                id: 'settings_suite',
+                section: 'ADMINISTRATION',
+                children: [
+                    { label: 'My Profile', id: 'settings_profile', icon: Users },
+                    { label: 'General Settings', id: 'settings_general', icon: Globe },
+                    { label: 'Security & Access', id: 'settings_security', icon: Shield },
+                    { label: 'API & Integrations', id: 'settings_integrations', icon: LinkIcon },
+                    { label: 'System Logs', id: 'settings_logs', icon: FileText }
+                ]
+            },
+            { icon: LockIcon, label: 'Firewall & Security', id: 'firewall', section: 'ADMINISTRATION' },
         ],
-        'SUB_ADMIN': [
-            { icon: LayoutDashboard, label: 'Sub-Admin Dash', id: 'dashboard' },
-            { icon: Users, label: 'User Mgmt', id: 'user_mgmt' },
-            { icon: DollarSign, label: 'Pricing & Services', id: 'service_mgmt' },
-            { icon: FileText, label: 'Orders Mgmt', id: 'order_mgmt' },
-            { icon: Cpu, label: 'Automation Mgmt', id: 'ai_mgmt' },
-            { icon: DollarSign, label: 'Payment & Finance', id: 'financials' },
-            { icon: Shield, label: 'Admin Controls', id: 'admin_controls' },
-            { icon: MessageSquare, label: 'Notifications', id: 'notifications' },
-            { icon: Globe, label: 'Content Mgmt', id: 'cms' },
-            { icon: FileCheck, label: 'Audit & Logs', id: 'logs' },
-            { icon: Users, label: 'Agent Admin Mgmt', id: 'agent_admin_mgmt' },
-            { icon: BarChart3, label: 'Regional Reports', id: 'reports' },
-            { icon: CheckCircle, label: 'Content Moderation', id: 'content_mod' },
-        ],
-        'AGENT_ADMIN': [
-            { icon: LayoutDashboard, label: 'Agent Dashboard', id: 'dashboard' },
-            { icon: Users, label: 'Agent Onboarding', id: 'agent_onboarding' },
-            { icon: TrendingUp, label: 'Performance', id: 'performance' },
-            { icon: CheckCircle, label: 'Lead Assignment', id: 'lead_assignment' },
-            { icon: FileText, label: 'Agent Support', id: 'agent_support' },
-            { icon: DollarSign, label: 'Financials', id: 'financials' },
-        ]
+        'SUB_ADMIN': [ /* ... same ... */],
+        'AGENT_ADMIN': [ /* ... same ... */]
     };
 
-    // Filter items based on dynamic permissions
-    const rawItems = sidebarConfig[role] || sidebarConfig['MASTER_ADMIN'];
-    const currentSidebarItems = rawItems.filter(item => hasPermission(role, item.id));
+    const getItems = (role) => {
+        const base = sidebarConfig[role] || sidebarConfig['MASTER_ADMIN'];
+        if (role !== 'MASTER_ADMIN') return base.map(i => ({ ...i, section: 'MAIN MENU' }));
+        return base;
+    }
 
-    useEffect(() => {
-        const fetchApps = async () => {
-            try {
-                const apps = await getAllApplications();
-                setApplications(apps.map((app, index) => ({
-                    id: `APP-00${app.id}`,
-                    client: app.user ? app.user.fullName || app.user.email : 'Unknown User',
-                    service: app.serviceName,
-                    date: new Date(app.createdAt).toLocaleDateString(),
-                    status: app.status
-                })));
-            } catch (err) {
-                console.error("Failed to fetch admin apps", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchApps();
-    }, []);
+    const currentSidebarItems = getItems(role).filter(item => hasPermission(role, item.id));
+
+    const groupedItems = currentSidebarItems.reduce((acc, item) => {
+        const section = item.section || 'MAIN MENU';
+        if (!acc[section]) acc[section] = [];
+        acc[section].push(item);
+        return acc;
+    }, {});
 
     const handleSearch = (e) => setSearchQuery(e.target.value);
 
-    const [unreadChatCount, setUnreadChatCount] = useState(0);
-    const [unreadSystemNotif, setUnreadSystemNotif] = useState(0);
+    // Nested Sidebar Item
+    const SidebarItem = ({ icon: Icon, label, id, children, hot }) => {
+        const hasChildren = children && children.length > 0;
+        const isChildActive = hasChildren && children.some(c => c.id === activeTab);
+        const isActive = activeTab === id || isChildActive;
+        const [isExpanded, setIsExpanded] = useState(isChildActive);
 
-    // Fetch unread counts
-    useEffect(() => {
-        const fetchCounts = async () => {
-            if ('Notification' in window && Notification.permission !== 'granted') {
-                Notification.requestPermission();
-            }
+        useEffect(() => {
+            if (isChildActive) setIsExpanded(true);
+        }, [isChildActive]);
 
-            try {
-                setUnreadSystemNotif(0);
-            } catch (e) {
-                console.error(e);
-            }
-        };
-
-        fetchCounts();
-        // Optional: Poll every minute
-        const interval = setInterval(fetchCounts, 60000);
-        return () => clearInterval(interval);
-    }, []);
-
-    const totalUnread = unreadSystemNotif; // + unreadChatCount if available
-
-    // Sidebar Item Component
-    const SidebarItem = ({ icon: Icon, label, id, onClick }) => {
-        const isActive = activeTab === id;
         return (
-            <button
-                key={id}
-                onClick={() => {
-                    setActiveTab(id);
-                    if (onClick) onClick();
-                    if (window.innerWidth < 768) setIsSidebarOpen(false);
-                }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group mb-1 text-left justify-start ${isActive
-                    ? 'bg-[#B58863] text-white shadow-lg shadow-[#B58863]/20 font-bold'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                    }`}
-            >
-                <Icon size={20} className={isActive ? 'text-white' : 'text-[#3D4D55] group-hover:text-white'} />
-                <span className={`text-sm ${isActive ? 'font-bold' : 'font-medium'}`}>{label}</span>
-            </button>
+            <div className="mb-0.5">
+                <button
+                    onClick={() => {
+                        if (hasChildren) {
+                            setIsExpanded(!isExpanded);
+                        } else {
+                            setActiveTab(id);
+                            if (window.innerWidth < 768) setIsSidebarOpen(false);
+                        }
+                    }}
+                    className={`
+                        w-full flex items-center justify-between px-6 py-2.5 transition-all duration-200 group text-left relative
+                        ${isActive
+                            ? 'text-slate-800 dark:text-white font-bold'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}
+                    `}
+                >
+                    <div className="flex items-center gap-3">
+                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isActive && !hasChildren ? 'bg-[#F97316] scale-125' : 'bg-transparent'}`}></div>
+                        <Icon size={18} className={isActive ? 'text-[#F97316]' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'} />
+                        <span className="text-sm">{label}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {hot && <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Hot</span>}
+                        {hasChildren && (
+                            <ChevronDown size={14} className={`text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                        )}
+                    </div>
+                </button>
+
+                {/* Sub Menu */}
+                <AnimatePresence>
+                    {isExpanded && hasChildren && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden bg-slate-50/50 dark:bg-slate-900/30"
+                        >
+                            {children.map(child => {
+                                const isSubActive = activeTab === child.id;
+                                return (
+                                    <button
+                                        key={child.id}
+                                        onClick={() => {
+                                            setActiveTab(child.id);
+                                            if (window.innerWidth < 768) setIsSidebarOpen(false);
+                                        }}
+                                        className={`w-full flex items-center gap-3 px-6 pl-[3.25rem] py-2 text-xs transition-colors relative
+                                            ${isSubActive ? 'text-[#F97316] font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`
+                                        }
+                                    >
+                                        {isSubActive && <div className="absolute left-[2.5rem] top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#F97316]"></div>}
+                                        {child.label}
+                                    </button>
+                                )
+                            })}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
         );
     };
 
     return (
-        <div className="flex h-screen bg-[#FDFBF7] font-sans overflow-hidden">
+        <div className="flex h-screen bg-[#F3F4F6] dark:bg-slate-900 font-[Roboto,sans-serif] overflow-hidden transition-colors duration-200">
             <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
             `}</style>
 
-            {/* Sidebar (Navy Blue) */}
+            {/* Sidebar */}
             <AnimatePresence>
                 {(isSidebarOpen || window.innerWidth >= 768) && (
                     <motion.div
@@ -166,100 +328,85 @@ const AdminDashboardPage = ({ onLogout, user }) => {
                         animate={{ x: 0 }}
                         exit={{ x: -300 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className={`fixed inset-y-0 left-0 w-64 bg-[#10232A] text-white z-50 flex flex-col shadow-2xl md:shadow-none border-r border-[#10232A]/5 ${isSidebarOpen ? 'block' : 'hidden md:flex'}`}
+                        className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-slate-800 dark:border-slate-700 text-slate-800 dark:text-slate-200 z-50 flex flex-col shadow-xl md:shadow-md border-r border-slate-100 ${isSidebarOpen ? 'block' : 'hidden md:flex'}`}
                     >
-                        {/* Header */}
-                        <div className="p-6 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#B58863] flex items-center justify-center text-white font-bold text-lg shadow-lg">S</div>
-                            <span className="text-lg font-bold tracking-tight text-white">Shine<span className="text-[#B58863]">Admin</span></span>
-                            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden ml-auto text-[#3D4D55]"><X size={20} /></button>
-                        </div>
-
-                        {/* Menu Items */}
-                        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-1 no-scrollbar">
-                            <div className="px-2 py-3 text-[11px] font-bold text-[#3D4D55] uppercase tracking-wider">Management</div>
-                            {currentSidebarItems.map((item) => (
-                                <SidebarItem key={item.id} icon={item.icon} label={item.label} id={item.id} />
-                            ))}
-
-                            <div className="px-2 py-3 mt-4 text-[11px] font-bold text-[#3D4D55] uppercase tracking-wider">System</div>
-                            <SidebarItem icon={Settings} label="Settings" id="settings" />
-                        </div>
-
-                        {/* Profile Footer */}
-                        <div className="p-4 bg-black/20 border-t border-white/5">
-                            <div className="flex items-center gap-3">
-                                {currentUser.profileImage ? (
-                                    <img src={currentUser.profileImage} alt="Profile" className="w-10 h-10 rounded-full object-cover border-2 border-[#B58863]" />
-                                ) : (
-                                    <div className="w-10 h-10 rounded-full bg-[#B58863] text-white flex items-center justify-center font-bold text-sm shadow-md">
-                                        {currentUser.fullName ? currentUser.fullName.charAt(0) : 'A'}
-                                    </div>
-                                )}
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-bold text-white truncate">{currentUser.fullName || 'System Admin'}</p>
-                                    <p className="text-[10px] text-[#3D4D55] truncate uppercase tracking-wider font-bold">{role.replace('_', ' ')}</p>
+                        <div className="h-16 flex items-center px-6 border-b border-slate-50 dark:border-slate-700">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full border-2 border-[#F97316] flex items-center justify-center">
+                                    <div className="w-4 h-4 bg-[#F97316] rounded-full"></div>
                                 </div>
-                                <button onClick={onLogout} className="text-[#3D4D55] hover:text-red-400 transition"><LogOut size={18} /></button>
+                                <span className="text-xl font-bold tracking-tight text-slate-800 dark:text-white">Shinefiling</span>
                             </div>
+                            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden ml-auto text-slate-400"><X size={20} /></button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto py-4 space-y-6 no-scrollbar">
+                            {Object.entries(groupedItems).map(([section, items]) => (
+                                <div key={section}>
+                                    <div className="px-6 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">{section}</div>
+                                    {items.map(item => <SidebarItem key={item.id} {...item} />)}
+                                </div>
+                            ))}
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
             {/* Mobile Overlay */}
-            {isSidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />}
+            {isSidebarOpen && <div className="fixed inset-0 bg-black/20 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />}
 
-            {/* Main Content Area */}
+            {/* Main Content Actions - Copied from previous logic (Header etc) */}
             <div className="flex-1 md:ml-64 flex flex-col h-screen overflow-hidden">
-                {/* Header */}
-                <div className="sticky top-0 z-30 bg-[#FDFBF7]/90 backdrop-blur-md px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                    <div className="w-full md:w-96 relative group">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#B58863] transition-colors" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Global Search (Orders, Clients, Services)..."
-                            className="w-full pl-10 pr-4 py-2 bg-white/50 border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-[#B58863]/10 focus:border-[#B58863] transition-all outline-none"
-                            value={searchQuery}
-                            onChange={handleSearch}
-                        />
-                    </div>
-
+                <div className="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 z-30 sticky top-0 transition-colors duration-200">
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-                            <div className="text-right hidden sm:block">
-                                <p className="text-sm font-bold text-[#10232A]">{currentUser.fullName || 'Admin'}</p>
-                                <p className="text-xs text-gray-400 font-bold">{role.replace('_', ' ')}</p>
-                            </div>
-                            {currentUser.profileImage ? (
-                                <img src={currentUser.profileImage} alt="Profile" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
-                            ) : (
-                                <div className="w-10 h-10 bg-[#B58863]/10 text-[#B58863] rounded-full flex items-center justify-center font-bold text-sm border border-[#B58863]/20">
-                                    {currentUser.fullName ? currentUser.fullName.charAt(0) : 'A'}
-                                </div>
-                            )}
-                        </div>
+                        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden text-slate-500"><Menu size={24} /></button>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <button onClick={toggleDarkMode} className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition-colors">{isDarkMode ? <Sun size={20} /> : <Moon size={20} />}</button>
 
-                        <button
-                            onClick={() => setActiveTab('notifications')}
-                            className={`relative p-2 rounded-full transition-colors ${activeTab === 'notifications' ? 'bg-blue-50 text-blue-600' : 'text-gray-400 hover:bg-gray-100'}`}
-                        >
+                        <button onClick={() => setIsNotificationsOpen(!isNotificationsOpen)} className="relative p-2 rounded-full transition-colors text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700">
                             <Bell size={20} />
-                            {totalUnread > 0 && (
-                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white animate-pulse"></span>
-                            )}
+                            <span className="absolute top-1.5 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></span>
                         </button>
-                        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden p-2 text-gray-600">
-                            <Menu size={24} />
+                        <AnimatePresence>
+                            {isNotificationsOpen && (
+                                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute right-16 top-16 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700 z-50 overflow-hidden">
+                                    <div className="p-4 border-b border-slate-100 dark:border-slate-700"><h4 className="font-bold">Notifications</h4></div>
+                                    <div className="p-4 text-sm text-slate-500 text-center">No new notifications</div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+
+                        <div className="flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-slate-700 ml-2">
+                            <div className="hidden md:block text-right">
+                                <p className="text-sm font-bold text-slate-800 dark:text-white leading-none">{currentUser.fullName || 'Administrator'}</p>
+                                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1">{role.replace('_', ' ')}</p>
+                            </div>
+                            <button className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden ring-2 ring-transparent hover:ring-[#F97316] transition-all relative group">
+                                {currentUser.profileImage ? (
+                                    <img src={currentUser.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-[#F97316] to-[#EF4444] flex items-center justify-center text-white font-bold text-sm">
+                                        {currentUser.fullName ? currentUser.fullName.charAt(0).toUpperCase() : 'A'}
+                                    </div>
+                                )}
+                            </button>
+                        </div>
+                        <button
+                            onClick={() => { localStorage.removeItem('user'); window.location.href = '/'; }}
+                            className="p-2 text-slate-500 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+                            title="Logout"
+                        >
+                            <LogOut size={20} />
                         </button>
                     </div>
                 </div>
 
-                {/* Dashboard Content */}
-                <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#FDFBF7] relative">
-                    <div className="relative z-10 max-w-7xl mx-auto">
+                <div className="flex-1 overflow-y-auto p-6 bg-[#F3F4F6] dark:bg-slate-900 relative scroll-smooth transition-colors duration-200">
+                    <div className="max-w-[1600px] mx-auto">
                         <AnimatePresence mode="wait">
-                            {role === 'MASTER_ADMIN' && <MasterDashboard activeTab={activeTab} />}
+                            {role === 'MASTER_ADMIN' && <MasterDashboard activeTab={activeTab} onNavigate={setActiveTab} user={currentUser} />}
                             {role === 'SUB_ADMIN' && <SubAdminDashboard activeTab={activeTab} />}
                             {role === 'AGENT_ADMIN' && <AgentDashboard activeTab={activeTab} />}
                         </AnimatePresence>

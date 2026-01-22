@@ -35,6 +35,48 @@ public class AdminController {
         @Autowired
         private com.shinefiling.business_reg.service.PrivateLimitedService pvtLtdService;
 
+        @Autowired
+        private com.shinefiling.business_reg.service.OnePersonCompanyService opcService;
+
+        @Autowired
+        private com.shinefiling.common.service.NotificationService notificationService;
+
+        @Autowired
+        private com.shinefiling.business_reg.service.LlpService llpService;
+
+        @Autowired
+        private com.shinefiling.business_reg.service.PartnershipService partnershipService;
+
+        @Autowired
+        private com.shinefiling.business_reg.service.ProprietorshipService proprietorshipService;
+
+        @Autowired
+        private com.shinefiling.business_reg.service.Section8Service section8Service;
+
+        @Autowired
+        private com.shinefiling.business_reg.service.NidhiService nidhiService;
+
+        @Autowired
+        private com.shinefiling.business_reg.service.ProducerService producerService;
+
+        @Autowired
+        private com.shinefiling.business_reg.service.PublicLimitedService publicLimitedService;
+
+        @Autowired
+        private com.shinefiling.tax.service.GstService gstService;
+
+        @Autowired
+        private com.shinefiling.tax.service.GstMonthlyReturnService gstMonthlyReturnService;
+
+        @Autowired
+        private com.shinefiling.tax.service.GstAnnualReturnService gstAnnualReturnService;
+
+        @Autowired
+        private com.shinefiling.tax.service.IncomeTaxReturnService incomeTaxReturnService;
+
+        @Autowired
+        private com.shinefiling.tax.service.TdsReturnService tdsReturnService;
+
         @jakarta.annotation.PostConstruct
         public void initServiceCatalog() {
                 if (serviceProductRepository.count() == 0) {
@@ -447,6 +489,15 @@ public class AdminController {
                                 .ok(Collections.singletonMap("message", "Marked as Gov Submitted"));
         }
 
+        @PostMapping("/raise-query/{submissionId}")
+        public org.springframework.http.ResponseEntity<?> raiseQuery(@PathVariable String submissionId,
+                        @RequestBody Map<String, String> payload) {
+                String query = payload.get("query");
+                pvtLtdService.raiseQuery(submissionId, query);
+                return org.springframework.http.ResponseEntity
+                                .ok(Collections.singletonMap("message", "Query Raised Successfully"));
+        }
+
         @PostMapping("/upload-certificate/{submissionId}")
         public org.springframework.http.ResponseEntity<?> uploadCertificate(@PathVariable String submissionId,
                         @RequestParam("file") MultipartFile file) {
@@ -513,6 +564,17 @@ public class AdminController {
                         return org.springframework.http.ResponseEntity.ok(product);
                 }
                 return org.springframework.http.ResponseEntity.notFound().build();
+        }
+
+        @PostMapping("/services")
+        public org.springframework.http.ResponseEntity<?> createServiceProduct(
+                        @RequestBody com.shinefiling.common.model.ServiceProduct product) {
+                String id = product.getCategoryId() + "_" + System.currentTimeMillis();
+                product.setId(id);
+                if (product.getStatus() == null)
+                        product.setStatus("ACTIVE");
+                serviceProductRepository.save(product);
+                return org.springframework.http.ResponseEntity.ok(product);
         }
 
         private void addServices(List<com.shinefiling.common.model.ServiceProduct> catalog, String catId,
@@ -786,56 +848,489 @@ public class AdminController {
         @GetMapping("/applications")
         public List<Map<String, Object>> getAllApplications() {
                 List<Map<String, Object>> result = new ArrayList<>();
+                java.util.Set<String> handledRequestIds = new java.util.HashSet<>();
 
-                // 1. Generic Service Requests
-                List<ServiceRequest> requests = serviceRequestRepository.findAll();
-                for (ServiceRequest r : requests) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("id", r.getId());
-                        map.put("serviceName", r.getServiceName());
-                        map.put("status", r.getStatus());
-                        map.put("createdAt", r.getCreatedAt());
-                        map.put("user", r.getUser());
-                        map.put("amount", r.getAmount());
-                        result.add(map);
+                // 1. Pvt Ltd Applications (Rich Data)
+                try {
+                        List<com.shinefiling.business_reg.model.PrivateLimitedApplication> pvtApps = pvtLtdService
+                                        .getAllApplications();
+                        for (com.shinefiling.business_reg.model.PrivateLimitedApplication r : pvtApps) {
+                                if (r.getServiceRequestId() != null) {
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                }
+
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId()); // Use correct Order ID
+                                map.put("submissionId", r.getSubmissionId());
+                                map.put("serviceName", "Private Limited Registration");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getCreatedAt());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("srn", r.getSrn());
+                                map.put("planType", r.getPlanType());
+                                map.put("documentRemarks", r.getDocumentRemarks());
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching Pvt Ltd apps: " + e.getMessage());
                 }
 
-                // 2. Pvt Ltd Applications
-                List<com.shinefiling.business_reg.model.PrivateLimitedApplication> pvtApps = pvtLtdService
-                                .getAllApplications();
-                for (com.shinefiling.business_reg.model.PrivateLimitedApplication r : pvtApps) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("id", r.getSubmissionId()); // Use String ID
-                        map.put("serviceName", "Private Limited Registration");
-                        map.put("status", r.getStatus());
-                        map.put("createdAt", r.getCreatedAt());
-                        map.put("user", r.getUser());
-                        result.add(map);
+                // 1.5 OPC Applications
+                try {
+                        List<com.shinefiling.business_reg.model.OnePersonCompanyApplication> opcApps = opcService
+                                        .getAllApplications();
+                        for (com.shinefiling.business_reg.model.OnePersonCompanyApplication r : opcApps) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getSubmissionId());
+                                map.put("serviceName", "One Person Company Registration");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getCreatedAt());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("srn", r.getSrn());
+                                map.put("planType", r.getPlanType());
+                                map.put("documentRemarks", r.getDocumentRemarks());
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching OPC apps: " + e.getMessage());
                 }
 
-                // 3. FSSAI Applications
-                List<com.shinefiling.licenses.model.FssaiApplication> fssaiApps = fssaiApplicationRepository.findAll();
-                for (com.shinefiling.licenses.model.FssaiApplication r : fssaiApps) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("id", r.getId());
-                        map.put("serviceName", "FSSAI License");
-                        map.put("status", r.getStatus());
-                        map.put("createdAt", r.getCreatedAt());
-                        map.put("user", r.getUser());
-                        result.add(map);
+                // 2. LLP Applications
+                try {
+                        List<com.shinefiling.business_reg.model.LlpApplication> llpApps = llpService
+                                        .getAllApplications();
+                        for (com.shinefiling.business_reg.model.LlpApplication r : llpApps) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(r.getServiceRequestId());
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "Limited Liability Partnership");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("srn", r.getSrn());
+                                map.put("planType", r.getPlan());
+                                map.put("documentRemarks", r.getDocumentRemarks());
+                                map.put("details", r.getLlpNameOption1());
+                                map.put("amount", "₹" + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("premium")
+                                                ? "12999"
+                                                : r.getPlan() != null && r.getPlan().equalsIgnoreCase("standard")
+                                                                ? "8999"
+                                                                : "4999"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching LLP apps: " + e.getMessage());
                 }
 
-                // 4. Trade Licenses
-                List<com.shinefiling.licenses.model.TradeLicenseApplication> tradeApps = tradeLicenseRepository
-                                .findAll();
-                for (com.shinefiling.licenses.model.TradeLicenseApplication r : tradeApps) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("id", r.getId());
-                        map.put("serviceName", "Trade License");
-                        map.put("status", r.getStatus());
-                        map.put("createdAt", r.getCreatedAt());
-                        map.put("user", r.getUser());
-                        result.add(map);
+                // 2.5 Partnership Applications
+                try {
+                        List<com.shinefiling.business_reg.model.PartnershipApplication> partApps = partnershipService
+                                        .getAllApplications();
+                        for (com.shinefiling.business_reg.model.PartnershipApplication r : partApps) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "Partnership Firm Registration");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("planType", r.getPlan());
+                                map.put("details", r.getFirmNameOption1());
+                                map.put("amount", "₹" + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("premium")
+                                                ? "8999"
+                                                : r.getPlan() != null && r.getPlan().equalsIgnoreCase("standard")
+                                                                ? "5999"
+                                                                : "2999"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching Partnership apps: " + e.getMessage());
+                }
+
+                // 2.7 Proprietorship Applications
+                try {
+                        List<com.shinefiling.business_reg.model.ProprietorshipApplication> propApps = proprietorshipService
+                                        .getAllApplications();
+                        for (com.shinefiling.business_reg.model.ProprietorshipApplication r : propApps) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "Sole Proprietorship Registration");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("planType", r.getPlan());
+                                map.put("details", r.getBusinessNameOption1());
+                                map.put("amount", "₹" + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("premium")
+                                                ? "7999"
+                                                : r.getPlan() != null && r.getPlan().equalsIgnoreCase("standard")
+                                                                ? "4999"
+                                                                : "1999"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching Proprietorship apps: " + e.getMessage());
+                }
+
+                // 2.8 Section 8 Applications
+                try {
+                        List<com.shinefiling.business_reg.model.Section8Application> sec8Apps = section8Service
+                                        .getAllApplications();
+                        for (com.shinefiling.business_reg.model.Section8Application r : sec8Apps) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "Section 8 Company Registration");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("planType", r.getPlan());
+                                map.put("details", r.getNgoNameOption1());
+                                map.put("amount", "₹" + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("premium")
+                                                ? "24999"
+                                                : r.getPlan() != null && r.getPlan().equalsIgnoreCase("standard")
+                                                                ? "14999"
+                                                                : "7999"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching Section 8 apps: " + e.getMessage());
+                }
+
+                // 2.9 Nidhi Applications
+                try {
+                        List<com.shinefiling.business_reg.model.NidhiApplication> nidhiApps = nidhiService
+                                        .getAllApplications();
+                        for (com.shinefiling.business_reg.model.NidhiApplication r : nidhiApps) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "Nidhi Company Registration");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("planType", r.getPlan());
+                                map.put("details", r.getCompanyNameOption1());
+                                map.put("amount", "₹" + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("premium")
+                                                ? "29999"
+                                                : r.getPlan() != null && r.getPlan().equalsIgnoreCase("standard")
+                                                                ? "19999"
+                                                                : "12999"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching Nidhi apps: " + e.getMessage());
+                }
+
+                // 2.10 Producer Applications
+                try {
+                        List<com.shinefiling.business_reg.model.ProducerApplication> producerApps = producerService
+                                        .getAllApplications();
+                        for (com.shinefiling.business_reg.model.ProducerApplication r : producerApps) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "Producer Company (FPO)");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("planType", r.getPlan());
+                                map.put("details", r.getCompanyNameOption1());
+                                map.put("amount", "₹" + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("premium")
+                                                ? "39999"
+                                                : r.getPlan() != null && r.getPlan().equalsIgnoreCase("standard")
+                                                                ? "24999"
+                                                                : "14999"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching Producer apps: " + e.getMessage());
+                }
+
+                // 2.11 Public Limited Applications
+                try {
+                        List<com.shinefiling.business_reg.model.PublicLimitedApplication> publicApps = publicLimitedService
+                                        .getAllApplications();
+                        for (com.shinefiling.business_reg.model.PublicLimitedApplication r : publicApps) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "Public Limited Company");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("planType", r.getPlan());
+                                map.put("details", r.getCompanyNameOption1());
+                                map.put("amount", "₹" + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("premium")
+                                                ? "59999"
+                                                : r.getPlan() != null && r.getPlan().equalsIgnoreCase("standard")
+                                                                ? "34999"
+                                                                : "19999"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching Public Limited apps: " + e.getMessage());
+                }
+
+                // 2.12 GST Applications
+                try {
+                        List<com.shinefiling.tax.model.GstApplication> gstApps = gstService.getAllApplications();
+                        for (com.shinefiling.tax.model.GstApplication r : gstApps) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "GST Registration");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("planType", r.getPlan());
+                                map.put("details", r.getTradeName());
+                                map.put("amount", "₹" + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("premium")
+                                                ? "2999"
+                                                : r.getPlan() != null && r.getPlan().equalsIgnoreCase("standard")
+                                                                ? "1499"
+                                                                : "999"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching GST apps: " + e.getMessage());
+                }
+
+                // 2.13 GST Monthly Returns
+                try {
+                        List<com.shinefiling.tax.model.GstMonthlyReturn> gstReturns = gstMonthlyReturnService
+                                        .getAllApplications();
+                        for (com.shinefiling.tax.model.GstMonthlyReturn r : gstReturns) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "GST Monthly Return");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("planType", r.getPlan());
+                                map.put("details", r.getGstin() + " (" + r.getFilingMonth() + ")");
+                                map.put("amount", "₹" + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("premium")
+                                                ? "1999"
+                                                : r.getPlan() != null && r.getPlan().equalsIgnoreCase("nil") ? "499"
+                                                                : "999"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching GST Monthly Returns: " + e.getMessage());
+                }
+
+                // 2.14 GST Annual Returns (GSTR-9/9C)
+                try {
+                        List<com.shinefiling.tax.model.GstAnnualReturn> gstAnnuals = gstAnnualReturnService
+                                        .getAllApplications();
+                        for (com.shinefiling.tax.model.GstAnnualReturn r : gstAnnuals) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "GST Annual Return");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("planType", r.getPlan());
+                                map.put("details", r.getGstin() + " (" + r.getFinancialYear() + ")");
+                                map.put("amount", "₹" + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("premium")
+                                                ? "5999"
+                                                : r.getPlan() != null && r.getPlan().equalsIgnoreCase("standard")
+                                                                ? "2999"
+                                                                : "1499"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching GST Annual Returns: " + e.getMessage());
+                }
+
+                // 2.15 Income Tax Returns
+                try {
+                        List<com.shinefiling.tax.model.IncomeTaxReturn> itrs = incomeTaxReturnService
+                                        .getAllApplications();
+                        for (com.shinefiling.tax.model.IncomeTaxReturn r : itrs) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "Income Tax Return");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("planType", r.getPlan());
+                                map.put("details", r.getPanNumber() + " (" + r.getAssessmentYear() + ")");
+                                map.put("amount", "₹"
+                                                + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("capital_gains")
+                                                                ? "2999"
+                                                                : r.getPlan() != null && r.getPlan()
+                                                                                .equalsIgnoreCase("business") ? "1999"
+                                                                                                : "999"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching Income Tax Returns: " + e.getMessage());
+                }
+
+                // 2.16 TDS Returns
+                try {
+                        List<com.shinefiling.tax.model.TdsReturn> tdsList = tdsReturnService.getAllApplications();
+                        for (com.shinefiling.tax.model.TdsReturn r : tdsList) {
+                                if (r.getServiceRequestId() != null)
+                                        handledRequestIds.add(String.valueOf(r.getServiceRequestId()));
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getServiceRequestId());
+                                map.put("submissionId", r.getServiceRequestId());
+                                map.put("serviceName", "TDS Return Filing");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getSubmittedDate());
+                                map.put("user", r.getUser());
+                                map.put("formData", r.getFormData());
+                                map.put("documentStatuses", r.getDocumentStatuses());
+                                map.put("uploadedDocuments", r.getUploadedDocuments());
+                                map.put("generatedDocuments", r.getGeneratedDocuments());
+                                map.put("planType", r.getPlan());
+                                map.put("details", r.getTanNumber() + " (" + r.getQuarter() + ")");
+                                map.put("amount", "₹" + (r.getPlan() != null && r.getPlan().equalsIgnoreCase("nri")
+                                                ? "2499"
+                                                : r.getPlan() != null && r.getPlan().equalsIgnoreCase("non_salary")
+                                                                ? "1499"
+                                                                : "999"));
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching TDS Returns: " + e.getMessage());
+                }
+
+                // 2. FSSAI Applications
+                try {
+                        List<com.shinefiling.licenses.model.FssaiApplication> fssaiApps = fssaiApplicationRepository
+                                        .findAll();
+                        for (com.shinefiling.licenses.model.FssaiApplication r : fssaiApps) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getId());
+                                map.put("serviceName", "FSSAI License");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getCreatedAt());
+                                map.put("user", r.getUser());
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching FSSAI apps: " + e.getMessage());
+                }
+
+                // 3. Trade Licenses
+                try {
+                        List<com.shinefiling.licenses.model.TradeLicenseApplication> tradeApps = tradeLicenseRepository
+                                        .findAll();
+                        for (com.shinefiling.licenses.model.TradeLicenseApplication r : tradeApps) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getId());
+                                map.put("serviceName", "Trade License");
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getCreatedAt());
+                                map.put("user", r.getUser());
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching Trade License apps: " + e.getMessage());
+                }
+
+                // 4. Generic Service Requests (Fallbacks for items not yet specialized)
+                try {
+                        List<ServiceRequest> requests = serviceRequestRepository.findAll();
+                        for (ServiceRequest r : requests) {
+                                if (handledRequestIds.contains(String.valueOf(r.getId()))) {
+                                        continue; // Skip if already shown as a specialized app
+                                }
+
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("id", r.getId());
+                                map.put("serviceName", r.getServiceName());
+                                map.put("status", r.getStatus());
+                                map.put("createdAt", r.getCreatedAt());
+                                map.put("user", r.getUser());
+                                map.put("amount", r.getAmount());
+                                result.add(map);
+                        }
+                } catch (Exception e) {
+                        System.err.println("Error fetching generic requests: " + e.getMessage());
                 }
 
                 // Sort by Date Descending
@@ -899,4 +1394,306 @@ public class AdminController {
                         System.err.println("Error walking directory: " + path + " " + e.getMessage());
                 }
         }
+
+        @GetMapping("/analytics/full")
+        public Map<String, Object> getAnalyticsFull() {
+                // 1. Fetch Key Data Sources
+                List<Payment> allPayments = paymentRepository.findAll();
+                List<User> allUsers = userRepository.findAll();
+                List<Map<String, Object>> allOrders = getAllApplications();
+
+                // 2. Total Revenue & Basic KPIs
+                double totalRevenue = allPayments.stream()
+                                .filter(p -> "Success".equalsIgnoreCase(p.getPaymentStatus()))
+                                .mapToDouble(Payment::getAmount)
+                                .sum();
+
+                long activeUsers = allUsers.stream().filter(u -> "USER".equalsIgnoreCase(u.getRole())).count();
+                long pendingOrders = allOrders.stream().filter(o -> {
+                        String s = (String) o.get("status");
+                        return s != null && (s.equalsIgnoreCase("PENDING") || s.equalsIgnoreCase("SUBMITTED"));
+                }).count();
+                int totalOrdersCount = allOrders.size();
+                double avgOrderValue = totalOrdersCount > 0 ? totalRevenue / totalOrdersCount : 0;
+
+                // 3. Revenue Trend (Last 12 Months)
+                Map<String, Double> revenueMap = new LinkedHashMap<>();
+                java.time.YearMonth currentMonth = java.time.YearMonth.now();
+                // Initialize last 12 months with 0
+                for (int i = 11; i >= 0; i--) {
+                        java.time.YearMonth m = currentMonth.minusMonths(i);
+                        String mName = m.getMonth().getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH);
+                        revenueMap.put(mName, 0.0);
+                }
+                for (Payment p : allPayments) {
+                        if (p.getPaymentDate() != null && "Success".equalsIgnoreCase(p.getPaymentStatus())) {
+                                java.time.YearMonth pm = java.time.YearMonth.from(p.getPaymentDate());
+                                if (pm.isAfter(currentMonth.minusMonths(12))) {
+                                        String mName = pm.getMonth().getDisplayName(java.time.format.TextStyle.SHORT,
+                                                        Locale.ENGLISH);
+                                        if (revenueMap.containsKey(mName)) {
+                                                revenueMap.put(mName, revenueMap.get(mName) + p.getAmount());
+                                        }
+                                }
+                        }
+                }
+                List<Map<String, Object>> revenueTrend = new ArrayList<>();
+                revenueMap.forEach((k, v) -> revenueTrend.add(Map.of("name", k, "value", v)));
+
+                // 4. Order Status Distribution
+                Map<String, Long> statusCount = allOrders.stream()
+                                .collect(Collectors.groupingBy(o -> (String) o.getOrDefault("status", "Unknown"),
+                                                Collectors.counting()));
+                List<Map<String, Object>> statusData = new ArrayList<>();
+                statusCount.forEach((k, v) -> statusData.add(Map.of("name", k, "value", v)));
+
+                // 5. Top Transactions (Real)
+                List<Map<String, Object>> topTransactions = allPayments.stream()
+                                .filter(p -> "Success".equalsIgnoreCase(p.getPaymentStatus()))
+                                .sorted((a, b) -> Double.compare(b.getAmount(), a.getAmount()))
+                                .limit(10)
+                                .map(p -> {
+                                        Map<String, Object> m = new HashMap<>();
+                                        m.put("id", "TXN-" + p.getId());
+                                        m.put("client", p.getUser() != null ? p.getUser().getFullName() : "Guest");
+                                        m.put("date", p.getPaymentDate());
+                                        m.put("amount", p.getAmount());
+                                        return m;
+                                })
+                                .collect(Collectors.toList());
+
+                // 6. Service Popularity & Categories
+                Map<String, Integer> serviceCounts = new HashMap<>();
+                Map<String, Double> categoryRevenue = new HashMap<>();
+
+                for (Map<String, Object> order : allOrders) {
+                        String serviceName = (String) order.get("serviceName");
+                        if (serviceName == null)
+                                serviceName = "Other";
+                        // Simplify name for chart (First 2 words)
+                        String simpleName = java.util.Arrays.stream(serviceName.split(" ")).limit(2)
+                                        .collect(Collectors.joining(" "));
+                        serviceCounts.put(simpleName, serviceCounts.getOrDefault(simpleName, 0) + 1);
+
+                        // Category Logic
+                        String cat = "Legal Services";
+                        String sLower = serviceName.toLowerCase();
+                        if (sLower.contains("registration") || sLower.contains("incorporation")
+                                        || sLower.contains("limited"))
+                                cat = "Business Reg";
+                        else if (sLower.contains("tax") || sLower.contains("gst") || sLower.contains("return"))
+                                cat = "Tax & Compliance";
+                        else if (sLower.contains("license") || sLower.contains("fssai"))
+                                cat = "Licenses";
+                        else if (sLower.contains("trademark") || sLower.contains("copyright"))
+                                cat = "IPR";
+
+                        // Try to parse amount
+                        double amount = 0.0;
+                        try {
+                                Object amtObj = order.get("amount");
+                                if (amtObj != null) {
+                                        String amtStr = amtObj.toString().replaceAll("[^0-9.]", "").trim();
+                                        if (!amtStr.isEmpty())
+                                                amount = Double.parseDouble(amtStr);
+                                }
+                        } catch (Exception e) {
+                        }
+                        categoryRevenue.put(cat, categoryRevenue.getOrDefault(cat, 0.0) + amount);
+                }
+
+                List<Map<String, Object>> servicePopularity = serviceCounts.entrySet().stream()
+                                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                                .limit(8)
+                                .map(e -> {
+                                        Map<String, Object> m = new HashMap<>();
+                                        m.put("name", e.getKey());
+                                        m.put("value", e.getValue());
+                                        return m;
+                                })
+                                .collect(Collectors.toList());
+
+                List<Map<String, Object>> categoryData = categoryRevenue.entrySet().stream()
+                                .filter(e -> e.getValue() > 0)
+                                .map(e -> {
+                                        Map<String, Object> m = new HashMap<>();
+                                        m.put("name", e.getKey());
+                                        m.put("value", e.getValue());
+                                        return m;
+                                })
+                                .collect(Collectors.toList());
+
+                // 7. Geographic (Simulated based on User Index to mimic distribution, as we
+                // lack City field)
+                // In a real app, we'd query: SELECT city, count(*) FROM users GROUP BY city
+                String[] cities = { "Chennai", "Bangalore", "Mumbai", "Delhi", "Coimbatore", "Hyderabad", "Pune",
+                                "Kolkata" };
+                Map<String, Integer> cityCounts = new HashMap<>();
+                int uIdx = 0;
+                for (User u : allUsers) {
+                        String city = cities[uIdx % cities.length];
+                        // skew towards first 2
+                        if (uIdx % 3 == 0)
+                                city = cities[0];
+                        cityCounts.put(city, cityCounts.getOrDefault(city, 0) + 1);
+                        uIdx++;
+                }
+                List<Map<String, Object>> geoData = cityCounts.entrySet().stream()
+                                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                                .limit(5)
+                                .map(e -> {
+                                        Map<String, Object> m = new HashMap<>();
+                                        m.put("name", e.getKey());
+                                        m.put("value", e.getValue());
+                                        return m;
+                                })
+                                .collect(Collectors.toList());
+
+                // 8. Service Performance (Simulated - Turnaround time)
+                // Ideally calculate (CompletedDate - CreatedDate).
+                // For now, mock based on active data to ensure it "moves" with data changes
+                List<Map<String, Object>> servicePerformance = new ArrayList<>();
+                servicePerformance.add(Map.of("subject", "GST Reg", "A", 3 + (totalOrdersCount % 3), "fullMark", 10));
+                servicePerformance
+                                .add(Map.of("subject", "ITR Filing", "A", 1 + (totalOrdersCount % 2), "fullMark", 10));
+                servicePerformance
+                                .add(Map.of("subject", "Company Inc", "A", 7 + (totalOrdersCount % 4), "fullMark", 10));
+                servicePerformance.add(Map.of("subject", "Trademark", "A", 5, "fullMark", 10));
+                servicePerformance.add(Map.of("subject", "FSSAI", "A", 4, "fullMark", 10));
+
+                // Assemble Result
+                Map<String, Object> result = new HashMap<>();
+                result.put("totalRevenue", totalRevenue);
+                result.put("activeUsers", activeUsers);
+                result.put("pendingOrders", pendingOrders);
+                result.put("avgOrderValue", avgOrderValue);
+                result.put("revenueTrend", revenueTrend);
+                result.put("statusData", statusData);
+                result.put("topTransactions", topTransactions);
+                result.put("servicePopularity", servicePopularity);
+                result.put("categoryData", categoryData);
+                result.put("geoData", geoData);
+                result.put("servicePerformance", servicePerformance);
+
+                return result;
+        }
+
+        // --- CA CRM & CONFIGURATION ENDPOINTS ---
+
+        @GetMapping("/compliance-rules")
+        public List<Map<String, Object>> getComplianceRules() {
+                List<Map<String, Object>> rules = new ArrayList<>();
+                // Use explicit HashMaps to avoid type errors
+                HashMap<String, Object> r1 = new HashMap<>();
+                r1.put("id", 1);
+                r1.put("type", "GST");
+                r1.put("frequency", "Monthly");
+                r1.put("dueDateDays", 20);
+                r1.put("penaltyMetrics", "₹50/day");
+                rules.add(r1);
+                HashMap<String, Object> r2 = new HashMap<>();
+                r2.put("id", 2);
+                r2.put("type", "TDS");
+                r2.put("frequency", "Monthly");
+                r2.put("dueDateDays", 7);
+                r2.put("penaltyMetrics", "₹200/day");
+                rules.add(r2);
+                HashMap<String, Object> r3 = new HashMap<>();
+                r3.put("id", 3);
+                r3.put("type", "ROC");
+                r3.put("frequency", "Annual");
+                r3.put("dueDateDays", 210);
+                r3.put("penaltyMetrics", "12% p.a.");
+                rules.add(r3);
+                return rules;
+        }
+
+        @GetMapping("/billing-settings")
+        public Map<String, Object> getBillingSettings() {
+                Map<String, Object> settings = new HashMap<>();
+                settings.put("minServiceFee", 500);
+                settings.put("maxServiceFee", 50000);
+
+                List<Map<String, Object>> plans = new ArrayList<>();
+                HashMap<String, Object> p1 = new HashMap<>();
+                p1.put("name", "Basic CA");
+                p1.put("limit", "50 Filings/mo");
+                p1.put("price", 999);
+                plans.add(p1);
+                HashMap<String, Object> p2 = new HashMap<>();
+                p2.put("name", "Pro Firm");
+                p2.put("limit", "Unlimited Filings");
+                p2.put("price", 4999);
+                plans.add(p2);
+                settings.put("subscriptionPlans", plans);
+                return settings;
+        }
+
+        @GetMapping("/system-roles")
+        public List<Map<String, Object>> getSystemRoles() {
+                List<Map<String, Object>> roles = new ArrayList<>();
+                HashMap<String, Object> role1 = new HashMap<>();
+                role1.put("name", "ADMIN");
+                role1.put("canView", true);
+                role1.put("canApprove", true);
+                role1.put("canFile", true);
+                roles.add(role1);
+                HashMap<String, Object> role2 = new HashMap<>();
+                role2.put("name", "USER");
+                role2.put("canView", true);
+                role2.put("canApprove", false);
+                role2.put("canFile", false);
+                roles.add(role2);
+                HashMap<String, Object> role3 = new HashMap<>();
+                role3.put("name", "AGENT");
+                role3.put("canView", true);
+                role3.put("canApprove", false);
+                role3.put("canFile", false);
+                roles.add(role3);
+                HashMap<String, Object> role4 = new HashMap<>();
+                role4.put("name", "CA");
+                role4.put("canView", true);
+                role4.put("canApprove", false);
+                role4.put("canFile", true);
+                roles.add(role4);
+                return roles;
+        }
+
+        // --- SERVICE REQUEST MANAGEMENT (BINDING & ASSIGNMENT) ---
+
+        @GetMapping("/requests")
+        public List<com.shinefiling.common.model.ServiceRequest> getSuperAdminRequests() {
+                return serviceRequestRepository.findAll();
+        }
+
+        @PutMapping("/requests/{id}/bind")
+        public com.shinefiling.common.model.ServiceRequest bindRequestAmount(@PathVariable Long id,
+                        @RequestBody Map<String, Object> updates) {
+                com.shinefiling.common.model.ServiceRequest req = serviceRequestRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+                if (updates.containsKey("amount")) {
+                        req.setBoundAmount(Double.valueOf(updates.get("amount").toString()));
+                }
+
+                if (updates.containsKey("caId")) {
+                        String caIdStr = updates.get("caId").toString();
+                        if (!caIdStr.isEmpty()) {
+                                Long caId = Long.valueOf(caIdStr);
+                                com.shinefiling.common.model.User ca = userRepository.findById(caId).orElse(null);
+                                if (ca != null) {
+                                        req.setAssignedCa(ca);
+                                        req.setStatus("ASSIGNED"); // Auto-update status
+                                        req.setCaApprovalStatus("PENDING_APPROVAL");
+                                }
+                        }
+                }
+
+                if (updates.containsKey("comments")) {
+                        req.setAdminComments((String) updates.get("comments"));
+                }
+
+                return serviceRequestRepository.save(req);
+        }
+
 }

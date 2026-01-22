@@ -38,6 +38,12 @@ const LoginPage = ({ onLogin }) => {
                 // Redirect based on Role
                 if (data.role === 'ADMIN' || data.email.includes('admin')) {
                     navigate('/admin-dashboard');
+                } else if (data.role === 'AGENT') {
+                    navigate('/agent-dashboard');
+                } else if (data.role === 'CA') {
+                    navigate('/ca-dashboard');
+                } else if (data.role === 'EMPLOYEE') {
+                    navigate('/employee-dashboard');
                 } else {
                     navigate('/dashboard');
                 }
@@ -70,11 +76,14 @@ const LoginPage = ({ onLogin }) => {
             onLogin(userWithTimestamp);
 
             // Redirect based on Role
-            // Redirect based on Role
             if (data.role === 'ADMIN' || data.email.includes('admin')) {
                 navigate('/admin-dashboard');
             } else if (data.role === 'AGENT') {
                 navigate('/agent-dashboard');
+            } else if (data.role === 'CA') {
+                navigate('/ca-dashboard');
+            } else if (data.role === 'EMPLOYEE') {
+                navigate('/employee-dashboard');
             } else {
                 navigate('/dashboard');
             }

@@ -9,119 +9,147 @@ export const SERVICE_DATA = {
         id: 'business_reg',
         label: 'Business Registration',
         icon: Building,
-        color: 'indigo', // Professional Indigo
+        color: 'indigo',
         colorHex: '#6366f1',
         items: [
-            'Private Limited Company Registration', 'One Person Company (OPC)',
-            'Limited Liability Partnership (LLP)', 'Partnership Firm Registration',
-            'Sole Proprietorship Registration', 'Section 8 NGO Company',
+            'Private Limited Company Registration', 'One Person Company (OPC) Registration',
+            'Limited Liability Partnership (LLP) Registration', 'Partnership Firm Registration',
+            'Sole Proprietorship Registration', 'Section 8 (NGO) Company Registration',
             'Nidhi Company Registration', 'Producer Company Registration',
-            'Public Limited Company'
+            'Public Limited Company Registration', 'Indian Subsidiary Registration',
+            'Foreign Company Registration (India)', 'Startup Incorporation Advisory'
         ]
     },
     tax_compliance: {
         id: 'tax_compliance',
-        label: 'Tax & Compliance',
+        label: 'Tax & GST Compliance',
         icon: Coins,
-        color: 'emerald', // Trustworthy Green
+        color: 'emerald',
         colorHex: '#10b981',
         items: [
-            'GST Registration', 'GST Monthly Return (GSTR-1 & 3B)', 'GST Annual Return (GSTR-9)',
-            'Income Tax Return (ITR 1–7)', 'TDS Return Filing', 'Professional Tax Reg & Filing',
-            'Advance Tax Filing', 'Tax Audit Filing'
+            'GST Registration', 'GST Amendment / Correction', 'GST Monthly Return (GSTR-1)',
+            'GST Monthly Return (GSTR-3B)', 'GST Annual Return (GSTR-9)', 'GST Audit (GSTR-9C)',
+            'GST Cancellation', 'Income Tax Return (ITR-1)', 'Income Tax Return (ITR-2)',
+            'Income Tax Return (ITR-3)', 'Income Tax Return (ITR-4)', 'Income Tax Return (ITR-5/6/7)',
+            'Advance Tax Filing', 'TDS Return Filing'
         ]
     },
     roc_compliance: {
         id: 'roc_compliance',
-        label: 'ROC / MCA Filings',
+        label: 'ROC / MCA Compliance',
         icon: Briefcase,
-        color: 'blue', // Corporate Blue
+        color: 'blue',
         colorHex: '#3b82f6',
         items: [
-            'Annual ROC Filing (AOC-4, MGT-7)', 'Director KYC (DIR-3 KYC)', 'Add/Remove Director',
-            'Change of Registered Office', 'Share Transfer Filing', 'Increase Authorized Capital',
-            'MOA/AOA Amendment', 'Company Name Change', 'Strike Off Company'
+            'Annual ROC Filing (AOC-4)', 'Annual ROC Filing (MGT-7)', 'Director KYC (DIR-3 KYC)',
+            'Add Director', 'Remove Director', 'Change Registered Office',
+            'Increase Authorized Capital', 'Share Transfer Filing', 'MOA Amendment',
+            'AOA Amendment', 'Company Name Change', 'Strike Off Company'
         ]
     },
     licenses: {
         id: 'licenses',
         label: 'Government Licenses',
         icon: Landmark,
-        color: 'orange', // Warning/Alert Orange for Licenses
+        color: 'orange',
         colorHex: '#f97316',
         items: [
-            'FSSAI License (Basic/State/Central)', 'Shop & Establishment License', 'Trade License',
-            'Labour License', 'Factory License', 'Drug License', 'Fire Safety NOC',
-            'Pollution Control (CTE/CTO)', 'Import Export Code (IEC)', 'Gumastha License',
-            'Bar / Liquor License'
+            'FSSAI Registration (Basic)', 'FSSAI License (State)', 'FSSAI License (Central)',
+            'FSSAI Renewal', 'FSSAI Correction', 'Shop & Establishment License',
+            'Trade License', 'Labour License', 'Factory License', 'Drug License',
+            'Fire Safety NOC', 'Pollution Control (CTE / CTO)', 'Import Export Code (IEC)'
         ]
     },
     ipr: {
         id: 'ipr',
-        label: 'Intellectual Property',
+        label: 'Intellectual Property (IPR)',
         icon: Shield,
-        color: 'violet', // Premium Violet
+        color: 'violet',
         colorHex: '#8b5cf6',
         items: [
-            'Trademark Registration', 'Trademark Objection Reply', 'Trademark Hearing Support',
-            'Trademark Assignment', 'Trademark Renewal', 'Copyright Registration',
-            'Patent Filing (Provisional/Complete)', 'Design Registration'
+            'Trademark Registration', 'Trademark Objection Reply', 'Trademark Hearing Representation',
+            'Trademark Renewal', 'Trademark Assignment', 'Copyright Registration',
+            'Patent Provisional Filing', 'Patent Complete Filing', 'Design Registration'
         ]
     },
     labour_hr: {
         id: 'labour_hr',
-        label: 'Labour Law & HR',
+        label: 'Labour Law & HR Compliance',
         icon: User,
-        color: 'cyan', // Calm Cyan
+        color: 'cyan',
         colorHex: '#06b6d4',
         items: [
-            'PF Registration & Filing', 'ESI Registration & Filing', 'Professional Tax Reg & Return',
-            'Labour Welfare Fund Filing', 'Gratuity Act Registration', 'Bonus Act Compliance',
-            'Minimum Wages Compliance'
+            'PF Registration', 'PF Return Filing', 'ESI Registration', 'ESI Return Filing',
+            'Professional Tax Registration', 'Professional Tax Filing', 'Labour Welfare Fund Filing',
+            'Payroll Compliance'
         ]
     },
     certifications: {
         id: 'certifications',
         label: 'Business Certifications',
         icon: Award,
-        color: 'amber', // Gold/Amber for Awards/Certs
+        color: 'amber',
         colorHex: '#f59e0b',
         items: [
-            'MSME / Udyam Registration', 'ISO Certification (9001, 14001)', 'Startup India Recognition',
-            'Digital Signature (DSC)', 'Bar Code Registration', 'TAN / PAN Application'
+            'MSME / Udyam Registration', 'ISO Certification (9001 / 14001 / 27001)',
+            'Startup India Registration', 'Digital Signature Certificate (DSC)',
+            'Barcode / GS1 Registration', 'PAN Application', 'TAN Application'
         ]
     },
     legal: {
         id: 'legal',
         label: 'Legal Drafting',
         icon: Scale,
-        color: 'rose', // Serious Rose/Red for Legal
+        color: 'rose',
         colorHex: '#f43f5e',
         items: [
-            'Partnership Deed', 'Founders Agreement', 'Shareholders Agreement', 'Employment Agreement',
-            'Rent Agreement', 'Franchise Agreement', 'NDA (Non-Disclosure)', 'Vendor Agreement'
+            'Partnership Deed Drafting', 'Founders Agreement', 'Shareholders Agreement',
+            'Employment Agreement', 'Rent / Lease Agreement', 'Franchise Agreement',
+            'NDA (Non-Disclosure Agreement)', 'Vendor / Service Agreement'
+        ]
+    },
+    legal_notices: {
+        id: 'legal_notices',
+        label: 'Legal Notices & Disputes',
+        icon: Scale,
+        color: 'red',
+        colorHex: '#ef4444',
+        items: [
+            'Legal Notice Drafting', 'Reply to Legal Notice', 'Cheque Bounce Notice (Section 138)',
+            'GST / Income Tax Notice Reply', 'ROC Notice Reply'
+        ]
+    },
+    corrections: {
+        id: 'corrections',
+        label: 'Corrections & Amendments',
+        icon: Stamp,
+        color: 'fuchsia',
+        colorHex: '#d946ef',
+        items: [
+            'PAN Correction', 'GST Certificate Correction', 'FSSAI License Correction',
+            'Company / LLP Detail Correction', 'DIN / DSC Correction'
+        ]
+    },
+    closure: {
+        id: 'closure',
+        label: 'Closure / Exit Services',
+        icon: Lock,
+        color: 'slate',
+        colorHex: '#64748b',
+        items: [
+            'LLP Closure', 'GST Cancellation (Business Closure)',
+            'Proprietorship Closure', 'FSSAI License Cancellation'
         ]
     },
     financial: {
         id: 'financial',
-        label: 'Financial Services',
+        label: 'Financial & Startup Support',
         icon: FileText,
-        color: 'teal', // Financial Teal
+        color: 'teal',
         colorHex: '#14b8a6',
         items: [
-            'CMA Data Preparation', 'Project Report for Loans', 'Bank Loan Documentation',
-            'Cash Flow Compliance', 'Startup Pitch Deck', 'Business Valuation Reports'
-        ]
-    },
-    storage: {
-        id: 'storage',
-        label: 'Mini DigiLocker',
-        icon: Database,
-        color: 'yellow',
-        colorHex: '#eab308',
-        items: [
-            'Store PAN Card', 'Store Aadhaar Card', 'Store Rent Agreement', 'Store GST Cert',
-            'Store FSSAI Cert', 'Business Doc Vault', 'Secure PDF Download'
+            'CMA Data Preparation', 'Project Report for Bank Loan', 'Business Valuation',
+            'Startup Pitch Deck', 'Cash Flow Statement', 'Virtual CFO Services'
         ]
     }
 };

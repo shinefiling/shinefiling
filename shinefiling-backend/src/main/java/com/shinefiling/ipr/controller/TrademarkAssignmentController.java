@@ -50,8 +50,8 @@ public class TrademarkAssignmentController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(6999.0); // Professional Fee for Assignment
+            createdRequest.setPlan(requestDTO.getPlan() != null ? requestDTO.getPlan() : "standard");
+            createdRequest.setAmount(requestDTO.getAmountPaid() != null ? requestDTO.getAmountPaid() : 6999.0);
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 
@@ -72,5 +72,3 @@ public class TrademarkAssignmentController {
         return t;
     }
 }
-
-

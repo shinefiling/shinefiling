@@ -46,6 +46,15 @@ public class UserController {
     @Autowired
     private com.shinefiling.business_reg.service.PrivateLimitedService pvtLtdService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUser(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(user);
+    }
+
     @GetMapping("/{id}/payments")
     public List<Payment> getUserPayments(@PathVariable Long id) {
         return paymentRepository.findByUserId(id);

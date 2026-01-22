@@ -9,6 +9,8 @@ public class TrademarkRequest {
     private String userEmail;
     private String brandName;
     private String applicantType; // INDIVIDUAL, STARTUP, SMALL_ENTERPRISE, OTHERS
+    private String plan;
+    private Double amountPaid;
     private String status;
 
     private TrademarkFormData formData;
@@ -40,4 +42,3 @@ public class TrademarkRequest {
         private String description;
     }
 }
-

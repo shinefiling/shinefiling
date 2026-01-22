@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../components/Navbar';
 import { submitPartnershipDeed } from '../../../api';
+import { uploadFile } from '../../../utils/uploadFile';
 import { ArrowLeft, Upload, CheckCircle, Loader } from 'lucide-react';
 
 const ApplyPartnershipDeed = () => {
@@ -24,6 +25,7 @@ const ApplyPartnershipDeed = () => {
         email: '',
         mobile: ''
     });
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     useEffect(() => {
         const userStr = localStorage.getItem('user');
@@ -40,9 +42,8 @@ const ApplyPartnershipDeed = () => {
     };
 
     const handleFileChange = (e) => {
-        // Mock file upload for now, just store name
-        if (e.target.files[0]) {
-            setFormData({ ...formData, [e.target.name]: `File: ${e.target.files[0].name}` });
+        if (e.target.files) {
+            setSelectedFiles(Array.from(e.target.files));
         }
     };
 
@@ -51,9 +52,31 @@ const ApplyPartnershipDeed = () => {
         setLoading(true);
         setError(null);
         try {
-            await submitPartnershipDeed(formData);
+            const finalPayload = {
+                submissionId: `DEED-${Date.now()}`,
+                userEmail: formData.email,
+                plan: "standard",
+                amountPaid: 1999,
+                status: "INITIATED",
+                formData: formData,
+                documents: [], // Will be populated below
+                automationQueue: []
+            };
+
+            const uploadedDocs = [];
+            for (const file of selectedFiles) {
+                const url = await uploadFile(file);
+                uploadedDocs.push({
+                    documentType: "User Upload",
+                    fileName: file.name,
+                    fileUrl: url
+                });
+            }
+            finalPayload.documents = uploadedDocs;
+
+            await submitPartnershipDeed(finalPayload);
             setSuccess(true);
-            setTimeout(() => navigate('/dashboard'), 2000);
+            setTimeout(() => navigate('/dashboard?tab=orders'), 2000);
         } catch (err) {
             setError(err.message || 'Submission failed. Please try again.');
         } finally {
@@ -132,6 +155,24 @@ const ApplyPartnershipDeed = () => {
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Profit Sharing Ratio</label>
                                         <input type="text" name="profitSharingRatio" value={formData.profitSharingRatio} onChange={handleChange} required className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-1 focus:ring-blue-500 outline-none" placeholder="e.g. 50:50 or 60:40" />
                                     </div>
+                                </div>
+                            </div>
+
+                            <div className="border-t border-gray-100 pt-6">
+                                <h3 className="text-lg font-bold text-gray-800 mb-4">Upload Documents (Optional)</h3>
+                                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer relative">
+                                    <input type="file" multiple onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                                    <Upload className="mx-auto text-gray-400 mb-2" size={32} />
+                                    <p className="text-sm text-gray-600 font-medium">Click to upload ID Proofs or Drafts</p>
+                                    <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG allowed</p>
+                                    {selectedFiles.length > 0 && (
+                                        <div className="mt-4 text-left">
+                                            <p className="text-sm font-bold text-green-600 mb-2">Selected Files:</p>
+                                            <ul className="text-xs text-gray-600 space-y-1">
+                                                {selectedFiles.map((f, i) => <li key={i} className="flex items-center gap-1"><CheckCircle size={10} /> {f.name}</li>)}
+                                            </ul>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

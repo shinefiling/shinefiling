@@ -9,6 +9,8 @@ public class TrademarkHearingRequest {
     private String userEmail;
     private String applicationNumber;
     private String hearingType; // PHYSICAL, VIDEO_CONFERENCING
+    private String plan;
+    private Double amountPaid;
     private String status;
 
     private HearingFormData formData;
@@ -38,4 +40,3 @@ public class TrademarkHearingRequest {
         private String description;
     }
 }
-

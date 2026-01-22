@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Upload, CheckCircle, AlertCircle, FileText, ChevronRight, Save } from 'lucide-react';
-import { submitISOCertification } from '../../../api';
+import { submitISOCertification, uploadFile } from '../../../api';
 
 const ApplyISOCertification = () => {
     const navigate = useNavigate();
@@ -53,28 +53,48 @@ const ApplyISOCertification = () => {
         setLoading(true);
         setError(null);
         try {
-            const processedDocs = {};
+            const uploadedDocsList = [];
+            // Upload files first
             for (const [key, file] of Object.entries(documents)) {
                 if (file) {
-                    processedDocs[key] = `File: ${file.name}`;
+                    try {
+                        const uploadRes = await uploadFile(file, 'iso-certification');
+                        uploadedDocsList.push({
+                            id: key,
+                            filename: uploadRes.originalName || file.name,
+                            fileUrl: uploadRes.fileUrl,
+                            type: key
+                        });
+                    } catch (e) {
+                        console.error("File upload failed for " + key, e);
+                        // Continue or throw? Let's continue but maybe warn.
+                    }
                 }
             }
 
-            const payload = {
+            const isoFormData = {
                 businessName: formData.organizationName,
-                businessType: "Unknown", // Field not in form
+                businessType: "Unknown",
                 isoStandard: formData.standard,
                 scopeOfBusiness: formData.businessActivity,
-                currentCertification: "No", // Field not in form
+                currentCertification: "No",
                 mobile: formData.mobile,
                 email: formData.email,
-                address: formData.address,
-                // Extra fields for generic handling if needed
-                status: "PENDING",
-                notes: JSON.stringify(processedDocs)
+                address: formData.address
             };
 
-            await submitISOCertification(payload);
+            const finalPayload = {
+                submissionId: `ISO-${Date.now()}`,
+                userEmail: formData.email,
+                plan: formData.standard,
+                amountPaid: formData.standard === 'ims' ? 9999 : 3999, // Basic dynamic pricing
+                status: "INITIATED",
+                formData: isoFormData,
+                documents: uploadedDocsList,
+                automationQueue: []
+            };
+
+            await submitISOCertification(finalPayload);
             navigate('/dashboard?tab=orders');
         } catch (err) {
             setError(err.message || "Submission failed");

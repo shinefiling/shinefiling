@@ -25,6 +25,7 @@ public class AnnualRocFilingRequest {
         // Director & Shareholding
         private Integer numberOfDirectors;
         private Double paidUpCapital;
+        private Double turnover;
     }
 
     @Data

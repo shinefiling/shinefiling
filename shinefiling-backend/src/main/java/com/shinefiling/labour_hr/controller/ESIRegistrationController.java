@@ -58,9 +58,8 @@ public class ESIRegistrationController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(2499.0); // Professional Fee
-            createdRequest.setPaymentStatus("PAID");
+            createdRequest.setPlan(requestDTO.getPlan() != null ? requestDTO.getPlan() : "standard");
+            createdRequest.setAmount(requestDTO.getAmountPaid() != null ? requestDTO.getAmountPaid() : 2499.0);
             createdRequest.setStatus("INITIATED");
 
             serviceRequestRepository.save(createdRequest);
@@ -80,6 +79,3 @@ public class ESIRegistrationController {
         return t;
     }
 }
-
-
-

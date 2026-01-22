@@ -3,7 +3,7 @@ import {
     DollarSign, Download, CreditCard, RefreshCcw, CheckCircle,
     ArrowUpRight, ArrowDownLeft, Search, Filter, FileText, AlertCircle,
     Calendar, MoreVertical, ChevronDown, PieChart as PieChartIcon, TrendingUp,
-    Wallet, Landmark, Receipt, ExternalLink, ArrowRight
+    Wallet, Landmark, Receipt, ExternalLink, ArrowRight, Plus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getFinancialData } from '../../../../api';
@@ -363,7 +363,6 @@ const PaymentFinance = () => {
     );
 };
 
-// Start of Plus Icon Fix (Icon was used but not imported in Invoices section)
-import { Plus } from 'lucide-react';
+
 
 export default PaymentFinance;

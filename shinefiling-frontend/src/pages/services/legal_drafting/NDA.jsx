@@ -1,6 +1,9 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Lock, Shield, FileText, Scale, HelpCircle, Briefcase, BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
+import {
+    CheckCircle, Lock, Shield, FileText, Scale, HelpCircle, Briefcase,
+    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck, X
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const NDA = ({ isLoggedIn }) => {
@@ -20,6 +23,7 @@ const NDA = ({ isLoggedIn }) => {
         { q: "How long is it valid?", a: "Typically 2-5 years, but trade secrets can be protected indefinitely." },
         { q: "Does it cover everything?", a: "No, it generally excludes public information or info already known to the receiver." },
         { q: "Is it enforceable in court?", a: "Yes, a well-drafted NDA is legally binding and enforceable in Indian courts." },
+        { q: "Can I protect my startup idea?", a: "Yes, an NDA prevents potential investors or partners from stealing your idea before you launch." },
     ];
 
     return (
@@ -47,7 +51,7 @@ const NDA = ({ isLoggedIn }) => {
                             rotate: [0, 45, 0]
                         }}
                         transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-gray-600/20 rounded-full blur-[120px]"
+                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-cyan-600/20 rounded-full blur-[120px]"
                     />
                     <motion.div
                         animate={{
@@ -56,7 +60,7 @@ const NDA = ({ isLoggedIn }) => {
                             x: [0, -50, 0]
                         }}
                         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-slate-600/20 rounded-full blur-[100px]"
+                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[100px]"
                     />
                 </div>
 
@@ -78,7 +82,7 @@ const NDA = ({ isLoggedIn }) => {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Agreement (NDA)</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Protect your sensitive business information, trade secrets, and ideas. Essential for startups, freelancers, and businesses.
+                                    Protect your sensitive business information, trade secrets, and ideas. Essential for <strong>Startups</strong>, <strong>Employees</strong>, and <strong>Vendors</strong>.
                                 </p>
                             </motion.div>
 
@@ -127,7 +131,7 @@ const NDA = ({ isLoggedIn }) => {
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
                                 <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Essential</div>
-                                <div className="text-center mb-6">
+                                <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">Standard Draft</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹999</h3>
@@ -135,7 +139,7 @@ const NDA = ({ isLoggedIn }) => {
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Ready in 24 Hrs</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {["Unilateral / Mutual Options", "Confidentiality Definition", "Exclusions & Exceptions", "Term of Agreement", "Jurisdiction Clause"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
@@ -144,11 +148,9 @@ const NDA = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Draft NDA <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -156,27 +158,133 @@ const NDA = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+
+            {/* --- PRICING SECTION --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Safety Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Choose Your Plan</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: BASIC */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
+                            <p className="text-slate-500 text-sm mb-6">Simple Unilateral NDA.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹499</span>
+                                <span className="text-slate-400 line-through text-sm">₹800</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Standard Template</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Unilateral (One-way)</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Word Format</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> No Custom Clauses</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Basic</button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD - POPULAR */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
+                            <p className="text-gray-400 text-sm mb-6">Mutual / Employee NDA.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹999</span>
+                                <span className="text-gray-500 line-through text-sm">₹1,500</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Lawyer Drafted</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Unilateral OR Mutual</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Non-Solicit Included</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Penalty Clauses</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Standard</button>
+                        </motion.div>
+
+                        {/* PLAN 3: PREMIUM */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Premium / Custom</h3>
+                            <p className="text-slate-500 text-sm mb-6">Complex Deals / M&A.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹2,499</span>
+                                <span className="text-slate-400 line-through text-sm">₹4,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> IP Heavy Protection</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> International Jurisdiction</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Detailed Exclusions</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Lawyer Consultation</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Premium</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Types of NDA Section */}
+                    {/* Intro Section */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <Lock className="text-bronze" /> Types of NDAs
+                            <Lock className="text-bronze" /> Protect Your Information
+                        </h2>
+                        <div className="prose prose-lg text-gray-600">
+                            <p className="lead text-xl text-gray-800 font-medium">
+                                A <strong>Non-Disclosure Agreement (NDA)</strong> is the first line of defense for your business secrets. Whether you are pitching to investors, hiring key employees, or exploring a partnership, sharing information without an NDA puts your intellectual property at risk.
+                            </p>
+                            <p>
+                                We draft robust, legally enforceable NDAs tailored to your specific situation, ensuring your trade secrets remain secret. Our agreements are designed to withstand scrutiny in Indian courts and provide you with strong remedies in case of a breach.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* Importance/Features Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
+                            <Shield className="text-bronze" /> Why You Need an NDA
                         </h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Unilateral NDA", desc: "One-way protection. Used when only you are sharing info (e.g., with employees)." },
-                                { title: "Mutual NDA", desc: "Two-way protection. Used when both parties share secrets (e.g., joint venture)." },
-                                { title: "Employee NDA", desc: "Specific for employees to protect company data and trade secrets." },
-                                { title: "Investor NDA", desc: "For sharing pitch decks and financials with potential investors." },
+                                { title: "Prevent Idea Theft", desc: "Legally stops others from stealing your business ideas." },
+                                { title: "Safeguard Client Data", desc: "Protects your client lists and sensitive database." },
+                                { title: "Secure Investments", desc: "Investors expect an NDA before deep-diving into your tech." },
+                                { title: "Maintain Competitive Edge", desc: "Keeps your strategies hidden from competitors." },
+                                { title: "Legal Recourse", desc: "Gives you the right to sue for damages if a leak occurs." },
+                                { title: "Define Confidentiality", desc: "Clearly states what is 'secret' and what is 'public'." },
                             ].map((item, i) => (
                                 <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
                                     <div className="flex items-start gap-4">
-                                        <Shield size={24} className="text-bronze shrink-0 mt-1 group-hover:scale-110 transition" />
+                                        <CheckCircle size={24} className="text-green-500 shrink-0 mt-1" />
                                         <div>
                                             <h3 className="text-lg font-bold text-navy mb-1">{item.title}</h3>
                                             <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
@@ -187,36 +295,84 @@ const NDA = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
+                    {/* Types of NDA Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
+                            <Briefcase className="text-bronze" /> Types of NDAs We Draft
+                        </h2>
                         <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Standard NDA</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹999</div>
-                                <p className="text-xs text-gray-400 mb-6">/ Agreement</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Choice of Type</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Lawyer Verified</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Edit Revisions (1)</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
-                            </div>
+                            {[
+                                { title: "Unilateral NDA", desc: "One-way protection. Used when only you are sharing info (e.g., with employees)." },
+                                { title: "Mutual NDA", desc: "Two-way protection. Used when both parties share secrets (e.g., joint venture)." },
+                                { title: "Employee NDA", desc: "Specific for employees to protect company data and trade secrets upon hiring." },
+                                { title: "Investor NDA", desc: "Tailored for sharing pitch decks and financials with potential investors." },
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg hover:border-bronze/30 group">
+                                    <div className="flex items-start gap-4">
+                                        <Shield size={24} className="text-bronze shrink-0 mt-1" />
+                                        <div>
+                                            <h3 className="text-lg font-bold text-navy mb-1">{item.title}</h3>
+                                            <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                            {/* Custom */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Complex / Custom</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹1,999</div>
-                                <p className="text-xs text-slate-400 mb-6">/ Agreement</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> For M&A / IP Deals</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Detailed Clauses</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> 3 Rounds Revisions</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('custom')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Custom</button>
-                            </div>
+                    {/* Key Conditions Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
+                            <Scale className="text-bronze" /> Key Conditions We Include
+                        </h2>
+                        <ul className="grid md:grid-cols-2 gap-4">
+                            {[
+                                "Clear Definition of Confidential Information",
+                                "Exclusions (Public Knowledge)",
+                                "Obligations of Receiving Party",
+                                "Time Period of Confidentiality (e.g., 2-5 years)",
+                                "Return or Destruction of Data Clause",
+                                "Dispute Resolution & Jurisdiction",
+                                "Non-Solicitation of Employees",
+                                "Non-Circumvention Clause"
+                            ].map((item, i) => (
+                                <li key={i} className="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                                    <div className="w-6 h-6 rounded-full bg-bronze/10 flex items-center justify-center">
+                                        <CheckCircle size={14} className="text-bronze" />
+                                    </div>
+                                    <span className="text-navy font-medium text-sm">{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+
+                    {/* Process Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Drafting Process</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Fill Request", days: "10 Mins", desc: "Provide details of the parties and the nature of information shared." },
+                                { step: "Step 2", title: "Drafting", days: "2-4 Hours", desc: "Our legal experts draft the NDA based on your specific needs." },
+                                { step: "Step 3", title: "Review", days: "Same Day", desc: "We send the draft for your review and make any necessary edits." },
+                                { step: "Step 4", title: "Final Copy", days: "Instant", desc: "Receive the final clean copy ready for signature." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-navy font-bold text-sm">{item.days}</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
@@ -266,9 +422,7 @@ const NDA = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Need it fast?</h4>
                             <p className="text-gray-300 text-sm mb-4">We can deliver standard NDAs in under 24 hours.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Get Priority
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -277,5 +431,6 @@ const NDA = ({ isLoggedIn }) => {
         </div>
     );
 };
-
 export default NDA;
+
+

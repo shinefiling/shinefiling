@@ -151,6 +151,43 @@ export const uploadFile = async (file, category = "others") => {
     return handleResponse(response);
 };
 
+export const getUserDocuments = async (email) => {
+    try {
+        const response = await fetch(`${BASE_URL}/users/${email}/documents`, {
+            headers: getAuthHeaders()
+        });
+        if (response.ok) return await response.json();
+    } catch (e) {
+        console.warn("Failed to fetch user documents", e);
+    }
+    return [];
+};
+
+export const uploadUserDocument = async (email, file, category, name) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('category', category);
+    if (name) formData.append('name', name);
+
+    // Manually construct headers to exclude Content-Type
+    const userStr = localStorage.getItem('user');
+    let headers = {};
+    if (userStr) {
+        try {
+            const user = JSON.parse(userStr);
+            const token = user.token || user.accessToken || user.jwt || user.access_token || user.id_token || ((typeof user === 'string') ? user : null);
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+        } catch (e) { }
+    }
+
+    const response = await fetch(`${BASE_URL}/users/${email}/documents`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+    });
+    return handleResponse(response);
+};
+
 
 // --- SERVICE REQUESTS ---
 
@@ -201,8 +238,182 @@ export const submitOnePersonCompanyRegistration = async (requestData) => {
     return handleResponse(response);
 };
 
-export const submitLlpRegistration = async (requestData) => {
+export const updateOnePersonCompanyStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/one-person-company/${id}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
+};
+
+export const submitLlpRegistration = async (formData) => {
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
     const response = await fetch(`${BASE_URL}/service/llp/apply`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+    });
+    return handleResponse(response);
+};
+
+export const updateLlpStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/llp/${id}/status`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
+};
+
+export const submitPartnershipFirmRegistration = async (formData) => {
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
+    const response = await fetch(`${BASE_URL}/service/partnership/apply`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+    });
+    return handleResponse(response);
+};
+
+// Also exported as 'submitPartnershipRegistration' for component compatibility
+export const submitPartnershipRegistration = submitPartnershipFirmRegistration;
+
+export const updatePartnershipStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/partnership/${id}/status`, {
+        method: 'POST', // or PUT depending on Controller
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
+};
+
+export const submitProprietorshipRegistration = async (formData) => {
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
+    const response = await fetch(`${BASE_URL}/service/proprietorship/apply`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+    });
+    return handleResponse(response);
+};
+
+export const updateProprietorshipStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/proprietorship/${id}/status`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
+};
+
+export const submitSection8Registration = async (formData) => {
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
+    const response = await fetch(`${BASE_URL}/service/section8/apply`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+    });
+    return handleResponse(response);
+};
+
+export const submitSection8CompanyRegistration = submitSection8Registration;
+
+export const updateSection8Status = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/section8/${id}/status`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
+};
+
+export const submitNidhiRegistration = async (formData) => {
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
+    const response = await fetch(`${BASE_URL}/service/nidhi/apply`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+    });
+    return handleResponse(response);
+};
+
+export const updateNidhiStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/nidhi/${id}/status`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
+};
+
+export const submitProducerRegistration = async (formData) => {
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
+    const response = await fetch(`${BASE_URL}/service/producer/apply`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+    });
+    return handleResponse(response);
+};
+
+export const updateProducerStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/producer/${id}/status`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
+};
+
+export const submitPublicLimitedRegistration = async (formData) => {
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
+    const response = await fetch(`${BASE_URL}/service/public-limited/apply`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+    });
+    return handleResponse(response);
+};
+
+export const updatePublicLimitedStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/public-limited/${id}/status`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
+};
+
+export const submitGstRegistration = async (formData) => {
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
+    const response = await fetch(`${BASE_URL}/service/gst-registration/apply`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+    });
+    return handleResponse(response);
+};
+
+export const updateGstStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/gst/${id}/status`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
+};
+
+export const submitGstAmendment = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/gst-amendment/apply`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(requestData),
@@ -210,11 +421,65 @@ export const submitLlpRegistration = async (requestData) => {
     return handleResponse(response);
 };
 
-export const submitPartnershipFirmRegistration = async (requestData) => {
-    const response = await fetch(`${BASE_URL}/service/partnership-firm/apply`, {
+export const submitGstCancellation = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/gst-cancellation/apply`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitGstAudit = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/gst-audit/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitGstMonthlyReturn = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/gst-monthly-return/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const updateGstMonthlyReturnStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/gst-monthly-return/${id}/status`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
+};
+
+export const submitGstAnnualReturn = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/gst-annual-return/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitIncomeTaxReturn = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/income-tax-return/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const updateGstAnnualReturnStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/gst-annual/${id}/status`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
     });
     return handleResponse(response);
 };
@@ -228,14 +493,7 @@ export const submitSoleProprietorshipRegistration = async (requestData) => {
     return handleResponse(response);
 };
 
-export const submitSection8CompanyRegistration = async (requestData) => {
-    const response = await fetch(`${BASE_URL}/service/section-8-company/apply`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(requestData),
-    });
-    return handleResponse(response);
-};
+
 
 export const submitNidhiCompanyRegistration = async (requestData) => {
     const response = await fetch(`${BASE_URL}/service/nidhi-company/apply`, {
@@ -256,6 +514,7 @@ export const submitProducerCompanyRegistration = async (requestData) => {
 };
 
 
+
 export const submitPublicLimitedCompanyRegistration = async (requestData) => {
     const response = await fetch(`${BASE_URL}/service/public-limited-company/apply`, {
         method: 'POST',
@@ -265,9 +524,26 @@ export const submitPublicLimitedCompanyRegistration = async (requestData) => {
     return handleResponse(response);
 };
 
+export const submitIndianSubsidiaryRegistration = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/indian-subsidiary/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
 
-export const submitGstRegistration = async (requestData) => {
-    const response = await fetch(`${BASE_URL}/service/gst-registration/apply`, {
+export const submitForeignCompanyRegistration = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/foreign-company/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitStartupAdvisoryRegistration = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/startup-advisory/apply`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(requestData),
@@ -276,44 +552,43 @@ export const submitGstRegistration = async (requestData) => {
 };
 
 
-export const submitGstMonthlyReturn = async (requestData) => {
-    const response = await fetch(`${BASE_URL}/service/gst-monthly-return/apply`, {
+
+
+
+
+
+
+export const updateIncomeTaxReturnStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/income-tax-return/${id}/status`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify(requestData),
+        body: JSON.stringify({ status }),
     });
     return handleResponse(response);
 };
 
-
-export const submitGstAnnualReturn = async (requestData) => {
-    const response = await fetch(`${BASE_URL}/service/gst-annual-return/apply`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(requestData),
-    });
-    return handleResponse(response);
-};
-
-
-export const submitIncomeTaxReturn = async (requestData) => {
-    const response = await fetch(`${BASE_URL}/service/income-tax-return/apply`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(requestData),
-    });
-    return handleResponse(response);
-};
-
-
-export const submitTdsReturn = async (requestData) => {
+export const submitTdsReturn = async (formData) => {
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
     const response = await fetch(`${BASE_URL}/service/tds-return/apply`, {
         method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(requestData),
+        headers: headers,
+        body: formData,
     });
     return handleResponse(response);
 };
+
+export const updateTdsReturnStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/tds-return/${id}/status`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
+};
+
+
+
 
 
 
@@ -874,7 +1149,7 @@ export const updateESIFilingStatus = async (id, status) => {
 
 
 export const submitProfessionalTax = async (requestData) => {
-    const response = await fetch(`${BASE_URL}/service/professional-tax/apply`, {
+    const response = await fetch(`${BASE_URL}/service/labour-professional-tax/apply`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(requestData),
@@ -964,18 +1239,29 @@ export const updateMinimumWagesStatus = async (id, status) => {
     return handleResponse(response);
 };
 
-// --- BUSINESS CERTIFICATIONS ---
-
-
-export const submitISOCertification = async (requestData) => {
-    const email = requestData.email;
-    const response = await fetch(`${BASE_URL}/service/iso-certification/submit?email=${encodeURIComponent(email)}`, {
+export const submitPayrollCompliance = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/payroll-compliance/apply`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(requestData),
     });
     return handleResponse(response);
 };
+
+// --- BUSINESS CERTIFICATIONS ---
+
+
+
+
+export const submitISOCertification = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/iso-certification/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
 
 export const updateISOCertificationStatus = async (id, status) => {
     const response = await fetch(`${BASE_URL}/service/iso-certification/${id}/status`, {
@@ -986,15 +1272,16 @@ export const updateISOCertificationStatus = async (id, status) => {
     return handleResponse(response);
 };
 
+
 export const submitStartupIndia = async (requestData) => {
-    const email = requestData.email;
-    const response = await fetch(`${BASE_URL}/service/startup-india/submit?email=${encodeURIComponent(email)}`, {
+    const response = await fetch(`${BASE_URL}/service/startup-india/apply`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(requestData),
     });
     return handleResponse(response);
 };
+
 
 export const updateStartupIndiaStatus = async (id, status) => {
     const response = await fetch(`${BASE_URL}/service/startup-india/${id}/status`, {
@@ -1005,15 +1292,16 @@ export const updateStartupIndiaStatus = async (id, status) => {
     return handleResponse(response);
 };
 
+
 export const submitDigitalSignature = async (requestData) => {
-    const email = requestData.email;
-    const response = await fetch(`${BASE_URL}/service/digital-signature/submit?email=${encodeURIComponent(email)}`, {
+    const response = await fetch(`${BASE_URL}/service/digital-signature/apply`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(requestData),
     });
     return handleResponse(response);
 };
+
 
 export const updateDigitalSignatureStatus = async (id, status) => {
     const response = await fetch(`${BASE_URL}/service/digital-signature/${id}/status`, {
@@ -1024,15 +1312,16 @@ export const updateDigitalSignatureStatus = async (id, status) => {
     return handleResponse(response);
 };
 
+
 export const submitBarCode = async (requestData) => {
-    const email = requestData.email;
-    const response = await fetch(`${BASE_URL}/service/bar-code/submit?email=${encodeURIComponent(email)}`, {
+    const response = await fetch(`${BASE_URL}/service/bar-code/apply`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(requestData),
     });
     return handleResponse(response);
 };
+
 
 export const updateBarCodeStatus = async (id, status) => {
     const response = await fetch(`${BASE_URL}/service/bar-code/${id}/status`, {
@@ -1043,15 +1332,16 @@ export const updateBarCodeStatus = async (id, status) => {
     return handleResponse(response);
 };
 
+
 export const submitTanPan = async (requestData) => {
-    const email = requestData.email;
-    const response = await fetch(`${BASE_URL}/service/tan-pan/submit?email=${encodeURIComponent(email)}`, {
+    const response = await fetch(`${BASE_URL}/service/tan-pan/apply`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(requestData),
     });
     return handleResponse(response);
 };
+
 
 export const updateTanPanStatus = async (id, status) => {
     const response = await fetch(`${BASE_URL}/service/tan-pan/${id}/status`, {
@@ -1062,9 +1352,9 @@ export const updateTanPanStatus = async (id, status) => {
     return handleResponse(response);
 };
 
+
 export const submitMSMERegistration = async (requestData) => {
-    const email = requestData.email;
-    const response = await fetch(`${BASE_URL}/service/msme-registration/submit?email=${encodeURIComponent(email)}`, {
+    const response = await fetch(`${BASE_URL}/service/msme-registration/apply`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(requestData),
@@ -1081,6 +1371,7 @@ export const updateMSMERegistrationStatus = async (id, status) => {
     return handleResponse(response);
 };
 
+
 export const getUserApplications = async (email) => {
     // Parallel fetch (Generic + 12 Specialized + 8 IP + 7 Labour Law + 6 Business Certifications + 9 Business Registration)
     const [
@@ -1093,7 +1384,11 @@ export const getUserApplications = async (email) => {
         msmeRes, isoRes, startupRes, dscRes, barCodeRes, tanPanRes,
         // Agreements & Financial Services are now handled by Generic Service Request Controller
         pvtRes,
-        // opcRes, llpRes, firmRes, soleRes, sec8Res, nidhiRes, prodRes, pubRes
+        panCorrRes, gstCorrRes, compCorrRes, dscCorrRes,
+        // New: Case/Closure
+        strikeRes, propCloseRes, fssaiCanRes, gstCanRes,
+        // New: Financial
+        valRes, pitchRes, cashRes, projRes, cmaRes, cfoRes
     ] = await Promise.allSettled([
         fetch(`${BASE_URL}/services/my-requests?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
         fetch(`${BASE_URL}/fssai/my-requests?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
@@ -1134,6 +1429,43 @@ export const getUserApplications = async (email) => {
 
         // Business Registration
         fetch(`${BASE_URL}/service/private-limited-company/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+
+        // Legal Drafting
+        fetch(`${BASE_URL}/service/partnership-deed/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/founders-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/shareholders-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/employment-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/rent-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/franchise-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/nda/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/vendor-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+
+        // Legal Notices
+        fetch(`${BASE_URL}/service/legal-notice/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/legal-notice-reply/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/cheque-bounce-notice/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/tax-notice-reply/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/roc-notice-reply/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+
+        // Correction Services
+        fetch(`${BASE_URL}/service/pan-correction/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/gst-amendment/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/company-llp-correction/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/din-dsc-correction/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+
+        // Closure Services
+        fetch(`${BASE_URL}/service/strike-off/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/proprietorship-closure/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/fssai-cancellation/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/gst-cancellation/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+
+        // Financial Services
+        fetch(`${BASE_URL}/service/business-valuation/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/startup-pitch-deck/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/cash-flow-statement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/project-report/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/cma-data-preparation/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
+        fetch(`${BASE_URL}/service/virtual-cfo/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
     ]);
 
     const orderMap = new Map();
@@ -1264,6 +1596,26 @@ export const getUserApplications = async (email) => {
     // await processRes(pitchRes, "Startup Pitch Deck", i => "Startup Pitch Deck");
     // await processRes(valRes, "Business Valuation", i => "Business Valuation Report");
 
+    // Correction
+    await processRes(panCorrRes, "PAN Correction", i => "PAN Correction");
+    await processRes(gstCorrRes, "GST Amendment", i => "GST Amendment");
+    await processRes(compCorrRes, "Company/LLP Correction", i => "Company/LLP Correction");
+    await processRes(dscCorrRes, "DIN/DSC Correction", i => "DIN/DSC Correction");
+
+    // Closure
+    await processRes(strikeRes, "LLP Closure", i => "LLP Closure / Strike Off");
+    await processRes(propCloseRes, "Proprietorship Closure", i => "Proprietorship Closure");
+    await processRes(fssaiCanRes, "FSSAI Cancellation", i => "FSSAI Cancellation");
+    await processRes(gstCanRes, "GST Cancellation", i => "GST Cancellation");
+
+    // Financial
+    await processRes(valRes, "Business Valuation", i => "Business Valuation Report");
+    await processRes(pitchRes, "Startup Pitch Deck", i => "Startup Pitch Deck");
+    await processRes(cashRes, "Cash Flow Statement", i => "Cash Flow Statement");
+    await processRes(projRes, "Project Report", i => "Project Report (DPR)");
+    await processRes(cmaRes, "CMA Data Preparation", i => "CMA Data Preparation");
+    await processRes(cfoRes, "Virtual CFO Services", i => "Virtual CFO Services");
+
     // Business Registration
     await processRes(pvtRes, "Private Limited Company", i => "Private Limited Company");
     // await processRes(opcRes, "One Person Company", i => "One Person Company");
@@ -1288,7 +1640,7 @@ export const getAllApplications = async () => {
 
 
 export const getAgentApplications = async (email) => {
-    const response = await fetch(`${BASE_URL}/services/agent-requests?email=${encodeURIComponent(email)}`, {
+    const response = await fetch(`${BASE_URL}/agent/applications?email=${encodeURIComponent(email)}`, {
         headers: getAuthHeaders()
     });
     return handleResponse(response);
@@ -1389,6 +1741,9 @@ export const getUserStats = async (userId) => {
     };
 };
 
+// (Duplicate removal)
+// (Duplicate removal)
+
 export const getUserPayments = async (userId) => {
     try {
         const response = await fetch(`${BASE_URL}/users/${userId}/payments`, {
@@ -1427,12 +1782,132 @@ export const uploadProfilePicture = async (userId, file) => {
 };
 
 export const requestWithdrawal = async (userId, amount) => {
-    // Simulating success for "A-Z" feel
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({ success: true, message: "Withdrawal request submitted successfully." });
-        }, 1000);
+    const response = await fetch(`${BASE_URL}/agent/${userId}/withdraw`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ amount }),
     });
+    return handleResponse(response);
+};
+
+// --- SUPER ADMIN CRM APIs ---
+
+
+
+
+
+
+
+export const broadcastRequest = async (requestId, amount) => {
+    const response = await fetch(`${BASE_URL}/admin/requests/${requestId}/broadcast`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ amount })
+    });
+    return handleResponse(response);
+};
+
+export const getBidsForRequest = async (requestId) => {
+    const response = await fetch(`${BASE_URL}/admin/requests/${requestId}/bids`, {
+        headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+};
+
+export const acceptBid = async (bidId) => {
+    const response = await fetch(`${BASE_URL}/admin/bids/${bidId}/accept`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+};
+
+
+
+
+// --- CA DASHBOARD APIs ---
+
+export const getCaRequests = async (caId) => {
+    const response = await fetch(`${BASE_URL}/ca/${caId}/requests`, {
+        headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+};
+
+export const respondToBoundAmount = async (requestId, status, comments) => {
+    // comments is technically optional in backend, but good to pass if needed
+    const response = await fetch(`${BASE_URL}/ca/requests/${requestId}/respond`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status, comments })
+    });
+    return handleResponse(response);
+};
+
+export const getOpenBiddingRequests = async () => {
+    const response = await fetch(`${BASE_URL}/ca/requests/open`, {
+        headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+};
+
+export const submitCaBid = async (requestId, caId, amount, remarks) => {
+    const response = await fetch(`${BASE_URL}/ca/requests/${requestId}/bid`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ caId, amount, remarks })
+    });
+    return handleResponse(response);
+};
+
+export const getCaBids = async (caId) => {
+    const response = await fetch(`${BASE_URL}/ca/${caId}/bids`, {
+        headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+};
+
+export const getCaEmployees = async (caId) => {
+    const response = await fetch(`${BASE_URL}/ca/${caId}/employees`, {
+        headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+};
+
+export const createEmployee = async (caId, employeeData) => {
+    const response = await fetch(`${BASE_URL}/ca/${caId}/employees`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(employeeData)
+    });
+    return handleResponse(response);
+};
+
+export const assignEmployeeToRequest = async (requestId, employeeId) => {
+    const response = await fetch(`${BASE_URL}/ca/requests/${requestId}/assign-employee`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ employeeId })
+    });
+    return handleResponse(response);
+};
+
+// --- EMPLOYEE DASHBOARD APIs ---
+
+export const getEmployeeTasks = async (employeeId) => {
+    const response = await fetch(`${BASE_URL}/employee/${employeeId}/tasks`, {
+        headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+};
+
+export const updateEmployeeTaskStatus = async (requestId, status) => {
+    const response = await fetch(`${BASE_URL}/employee/tasks/${requestId}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status })
+    });
+    return handleResponse(response);
 };
 
 export const submitSupportTicket = async (ticketData) => {
@@ -1586,7 +2061,7 @@ export const getAuditLogs = async () => {
 // --- PRIVATE LIMITED AUTOMATION ---
 
 export const verifyPrivateLimitedDocs = async (submissionId) => {
-    const response = await fetch(`${BASE_URL}/admin/verify-docs/${submissionId}`, {
+    const response = await fetch(`${BASE_URL}/service/private-limited-company/${submissionId}/verify-docs`, {
         method: 'POST',
         headers: getAuthHeaders()
     });
@@ -1759,159 +2234,7 @@ export const getAutomationSystemLogs = async () => {
     }
 };
 
-// --- LEGAL DRAFTING SERVICES ---
 
-export const submitPartnershipDeed = async (formData) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const response = await fetch(`${BASE_URL} / service / partnership - deed / submit ? email = ${encodeURIComponent(user.email)}`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(formData)
-    });
-    return handleResponse(response);
-};
-
-export const updatePartnershipDeedStatus = async (id, status) => {
-    const response = await fetch(`${BASE_URL} /service/partnership - deed / ${id}/status`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status })
-    });
-    return handleResponse(response);
-};
-
-export const submitFoundersAgreement = async (formData) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const response = await fetch(`${BASE_URL}/service/founders-agreement/submit?email=${encodeURIComponent(user.email)}`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(formData)
-    });
-    return handleResponse(response);
-};
-
-export const updateFoundersAgreementStatus = async (id, status) => {
-    const response = await fetch(`${BASE_URL}/service/founders-agreement/${id}/status`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status })
-    });
-    return handleResponse(response);
-};
-
-export const submitShareholdersAgreement = async (formData) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const response = await fetch(`${BASE_URL}/service/shareholders-agreement/submit?email=${encodeURIComponent(user.email)}`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(formData)
-    });
-    return handleResponse(response);
-};
-
-export const updateShareholdersAgreementStatus = async (id, status) => {
-    const response = await fetch(`${BASE_URL}/service/shareholders-agreement/${id}/status`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status })
-    });
-    return handleResponse(response);
-};
-
-export const submitEmploymentAgreement = async (formData) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const response = await fetch(`${BASE_URL}/service/employment-agreement/submit?email=${encodeURIComponent(user.email)}`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(formData)
-    });
-    return handleResponse(response);
-};
-
-export const updateEmploymentAgreementStatus = async (id, status) => {
-    const response = await fetch(`${BASE_URL}/service/employment-agreement/${id}/status`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status })
-    });
-    return handleResponse(response);
-};
-
-export const submitRentAgreementDrafting = async (formData) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const response = await fetch(`${BASE_URL}/service/rent-agreement/submit?email=${encodeURIComponent(user.email)}`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(formData)
-    });
-    return handleResponse(response);
-};
-
-export const updateRentAgreementStatus = async (id, status) => {
-    const response = await fetch(`${BASE_URL}/service/rent-agreement/${id}/status`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status })
-    });
-    return handleResponse(response);
-};
-
-export const submitFranchiseAgreement = async (formData) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const response = await fetch(`${BASE_URL}/service/franchise-agreement/submit?email=${encodeURIComponent(user.email)}`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(formData)
-    });
-    return handleResponse(response);
-};
-
-export const updateFranchiseAgreementStatus = async (id, status) => {
-    const response = await fetch(`${BASE_URL}/service/franchise-agreement/${id}/status`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status })
-    });
-    return handleResponse(response);
-};
-
-export const submitNDA = async (formData) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const response = await fetch(`${BASE_URL}/service/nda/submit?email=${encodeURIComponent(user.email)}`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(formData)
-    });
-    return handleResponse(response);
-};
-
-export const updateNDAStatus = async (id, status) => {
-    const response = await fetch(`${BASE_URL}/service/nda/${id}/status`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status })
-    });
-    return handleResponse(response);
-};
-
-export const submitVendorAgreement = async (formData) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const response = await fetch(`${BASE_URL}/service/vendor-agreement/submit?email=${encodeURIComponent(user.email)}`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(formData)
-    });
-    return handleResponse(response);
-};
-
-export const updateVendorAgreementStatus = async (id, status) => {
-    const response = await fetch(`${BASE_URL}/service/vendor-agreement/${id}/status`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status })
-    });
-    return handleResponse(response);
-};
 
 // --- SERVICE CATALOG MANAGEMENT ---
 // --- SERVICE CATALOG MANAGEMENT ---
@@ -2072,4 +2395,455 @@ export const getAllTestimonials = async () => {
         headers: getAuthHeaders(),
     });
     return handleResponse(response);
+};
+
+// --- LEGAL DRAFTING SERVICES ---
+
+export const submitPartnershipDeed = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/partnership-deed/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const updatePartnershipDeedStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/partnership-deed/${id}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status })
+    });
+    return handleResponse(response);
+};
+
+export const submitFoundersAgreement = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/founders-agreement/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const updateFoundersAgreementStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/founders-agreement/${id}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status })
+    });
+    return handleResponse(response);
+};
+
+export const submitShareholdersAgreement = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/shareholders-agreement/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const updateShareholdersAgreementStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/shareholders-agreement/${id}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status })
+    });
+    return handleResponse(response);
+};
+
+export const submitEmploymentAgreement = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/employment-agreement/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const updateEmploymentAgreementStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/employment-agreement/${id}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status })
+    });
+    return handleResponse(response);
+};
+
+export const submitRentAgreement = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/rent-agreement/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const updateRentAgreementStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/rent-agreement/${id}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status })
+    });
+    return handleResponse(response);
+};
+
+export const submitFranchiseAgreement = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/franchise-agreement/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const updateFranchiseAgreementStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/franchise-agreement/${id}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status })
+    });
+    return handleResponse(response);
+};
+
+export const submitNDA = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/nda/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const updateNDAStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/nda/${id}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status })
+    });
+    return handleResponse(response);
+};
+
+export const submitVendorAgreement = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/vendor-agreement/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const updateVendorAgreementStatus = async (id, status) => {
+    const response = await fetch(`${BASE_URL}/service/vendor-agreement/${id}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status })
+    });
+    return handleResponse(response);
+};
+
+export const submitLegalNotice = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/legal-notice/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitLegalNoticeReply = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/legal-notice-reply/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitChequeBounceNotice = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/cheque-bounce-notice/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitTaxNoticeReply = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/tax-notice-reply/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitRocNoticeReply = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/roc-notice-reply/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+// --- CORRECTION SERVICES ---
+
+export const submitPanCorrection = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/pan-correction/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitGstCorrection = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/gst-amendment/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitCompanyLlpCorrection = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/company-llp-correction/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitDinDscCorrection = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/din-dsc-correction/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+
+// --- CLOSURE SERVICES ---
+
+export const submitLlpClosure = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/strike-off/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitProprietorshipClosure = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/proprietorship-closure/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitFssaiCancellation = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/fssai-cancellation/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+// --- FINANCIAL SERVICES ---
+
+export const submitBusinessValuation = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/business-valuation/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitStartupPitchDeck = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/startup-pitch-deck/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitCashFlowStatement = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/cash-flow-statement/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitProjectReport = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/project-report/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitCmaData = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/cma-data-preparation/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitVirtualCfo = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/virtual-cfo/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+export const submitCmaDataPreparation = submitCmaData;
+
+export const submitPitchDeck = submitStartupPitchDeck;
+
+export const submitBankLoanDocumentation = async (requestData) => {
+    const response = await fetch(`${BASE_URL}/service/bank-loan-documentation/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+};
+
+// --- ADMIN CONTROL CENTER (CA CRM & SYSTEM) ---
+
+export const getComplianceRules = async () => {
+    try {
+        const response = await fetch(`${BASE_URL}/admin/compliance-rules`, { headers: getAuthHeaders() });
+        return await handleResponse(response) || [];
+    } catch (e) { console.warn(e); return []; }
+};
+
+export const saveComplianceRule = async (data) => {
+    const response = await fetch(`${BASE_URL}/admin/compliance-rules`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    });
+    return handleResponse(response);
+};
+
+export const deleteComplianceRule = async (id) => {
+    const response = await fetch(`${BASE_URL}/admin/compliance-rules/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    });
+    return response.ok;
+};
+
+export const getServiceConfigs = async () => {
+    try {
+        const response = await fetch(`${BASE_URL}/admin/services`, { headers: getAuthHeaders() });
+        const services = await handleResponse(response);
+        if (Array.isArray(services)) {
+            return services.map(s => ({
+                ...s,
+                docsRequired: typeof s.docsRequired === 'string' ? s.docsRequired.split(',') : (s.docsRequired || [])
+            }));
+        }
+        return [];
+    } catch (e) { return []; }
+};
+
+export const saveServiceConfig = async (data) => {
+    const response = await fetch(`${BASE_URL}/admin/service-configs`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    });
+    return handleResponse(response);
+};
+
+export const getBillingSettings = async () => {
+    try {
+        const response = await fetch(`${BASE_URL}/admin/billing-settings`, { headers: getAuthHeaders() });
+        return await handleResponse(response) || {};
+    } catch (e) { return {}; }
+};
+
+export const getSystemRoles = async () => {
+    try {
+        const response = await fetch(`${BASE_URL}/admin/system-roles`, { headers: getAuthHeaders() });
+        return await handleResponse(response) || [];
+    } catch (e) { return []; }
+};
+
+// --- SERVICE REQUEST BINDING (SUPER ADMIN) ---
+
+export const getSuperAdminRequests = async () => {
+    try {
+        const response = await fetch(`${BASE_URL}/admin/requests`, { headers: getAuthHeaders() });
+        return await handleResponse(response) || [];
+    } catch (e) { return []; }
+};
+
+export const getAllCas = async () => {
+    try {
+        const users = await getAllUsers();
+        return users.filter(u => u.role === 'CA');
+    } catch (e) { return []; }
+};
+
+export const bindRequestAmount = async (id, amount) => {
+    const response = await fetch(`${BASE_URL}/admin/requests/${id}/bind`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ amount })
+    });
+    return handleResponse(response);
+};
+
+export const assignRequestToCa = async (id, caId, comments) => {
+    const response = await fetch(`${BASE_URL}/admin/requests/${id}/bind`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ caId, comments })
+    });
+    return handleResponse(response);
+};
+
+// Duplicate functions removed
+
+export const getBotResponse = (message, role) => {
+    const msg = message.toLowerCase();
+
+    if (msg.includes('hello') || msg.includes('hi')) return "Hello! How can I assist you today?";
+    if (msg.includes('status')) return "You can check your application status in the 'My Applications' tab.";
+    if (msg.includes('document') || msg.includes('upload')) return "Please go to 'My Documents' to upload or view your files.";
+    if (msg.includes('payment') || msg.includes('invoice')) return "Billing details are available under the 'Billing & Invoices' section.";
+    if (msg.includes('contact') || msg.includes('call')) return "You can call our support at +91 98765 43210.";
+
+    return "I'm here to help! Could you please provide more details?";
+};
+
+export const getFullAnalytics = async () => {
+    try {
+        const response = await fetch(`${BASE_URL}/admin/analytics/full`, {
+            headers: getAuthHeaders()
+        });
+        if (response.ok) return await response.json();
+    } catch (e) {
+        console.warn("Failed to fetch full analytics", e);
+    }
+    return null;
 };

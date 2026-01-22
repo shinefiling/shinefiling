@@ -99,16 +99,13 @@ public class AdvanceTaxController {
     private Double getPlanAmount(String plan) {
         switch (plan.toLowerCase()) {
             case "basic":
-                return 999.0;
+                return 0.0;
             case "standard":
-                return 2999.0;
+                return 499.0;
             case "premium":
-                return 5999.0;
+                return 1499.0;
             default:
                 return 0.0;
         }
     }
 }
-
-
-

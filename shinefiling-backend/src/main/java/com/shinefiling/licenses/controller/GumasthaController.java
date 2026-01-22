@@ -62,8 +62,8 @@ public class GumasthaController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(1499.0); // Standard
+            createdRequest.setPlan(requestDTO.getPlan());
+            createdRequest.setAmount(requestDTO.getAmountPaid());
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 

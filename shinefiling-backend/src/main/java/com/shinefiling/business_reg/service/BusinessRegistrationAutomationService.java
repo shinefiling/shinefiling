@@ -5,7 +5,7 @@ import com.shinefiling.business_reg.repository.BusinessRegistrationRepository;
 import com.shinefiling.business_reg.service.automation.*;
 import com.shinefiling.common.model.AutomationJob;
 import com.shinefiling.common.repository.AutomationJobRepository;
-import com.shinefiling.common.repository.ServiceRequestRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

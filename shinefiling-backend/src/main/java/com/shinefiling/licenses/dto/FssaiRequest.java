@@ -15,6 +15,8 @@ public class FssaiRequest {
     private int validityYears; // 1-5
     private String licenseType; // BASIC, STATE, CENTRAL (Auto-determined)
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private FssaiFormData formData;
     private List<UploadedDocumentDTO> documents;

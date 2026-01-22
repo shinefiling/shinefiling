@@ -11,6 +11,8 @@ public class ShopEstablishmentRequest {
     private String state;
     private int numberOfEmployees;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private ShopActFormData formData;
     private List<UploadedDocumentDTO> documents;

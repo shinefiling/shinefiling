@@ -56,8 +56,8 @@ public class DesignRegistrationController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(4999.0); // Professional Fee
+            createdRequest.setPlan(requestDTO.getPlan() != null ? requestDTO.getPlan() : "standard");
+            createdRequest.setAmount(requestDTO.getAmountPaid() != null ? requestDTO.getAmountPaid() : 4999.0);
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 
@@ -78,5 +78,3 @@ public class DesignRegistrationController {
         return t;
     }
 }
-
-

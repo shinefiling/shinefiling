@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { FileText, CheckCircle, Activity, ChevronRight, X, User, Search, RefreshCcw, Shield, Zap, Terminal, Play, Eye, Archive, MessageCircle, ShieldCheck, MoreVertical, Paperclip, Smile, Minimize2, Loader2, Send, Mail, Phone, ExternalLink, Trash2 } from 'lucide-react';
+import { FileText, CheckCircle, Activity, ChevronRight, X, User, Search, RefreshCcw, Shield, Zap, Terminal, Play, Eye, Archive, MessageCircle, ShieldCheck, MoreVertical, Paperclip, Smile, Minimize2, Loader2, Send, Mail, Phone, ExternalLink, Trash2, Database, FileCheck, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    updateApplicationStatus, verifyPrivateLimitedDocs, startAutomation, getAutomationLogs, getAllApplications, BASE_URL, getChatHistory, sendChatMessage, getUnreadChatCounts, markChatAsRead, editChatMessage, deleteChatMessage, clearChatHistory, setTypingStatus, getTypingStatus, updateTradeLicenseStatus,
+    updateApplicationStatus, verifyPrivateLimitedDocs, getAllApplications, broadcastRequest, getBidsForRequest, acceptBid, BASE_URL, getChatHistory, sendChatMessage, getUnreadChatCounts, markChatAsRead, editChatMessage, deleteChatMessage, clearChatHistory, setTypingStatus, getTypingStatus, updateTradeLicenseStatus,
     updateLabourLicenseStatus, updateDrugLicenseStatus, updatePollutionControlStatus, updateGumasthaLicenseStatus,
     updateTrademarkRegistrationStatus, updateTrademarkObjectionStatus, updateTrademarkHearingStatus, updateTrademarkAssignmentStatus, updateTrademarkRenewalStatus,
     updateCopyrightRegistrationStatus, updatePatentFilingStatus, updateDesignRegistrationStatus,
@@ -18,6 +18,19 @@ import FssaiWorkflowPanel from './FssaiWorkflowPanel';
 
 import MsmeWorkflowPanel from './MsmeWorkflowPanel';
 import PrivateLimitedWorkflowPanel from './PrivateLimitedWorkflowPanel';
+import OnePersonCompanyWorkflowPanel from './OnePersonCompanyWorkflowPanel';
+import LlpWorkflowPanel from './LlpWorkflowPanel';
+import PartnershipWorkflowPanel from './PartnershipWorkflowPanel';
+import ProprietorshipWorkflowPanel from './ProprietorshipWorkflowPanel';
+import Section8WorkflowPanel from './Section8WorkflowPanel';
+import NidhiWorkflowPanel from './NidhiWorkflowPanel';
+import ProducerWorkflowPanel from './ProducerWorkflowPanel';
+import PublicLimitedWorkflowPanel from './PublicLimitedWorkflowPanel';
+import GstWorkflowPanel from './GstWorkflowPanel';
+import GstMonthlyReturnWorkflowPanel from './GstMonthlyReturnWorkflowPanel';
+import GstAnnualReturnWorkflowPanel from './GstAnnualReturnWorkflowPanel';
+import IncomeTaxReturnWorkflowPanel from './IncomeTaxReturnWorkflowPanel';
+import TdsReturnWorkflowPanel from './TdsReturnWorkflowPanel';
 
 // --- CHART COMPONENTS (Inlined for self-containment) ---
 const AreaChart = ({ data, color = "#2563EB", height = 60 }) => {
@@ -80,10 +93,11 @@ const OrdersManagement = ({ orders = [] }) => {
     const [statusUpdating, setStatusUpdating] = useState(false);
     const [localOrders, setLocalOrders] = useState(orders);
 
-    // Automation Logging State
-    const [showLogs, setShowLogs] = useState(false);
-    const [jobLogs, setJobLogs] = useState([]);
-    const [polling, setPolling] = useState(false);
+    // Bidding State
+    const [bids, setBids] = useState([]);
+    const [isBidsModalOpen, setIsBidsModalOpen] = useState(false);
+    const [isBroadcasting, setIsBroadcasting] = useState(false);
+
 
     // FSSAI State
     const [fssaiData, setFssaiData] = useState({ docs: [], genDocs: [] });
@@ -145,6 +159,12 @@ const OrdersManagement = ({ orders = [] }) => {
         }
         return 0;
     };
+
+    // DEBUG: Show order count
+    /*
+    console.log("OrdersManagement Rendered. Orders Prop Length:", orders.length);
+    if (orders.length > 0) console.log("First Order Sample:", orders[0]);
+    */
 
     const fetchUnreadCounts = async () => {
         try {
@@ -209,7 +229,7 @@ const OrdersManagement = ({ orders = [] }) => {
     const analytics = useMemo(() => {
         const total = localOrders.length;
         const pending = localOrders.filter(o => o.status === 'PENDING').length;
-        const auto = localOrders.filter(o => o.status === 'AUTOMATION_STARTED').length;
+
         const completed = localOrders.filter(o => o.status === 'COMPLETED').length;
 
         // Calculate dynamic revenue
@@ -219,18 +239,18 @@ const OrdersManagement = ({ orders = [] }) => {
         const statusDist = [
             { label: 'Completed', value: completed, color: '#10B981' },
             { label: 'Pending', value: pending, color: '#F59E0B' },
-            { label: 'Auto', value: auto, color: '#6366F1' },
-            { label: 'Other', value: total - (pending + auto + completed), color: '#94A3B8' }
+
+            { label: 'Other', value: total - (pending + completed), color: '#94A3B8' }
         ].filter(d => d.value > 0);
 
         // Revenue Trend (Mock 6 Days based on dynamic total)
         const trend = [0.4, 0.6, 0.5, 0.7, 0.8, 1].map(m => ({ value: m * revenue / 6 })); // Normalized shape
 
-        return { total, pending, auto, completed, revenue, statusDist, trend };
+        return { total, pending, completed, revenue, statusDist, trend };
     }, [localOrders]);
 
     // Sync local orders if props change
-    useMemo(() => {
+    useEffect(() => {
         setLocalOrders(orders);
     }, [orders]);
 
@@ -271,10 +291,7 @@ const OrdersManagement = ({ orders = [] }) => {
     useEffect(() => {
         if (selectedOrder) {
             refreshOrderDetails();
-            // Also fetch logs if available
-            if (selectedOrder.submissionId) {
-                getAutomationLogs(selectedOrder.submissionId).then(logs => setJobLogs(logs || [])).catch(() => { });
-            }
+
 
             // FSSAI Fetch
             if (selectedOrder.service?.toLowerCase().includes('fssai')) {
@@ -290,24 +307,7 @@ const OrdersManagement = ({ orders = [] }) => {
         }
     }, [selectedOrder?.id]);
 
-    // Poll logs when log panel is open
-    useEffect(() => {
-        let interval;
-        if (showLogs && selectedOrder && selectedOrder.realId) {
-            setPolling(true);
-            const fetchLogs = async () => {
-                try {
-                    const logs = await getAutomationLogs(selectedOrder.realId);
-                    setJobLogs(logs || []);
-                } catch (e) { console.error("Log poll failed", e); }
-            };
-            fetchLogs(); // Initial
-            interval = setInterval(fetchLogs, 3000);
-        } else {
-            setPolling(false);
-        }
-        return () => clearInterval(interval);
-    }, [showLogs, selectedOrder]);
+
 
     const statusColors = {
         'PENDING': 'bg-yellow-100 text-yellow-700',
@@ -440,26 +440,49 @@ const OrdersManagement = ({ orders = [] }) => {
         }
     };
 
-    const handleStartAutomation = async () => {
+    const handleBroadcast = async () => {
         if (!selectedOrder) return;
-        setStatusUpdating(true);
+        const amount = prompt("Enter the budget amount for this request:", getOrderAmount(selectedOrder));
+        if (!amount) return;
+
+        setIsBroadcasting(true);
         try {
-            const realId = selectedOrder.realId || selectedOrder.id.toString().replace('ORD-', '');
-            await startAutomation(realId);
-
-            // Optimistic update
-            const newStatus = "AUTOMATION_STARTED";
-            setLocalOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, status: newStatus } : o));
-            setSelectedOrder(prev => ({ ...prev, status: newStatus }));
-
-            setShowLogs(true); // Open log panel automatically
-            alert("Automation Job Started! View logs for progress.");
+            const realId = selectedOrder.id.toString().replace('ORD-', '');
+            await broadcastRequest(realId, parseFloat(amount));
+            alert("Request broadcasted to all CAs successfully!");
+            refreshOrderDetails();
         } catch (e) {
-            alert("Failed to start automation: " + e.message);
+            alert("Failed to broadcast: " + e.message);
         } finally {
-            setStatusUpdating(false);
+            setIsBroadcasting(false);
         }
     };
+
+    const handleViewBids = async () => {
+        if (!selectedOrder) return;
+        try {
+            const realId = selectedOrder.id.toString().replace('ORD-', '');
+            const fetchedBids = await getBidsForRequest(realId);
+            setBids(fetchedBids || []);
+            setIsBidsModalOpen(true);
+        } catch (e) {
+            alert("Failed to fetch bids: " + e.message);
+        }
+    };
+
+    const handleAcceptBid = async (bidId) => {
+        if (!confirm("Are you sure you want to accept this bid? This will assign the CA to this request.")) return;
+        try {
+            await acceptBid(bidId);
+            alert("Bid accepted successfully!");
+            setIsBidsModalOpen(false);
+            refreshOrderDetails();
+        } catch (e) {
+            alert("Failed to accept bid: " + e.message);
+        }
+    };
+
+
 
 
 
@@ -617,7 +640,7 @@ const OrdersManagement = ({ orders = [] }) => {
         <div className="space-y-6">
             <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-[#10232A]">Global Order Management</h2>
+                    <h2 className="text-2xl font-bold text-[#10232A]">Global Order Management ({localOrders.length})</h2>
                     <p className="text-[#3D4D55] text-sm">Track and manage client applications.</p>
                 </div>
                 <div>
@@ -691,7 +714,7 @@ const OrdersManagement = ({ orders = [] }) => {
 
                 {/* Filter Tabs */}
                 <div className="flex bg-white p-1 rounded-xl border border-gray-200 overflow-x-auto w-full md:w-auto items-center max-w-full no-scrollbar">
-                    {['ALL', 'CHAT_PENDING', 'PENDING', 'AUTOMATION_STARTED', 'COMPLETED'].map(f => (
+                    {['ALL', 'CHAT_PENDING', 'PENDING', 'COMPLETED'].map(f => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
@@ -722,7 +745,7 @@ const OrdersManagement = ({ orders = [] }) => {
                                 <tr key={i} className="hover:bg-blue-50/50 transition duration-200 cursor-pointer group" onClick={() => setSelectedOrder(o)}>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <span className="font-mono font-bold text-[#B58863] text-xs">{o.id}</span>
+                                            <span className="font-mono font-bold text-[#B58863] text-xs">{o.submissionId}</span>
                                             <span className="text-[10px] text-[#3D4D55] font-medium mt-0.5 flex items-center gap-1">
                                                 <Activity size={10} /> {new Date(o.createdAt || o.date || Date.now()).toLocaleDateString()}
                                             </span>
@@ -830,7 +853,7 @@ const OrdersManagement = ({ orders = [] }) => {
                     <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 active:scale-[0.99] transition-transform" onClick={() => setSelectedOrder(o)}>
                         <div className="flex justify-between items-start mb-4 border-b border-gray-50 pb-3">
                             <div>
-                                <span className="font-mono font-bold text-blue-600 text-xs block">{o.id}</span>
+                                <span className="font-mono font-bold text-blue-600 text-xs block">{o.submissionId}</span>
                                 <span className="text-[10px] text-gray-400 font-medium flex items-center gap-1 mt-1">
                                     <Activity size={10} /> {new Date(o.createdAt || o.date || Date.now()).toLocaleDateString()}
                                 </span>
@@ -901,293 +924,371 @@ const OrdersManagement = ({ orders = [] }) => {
                 )}
             </div>
 
-            {/* Order Detail Modal */}
+            {/* Order Detail Modal - Revamped Design */}
             {createPortal(
                 <AnimatePresence>
                     {selectedOrder && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedOrder(null)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-                            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
-                                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-[#10232A]">Order #{selectedOrder.id}</h3>
-                                        <p className="text-xs text-[#3D4D55] font-bold uppercase">{selectedOrder.service}</p>
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setSelectedOrder(null)}
+                                className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
+                            />
+                            <motion.div
+                                initial={{ scale: 0.98, opacity: 0, y: 10 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.98, opacity: 0, y: 10 }}
+                                className="relative bg-[#F8FAFC] rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden ring-1 ring-white/20"
+                            >
+                                {/* 1. HEADER */}
+                                <div className="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center shrink-0">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-blue-50 text-blue-600 rounded-xl border border-blue-100">
+                                            <FileText size={24} />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                                                Order #{selectedOrder.id.replace('ORD-', '')}
+                                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wide border ${statusColors[selectedOrder.status] ? statusColors[selectedOrder.status].replace('bg-', 'bg-opacity-10 border-').replace('text-', 'text-') : 'bg-gray-100 text-gray-500 border-gray-200'}`}>
+                                                    {selectedOrder.status?.replace(/_/g, ' ')}
+                                                </span>
+                                            </h2>
+                                            <p className="text-sm text-slate-500 font-medium flex items-center gap-2">
+                                                {selectedOrder.service}
+                                                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                                <span className="text-slate-400 text-xs">{new Date(selectedOrder.createdAt || selectedOrder.date).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
+                                            </p>
+                                        </div>
                                     </div>
+
                                     <div className="flex items-center gap-2">
-                                        <button onClick={() => { setShowLogs(!showLogs); }} className={`p-2 hover:bg-gray-200 rounded-full transition ${showLogs ? 'text-blue-600 bg-blue-50' : 'text-gray-500'}`} title="Toggle Logs"><Terminal size={18} /></button>
-                                        <button onClick={refreshOrderDetails} className="p-2 hover:bg-gray-200 rounded-full transition text-gray-500" title="Refresh Data"><RefreshCcw size={18} /></button>
-                                        <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-gray-200 rounded-full transition"><X size={20} className="text-gray-500" /></button>
+
+                                        <div className="h-6 w-px bg-slate-200 mx-1"></div>
+                                        <button
+                                            onClick={refreshOrderDetails}
+                                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            title="Refresh Data"
+                                        >
+                                            <RefreshCcw size={18} />
+                                        </button>
+                                        <button
+                                            onClick={() => setSelectedOrder(null)}
+                                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Close"
+                                        >
+                                            <X size={20} />
+                                        </button>
                                     </div>
                                 </div>
 
-                                <div className="flex h-full overflow-hidden">
-                                    {/* LEFT PANEL: Info & Workflow */}
-                                    <div className={`p-6 overflow-y-auto space-y-6 ${showLogs ? 'w-1/2 border-r border-gray-100 hidden md:block' : 'w-full'}`}>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                                <p className="text-xs text-gray-400 font-bold uppercase mb-1">Client Details</p>
-                                                <p className="font-bold text-[#2B3446]">{selectedOrder.client || 'Unknown Client'}</p>
-                                                <div className="space-y-1 mt-2">
-                                                    <p className="text-xs text-gray-500 flex items-center gap-2">
-                                                        <Mail size={12} className="text-blue-500" />
-                                                        {selectedOrder.email || 'N/A'}
-                                                    </p>
-                                                    <p className="text-xs text-gray-500 flex items-center gap-2">
-                                                        <Phone size={12} className="text-green-500" />
-                                                        {selectedOrder.mobile || 'N/A'}
-                                                    </p>
+                                {/* 2. BODY CONTENT */}
+                                <div className="flex-1 flex overflow-hidden">
+                                    {/* LEFT SIDEBAR (Metadata) */}
+                                    <div className="w-80 bg-white border-r border-slate-200 overflow-y-auto p-5 space-y-6 shrink-0 hidden lg:block custom-scrollbar">
+                                        {/* Client Card */}
+                                        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase mb-3 flex items-center justify-between">
+                                                Client Profile
+                                                <button onClick={() => openChat(selectedOrder)} className="text-indigo-500 hover:bg-indigo-50 p-1 rounded"><MessageCircle size={14} /></button>
+                                            </h4>
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold shadow-sm">
+                                                    {(selectedOrder.client || 'U').charAt(0).toUpperCase()}
+                                                </div>
+                                                <div className="overflow-hidden">
+                                                    <p className="font-bold text-slate-800 text-sm truncate" title={selectedOrder.client}>{selectedOrder.client || 'Guest User'}</p>
+                                                    <p className="text-xs text-slate-500 truncate">Customer ID: #{selectedOrder.userId || 'N/A'}</p>
                                                 </div>
                                             </div>
-                                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                                <p className="text-xs text-gray-400 font-bold uppercase mb-1">Status</p>
-                                                <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${statusColors[selectedOrder.status] || 'bg-gray-100'}`}>
-                                                    {selectedOrder.status}
-                                                </span>
+                                            <div className="space-y-2.5">
+                                                <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-slate-100">
+                                                    <Mail size={14} className="text-slate-400 shrink-0" />
+                                                    <span className="text-xs text-slate-600 font-medium truncate" title={selectedOrder.email}>{selectedOrder.email || 'No Email'}</span>
+                                                </div>
+                                                <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-slate-100">
+                                                    <Phone size={14} className="text-slate-400 shrink-0" />
+                                                    <span className="text-xs text-slate-600 font-medium">{selectedOrder.mobile || 'No Mobile'}</span>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        {/* Application Workflow Section */}
-                                        <div>
-                                            <h4 className="font-bold text-[#2B3446] mb-4">Application Workflow</h4>
+                                        {/* Financials */}
+                                        <div className="space-y-3">
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase">Payment Details</h4>
+                                            <div className="p-4 rounded-xl border border-slate-100 bg-emerald-50/50 flex flex-col gap-2">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-slate-500 font-medium">Total Amount</span>
+                                                    <span className="text-sm font-bold text-slate-800">₹{(getOrderAmount(selectedOrder)).toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-slate-500 font-medium">Payment Status</span>
+                                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
+                                                        <CheckCircle size={10} /> PAID
+                                                    </span>
+                                                </div>
+                                                <div className="h-px bg-slate-200 my-1"></div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-slate-500 font-medium">Transaction ID</span>
+                                                    <span className="font-mono text-[10px] text-slate-400">{selectedOrder.paymentId || 'TXN_MOCK_12345'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Quick Actions */}
+                                        <div className="space-y-3">
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase">Admin Actions</h4>
+
+                                            {/* CA BIDDING ACTIONS */}
+                                            {(!selectedOrder.status || selectedOrder.status === 'PENDING' || selectedOrder.status === 'INITIATED') && (
+                                                <button
+                                                    onClick={handleBroadcast}
+                                                    disabled={isBroadcasting}
+                                                    className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm"
+                                                >
+                                                    {isBroadcasting ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} />} Broadcast to CAs
+                                                </button>
+                                            )}
+
+                                            {(selectedOrder.status === 'OPEN_FOR_BIDDING' || selectedOrder.biddingStatus === 'OPEN') && (
+                                                <div className="space-y-2">
+                                                    <div className="p-2 bg-indigo-50 border border-indigo-100 rounded text-center text-[10px] text-indigo-700 font-bold animate-pulse">
+                                                        Bidding in Progress...
+                                                    </div>
+                                                    <button
+                                                        onClick={handleViewBids}
+                                                        className="w-full py-2.5 bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2"
+                                                    >
+                                                        <ShieldCheck size={14} /> View Received Bids
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            {selectedOrder.status !== 'COMPLETED' && (
+                                                <button
+                                                    onClick={() => handleUpdateStatus('COMPLETED')}
+                                                    disabled={statusUpdating}
+                                                    className="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm"
+                                                >
+                                                    {statusUpdating ? <Loader2 className="animate-spin" size={14} /> : <CheckCircle size={14} />} Mark as Completed
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => handleDeleteOrder(selectedOrder.realId || selectedOrder.id.replace('ORD-', ''))}
+                                                className="w-full py-2.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2"
+                                            >
+                                                <Trash2 size={14} /> Delete Order
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* MAIN WORK AREA */}
+                                    <div className="flex-1 bg-slate-50/50 flex flex-col min-w-0">
+                                        <div className="flex-1 overflow-y-auto custom-scrollbar">
+                                            {/* Specialized Workflow Panels */}
                                             {selectedOrder.service?.toLowerCase().includes('fssai') ? (
-                                                <FssaiWorkflowPanel
-                                                    orderId={selectedOrder.realId || selectedOrder.id}
-                                                    submissionId={selectedOrder.submissionId}
-                                                    docs={fssaiData.docs}
-                                                    genDocs={fssaiData.genDocs}
-                                                    onRefresh={refreshOrderDetails}
-                                                />
+                                                <div className="p-6 md:p-8">
+                                                    <FssaiWorkflowPanel
+                                                        orderId={selectedOrder.realId || selectedOrder.id}
+                                                        submissionId={selectedOrder.submissionId}
+                                                        docs={fssaiData.docs}
+                                                        genDocs={fssaiData.genDocs}
+                                                        onRefresh={refreshOrderDetails}
+                                                    />
+                                                </div>
                                             ) : (selectedOrder.service?.toLowerCase().includes('msme') || selectedOrder.service?.toLowerCase().includes('udyam')) ? (
-                                                <MsmeWorkflowPanel
-                                                    order={selectedOrder}
-                                                    onUpdateStatus={handleUpdateStatus}
-                                                    onClose={() => setSelectedOrder(null)}
-                                                />
-                                            ) : (selectedOrder.service?.includes('Private Limited') || selectedOrder.service?.includes('Registration') && !selectedOrder.service?.toLowerCase().includes('fssai') && !selectedOrder.service?.toLowerCase().includes('msme')) ? (
+                                                <div className="p-6 md:p-8">
+                                                    <MsmeWorkflowPanel
+                                                        order={selectedOrder}
+                                                        onUpdateStatus={handleUpdateStatus}
+                                                        onClose={() => setSelectedOrder(null)}
+                                                    />
+                                                </div>
+                                            ) : (selectedOrder.service?.includes('Private Limited') || selectedOrder.service?.includes('Registration') && !selectedOrder.service?.toLowerCase().includes('fssai') && !selectedOrder.service?.toLowerCase().includes('msme') && !selectedOrder.service?.toLowerCase().includes('one person company')) ? (
                                                 <PrivateLimitedWorkflowPanel
                                                     order={selectedOrder}
                                                     onUpdateStatus={handleUpdateStatus}
                                                     onClose={() => setSelectedOrder(null)}
+                                                    onRefresh={refreshOrderDetails}
                                                 />
-                                            ) : selectedOrder.service?.toLowerCase().includes('trade license') ? (
-                                                <div className="space-y-6">
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                                            <p className="text-[10px] uppercase text-slate-400 font-bold">Business Name</p>
-                                                            <p className="font-bold text-slate-700 text-sm">{selectedOrder.businessName || 'N/A'}</p>
-                                                        </div>
-                                                        <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                                            <p className="text-[10px] uppercase text-slate-400 font-bold">Trade Type</p>
-                                                            <p className="font-bold text-slate-700 text-sm">{selectedOrder.businessType || selectedOrder.tradeType || 'N/A'}</p>
-                                                        </div>
-                                                        <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                                            <p className="text-[10px] uppercase text-slate-400 font-bold">Applicant Name</p>
-                                                            <p className="font-bold text-slate-700 text-sm">{selectedOrder.applicantName || 'N/A'}</p>
-                                                        </div>
-                                                        <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                                            <p className="text-[10px] uppercase text-slate-400 font-bold">Municipality / Ward</p>
-                                                            <p className="font-bold text-slate-700 text-sm">
-                                                                {selectedOrder.municipality || 'N/A'} {selectedOrder.ward ? `(Ward ${selectedOrder.ward})` : ''}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                                                        <h4 className="font-bold text-slate-700 text-xs mb-3 flex items-center gap-1.5">
-                                                            <Paperclip size={14} className="text-indigo-600" /> Uploaded Documents
-                                                        </h4>
-                                                        {selectedOrder.uploadedDocuments && Object.keys(selectedOrder.uploadedDocuments).length > 0 ? (
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                                {Object.entries(selectedOrder.uploadedDocuments).map(([docName, url]) => (
-                                                                    <a
-                                                                        key={docName}
-                                                                        href={url}
-                                                                        target="_blank"
-                                                                        rel="noreferrer"
-                                                                        className="flex items-center justify-between p-3 bg-slate-50 hover:bg-white border border-slate-100 hover:border-indigo-100 rounded-lg transition-all group"
-                                                                    >
-                                                                        <div className="flex items-center gap-2 overflow-hidden">
-                                                                            <div className="p-1.5 bg-white rounded-md text-indigo-600 shadow-sm">
-                                                                                <FileText size={14} />
-                                                                            </div>
-                                                                            <span className="text-xs font-bold text-slate-700 truncate capitalize">
-                                                                                {docName.replace(/_/g, ' ')}
-                                                                            </span>
-                                                                        </div>
-                                                                        <ExternalLink size={12} className="text-slate-400 group-hover:text-indigo-600" />
-                                                                    </a>
-                                                                ))}
-                                                            </div>
-                                                        ) : (
-                                                            <div className="text-center py-6 text-slate-400 text-xs italic bg-slate-50 rounded-lg border border-dashed border-slate-200">
-                                                                No documents uploaded yet.
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            ) : selectedOrder.service?.toLowerCase().includes('factory license') ? (
-                                                <div className="space-y-6">
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                                            <p className="text-[10px] uppercase text-slate-400 font-bold">Business Name</p>
-                                                            <p className="font-bold text-slate-700 text-sm">{selectedOrder.businessName || 'N/A'}</p>
-                                                        </div>
-                                                        <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                                            <p className="text-[10px] uppercase text-slate-400 font-bold">Factory Address</p>
-                                                            <p className="font-bold text-slate-700 text-sm">{selectedOrder.factoryAddress || 'N/A'}</p>
-                                                        </div>
-                                                        <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                                            <p className="text-[10px] uppercase text-slate-400 font-bold">Factory Type</p>
-                                                            <p className="font-bold text-slate-700 text-sm">{selectedOrder.factoryType === 'with_power' ? 'With Power' : 'Without Power'}</p>
-                                                        </div>
-                                                        <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                                            <p className="text-[10px] uppercase text-slate-400 font-bold">Workers</p>
-                                                            <p className="font-bold text-slate-700 text-sm">{selectedOrder.workerCount || '0'}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                                                        <h4 className="font-bold text-slate-700 text-xs mb-3 flex items-center gap-1.5">
-                                                            <Paperclip size={14} className="text-indigo-600" /> Uploaded Documents
-                                                        </h4>
-                                                        {selectedOrder.uploadedDocuments && Object.keys(selectedOrder.uploadedDocuments).length > 0 ? (
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                                {Object.entries(selectedOrder.uploadedDocuments).map(([docName, url]) => (
-                                                                    <a key={docName} href={url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-slate-50 hover:bg-white border border-slate-100 hover:border-indigo-100 rounded-lg transition-all group">
-                                                                        <div className="flex items-center gap-2 overflow-hidden">
-                                                                            <div className="p-1.5 bg-white rounded-md text-indigo-600 shadow-sm"><FileText size={14} /></div>
-                                                                            <span className="text-xs font-bold text-slate-700 truncate capitalize">{docName.replace(/_/g, ' ')}</span>
-                                                                        </div>
-                                                                    </a>
-                                                                ))}
-                                                            </div>
-                                                        ) : (
-                                                            <div className="text-center py-6 text-slate-400 text-xs italic bg-slate-50 rounded-lg border border-dashed border-slate-200">No documents uploaded yet.</div>
-                                                        )}
-                                                    </div>
-                                                </div>
+                                            ) : selectedOrder.service?.toLowerCase().includes('one person company') ? (
+                                                <OnePersonCompanyWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onUpdateStatus={handleUpdateStatus}
+                                                    onClose={() => setSelectedOrder(null)}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : (selectedOrder.service?.toLowerCase().includes('limited liability partnership') || selectedOrder.service?.toLowerCase().includes('llp')) ? (
+                                                <LlpWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : (selectedOrder.service?.toLowerCase().includes('partnership firm') || selectedOrder.service?.toLowerCase().includes('partnership')) ? (
+                                                <PartnershipWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : (selectedOrder.service?.toLowerCase().includes('proprietorship') || selectedOrder.service?.toLowerCase().includes('sole')) ? (
+                                                <ProprietorshipWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : selectedOrder.service?.toLowerCase().includes('section 8') ? (
+                                                <Section8WorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : selectedOrder.service?.toLowerCase().includes('nidhi') ? (
+                                                <NidhiWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : selectedOrder.service?.toLowerCase().includes('producer') ? (
+                                                <ProducerWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : selectedOrder.service?.toLowerCase().includes('public limited') ? (
+                                                <PublicLimitedWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : selectedOrder.service?.toLowerCase().includes('tds return') ? (
+                                                <TdsReturnWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : selectedOrder.service?.toLowerCase().includes('income tax') ? (
+                                                <IncomeTaxReturnWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : selectedOrder.service?.toLowerCase().includes('gst annual') ? (
+                                                <GstAnnualReturnWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : selectedOrder.service?.toLowerCase().includes('gst monthly') || selectedOrder.service?.toLowerCase().includes('gst return') ? (
+                                                <GstMonthlyReturnWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
+                                            ) : selectedOrder.service?.toLowerCase().includes('gst') ? (
+                                                <GstWorkflowPanel
+                                                    order={selectedOrder}
+                                                    onRefresh={refreshOrderDetails}
+                                                />
                                             ) : (
-                                                <div className="relative pl-8 space-y-6 before:content-[''] before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200">
-                                                    {(() => {
-                                                        // Generic Workflow Configuration
-                                                        let steps = [
-                                                            { label: 'Payment Received', isCompleted: true },
-                                                            { label: 'Processing', isCompleted: selectedOrder.status !== 'PENDING' },
-                                                            { label: 'Completed', isCompleted: selectedOrder.status === 'COMPLETED' }
-                                                        ];
+                                                /* Generic / Fallback View for Other Services */
+                                                <div className="p-6 md:p-8 space-y-8 max-w-4xl mx-auto">
 
-                                                        return steps.map((step, idx) => (
-                                                            <div key={idx} className="relative">
-                                                                <div className={`absolute -left-8 w-6 h-6 rounded-full border-4 border-white flex items-center justify-center text-white text-[10px] transition-colors ${step.isCompleted ? 'bg-green-500' : 'bg-gray-300'}`}>
-                                                                    {step.isCompleted ? <CheckCircle size={12} /> : <div className="w-2 h-2 rounded-full bg-white" />}
+                                                    {/* Data Key-Value Pairs */}
+                                                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                                                        <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                                                            <h3 className="font-bold text-slate-700 flex items-center gap-2">
+                                                                <Database size={16} className="text-slate-400" /> Application Data
+                                                            </h3>
+                                                        </div>
+                                                        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                                                            {['businessName', 'tradeType', 'businessType', 'applicantName', 'municipality', 'ward', 'factoryAddress', 'workerCount', 'factoryType']
+                                                                .filter(key => selectedOrder[key])
+                                                                .map(key => (
+                                                                    <div key={key}>
+                                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1 block">{key.replace(/([A-Z])/g, ' $1').trim()}</label>
+                                                                        <div className="text-sm font-semibold text-slate-800">{selectedOrder[key]}</div>
+                                                                    </div>
+                                                                ))
+                                                            }
+                                                            {/* Fallback if no specific keys found */}
+                                                            {(!selectedOrder.businessName && !selectedOrder.applicantName) && (
+                                                                <div className="col-span-2 text-center text-slate-400 text-sm italic py-4">
+                                                                    No specific form data captured for this service type. View raw JSON in logs if needed.
                                                                 </div>
-                                                                <div className="flex flex-col">
-                                                                    <p className={`font-bold text-sm ${step.isCompleted ? 'text-[#2B3446]' : 'text-gray-400'}`}>{step.label}</p>
-                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Documents Section */}
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                        {/* Uploaded Documents */}
+                                                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col">
+                                                            <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
+                                                                <h3 className="font-bold text-slate-700 flex items-center gap-2">
+                                                                    <Paperclip size={16} className="text-indigo-500" /> Client Uploads
+                                                                </h3>
                                                             </div>
-                                                        ));
-                                                    })()}
+                                                            <div className="p-5 flex-1">
+                                                                {selectedOrder.uploadedDocuments && Object.keys(selectedOrder.uploadedDocuments).length > 0 ? (
+                                                                    <ul className="space-y-3">
+                                                                        {Object.entries(selectedOrder.uploadedDocuments).map(([docName, url]) => (
+                                                                            <li key={docName} className="flex items-center group">
+                                                                                <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-500 mr-3 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                                                                                    <FileText size={16} />
+                                                                                </div>
+                                                                                <div className="flex-1 min-w-0 mr-4">
+                                                                                    <p className="text-xs font-bold text-slate-700 uppercase truncate">{docName.replace(/_/g, ' ')}</p>
+                                                                                    <p className="text-[10px] text-slate-400">PDF Document</p>
+                                                                                </div>
+                                                                                <a href={url} target="_blank" rel="noreferrer" className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                                                                                    <Eye size={16} />
+                                                                                </a>
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                ) : (
+                                                                    <div className="flex flex-col items-center justify-center h-32 text-slate-400 border-2 border-dashed border-slate-100 rounded-xl">
+                                                                        <Paperclip size={24} className="mb-2 opacity-20" />
+                                                                        <span className="text-xs font-medium">No uploads found</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Generated Documents */}
+                                                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col">
+                                                            <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
+                                                                <h3 className="font-bold text-slate-700 flex items-center gap-2">
+                                                                    <FileCheck size={16} className="text-emerald-500" /> Output Files
+                                                                </h3>
+                                                            </div>
+                                                            <div className="p-5 flex-1">
+                                                                {selectedOrder.generatedDocuments && Object.keys(selectedOrder.generatedDocuments).length > 0 ? (
+                                                                    <ul className="space-y-3">
+                                                                        {Object.entries(selectedOrder.generatedDocuments).map(([type, path], i) => (
+                                                                            <li key={i} className="flex items-center group">
+                                                                                <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-500 mr-3 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-colors">
+                                                                                    <CheckCircle size={16} />
+                                                                                </div>
+                                                                                <div className="flex-1 min-w-0 mr-4">
+                                                                                    <p className="text-xs font-bold text-slate-700 uppercase truncate">{type}</p>
+                                                                                    <p className="text-[10px] text-slate-400">System Generated</p>
+                                                                                </div>
+                                                                                <button
+                                                                                    onClick={() => window.open(`${BASE_URL}/admin/download-docs/${selectedOrder.submissionId}?type=${type}`, '_blank')}
+                                                                                    className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                                                                >
+                                                                                    <Download size={16} />
+                                                                                </button>
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                ) : (
+                                                                    <div className="flex flex-col items-center justify-center h-32 text-slate-400 border-2 border-dashed border-slate-100 rounded-xl">
+                                                                        <Zap size={24} className="mb-2 opacity-20" />
+                                                                        <span className="text-xs font-medium">No files generated yet</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
-
-                                        {/* Generic Uploaded Documents Display */}
-                                        {selectedOrder.uploadedDocuments && Object.keys(selectedOrder.uploadedDocuments).length > 0 && !selectedOrder.service?.toLowerCase().includes('factory license') && !selectedOrder.service?.toLowerCase().includes('fssai') && (
-                                            <div className="mt-8 pt-6 border-t border-gray-100">
-                                                <h4 className="font-bold text-[#2B3446] mb-4 flex items-center gap-1.5">
-                                                    <Paperclip size={14} className="text-indigo-600" /> Uploaded Documents
-                                                </h4>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                    {Object.entries(selectedOrder.uploadedDocuments).map(([docName, url]) => (
-                                                        <a key={docName} href={url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-slate-50 hover:bg-white border border-slate-100 hover:border-indigo-100 rounded-lg transition-all group">
-                                                            <div className="flex items-center gap-2 overflow-hidden">
-                                                                <div className="p-1.5 bg-white rounded-md text-indigo-600 shadow-sm"><FileText size={14} /></div>
-                                                                <span className="text-xs font-bold text-slate-700 truncate capitalize">{docName.replace(/_/g, ' ')}</span>
-                                                            </div>
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {selectedOrder.generatedDocuments && Object.keys(selectedOrder.generatedDocuments).length > 0 && !selectedOrder.service?.toLowerCase().includes('fssai') && (
-                                            <div className="mt-8 pt-6 border-t border-gray-100">
-                                                <h4 className="font-bold text-[#2B3446] mb-4">Generated Documents</h4>
-                                                <div className="space-y-2">
-                                                    {Object.entries(selectedOrder.generatedDocuments).map(([type, path], i) => (
-                                                        <div key={i} className="flex items-center justify-between p-3 bg-blue-50 border border-blue-100 rounded-lg">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="p-2 bg-blue-100 rounded text-blue-600">
-                                                                    <FileText size={16} />
-                                                                </div>
-                                                                <div>
-                                                                    <p className="font-bold text-sm text-gray-700">{type}</p>
-                                                                    <p className="text-[10px] text-gray-500 truncate max-w-[200px]">{path.split('/').pop()}</p>
-                                                                </div>
-                                                            </div>
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    window.open(`${BASE_URL}/admin/download-docs/${selectedOrder.submissionId}?type=${type}`, '_blank');
-                                                                }}
-                                                                className="text-white hover:bg-blue-700 bg-blue-600 font-bold text-xs flex items-center gap-1 px-3 py-1.5 rounded transition shadow-sm"
-                                                            >
-                                                                <Archive size={12} /> Download
-                                                            </button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
 
-                                    {/* RIGHT PANEL: Logs (Visible only when automation active/requested) */}
-                                    <AnimatePresence>
-                                        {showLogs && (
-                                            <motion.div
-                                                initial={{ width: 0, opacity: 0 }} animate={{ width: "50%", opacity: 1 }} exit={{ width: 0, opacity: 0 }}
-                                                className="bg-[#0f172a] text-white flex flex-col h-full"
-                                            >
-                                                <div className="p-4 bg-[#1e293b] border-b border-gray-700 flex justify-between items-center">
-                                                    <div className="flex items-center gap-2 text-sm font-bold">
-                                                        <Terminal size={16} className="text-green-400" />
-                                                        <span>Live Worker Logs</span>
-                                                    </div>
-                                                    <button onClick={() => setShowLogs(false)} className="text-gray-400 hover:text-white"><X size={16} /></button>
-                                                </div>
-                                                <div className="flex-1 p-4 font-mono text-xs space-y-2 overflow-y-auto custom-scrollbar">
-                                                    {jobLogs.length > 0 ? jobLogs.map((log, i) => (
-                                                        <div key={i} className="flex gap-2">
-                                                            <span className="text-gray-500 shrink-0">[{new Date(log.timestamp).toLocaleTimeString()}]</span>
-                                                            <span className={`${log.level === 'INFO' ? 'text-blue-400' : log.level === 'ERROR' ? 'text-red-400' : 'text-gray-300'} font-bold`}>{log.level}</span>
-                                                            <span className="text-gray-300 break-all">{log.message}</span>
-                                                        </div>
-                                                    )) : (
-                                                        <div className="text-gray-500 italic">Waiting for logs...</div>
-                                                    )}
-                                                    {polling && <div className="text-green-500 animate-pulse">_</div>}
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+                                    {/* LOGS PANEL (Animated Slide-in) */}
 
-                                    {/* RIGHT PANEL: CHAT REMOVED FROM HERE */}
-                                </div>
-
-                                <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-3 flex-wrap">
-
-
-                                    {/* Private Limited specific buttons removed as they are now in the WorkflowPanel */}
-
-                                    {selectedOrder.status !== 'COMPLETED' && (
-                                        <button
-                                            onClick={() => handleUpdateStatus('COMPLETED')}
-                                            disabled={statusUpdating}
-                                            className="px-4 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition flex items-center gap-2"
-                                        >
-                                            {statusUpdating ? <RefreshCcw className="animate-spin" size={16} /> : <CheckCircle size={16} />}
-                                            Mark Completed
-                                        </button>
-                                    )}
                                 </div>
                             </motion.div>
                         </div>
@@ -1197,6 +1298,43 @@ const OrdersManagement = ({ orders = [] }) => {
             )}
             {/* FLOATING CHAT WIDGET */}
             {/* FLOATING CHAT WIDGET */}
+            {/* Bids Modal */}
+            {isBidsModalOpen && (
+                <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden">
+                        <div className="flex justify-between items-center p-4 border-b border-gray-100">
+                            <h3 className="font-bold text-lg text-slate-800">Received Bids</h3>
+                            <button onClick={() => setIsBidsModalOpen(false)}><X size={20} className="text-gray-400 hover:text-red-500" /></button>
+                        </div>
+                        <div className="p-4 max-h-[60vh] overflow-y-auto space-y-3">
+                            {bids.length === 0 ? (
+                                <p className="text-center text-gray-500 py-8">No bids received yet.</p>
+                            ) : (
+                                bids.map(bid => (
+                                    <div key={bid.id} className="border border-gray-200 rounded-lg p-4 flex justify-between items-center bg-white hover:shadow-md transition">
+                                        <div>
+                                            <p className="font-bold text-slate-700 text-sm">{bid.ca?.fullName || bid.caName || "CA Agent"}</p>
+                                            <p className="text-xs text-gray-500">{new Date(bid.createdAt).toLocaleString()}</p>
+                                            {bid.remarks && <p className="text-xs text-slate-600 mt-1 italic">"{bid.remarks}"</p>}
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="font-bold text-lg text-emerald-600">₹{bid.bidAmount}</p>
+                                            {bid.status === 'PENDING' && (
+                                                <button
+                                                    onClick={() => handleAcceptBid(bid.id)}
+                                                    className="mt-2 text-xs bg-slate-900 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-slate-700 transition"
+                                                >
+                                                    Accept Bid
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
             {activeChatOrder && (
                 <div className={`fixed bottom-4 right-4 z-[200] w-[320px] shadow-2xl rounded-2xl overflow-hidden bg-white border border-gray-200 flex flex-col transition-all duration-300 ${isChatMinimized ? 'h-12' : 'h-[450px]'}`}>
                     {/* Chat Header */}

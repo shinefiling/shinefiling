@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit2, Trash2, Search, Filter, X, CheckCircle, AlertTriangle } from 'lucide-react';
-import { getAllUsers, signupUser, updateUserRole } from '../../../../api';
+import { getAllUsers, signupUser, updateUserRole, deleteUser } from '../../../../api';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
@@ -62,12 +62,17 @@ const UserManagement = () => {
         }
     };
 
-    const handleDeleteUser = (userId) => {
+    const handleDeleteUser = async (userId) => {
         if (window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
-            // Note: Backend DELETE /users/{id} not yet implemented in AuthController
-            // Visual removal only for now as per system capability
-            setUsers(users.filter(u => u.id !== userId));
-            alert("User removed from view. (Backend deletion pending API implementation)");
+            try {
+                await deleteUser(userId);
+                setUsers(users.filter(u => u.id !== userId));
+                // alert("User deleted successfully."); 
+            } catch (error) {
+                console.error("Failed to delete user", error);
+                alert("Failed to delete user: " + error.message);
+                loadUsers();
+            }
         }
     };
 

@@ -1,6 +1,9 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Presentation, LineChart, Target, Scale, HelpCircle, Shield, BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, Lightbulb } from 'lucide-react';
+import {
+    CheckCircle, Layout, FileText, Monitor, HelpCircle, Shield,
+    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, X, Layers
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const StartupPitchDeck = ({ isLoggedIn }) => {
@@ -15,11 +18,11 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "What should a Pitch Deck include?", a: "Key slides: Problem, Solution, Market Size (TAM/SAM/SOM), Product, Traction, Team, Financials, and The Ask." },
-        { q: "How long should it be?", a: "Ideally 10-15 slides. Investors spend an average of 3 minutes reviewing a deck." },
-        { q: "Do you provide financial modeling?", a: "Yes, our packages include a 3-5 year financial projection model linked to the deck." },
-        { q: "What is the difference between Seed and Series A deck?", a: "Seed decks focus on the vision and early traction. Series A decks focus heavily on metrics, growth channels, and unit economics." },
-        { q: "Can you help with design?", a: "Absolutely. We ensure your deck looks professional, follows your brand guidelines, and uses visual storytelling." },
+        { q: "What is a Pitch Deck?", a: "A pitch deck is a brief presentation (usually 10-15 slides) that gives potential investors an overview of your business plan, products, services, and growth traction." },
+        { q: "Do you design the slides?", a: "Yes. We don't just write the content; we create professional, visually stunning designs using tools like PowerPoint, Canva, or Figma." },
+        { q: "How many slides are ideal?", a: "A standard investor deck should be between 10 to 15 slides. Anything longer risks losing the investor's attention." },
+        { q: "Do I need financial projections?", a: "Yes, expert investors always look for the 'Ask' slide and financial projections to understand the return on investment." },
+        { q: "Can you help with the story?", a: "Absolutely. Our financial consultants work with you to refine your narrative, ensuring the problem-solution fit is compelling." },
     ];
 
     return (
@@ -31,7 +34,7 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
                 <div className="absolute inset-0 z-0">
                     <img
                         src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=2074"
-                        alt="Startup Pitch"
+                        alt="Pitch Deck"
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-navy/95 via-navy/90 to-navy/80 mix-blend-multiply"></div>
@@ -47,7 +50,7 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
                             rotate: [0, 45, 0]
                         }}
                         transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-purple-600/20 rounded-full blur-[120px]"
+                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-red-900/20 rounded-full blur-[120px]"
                     />
                     <motion.div
                         animate={{
@@ -56,7 +59,7 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
                             x: [0, -50, 0]
                         }}
                         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[100px]"
+                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-amber-600/20 rounded-full blur-[100px]"
                     />
                 </div>
 
@@ -71,14 +74,14 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-                                    <Presentation size={12} className="fill-bronze" /> Investor Ready
+                                    <Monitor size={12} className="text-bronze" /> Investor Ready
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
                                     Startup <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Pitch Deck</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Compelling Pitch Decks that get you funded. We combine storytelling, design, and financial modeling to create winning presentations.
+                                    Secure funding with a compelling narrative. We craft visually stunning and strategically sound <strong>Pitch Decks</strong> that captivate investors.
                                 </p>
                             </motion.div>
 
@@ -90,30 +93,30 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
                             >
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <Lightbulb size={20} />
+                                        <Layers size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Compelling</p>
-                                        <p className="font-bold text-sm text-white">Storytelling</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">15 Slides</p>
+                                        <p className="font-bold text-sm text-white">Structure</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <LineChart size={20} />
+                                        <Layout size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Financial</p>
-                                        <p className="font-bold text-sm text-white">Models</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Premium</p>
+                                        <p className="font-bold text-sm text-white">Design</p>
                                     </div>
                                 </div>
                             </motion.div>
 
                             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
-                                    Start Pitching
+                                    Create Deck
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
-                                    <BookOpen size={18} /> Learn More
+                                    <BookOpen size={18} /> View Sample
                                 </button>
                             </div>
                         </div>
@@ -126,17 +129,17 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Pre-Seed</div>
-                                <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Seed Deck</h3>
+                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Premium</div>
+                                <div className="text-center mb-6 mt-4">
+                                    <h3 className="text-navy font-bold text-xl mb-2">Investor Deck</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹9,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ Deck</span>
+                                        <span className="text-lg text-slate-400 font-medium">/ Complete</span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">For Early Stage</p>
+                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Design + Content</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["10-12 Slide Professional Design", "Basic Financial Projections", "Competitor Analysis", "Review by Ex-Founders", "Editable Source File"].map((item, i) => (
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {["12-15 Slides Structure", "Professional Graphic Design", "Market Data Research", "Financial Summary Slide", "Unlimited Revisions"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
@@ -144,11 +147,9 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('seed')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Build My Deck <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -156,69 +157,171 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+            {/* --- PRICING SECTION --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Choose Your Plan</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: CONTENT ONLY */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Structure</h3>
+                            <p className="text-slate-500 text-sm mb-6">Content Only.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹4,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Content Strategy</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Slide-by-Slide Text</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Financial Summary</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> No Graphic Design</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Basic</button>
+                        </motion.div>
+
+                        {/* PLAN 2: INVESTOR READY - POPULAR */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Investor Ready</h3>
+                            <p className="text-gray-400 text-sm mb-6">Design + Content.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹9,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹15,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Premium Visual Design</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Infographics & Charts</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Storytelling Narrative</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> PPT + PDF Files</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Complete</button>
+                        </motion.div>
+
+                        {/* PLAN 3: BUNDLE */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Fundraise Bundle</h3>
+                            <p className="text-slate-500 text-sm mb-6">Deck + Valuation.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹19,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹30,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Pitch Deck (Premium)</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Business Valuation Report</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> 5-Year Financial Model</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Investor Q&A Support</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Bundle</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Features Section */}
+                    {/* Intro Section */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <Shield className="text-bronze" /> What Makes a Winning Deck?
+                            <Monitor className="text-bronze" /> Winning Investor Deck
                         </h2>
-                        <div className="grid md:grid-cols-2 gap-6">
+                        <div className="prose prose-lg text-gray-600">
+                            <p className="lead text-xl text-gray-800 font-medium">
+                                Investors spend an average of <strong>3 minutes</strong> reviewing a deck. Your pitch needs to be concise, visually appealing, and data-driven to make that time count.
+                            </p>
+                            <p>
+                                At ShineFiling, we combine financial expertise with creative design to build pitch decks that tell a compelling story about your startup's potential.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* Slides Structure */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">The Perfect 15 Slides</h2>
+                        <div className="grid md:grid-cols-2 gap-4">
                             {[
-                                { title: "Compelling Narrative", desc: "Clear problem-solution format that hooks investors." },
-                                { title: "Market Validation", desc: "Data-backed sizing (TAM/SAM/SOM) and trends." },
-                                { title: "Financial Model", desc: "Realistic 3-5 year projections to show scalability." },
-                                { title: "Competitive Edge", desc: "Clear differentiation from existing market players." },
-                                { title: "Professional Design", desc: "Clean, branded aesthetics that look premium." },
-                                { title: "The Ask", desc: "Clear funding requirements and usage of funds." },
-                            ].map((item, i) => (
-                                <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
-                                    <div className="flex items-start gap-4">
-                                        <CheckCircle size={24} className="text-green-500 shrink-0 mt-1" />
-                                        <div>
-                                            <h3 className="text-lg font-bold text-navy mb-1">{item.title}</h3>
-                                            <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
-                                        </div>
-                                    </div>
+                                "1. Title & Vision",
+                                "2. The Problem",
+                                "3. The Solution",
+                                "4. Market Size (TAM/SAM/SOM)",
+                                "5. Product / Technology",
+                                "6. Business Model (Revenue)",
+                                "7. Traction / Validation",
+                                "8. Go-to-Market Strategy",
+                                "9. Competitive Edge",
+                                "10. Core Team",
+                                "11. Financial Projections",
+                                "12. The Ask (Funding)",
+                                "13. Use of Funds",
+                                "14. Exit Strategy",
+                                "15. Contact / Vision",
+                            ].map((slide, i) => (
+                                <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 flex items-center gap-3 shadow-sm">
+                                    <div className="w-2 h-2 rounded-full bg-bronze"></div>
+                                    <span className="text-navy font-semibold text-sm">{slide}</span>
                                 </div>
                             ))}
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Seed Deck</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹9,999</div>
-                                <p className="text-xs text-gray-400 mb-6">/ Deck</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> 10-12 Slides</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Basic Financial Model</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> 5-Day Delivery</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('seed')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Seed</button>
-                            </div>
-
-                            {/* Premium */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Series A Deck</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹19,999</div>
-                                <p className="text-xs text-slate-400 mb-6">/ Deck</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> 15-20 Slides</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Advanced Financials</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Investor Q&A Prep</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('series_a')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Series A</button>
-                            </div>
+                    {/* Process Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Our Creative Process</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Discovery Call", days: "Day 1", desc: "We interview founders to understand the vision, problem, and solution deeply." },
+                                { step: "Step 2", title: "Content Draft", days: "Day 3", desc: "Creating the textual storyboard. Refining the 'Hook' and value proposition." },
+                                { step: "Step 3", title: "Design Phase", days: "Day 5", desc: "Our designers bring the slides to life with brand colors, icons, and charts." },
+                                { step: "Step 4", title: "Final Polish", days: "Day 7", desc: "Review, feedback integration, and delivery of editable PPT and PDF source files." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-navy font-bold text-sm">{item.days}</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
@@ -250,15 +353,15 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
                         {/* Documents Sidebar */}
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <Target className="text-bronze" /> Inputs Needed
+                                <FileText className="text-bronze" /> What We Need
                             </h3>
                             <div className="space-y-6">
                                 <div>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Problem Statement (Draft)</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Product / Solution Details</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Traction / Metrics</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Team Profiles & Background</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Company Logo (High Res)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Product Screenshots</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Team Photos</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Rough Draft / Notes</li>
                                     </ul>
                                 </div>
                             </div>
@@ -266,11 +369,9 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
 
                         {/* Support Card */}
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">Need to incorporate?</h4>
-                            <p className="text-gray-300 text-sm mb-4">Investors require a Pvt Ltd company. We can help you register one.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Register Pvt Ltd
-                            </button>
+                            <h4 className="font-bold text-lg mb-2">Startup India?</h4>
+                            <p className="text-gray-300 text-sm mb-4">A pitch deck is also required for Startup India Recognition.</p>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -279,5 +380,6 @@ const StartupPitchDeck = ({ isLoggedIn }) => {
         </div>
     );
 };
-
 export default StartupPitchDeck;
+
+

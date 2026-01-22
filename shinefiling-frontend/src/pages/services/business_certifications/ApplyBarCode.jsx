@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Upload, CheckCircle, AlertCircle, FileText, ChevronRight, Save } from 'lucide-react';
 import { submitBarCode } from '../../../api';
+import { uploadFile } from '../../../utils/uploadFile';
 
 const ApplyBarCode = () => {
     const navigate = useNavigate();
@@ -50,28 +51,47 @@ const ApplyBarCode = () => {
         setLoading(true);
         setError(null);
         try {
-            const processedDocs = {};
+            const uploadedDocsList = [];
+            // Upload files first
             for (const [key, file] of Object.entries(documents)) {
                 if (file) {
-                    processedDocs[key] = `File: ${file.name}`;
+                    try {
+                        const uploadRes = await uploadFile(file, 'barcode-registration');
+                        uploadedDocsList.push({
+                            id: key,
+                            filename: uploadRes.originalName || file.name,
+                            fileUrl: uploadRes.fileUrl,
+                            type: key
+                        });
+                    } catch (e) {
+                        console.error("File upload failed for " + key, e);
+                    }
                 }
             }
 
-            const payload = {
+            const barcodeFormData = {
                 businessName: formData.entityName,
-                brandName: formData.entityName, // Default if not in form
+                brandName: formData.entityName,
                 numberOfBarcodes: parseInt(formData.numberOfBarcodes, 10),
-                productCategory: "General", // Default
+                productCategory: "General",
                 turnover: formData.turnover,
                 mobile: formData.mobile,
                 email: formData.email,
-                gstNumber: "", // Not collected
-                // Extra
-                status: "PENDING",
-                notes: JSON.stringify(processedDocs)
+                gstNumber: ""
             };
 
-            await submitBarCode(payload);
+            const finalPayload = {
+                submissionId: `BARCODE-${Date.now()}`,
+                userEmail: formData.email,
+                plan: formData.numberOfBarcodes + '_codes',
+                amountPaid: 45000,
+                status: "INITIATED",
+                formData: barcodeFormData,
+                documents: uploadedDocsList,
+                automationQueue: []
+            };
+
+            await submitBarCode(finalPayload);
             navigate('/dashboard?tab=orders');
         } catch (err) {
             setError(err.message || "Submission failed");

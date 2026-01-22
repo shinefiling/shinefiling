@@ -43,9 +43,9 @@ public class ShareTransferFilingController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            // Set Plan/Amount Logic (Fixed professional fee + Stamp Duty if handled)
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(1999.0); // Professional Fee
+            // Set Plan/Amount Logic
+            createdRequest.setPlan(requestDTO.getPlan() != null ? requestDTO.getPlan() : "standard");
+            createdRequest.setAmount(requestDTO.getAmountPaid() != null ? requestDTO.getAmountPaid() : 1999.0);
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 

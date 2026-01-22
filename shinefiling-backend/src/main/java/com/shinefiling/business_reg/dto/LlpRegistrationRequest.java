@@ -1,80 +1,76 @@
 package com.shinefiling.business_reg.dto;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class LlpRegistrationRequest {
-    private String submissionId;
-    private String plan; // basic, standard, premium
-    private String userEmail;
-    private Double amountPaid;
-    private String status;
-    private LlpFormData formData;
-    private List<UploadedDocumentDTO> documents;
-    private List<AutomationTaskDTO> automationQueue;
+    private String plan;
+    private String llpNameOption1;
+    private String llpNameOption2;
+    private String businessActivity;
+    private String contributionAmount;
+    private String registeredAddress;
+    private String profitSharingRatio;
+    private String turnoverEstimate;
+    private String gstState;
+    private String bankPreference;
+    private String accountingStartDate;
+    private List<Map<String, String>> partners;
+    private Map<String, MultipartFile> documents;
 
-    @Data
-    public static class LlpFormData {
-        private List<String> proposedNames; // 2-3 names
-        private String businessActivity;
-
-        // Structured Address
-        private String addressLine1;
-        private String addressLine2;
-        private String state;
-        private String district;
-        private String pincode;
-        private String ownershipStatus; // Owned / Rented
-
-        private String totalCapitalContribution;
-
-        // Partners (Min 2)
-        private List<PartnerDTO> partners;
-
-        // Document URLs for LLP itself
-        private String officeUtilityBillUrl;
-        private String officeNocUrl; // if rented
-        private String officeDeedUrl; // if owned/rented
+    // Explicit Getters to avoid Lombok compilation issues
+    public String getPlan() {
+        return plan;
     }
 
-    @Data
-    public static class PartnerDTO {
-        private String name;
-        private String fatherName;
-        private String dob; // YYYY-MM-DD
-        private String pan;
-        private String aadhaar;
-        private String email;
-        private String phone;
-        private String address;
-        private String dinNumber; // Optional if existing
-
-        private Boolean isDesignatedPartner;
-        private String contributionAmount;
-        private String profitSharingRatio;
-
-        // Document URLs
-        private String photoUrl;
-        private String panUrl;
-        private String aadhaarUrl;
-        private String addressProofUrl;
+    public String getLlpNameOption1() {
+        return llpNameOption1;
     }
 
-    @Data
-    public static class UploadedDocumentDTO {
-        private String id;
-        private String type; // e.g. "PAN", "AADHAAR", "UTILITY_BILL"
-        private String ownerName; // if applicable (for partner docs)
-        private String filename;
-        private String fileUrl;
+    public String getLlpNameOption2() {
+        return llpNameOption2;
     }
 
-    @Data
-    public static class AutomationTaskDTO {
-        private String task;
-        private String priority;
-        private String description;
+    public String getBusinessActivity() {
+        return businessActivity;
+    }
+
+    public String getContributionAmount() {
+        return contributionAmount;
+    }
+
+    public String getRegisteredAddress() {
+        return registeredAddress;
+    }
+
+    public String getProfitSharingRatio() {
+        return profitSharingRatio;
+    }
+
+    public String getTurnoverEstimate() {
+        return turnoverEstimate;
+    }
+
+    public String getGstState() {
+        return gstState;
+    }
+
+    public String getBankPreference() {
+        return bankPreference;
+    }
+
+    public String getAccountingStartDate() {
+        return accountingStartDate;
+    }
+
+    public List<Map<String, String>> getPartners() {
+        return partners;
+    }
+
+    public Map<String, MultipartFile> getDocuments() {
+        return documents;
     }
 }
-

@@ -1,6 +1,11 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Shield, CreditCard, Rocket, FileText, Globe, Award, TrendingUp, BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
+import {
+    CheckCircle, Shield, CreditCard, Rocket, FileText, Globe, Award,
+    TrendingUp, BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight,
+    UserCheck, Building, Scale, Users, X, AlertTriangle, BadgePercent,
+    Briefcase, Landmark
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MSMERegistration = ({ isLoggedIn }) => {
@@ -15,12 +20,12 @@ const MSMERegistration = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "What is Udyam Registration?", a: "Udyam Registration is the new process of MSME Registration launched by the Ministry of MSME effective from July 1, 2020." },
-        { q: "Who can apply?", a: "Any person who intends to establish a micro, small or medium enterprise may file Udyam Registration online." },
-        { q: "Is Aadhaar mandatory?", a: "Yes, Aadhaar number is required for Udyam Registration." },
-        { q: "What are the benefits?", a: "Benefits include collateral-free loans, subsidy on patent registration, overdraft interest rate exemption, and protection against delayed payments." },
-        { q: "Is renewal required?", a: "No, Udyam Registration is a one-time process and does not require renewal." },
-        { q: "Can I register multiple businesses?", a: "No, one Aadhaar number can have only one Udyam Registration, but you can add multiple branches/activities." },
+        { q: "What is Udyam Registration?", a: "Udyam Registration is the new, simplified online process for MSME Registration introduced by the Ministry of MSME, effective from July 1, 2020. It replaces the erstwhile Udyog Aadhaar Memorandum (UAM)." },
+        { q: "Is Aadhaar mandatory for Udyam Registration?", a: "Yes, the Aadhaar number of the proprietor, partner, or director is mandatory. It must be linked with a mobile number for OTP verification." },
+        { q: "What documents are required?", a: "Since the process is fully integrated with Income Tax and GST systems, usually only Aadhaar is needed. However, keep PAN and bank details handy." },
+        { q: "What are the benefits of MSME Registration?", a: "Benefits include collateral-free loans (CGTMSE), subsidy on patent/barcode registration, protection against delayed payments, and concessions in electricity bills." },
+        { q: "Is this registration valid for a lifetime?", a: "Yes, Udyam Registration is valid for the lifetime of the enterprise and does not require renewal." },
+        { q: "Does ShineFiling help with the classification update?", a: "Yes, updated data regarding investment and turnover is automatically pulled from GST/IT returns, but we help ensure your classification (Micro/Small/Medium) is correct." },
     ];
 
     return (
@@ -32,7 +37,7 @@ const MSMERegistration = ({ isLoggedIn }) => {
                 <div className="absolute inset-0 z-0">
                     <img
                         src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=2070"
-                        alt="Business Growth"
+                        alt="MSME Growth"
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-navy/95 via-navy/90 to-navy/80 mix-blend-multiply"></div>
@@ -72,14 +77,14 @@ const MSMERegistration = ({ isLoggedIn }) => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-                                    <Globe size={12} className="fill-bronze" /> Govt of India
+                                    <Globe size={12} className="fill-bronze" /> Govt of India Initiative
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
                                     MSME / Udyam <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Registration</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Get your business recognized by the Government of India. Unlock subsidies, lower interest rates, and exclusive benefits for MSMEs.
+                                    Get official recognition for your business. Unlock <strong>Subsidy Benefits</strong>, <strong>Low-Interest Loans</strong>, and <strong>Protection against Delayed Payments</strong>.
                                 </p>
                             </motion.div>
 
@@ -100,23 +105,28 @@ const MSMERegistration = ({ isLoggedIn }) => {
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <Globe size={20} />
+                                        <Clock size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Access</p>
-                                        <p className="font-bold text-sm text-white">Global</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Processing</p>
+                                        <p className="font-bold text-sm text-white">24 Hours</p>
                                     </div>
                                 </div>
                             </motion.div>
 
-                            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.6 }}
+                                className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+                            >
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
-                                    Register Now
+                                    Apply Now
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
-                                    <BookOpen size={18} /> Learn More
+                                    <BookOpen size={18} /> Learn Benefits
                                 </button>
-                            </div>
+                            </motion.div>
                         </div>
 
                         {/* Pricing Card - Floating Glass Effect */}
@@ -127,29 +137,33 @@ const MSMERegistration = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Certification</div>
-                                <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Udyam Registration</h3>
+                                {/* Top Gold Line */}
+                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+
+                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
+
+                                <div className="text-center mb-6 mt-4">
+                                    <h3 className="text-navy font-bold text-xl mb-2">Udyam Pro</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ One-time</span>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹1,499</h3>
+                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">₹2,500</span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees (if any)</p>
+                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">All Inclusive</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["Udyam Certificate", "MSME Databank Reg", "Priority Sector Lending", "Interest Rate Subsidy", "Lifetime Validity"].map((item, i) => (
+
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {["Udyam Registration", "MSME Databank Profile", "GeM Portal Registration", "TReDS Registration", "Priority Processing"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
                                         </div>
                                     ))}
                                 </div>
+
                                 <button
-                                    onClick={() => handlePlanSelect('registration')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Register Now <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -157,59 +171,159 @@ const MSMERegistration = ({ isLoggedIn }) => {
                 </div>
             </div>
 
-            {/* EXTENSIVE CONTENT SECTION */}
+            {/* --- PRICING SECTION --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Choose Your Plan</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* BASIC */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
+                            <p className="text-slate-500 text-sm mb-6">Standard Registration.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹999</span>
+                                <span className="text-slate-400 line-through text-sm">₹1,500</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Udyam Certificate</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Lifetime Validity</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Digital Copy</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> MSME Databank</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> GeM Registration</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Basic</button>
+                        </motion.div>
+
+                        {/* STANDARD (PRO) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Recommended</div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Udyam Pro</h3>
+                            <p className="text-gray-400 text-sm mb-6">Complete Benefits Package.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹1,499</span>
+                                <span className="text-gray-500 line-through text-sm">₹2,500</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Everything in Basic</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> MSME Databank Profile</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> GeM Portal Registration</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> TReDS Registration</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Priority Support</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Pro Plan</button>
+                        </motion.div>
+
+                        {/* PREMIUM */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Growth</h3>
+                            <p className="text-slate-500 text-sm mb-6">With Shop Act / GST.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹2,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹5,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Udyam Registration</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Shop Act Intimation (State)</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Current Account Assistance</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Compliance Consultation</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Growth</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* MAIN CONTENT GRID */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
-                {/* LEFT CONTENT COLUMN (8 Cols) */}
+                {/* LEFT COLUMN (8) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Classification Section */}
+                    {/* Introduction */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> MSME Classification
+                            <Building className="text-bronze" /> What is Udyam Registration?
                         </h2>
-                        <div className="grid md:grid-cols-3 gap-6">
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-lg transition">
-                                <div className="absolute top-0 right-0 w-16 h-16 bg-bronze/10 rounded-bl-full -mr-8 -mt-8 group-hover:scale-110 transition"></div>
-                                <h3 className="text-xl font-bold text-navy mb-2 relative z-10">Micro</h3>
-                                <p className="text-sm text-gray-500 mb-4">Smallest Investment</p>
-                                <ul className="space-y-2 text-xs font-medium text-gray-600">
-                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-bronze"></div> Inv &lt; ₹1 Cr</li>
-                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-bronze"></div> Turnover &lt; ₹5 Cr</li>
-                                </ul>
+                        <div className="prose prose-lg text-gray-600">
+                            <p className="lead text-xl text-gray-800 font-medium">
+                                Udyam Registration is the official recognition for Micro, Small, and Medium Enterprises (MSMEs) in India. It is a completely digital process with no requirement for paper upload.
+                            </p>
+                            <p>
+                                Registered MSMEs enjoy various incentives from the government, including priority sector lending, lower interest rates on bank loans, excise exemption scheme, and protection against delayed payments.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* Classification Table */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">MSME Classification Criteria</h2>
+                        <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+                            <div className="grid grid-cols-3 bg-navy text-white text-center p-4 font-bold text-sm tracking-wider uppercase">
+                                <div>Classification</div>
+                                <div>Investment</div>
+                                <div>Turnover</div>
                             </div>
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-lg transition">
-                                <div className="absolute top-0 right-0 w-16 h-16 bg-navy/10 rounded-bl-full -mr-8 -mt-8 group-hover:scale-110 transition"></div>
-                                <h3 className="text-xl font-bold text-navy mb-2 relative z-10">Small</h3>
-                                <p className="text-sm text-gray-500 mb-4">Moderate Growth</p>
-                                <ul className="space-y-2 text-xs font-medium text-gray-600">
-                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-navy"></div> Inv &lt; ₹10 Cr</li>
-                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-navy"></div> Turnover &lt; ₹50 Cr</li>
-                                </ul>
-                            </div>
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-lg transition">
-                                <div className="absolute top-0 right-0 w-16 h-16 bg-green-500/10 rounded-bl-full -mr-8 -mt-8 group-hover:scale-110 transition"></div>
-                                <h3 className="text-xl font-bold text-navy mb-2 relative z-10">Medium</h3>
-                                <p className="text-sm text-gray-500 mb-4">Larger Scale</p>
-                                <ul className="space-y-2 text-xs font-medium text-gray-600">
-                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Inv &lt; ₹50 Cr</li>
-                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Turnover &lt; ₹250 Cr</li>
-                                </ul>
+                            <div className="divide-y divide-gray-100 bg-white">
+                                <div className="grid grid-cols-3 text-center p-6 hover:bg-gray-50 transition items-center">
+                                    <div className="font-bold text-navy text-lg">Micro</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹1 Crore</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹5 Crore</div>
+                                </div>
+                                <div className="grid grid-cols-3 text-center p-6 hover:bg-gray-50 transition items-center">
+                                    <div className="font-bold text-navy text-lg">Small</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹10 Crore</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹50 Crore</div>
+                                </div>
+                                <div className="grid grid-cols-3 text-center p-6 hover:bg-gray-50 transition items-center">
+                                    <div className="font-bold text-navy text-lg">Medium</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹50 Crore</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹250 Crore</div>
+                                </div>
                             </div>
                         </div>
                     </section>
 
-                    {/* BENEFITS GRID */}
+                    {/* Benefits Grid */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Why Register?</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Benefits of Udyam Registration</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Collateral Free Loans", desc: "Access to credit guarantee scheme under CGTMSE.", icon: CreditCard },
-                                { title: "Subsidy on IP", desc: "50% subsidy on Patent & Trademark registration fees.", icon: Shield },
-                                { title: "Interest Exemption", desc: "1% exemption on interest rate on overdraft.", icon: TrendingUp },
-                                { title: "Payment Protection", desc: "Protection against delayed payments from buyers.", icon: CheckCircle },
+                                { title: "Collateral Free Loans", desc: "Access to loans under Credit Guarantee Fund Trust for Micro and Small Enterprises (CGTMSE).", icon: CreditCard },
+                                { title: "Subsidy on IP", desc: "50% subsidy on Patent and Trademark registration fees for registered units.", icon: Shield },
+                                { title: "Interest Rate Exemption", desc: "Enjoy 1% exemption on interest rate on overdraft facilities.", icon: BadgePercent },
+                                { title: "Payment Protection", desc: "Protection against delayed payments. Buyers must pay within 45 days.", icon: Clock },
+                                { title: "Tenders Preference", desc: "Preference in procuring government tenders and exemptions from EMD.", icon: Award },
+                                { title: "Electricity Concession", desc: "Concession on electricity bills for manufacturing units.", icon: Zap },
                             ].map((item, i) => (
-                                <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-bronze transition group">
+                                <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-beige transition group">
                                     <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
                                         <item.icon size={28} />
                                     </div>
@@ -222,43 +336,67 @@ const MSMERegistration = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Udyam Basic</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹999</div>
-                                <p className="text-xs text-gray-400 mb-6">/ One-time</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Udyam Certificate</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> MSME Status</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Digital Copy</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('registration')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Basic</button>
-                            </div>
+                    {/* Registration Process */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Registration Process</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Aadhaar Verification", days: "Instant", desc: "OTP verification using the Aadhaar number of the business owner." },
+                                { step: "Step 2", title: "Business Details", days: "10 Mins", desc: "We enter your business details, bank info, and select appropriate NIC codes." },
+                                { step: "Step 3", title: "Form Submission", days: "Instant", desc: "Final review and submission of the application on the Udyam portal." },
+                                { step: "Step 4", title: "Certificate Generation", days: "24-48 Hrs", desc: "The government validates the data (PAN/GST) and issues the Udyam Certificate." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-48 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Estimated</span>
+                                        <span className="text-navy font-bold text-lg">{item.days}</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                            {/* Premium */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Udyam Premium</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹1,499</div>
-                                <p className="text-xs text-slate-400 mb-6">/ One-time</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> All Basic Benefits</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> GeM Portal Reg</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> TReDS Reg</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Premium</button>
-                            </div>
+                    {/* SEO Why Us */}
+                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
+                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why ShineFiling?</h2>
+                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
+                            {[
+                                { t: "Correct NIC Codes", d: "We ensure you select the right activities to maximize eligibility for tenders." },
+                                { t: "Lifetime Support", d: "We help you download updated certificates whenever required." },
+                                { t: "Instant Processing", d: "Application filed within 24 hours of receiving documents." },
+                                { t: "Value Added", d: "Free consultation on other applicable licenses like GST or Shop Act." }
+                            ].map((item, i) => (
+                                <div key={i} className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <CheckCircle size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">{item.t}</h4>
+                                        <p className="text-gray-300 text-sm">{item.d}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
                     {/* FAQs */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
-                            <HelpCircle className="text-bronze" /> Frequently Asked Questions
+                            <React.Fragment>
+                                <Users className="text-bronze" /> Frequently Asked Questions
+                            </React.Fragment>
                         </h2>
                         <div className="space-y-4">
                             {faqs.map((faq, i) => (
@@ -276,35 +414,42 @@ const MSMERegistration = ({ isLoggedIn }) => {
                     </section>
                 </div>
 
-                {/* RIGHT SIDEBAR (4 Cols) */}
+                {/* RIGHT SIDEBAR */}
                 <div className="lg:col-span-4">
                     <div className="sticky top-32 space-y-8">
-
-                        {/* Documents Sidebar */}
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <FileText className="text-bronze" /> Required Documents
+                                <FileText className="text-bronze" /> Checklist
                             </h3>
                             <div className="space-y-6">
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Business</h4>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Mandatory</h4>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Aadhaar Card</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Aadhaar (Linked Mobile)</li>
                                         <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> PAN Card</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Cancelled Cheque</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> GST (if applicable)</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Good to have</h4>
+                                    <ul className="space-y-3">
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> GST Number (if any)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> ITR Acknowledgement</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Bank Account Details</li>
                                     </ul>
                                 </div>
                             </div>
+                            <div className="mt-8 bg-beige/10 p-4 rounded-xl border border-blue-100">
+                                <p className="text-xs text-blue-800 font-medium leading-relaxed flex gap-2">
+                                    <span className="text-lg">💡</span>
+                                    <span><strong>Pro Tip:</strong> Ensure your name in Aadhaar and PAN matches exactly.</span>
+                                </p>
+                            </div>
                         </div>
 
-                        {/* Support Card */}
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Need Help?</h4>
-                            <p className="text-gray-300 text-sm mb-4">Our experts can guide you through the process.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Talk to Expert
-                            </button>
+                            <p className="text-gray-300 text-sm mb-4">Our experts can guide you through the classifications.</p>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -315,3 +460,5 @@ const MSMERegistration = ({ isLoggedIn }) => {
 };
 
 export default MSMERegistration;
+
+

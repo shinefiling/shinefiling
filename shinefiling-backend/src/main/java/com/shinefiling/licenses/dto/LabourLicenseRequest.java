@@ -11,6 +11,8 @@ public class LabourLicenseRequest {
     private String state;
     private int numberOfLabourers;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private LabourFormData formData;
     private List<UploadedDocumentDTO> documents;

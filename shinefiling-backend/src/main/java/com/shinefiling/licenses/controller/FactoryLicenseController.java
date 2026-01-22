@@ -52,8 +52,8 @@ public class FactoryLicenseController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(6999.0); // Higher amount for Factory License
+            createdRequest.setPlan(requestDTO.getPlan());
+            createdRequest.setAmount(requestDTO.getAmountPaid());
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 

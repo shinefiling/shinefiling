@@ -64,8 +64,8 @@ public class TrademarkRenewalController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(1999.0); // Professional Fee for Renewal
+            createdRequest.setPlan(requestDTO.getPlan() != null ? requestDTO.getPlan() : "standard");
+            createdRequest.setAmount(requestDTO.getAmountPaid() != null ? requestDTO.getAmountPaid() : 1999.0);
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 
@@ -86,5 +86,3 @@ public class TrademarkRenewalController {
         return t;
     }
 }
-
-

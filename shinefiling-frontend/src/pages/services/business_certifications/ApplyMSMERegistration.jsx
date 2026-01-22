@@ -146,9 +146,8 @@ const ApplyMSMERegistration = () => {
             const userStr = localStorage.getItem('user');
             const user = userStr ? JSON.parse(userStr) : {};
 
-            const payload = {
-                // Fields mapped to MsmeApplicationDTO
-                applicantName: user.fullName || formData.businessName, // Fallback to business name if no user name
+            const msmeFormData = {
+                applicantName: user.fullName || formData.businessName,
                 aadhaarNumber: formData.aadhaarNumber,
                 panNumber: formData.panNumber,
                 enterpriseName: formData.businessName,
@@ -161,20 +160,26 @@ const ApplyMSMERegistration = () => {
                 email: formData.email,
                 dateOfCommencement: formData.dateOfCommencement,
                 majorActivity: formData.mainActivity,
-                nicCodes: JSON.stringify(formData.nicCodes), // Convert array to string
+                nicCodes: JSON.stringify(formData.nicCodes),
                 maleEmployees: parseInt(formData.numberOfEmployees) || 0,
                 femaleEmployees: 0,
                 otherEmployees: 0,
                 investmentPlantMachinery: parseFloat(formData.investmentPlantMachinery) || 0,
                 investmentEquipment: 0,
-                turnover: parseFloat(formData.turnover) || 0,
-
-                // Extra metadata for tracking
-                status: "PENDING",
-                dateSubmitted: new Date().toISOString()
+                turnover: parseFloat(formData.turnover) || 0
             };
 
-            await submitMSMERegistration(payload);
+            const finalPayload = {
+                submissionId: `MSME-${Date.now()}`,
+                userEmail: user.email || formData.email || 'guest@example.com',
+                plan: 'standard',
+                amountPaid: 1499, // Standard Fee
+                status: "INITIATED",
+                formData: msmeFormData,
+                documents: []
+            };
+
+            await submitMSMERegistration(finalPayload);
             navigate('/dashboard?tab=orders');
         } catch (err) {
             setError(err.message || "Submission failed");

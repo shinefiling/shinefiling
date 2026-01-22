@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/service/labour/professional-tax")
+@RequestMapping("/api/service/labour-professional-tax")
 @CrossOrigin(origins = "http://localhost:5173")
 public class LabourProfessionalTaxController {
 
@@ -65,10 +65,9 @@ public class LabourProfessionalTaxController {
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
             // Pricing based on service type
-            double amount = "BOTH".equals(serviceType) ? 2999.0 : 1999.0;
-
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(amount);
+            double defaultAmount = "BOTH".equals(serviceType) ? 2999.0 : 1999.0;
+            createdRequest.setPlan(requestDTO.getPlan() != null ? requestDTO.getPlan() : "standard");
+            createdRequest.setAmount(requestDTO.getAmountPaid() != null ? requestDTO.getAmountPaid() : defaultAmount);
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 

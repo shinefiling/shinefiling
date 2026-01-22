@@ -7,6 +7,8 @@ import java.util.List;
 public class CompanyNameChangeRequest {
     private String submissionId;
     private String userEmail;
+    private String plan;
+    private Double amountPaid;
     private String cin;
     private String companyName; // Current Name
     private String status;

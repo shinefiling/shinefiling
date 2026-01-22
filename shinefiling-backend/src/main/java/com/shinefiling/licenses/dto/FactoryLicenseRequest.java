@@ -10,6 +10,8 @@ public class FactoryLicenseRequest {
     private String factoryName;
     private String state;
     private String status;
+    private String plan;
+    private Double amountPaid;
     private int numberOfWorkers;
     private boolean usePower; // To check 10 vs 20 rule
     private double installedHorsePower; // For fee calc

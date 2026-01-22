@@ -21,6 +21,7 @@ public class ProfessionalTaxRequest {
         private String entityType; // "Employer", "Professional"
         private Integer employeeCount;
         private String registrationType; // "EC" (Enrollment), "RC" (Registration), "Both"
+        private String employmentStartDate;
 
         // For Filing (Standard/Premium)
         private String filingPeriod; // "Monthly", "Yearly"
@@ -42,5 +43,3 @@ public class ProfessionalTaxRequest {
         private String description;
     }
 }
-
-

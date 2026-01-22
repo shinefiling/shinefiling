@@ -278,6 +278,8 @@ const ShopEstablishmentRegistration = ({ isLoggedIn }) => {
             const finalPayload = {
                 submissionId: `SHOPACT-${Date.now()}`,
                 userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                plan: employeeRange,
+                amountPaid: pricing[employeeRange].serviceFee,
                 businessName: formData.businessName,
                 state: formData.state,
                 numberOfEmployees: parseInt(formData.numberOfEmployees),

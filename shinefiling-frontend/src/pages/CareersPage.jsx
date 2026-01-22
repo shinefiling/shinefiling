@@ -2,14 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Clock, ArrowRight, Zap, Target, Users, Search } from 'lucide-react';
 
+import { getPublicJobs } from '../careerApi';
+
 const CareersPage = () => {
     const [jobs, setJobs] = useState([]);
 
     useEffect(() => {
-        const storedJobs = localStorage.getItem('careers_jobs');
-        if (storedJobs) {
-            setJobs(JSON.parse(storedJobs));
-        }
+        const fetchJobs = async () => {
+            try {
+                const data = await getPublicJobs();
+                setJobs(data);
+            } catch (error) {
+                console.error("Failed to fetch jobs", error);
+            }
+        };
+        fetchJobs();
     }, []);
 
     useEffect(() => {

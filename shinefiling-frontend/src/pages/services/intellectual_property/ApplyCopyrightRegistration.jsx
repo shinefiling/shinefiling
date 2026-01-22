@@ -1,34 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle, Upload, AlertTriangle, FileText, ArrowRight, CreditCard, Copyright, BookOpen } from 'lucide-react';
-import { uploadFile, submitCopyrightRegistration } from '../../../api'; // ensure in api.js
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import {
+    CheckCircle, Upload, FileText,
+    ArrowLeft, ArrowRight, IndianRupee, Copyright, BookOpen, AlertTriangle
+} from 'lucide-react';
+import { uploadFile, submitCopyrightRegistration } from '../../../api';
 
 const ApplyCopyrightRegistration = ({ isLoggedIn }) => {
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [uploadingFiles, setUploadingFiles] = useState({});
+    const [planType, setPlanType] = useState('standard');
 
-    // User data form local storage
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-    const [formData, setFormData] = useState({
-        userEmail: user.email || '',
-        workTitle: '',
-
-        // Form Data
-        workCategory: 'LITERARY', // LITERARY, ARTISTIC, SOFTWARE, MUSIC, CINEMATOGRAPH
-        authorName: '',
-        publicationStatus: 'UNPUBLISHED',
-        publicationDate: '',
-
-        // Docs
-        uploadedDocuments: []
-    });
-
+    // Protect Route
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         const isReallyLoggedIn = isLoggedIn || !!storedUser;
@@ -38,225 +23,293 @@ const ApplyCopyrightRegistration = ({ isLoggedIn }) => {
         }
     }, [isLoggedIn, navigate]);
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+    const [formData, setFormData] = useState({
+        workTitle: '',
+        workCategory: 'LITERARY', // LITERARY, ARTISTIC, SOFTWARE, MUSIC, CINEMATOGRAPH
+        authorName: '',
+        publicationStatus: 'UNPUBLISHED',
+        publicationDate: ''
+    });
+
+    const [uploadedFiles, setUploadedFiles] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [apiError, setApiError] = useState(null);
+    const [errors, setErrors] = useState({});
+
+    // Plans
+    const plans = {
+        standard: { title: "Copyright Filing", serviceFee: 2999 },
     };
 
-    const handleFileChange = async (docType, e) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setUploadingFiles(prev => ({ ...prev, [docType]: true }));
+    const getTotalPrice = () => {
+        return (plans[planType]?.serviceFee || 2999);
+    };
 
-            try {
-                const response = await uploadFile(file, 'copyright');
-                if (response && response.fileUrl) {
-                    setFormData(prev => ({
-                        ...prev,
-                        uploadedDocuments: [
-                            ...prev.uploadedDocuments.filter(d => d.id !== docType),
-                            {
-                                id: docType,
-                                type: docType,
-                                filename: response.originalName || file.name,
-                                fileUrl: response.fileUrl
-                            }
-                        ]
-                    }));
-                } else {
-                    alert('Upload failed. Please try again.');
-                }
-            } catch (error) {
-                console.error("File upload error:", error);
-                alert('Error uploading file.');
-            } finally {
-                setUploadingFiles(prev => ({ ...prev, [docType]: false }));
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
+    };
+
+    const validateStep = (step) => {
+        const newErrors = {};
+        let isValid = true;
+
+        if (step === 1) { // Work Details
+            if (!formData.workTitle) { newErrors.workTitle = "Title required"; isValid = false; }
+            if (!formData.authorName) { newErrors.authorName = "Author Name required"; isValid = false; }
+            if (formData.publicationStatus === 'PUBLISHED' && !formData.publicationDate) {
+                newErrors.publicationDate = "Publication Date required"; isValid = false;
             }
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    const handleNext = () => {
+        if (validateStep(currentStep)) {
+            setCurrentStep(prev => Math.min(3, prev + 1));
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
+    const handleFileUpload = async (e, key) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
         try {
-            const payload = {
+            const response = await uploadFile(file, 'copyright');
+            setUploadedFiles(prev => ({
+                ...prev,
+                [key]: {
+                    originalFile: file,
+                    name: response.originalName || file.name,
+                    fileUrl: response.fileUrl,
+                    fileId: response.id
+                }
+            }));
+        } catch (error) {
+            console.error("Upload failed", error);
+            alert("File upload failed. Please try again.");
+        }
+    };
+
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 1: // Work Details
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
+                                <Copyright size={20} className="text-orange-500" /> WORK DETAILS
+                            </h3>
+
+                            <div className="grid md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 block mb-1">Title of Work</label>
+                                    <input type="text" name="workTitle" value={formData.workTitle} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.workTitle ? 'border-red-500' : 'border-gray-200'}`} placeholder="e.g. My Book Title" />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 block mb-1">Category</label>
+                                    <select name="workCategory" value={formData.workCategory} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200">
+                                        <option value="LITERARY">Literary (Books / Text)</option>
+                                        <option value="ARTISTIC">Artistic (Logo / Design)</option>
+                                        <option value="SOFTWARE">Software / Code</option>
+                                        <option value="MUSIC">Musical Work</option>
+                                        <option value="CINEMATOGRAPH">Cinematograph (Video)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 block mb-1">Author Name</label>
+                                    <input type="text" name="authorName" value={formData.authorName} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.authorName ? 'border-red-500' : 'border-gray-200'}`} />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 block mb-1">Status</label>
+                                    <select name="publicationStatus" value={formData.publicationStatus} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200">
+                                        <option value="UNPUBLISHED">Unpublished</option>
+                                        <option value="PUBLISHED">Published</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {formData.publicationStatus === 'PUBLISHED' && (
+                                <div className="animate-in fade-in">
+                                    <label className="text-xs font-bold text-gray-500 block mb-1">First Publication Date</label>
+                                    <input type="date" name="publicationDate" value={formData.publicationDate} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.publicationDate ? 'border-red-500' : 'border-gray-200'}`} />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+
+            case 2: // Upload
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
+                                <Upload size={20} className="text-orange-500" /> UPLOAD WORK
+                            </h3>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                                {[
+                                    { id: 'WORK_COPY', label: 'Copy of Work (PDF/Img/Zip)' },
+                                    { id: 'NOC', label: 'NOC (If Author ≠ Applicant)' },
+                                    { id: 'ID_PROOF', label: 'ID Proof of Applicant' }
+                                ].map((doc) => (
+                                    <div key={doc.id} className="border border-dashed p-6 rounded-xl text-center group hover:border-orange-300 transition">
+                                        <label className="cursor-pointer block">
+                                            <div className="mb-2 mx-auto w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 group-hover:scale-110 transition">
+                                                <FileText size={24} />
+                                            </div>
+                                            <span className="font-bold text-gray-700 block mb-1">{doc.label}</span>
+                                            <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, doc.id)} accept=".pdf,.jpg,.png,.zip" />
+                                            {uploadedFiles[doc.id] ?
+                                                <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">{uploadedFiles[doc.id].name}</span> :
+                                                <span className="inline-block px-4 py-2 bg-gray-900 text-white rounded-lg text-xs font-bold">Choose File</span>
+                                            }
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            case 3: // Payment
+                return (
+                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
+                        <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6 text-orange-600">
+                            <IndianRupee size={32} />
+                        </div>
+                        <h2 className="text-2xl font-black text-[#2B3446] mb-2">Payment Summary</h2>
+                        <p className="text-gray-500 mb-8">Professional Fee</p>
+
+                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
+                            <div className="flex justify-between items-end mb-2">
+                                <span className="text-gray-500">Service Fee</span>
+                                <span className="text-lg font-bold text-[#2B3446]">₹2,999</span>
+                            </div>
+                            <div className="border-t pt-2 flex justify-between items-end">
+                                <span className="font-black text-gray-700">Total</span>
+                                <span className="text-3xl font-black text-orange-600">₹2,999</span>
+                            </div>
+                            <p className="text-xs text-center mt-4 text-gray-400">Govt Fees will be calculated based on category.</p>
+                        </div>
+
+                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
+                            {isSubmitting ? 'Processing...' : 'Pay & Submit'}
+                            {!isSubmitting && <ArrowRight size={18} />}
+                        </button>
+                    </div>
+                );
+
+            default: return null;
+        }
+    };
+
+    const submitApplication = async () => {
+        setIsSubmitting(true);
+        setApiError(null);
+        try {
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
+                id: k,
+                filename: v.name,
+                fileUrl: v.fileUrl,
+                type: k
+            }));
+
+            const finalPayload = {
                 submissionId: `CPR-${Date.now()}`,
-                userEmail: formData.userEmail,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
                 workTitle: formData.workTitle,
+                plan: planType,
+                amountPaid: getTotalPrice(),
                 status: "PAYMENT_SUCCESSFUL",
-                formData: {
-                    workCategory: formData.workCategory,
-                    authorName: formData.authorName,
-                    publicationStatus: formData.publicationStatus,
-                    publicationDate: formData.publicationDate
-                },
-                documents: formData.uploadedDocuments
+                formData: formData,
+                documents: docsList
             };
 
-            await submitCopyrightRegistration(payload);
-            setCurrentStep(3); // Success
-        } catch (err) {
-            setError(err.message || 'Submission failed. Please try again.');
-            console.error(err);
+            await submitCopyrightRegistration(finalPayload);
+            setIsSuccess(true);
+
+        } catch (error) {
+            console.error(error);
+            setApiError(error.message);
         } finally {
-            setLoading(false);
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#FDF0EC] font-sans pt-24 pb-24">
-            {/* Header */}
-            <div className="bg-[#431407] text-white py-6 px-6 shadow-md fixed top-0 left-0 right-0 z-50">
-                <div className="max-w-4xl mx-auto flex items-center justify-between">
-                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-orange-200 hover:text-white transition">
-                        <ArrowLeft size={18} /> Back
-                    </button>
-                    <h1 className="text-xl font-bold flex items-center gap-2"><Copyright size={20} className="text-orange-400" /> Copyright Application</h1>
+        <div className="min-h-screen bg-[#FFF7ED] pb-20 pt-24 px-4 md:px-8">
+            {isSuccess ? (
+                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
+                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle size={48} className="text-green-600" />
+                    </div>
+                    <h1 className="text-3xl font-black text-[#2B3446] mb-4">Copyright Submitted!</h1>
+                    <p className="text-gray-500 mb-8">
+                        Your application for <b>{formData.workTitle}</b> has been received.
+                    </p>
+                    <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
                 </div>
-            </div>
+            ) : (
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-8">
+                        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition"><ArrowLeft size={14} /> Back</button>
+                        <h1 className="text-3xl font-black text-[#2B3446]">Copyright Registration</h1>
+                        <p className="text-gray-500">Protect your Creative Works</p>
+                    </div>
 
-            <div className="max-w-3xl mx-auto px-6 mt-12">
-                {/* Progress */}
-                <div className="mb-8 flex items-center justify-between relative">
-                    <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-200 -z-10"></div>
-                    {[1, 2, 3].map((s) => (
-                        <div key={s} className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${currentStep >= s ? 'bg-orange-600 text-white' : 'bg-white border-2 border-slate-200 text-slate-400'}`}>
-                            {s}
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        <div className="w-full lg:w-80 space-y-6">
+                            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
+                                {['Work Details', 'Upload Files', 'Payment'].map((step, i) => (
+                                    <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-orange-50 border-orange-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
+                                        <div>
+                                            <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
+                                            <span className={`font-bold text-sm ${currentStep === i + 1 ? 'text-orange-700' : 'text-gray-600'}`}>{step}</span>
+                                        </div>
+                                        {currentStep > i + 1 && <CheckCircle size={16} className="text-green-500" />}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 text-xs text-orange-800">
+                                <strong>Estimated Fees:</strong> <br />
+                                <span className="text-lg font-bold">Standard Filing</span>
+                                <div className="mt-2 text-xl font-black text-orange-900">₹2,999</div>
+                                <div className="text-[10px] text-orange-600 mt-1 opacity-75">Govt Fees Extra</div>
+                            </div>
                         </div>
-                    ))}
-                </div>
 
-                {/* Form Container */}
-                <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
+                        <div className="flex-1">
+                            {renderStepContent()}
 
-                    {currentStep === 1 && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                            <h2 className="text-2xl font-bold text-[#2B3446] mb-2">Work Details</h2>
-                            <p className="text-slate-500 mb-8">Tell us about your creative work.</p>
-
-                            <form onSubmit={(e) => { e.preventDefault(); setCurrentStep(2); }} className="space-y-6">
-
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-700 mb-2">Title of Work</label>
-                                        <input type="text" name="workTitle" value={formData.workTitle} required className="w-full p-3 border border-slate-300 rounded-lg" onChange={handleChange} placeholder="e.g. My Awesome Book" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-700 mb-2">Category</label>
-                                        <select name="workCategory" value={formData.workCategory} onChange={handleChange} className="w-full p-3 border border-slate-300 rounded-lg">
-                                            <option value="LITERARY">Literary (Books / Text)</option>
-                                            <option value="ARTISTIC">Artistic (Logo / Design)</option>
-                                            <option value="SOFTWARE">Software / Code</option>
-                                            <option value="MUSIC">Musical Work</option>
-                                            <option value="CINEMATOGRAPH">Cinematograph Film (Video)</option>
-                                        </select>
-                                    </div>
+                            {apiError && (
+                                <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 flex items-center gap-2">
+                                    <AlertTriangle size={20} />
+                                    <span>{apiError}</span>
                                 </div>
+                            )}
 
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-700 mb-2">Author Name</label>
-                                        <input type="text" name="authorName" value={formData.authorName} required className="w-full p-3 border border-slate-300 rounded-lg" onChange={handleChange} />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-700 mb-2">Status</label>
-                                        <select name="publicationStatus" value={formData.publicationStatus} onChange={handleChange} className="w-full p-3 border border-slate-300 rounded-lg">
-                                            <option value="UNPUBLISHED">Unpublished</option>
-                                            <option value="PUBLISHED">Published</option>
-                                        </select>
-                                    </div>
-                                </div>
+                            {!isSuccess && currentStep < 3 && (
+                                <div className="mt-8 flex justify-between">
+                                    <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
 
-                                {formData.publicationStatus === 'PUBLISHED' && (
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-700 mb-2">Date of First Publication</label>
-                                        <input type="date" name="publicationDate" value={formData.publicationDate} required className="w-full p-3 border border-slate-300 rounded-lg" onChange={handleChange} />
-                                    </div>
-                                )}
-
-                                <div className="pt-6">
-                                    <button type="submit" className="w-full py-4 bg-orange-600 text-white font-bold rounded-xl shadow-lg hover:bg-black transition flex items-center justify-center gap-2">
+                                    <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
                                         Next Step <ArrowRight size={18} />
                                     </button>
                                 </div>
-                            </form>
-                        </motion.div>
-                    )}
-
-                    {currentStep === 2 && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                            <h2 className="text-2xl font-bold text-[#2B3446] mb-2">Upload Files</h2>
-                            <p className="text-slate-500 mb-8">Securely upload your work.</p>
-
-                            <div className="space-y-4 mb-8">
-                                {[
-                                    { id: 'WORK_COPY', label: 'Copy of Work (PDF / Image / Zip)' },
-                                    { id: 'NOC', label: 'NOC from Author (If Applicant is different)' },
-                                    { id: 'ID_PROOF', label: 'ID Proof of Applicant' }
-                                ].map((doc, i) => {
-                                    const uploadedDoc = formData.uploadedDocuments.find(d => d.type === doc.id);
-                                    return (
-                                        <div key={i} className={`flex items-center justify-between p-4 border rounded-xl transition-all ${uploadedDoc ? 'bg-orange-50 border-orange-200' : 'bg-slate-50 border-slate-200'}`}>
-                                            <div className="flex items-center gap-4">
-                                                <div className={`p-2 rounded-lg border ${uploadedDoc ? 'bg-white border-orange-200 text-orange-600 shadow-sm' : 'bg-white border-slate-200 text-slate-400'}`}>
-                                                    {uploadedDoc ? <CheckCircle size={20} /> : <FileText size={20} />}
-                                                </div>
-                                                <div>
-                                                    <span className={`font-bold text-sm block ${uploadedDoc ? 'text-orange-800' : 'text-slate-700'}`}>{doc.label}</span>
-                                                    {uploadingFiles[doc.id] ? (
-                                                        <span className="text-xs text-blue-600 font-medium animate-pulse">Uploading...</span>
-                                                    ) : uploadedDoc ? (
-                                                        <span className="text-xs text-green-600 font-medium flex items-center gap-1">Attached</span>
-                                                    ) : null}
-                                                </div>
-                                            </div>
-                                            <label className={`cursor-pointer text-sm font-bold px-4 py-2 rounded-lg transition-all ${uploadingFiles[doc.id] ? 'opacity-50 cursor-not-allowed bg-slate-200 text-slate-500' : uploadedDoc ? 'text-green-700 bg-green-100 hover:bg-green-200' : 'text-orange-600 bg-orange-50 hover:bg-orange-100'}`}>
-                                                {uploadingFiles[doc.id] ? '...' : uploadedDoc ? 'Change' : 'Upload'}
-                                                <input type="file" className="hidden" disabled={uploadingFiles[doc.id]} onChange={(e) => handleFileChange(doc.id, e)} />
-                                            </label>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            {error && <div className="p-4 bg-red-50 text-red-600 rounded-lg text-sm mb-6 border border-red-200 flex items-center gap-2"><AlertTriangle size={18} /> {error}</div>}
-
-                            <div className="flex gap-4">
-                                <button onClick={() => setCurrentStep(1)} className="flex-1 py-4 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition">
-                                    Back
-                                </button>
-                                <button onClick={handleSubmit} disabled={loading} className="flex-1 py-4 bg-orange-600 text-white font-bold rounded-xl shadow-lg hover:bg-orange-700 transition flex justify-center items-center">
-                                    {loading ? 'Processing...' : 'Register Copyright'}
-                                </button>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {currentStep === 3 && (
-                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center py-8">
-                            <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 mx-auto mb-6">
-                                <CheckCircle size={40} />
-                            </div>
-                            <h2 className="text-3xl font-black text-[#2B3446] mb-4">Application Started!</h2>
-                            <p className="text-slate-500 mb-8 max-w-md mx-auto">
-                                We've received your Copyright Request for <strong>{formData.workTitle}</strong>. We will file Form XIV shortly.
-                            </p>
-
-                            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 mb-8 max-w-xs mx-auto">
-                                <p className="text-sm text-slate-500 mb-2 uppercase tracking-wide font-bold">Total Fees</p>
-                                <p className="text-4xl font-black text-[#2B3446]">₹2,999<span className="text-sm font-normal text-slate-400 block">+ Govt Fee</span></p>
-                            </div>
-
-                            <button onClick={() => navigate('/dashboard')} className="w-full max-w-xs py-4 bg-orange-600 text-white font-bold rounded-xl shadow-lg hover:bg-orange-700 transition flex items-center justify-center gap-2 mx-auto">
-                                <CreditCard size={18} /> Proceed to Dashboard
-                            </button>
-                        </motion.div>
-                    )}
-
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

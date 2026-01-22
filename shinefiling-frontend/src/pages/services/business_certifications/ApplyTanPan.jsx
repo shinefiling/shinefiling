@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Upload, CheckCircle, AlertCircle, FileText, ChevronRight, Save } from 'lucide-react';
 import { submitTanPan } from '../../../api';
+import { uploadFile } from '../../../utils/uploadFile';
 
 const ApplyTanPan = () => {
     const navigate = useNavigate();
@@ -55,30 +56,49 @@ const ApplyTanPan = () => {
         setLoading(true);
         setError(null);
         try {
-            const processedDocs = {};
+            const uploadedDocsList = [];
+            // Upload files first
             for (const [key, file] of Object.entries(documents)) {
                 if (file) {
-                    processedDocs[key] = `File: ${file.name}`;
+                    try {
+                        const uploadRes = await uploadFile(file, 'tan-pan');
+                        uploadedDocsList.push({
+                            id: key,
+                            filename: uploadRes.originalName || file.name,
+                            fileUrl: uploadRes.fileUrl,
+                            type: key
+                        });
+                    } catch (e) {
+                        console.error("File upload failed for " + key, e);
+                    }
                 }
             }
 
-            const payload = {
+            const tanPanFormData = {
                 applicationType: formData.applicationType,
-                applicantCategory: "Individual", // Default
+                applicantCategory: "Individual",
                 applicantName: formData.applicantName,
                 fatherName: formData.fatherName,
                 dobIncorporation: formData.dob,
                 mobile: formData.mobile,
                 email: formData.email,
                 aadhaarNumber: formData.aadhaarNumber,
-                panNumber: "", // Not collected in this form (unless it's a correction flow which might need it?)
-                address: formData.address,
-                // Extra
-                status: "PENDING",
-                notes: JSON.stringify(processedDocs)
+                panNumber: "",
+                address: formData.address
             };
 
-            await submitTanPan(payload);
+            const finalPayload = {
+                submissionId: `TANPAN-${Date.now()}`,
+                userEmail: formData.email,
+                plan: formData.applicationType || 'pan_new',
+                amountPaid: formData.applicationType && formData.applicationType.includes('tan') ? 499 : 199, // Dynamic
+                status: "INITIATED",
+                formData: tanPanFormData,
+                documents: uploadedDocsList,
+                automationQueue: []
+            };
+
+            await submitTanPan(finalPayload);
             navigate('/dashboard?tab=orders');
         } catch (err) {
             setError(err.message || "Submission failed");

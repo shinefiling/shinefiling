@@ -1,8 +1,9 @@
-import Section8Registration from './Section8Registration';
+﻿
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, ChevronRight, User, Heart, Building, Scale, Globe, ArrowRight, Users } from 'lucide-react';
+import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Heart, HandHelping, Banknote, Handshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Section8Registration from './Section8Registration';
 
 const Section8Page = ({ isLoggedIn, onLogout }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -12,12 +13,12 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const faqs = [
-        { q: "What is a Section 8 Company?", a: "It is a company established for charitable objects like art, science, sports, education, research, social welfare, religion, charity, protection of environment etc. Profits cannot be paid as dividends." },
-        { q: "Is it different from a Trust/Society?", a: "Yes. A Section 8 Company is registered under MCA (Central Govt) and has better recognition, transparency, and ease of receiving foreign funds (FCRA) compared to Trusts/Societies." },
-        { q: "Does it require minimum capital?", a: "No, there is no minimum paid-up capital requirement for a Section 8 Company." },
-        { q: "What is 12A and 80G?", a: "12A registration exempts the NGO's income from income tax. 80G registration allows donors to claim tax deductions on their donations." },
-        { q: "Can I pay salaries to directors?", a: "Directors usually provide services honorarily. However, salaries can be paid to employees. Reasonable reimbursement of expenses to directors is allowed." },
-        { q: "How long does registration take?", a: "It typically takes 15-20 days, as it involves an additional step of obtaining the Central Govt License (INC-12) before incorporation." },
+        { q: "What is a Section 8 Company?", a: "A Section 8 company is a Non-Profit Organization (NPO) registered under the Companies Act, 2013. It is established for promoting arts, science, commerce, charity, etc." },
+        { q: "Can we distribute profits?", a: "No, profits cannot be distributed as dividends to members. They must be reinvested into the objectives of the company." },
+        { q: "What is 12A and 80G registration?", a: "12A grants tax exemption to the NGO's income, while 80G allows donors to claim tax deductions on their donations." },
+        { q: "Is FCRA mandatory?", a: "FCRA is only required if you intend to receive foreign contributions or donations." },
+        { q: "How many directors are needed?", a: "Minimum 2 directors and 2 shareholders are required for a private limited Section 8 company." },
+        { q: "Does it require a minimum capital?", a: "No, there is no minimum paid-up capital requirement for a Section 8 company." }
     ];
 
     const handlePlanSelect = (plan) => {
@@ -37,8 +38,8 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                 {/* Background Image with Overlay */}
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070"
-                        alt="Corporate Background"
+                        src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=2070"
+                        alt="NGO Background"
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-navy/95 via-navy/90 to-navy/80 mix-blend-multiply"></div>
@@ -78,14 +79,14 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-                                    <Star size={12} className="fill-bronze" /> India's #1 Registration Platform
+                                    <Heart size={12} className="fill-bronze" /> For Social Change
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
-                                    Section 8 NGO <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Company Registration</span>
+                                    Section 8 Company <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Registration</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Dedicated to social welfare. Start your Non-Profit Organization (NPO) with official recognition.
+                                    Build a credible foundation for your cause. Get <strong className="text-white font-semibold">12A & 80G Exemptions</strong>, <strong className="text-white font-semibold">CSR Funding</strong> eligibility, and corporate legal standing.
                                 </p>
                             </motion.div>
 
@@ -100,17 +101,17 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                                         <Clock size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Estimated Time</p>
-                                        <p className="font-bold text-sm text-white">20-30 Days</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Timeline</p>
+                                        <p className="font-bold text-sm text-white">10-15 Days</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <Users size={20} />
+                                        <Shield size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Trusted By</p>
-                                        <p className="font-bold text-sm text-white">50k+ Founders</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Status</p>
+                                        <p className="font-bold text-sm text-white">Tax Exempt</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -122,58 +123,92 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
                                 <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
-                                    Get Started Now
+                                    Start NGO Now
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
-                                    <Globe size={18} /> Learn More
+                                    <Globe size={18} /> Learn Exemptions
                                 </button>
                             </motion.div>
                         </div>
 
-                        {/* Pricing Card - Floating Glass Effect */}
+                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Best Value</div>
+                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                                {/* Top Gold Line (Matching other pages) */}
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
-                                <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Standard Package</h3>
-                                    <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹14,999</h3>
-                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">₹25,000</span>
+                                {/* Header - COMPACT */}
+                                <div className="flex flex-col items-center justify-center text-center mb-5 mt-2">
+                                    <div className="mb-3 relative">
+                                        <div className="w-14 h-14 rounded-full bg-bronze/10 flex items-center justify-center">
+                                            <Shield size={28} className="text-bronze fill-bronze/20" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle size={14} className="text-green-500 fill-white" />
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees as applicable</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">
+                                        Official <br />Registration
+                                    </h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">Section8</p>
                                 </div>
 
-                                <div className="space-y-4 mb-8">
-                                    {/* Default features - can be enhanced if data points exist */}
+                                {/* Divider */}
+                                <div className="h-px w-full bg-slate-100 mb-5"></div>
+
+                                {/* Stats Grid - COMPACT */}
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    {/* Left Stat */}
+                                    <div className="text-center relative">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Handshake size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">100%</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Process <br />Online</p>
+                                        <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
+                                    </div>
+
+                                    {/* Right Stat */}
+                                    <div className="text-center">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Shield size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Legal</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Protection <br />Assured</p>
+                                    </div>
+                                </div>
+
+                                {/* Check List - COMPACT */}
+                                <div className="space-y-3 mb-6 pl-2">
                                     {[
-                                        "DSC & DIN Included",
-                                        "Name Approval",
-                                        "Govt Registration Filing",
-                                        "Certificate of Incorporation",
-                                        "PAN & TAN Allocation",
-                                        "Bank Account Support"
+                                        "Company Incorporation (INC-32)",
+                                        "Section 8 License (INC-12)",
+                                        "12A & 80G Registration Support"
                                     ].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                                            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
-                                            <span className="leading-snug">{item}</span>
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="bg-green-100 rounded-full p-1 shrink-0">
+                                                <CheckCircle size={12} className="text-green-600" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-xs tracking-wide">{item}</span>
                                         </div>
                                     ))}
                                 </div>
 
+                                {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
-                                    className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
-                                    Start Registration <ArrowRight size={18} />
+                                    Start Registration <ArrowRight size={16} />
                                 </button>
-                                <p className="text-center text-[10px] text-slate-400 mt-4 font-medium">
-                                    100% Online process • No hidden charges
+                                
+                                <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
+                                    Compare all plans below
                                 </p>
                             </div>
                         </motion.div>
@@ -182,37 +217,167 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                 </div>
             </div>
 
-            {/* CONTENT SECTION */}
+            {/* --- PRICING SECTION (3 PLANS) --- */}
+            <section id="pricing-section" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Empowering Social Good</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">NGO Registration Plans</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: BASIC */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Foundation</h3>
+                            <p className="text-slate-500 text-sm mb-6">Basic Section 8 registration.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹9,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹15,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "2 DSC & 2 DIN",
+                                    "Name Approval (RUN)",
+                                    "MOA & AOA Drafting",
+                                    "Section 8 License (INC-12)",
+                                    "Certificate of Incorporation",
+                                    "PAN & TAN Allotment"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                                <li className="flex items-center gap-3 text-sm text-slate-400">
+                                    <X size={16} className="shrink-0" /> 12A & 80G Registration
+                                </li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400">
+                                    <X size={16} className="shrink-0" /> NGO Darpan
+                                </li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Choose Foundation
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD (POPULAR) */}
+                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            {/* Top Gold Line */}
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Most Popular
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Section8</h3>
+                            <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹14,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹25k</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {["Everything in Foundation",
+                                        "12A Tax Exemption App",
+                                        "80G (Donor Tax Benefit) App"].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Get Started
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 3: PREMIUM */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Global</h3>
+                            <p className="text-slate-500 text-sm mb-6">FCRA & Compliance.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹24,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹40,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Everything in Impact",
+                                    "FCRA Prior Permission App",
+                                    "CSR Policy Drafting",
+                                    "Project Proposal Template",
+                                    "Annual Compliance (1 Year)",
+                                    "Dedicated NGO Expert"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Choose Global
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section >
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
+                {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
+
+                    {/* Introduction - Expanded for SEO */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <Heart className="text-rose-600" /> Why Section 8 Company?
+                            <HandHelping className="text-bronze" /> Defining Section 8 Company
                         </h2>
                         <div className="prose prose-lg text-gray-600">
                             <p className="lead text-xl text-gray-800 font-medium">
-                                A <strong>Section 8 Company</strong> is the most reliable way to run an NGO in India. Unlike Trusts or Societies, it is regulated by MCA, giving it high credibility with donors and government bodies.
+                                A <strong>Section 8 Company</strong> is a Non-Profit Organization (NPO) registered under the <strong>Companies Act, 2013</strong>. It is established to promote charitable objectives like art, commerce, science, sports, education, research, social welfare, religion, charity, and environmental protection.
                             </p>
                             <p>
-                                It is eligible for all tax exemptions (12A & 80G) and Foreign Contribution Registration (FCRA). It is the preferred structure for Corporate Social Responsibility (CSR) funding.
+                                Unlike Trusts or Societies, a designated Section 8 company has better legal standing and credibility, making it the preferred choice for organizations looking to receive Government grants, CSR funding, and foreign contributions (FCRA). Any profit earned must be reinvested into the company's objectives and cannot be distributed as dividends to members.
+                            </p>
+                            <p>
+                                ShineFiling empowers social entrepreneurs by handling the complex licensing (Form INC-12) and registration process. We also assist with post-incorporation compliances like 12A & 80G registration to ensure your donors get tax benefits.
                             </p>
                         </div>
                     </section>
 
-                    {/* Benefits Grid */}
+                    {/* 6 KEY BENEFITS GRID */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Key Benefits</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Why Choose Section 8?</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Tax Exemptions", desc: "Eligible for 100% tax exemption on surplus income under 12A.", icon: Shield },
-                                { title: "Donor Benefits", desc: "Donors get 50% tax deduction on donations under Section 80G.", icon: Gift },
-                                { title: "Credibility", desc: "High trust factor among corporate donors and foreign entities due to strict compliance.", icon: Star },
-                                { title: "Limited Liability", desc: "Founders/Members have limited liability, protecting personal assets.", icon: Scale },
+                                { title: "Tax Exemptions", desc: "Eligible for 100% tax exemption on income under Section 12A of the IT Act.", icon: Zap },
+                                { title: "Donor Benefits", desc: "Donors get 50% tax deduction on donations under Section 80G, encouraging more funds.", icon: TrendingUp },
+                                { title: "CSR Funding", desc: "Most preferred entity type for receiving Corporate Social Responsibility (CSR) funds.", icon: Award },
+                                { title: "Credibility", desc: "Higher trust among stakeholders due to strict MCA regulations and transparency.", icon: Star },
+                                { title: "Limited Liability", desc: "Founders/Members have limited liability, protecting personal assets from company debts.", icon: Shield },
+                                { title: "No Minimum Capital", desc: "Can be registered without any minimum paid-up capital requirement.", icon: Briefcase },
                             ].map((benefit, i) => (
-                                <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-rose-200 transition">
-                                    <div className="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0">
-                                        {benefit.icon && <benefit.icon size={28} />}
+                                <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-beige transition group">
+                                    <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
+                                        <benefit.icon size={28} />
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-navy mb-2 text-lg">{benefit.title}</h4>
@@ -223,84 +388,53 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS */}
-                    <section id="pricing-section" className="mb-20">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl font-bold text-navy">Choose Your Plan</h2>
-                            <p className="text-slate-500 mt-3">Comprehensive packages for your social mission.</p>
+                    {/* DETAILED COMPARISON TABLE */}
+                    <section className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="bg-[#2B3446] p-6">
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Scale size={20} className="text-bronze" /> Comparison with Trust & Society
+                            </h2>
                         </div>
-
-                        <div className="grid md:grid-cols-3 gap-8">
-                            {/* Basic */}
-                            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group">
-                                <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
-                                <div className="text-3xl font-bold text-navy mb-1">₹7,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-4 mb-8">
-                                    {["License Application (INC-12)", "Incorporation Certificate", "MOA & AOA Drafting", "PAN & TAN"].map((feat, i) => (
-                                        <li key={i} className="flex gap-3 text-sm text-slate-600">
-                                            <CheckCircle size={16} className="text-bronze shrink-0" /> {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-[#2B3446] hover:text-white transition">Select Basic</button>
-                            </div>
-
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-8 shadow-2xl relative overflow-hidden transform md:-translate-y-4">
-                                <div className="absolute top-0 right-0 bg-rose-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Recommended</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Standard</h3>
-                                <div className="text-3xl font-bold text-white mb-1">₹14,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-4 mb-8">
-                                    {["Everything in Basic", "12A & 80G Prep", "Section 8 License", "CSR Guidance", "Bank Support"].map((feat, i) => (
-                                        <li key={i} className="flex gap-3 text-sm text-gray-300">
-                                            <CheckCircle size={16} className="text-rose-500 shrink-0" /> {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold shadow-lg hover:shadow-rose-500/50 transition">Choose Standard</button>
-                            </div>
-
-                            {/* Premium */}
-                            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group">
-                                <h3 className="text-xl font-bold text-navy mb-2">Premium</h3>
-                                <div className="text-3xl font-bold text-navy mb-1">₹24,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-4 mb-8">
-                                    {["Everything in Standard", "12A & 80G Filing", "NGO Darpan", "CSR-1 Registration", "Compliance (1Y)"].map((feat, i) => (
-                                        <li key={i} className="flex gap-3 text-sm text-slate-600">
-                                            <CheckCircle size={16} className="text-bronze shrink-0" /> {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-[#2B3446] hover:text-white transition">Select Premium</button>
-                            </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-[#2B3446]/5 text-navy">
+                                    <tr>
+                                        <th className="px-6 py-4">Feature</th>
+                                        <th className="px-6 py-4 bg-beige/10 border-b-2 border-yellow-500">Section 8 Company</th>
+                                        <th className="px-6 py-4">Trust</th>
+                                        <th className="px-6 py-4">Society</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Registration Authority</td><td className="px-6 py-4 text-slate font-bold bg-beige/10">MCA (Central Govt)</td><td className="px-6 py-4 text-slate-500">Sub-Registrar (State)</td><td className="px-6 py-4 text-slate-500">Registrar of Societies</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Credibility</td><td className="px-6 py-4 text-slate font-bold bg-beige/10 text-green-600">Highest</td><td className="px-6 py-4 text-orange-500">Moderate</td><td className="px-6 py-4 text-orange-500">Moderate</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">CSR Funding</td><td className="px-6 py-4 text-slate font-bold bg-beige/10 text-green-600">Highly Preferred</td><td className="px-6 py-4 text-slate-500">Allowed</td><td className="px-6 py-4 text-slate-500">Allowed</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Compliance</td><td className="px-6 py-4 text-slate font-bold bg-beige/10">High</td><td className="px-6 py-4 text-green-600">Low</td><td className="px-6 py-4 text-orange-500">Medium</td></tr>
+                                </tbody>
+                            </table>
                         </div>
-
                     </section>
 
                     {/* DETAILED PROCESS SECTION */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Comprehensive Registration Process</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Registration Timeline</h2>
                         <div className="space-y-6">
                             {[
-                                { step: "Step 1", title: "DSC & Name", days: "Day 1-3", desc: "DSC for directors and Name Approval (must include Foundation, etc.)." },
-                                { step: "Step 2", title: "License Application", days: "Day 4-10", desc: "Applying for Central Govt License (INC-12) for Section 8 status." },
-                                { step: "Step 3", title: "Incorporation", days: "Day 11-20", desc: "Filing SPICe+ form after license approval." },
-                                { step: "Step 4", title: "PAN & TAN", days: "Day 21-25", desc: "Allocation of PAN and TAN." },
-                                { step: "Step 5", title: "12A & 80G", days: "Post-Inc", desc: "Applying for tax exemption (separate process)." }
+                                { step: "Step 1", title: "Name Approval", days: "Day 1-2", desc: "Application for Name Reservation through RUN service. Name must exclude 'Pvt Ltd' suffix." },
+                                { step: "Step 2", title: "DSC & DIN", days: "Day 3-4", desc: "Obtaining Digital Signatures (DSC) for directors and applying for Director Identification Numbers." },
+                                { step: "Step 3", title: "License (INC-12)", days: "Day 5-9", desc: "Application to the Central Government for Section 8 License is the most critical step." },
+                                { step: "Step 4", title: "Incorporation", days: "Day 10-15", desc: "Final filing of SPICe+ form along with MOA, AOA, and License to get the Certificate of Incorporation." }
                             ].map((item, i) => (
                                 <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
-                                    <div className="flex-shrink-0 w-full md:w-48 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
-                                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                    <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
                                             {i + 1}
                                         </div>
-                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Estimated</span>
-                                        <span className="text-navy font-bold text-lg">{item.days}</span>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Duration</span>
+                                        <span className="text-navy font-bold text-sm">{item.days}</span>
                                     </div>
                                     <div className="flex-1 flex flex-col justify-center">
-                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
                                             {item.title}
                                         </h3>
                                         <p className="text-slate-600 leading-relaxed text-sm">
@@ -312,37 +446,53 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                         </div>
                     </section>
 
-                    {/* MANDATORY COMPLIANCES SECTION */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Mandatory Annual Compliances</h2>
-                        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
-                            <div className="p-6 bg-navy text-white">
-                                <p className="text-sm opacity-80">Keep your business active and penalty-free with these filings.</p>
-                            </div>
-                            <div className="divide-y divide-gray-100">
-                                {[
-                                    { name: "Auditor Appointment (ADT-1)", due: "Within 30 days of Inc", type: "One Time" },
-                                    { name: "Commencement of Business (INC-20A)", due: "Within 180 days of Inc", type: "One Time" },
-                                    { name: "Income Tax Return (ITR-6)", due: "30th September", type: "Annual" },
-                                    { name: "Financial Statements (AOC-4)", due: "30 days from AGM", type: "Annual" },
-                                    { name: "Annual Return (MGT-7)", due: "60 days from AGM", type: "Annual" },
-                                    { name: "Director KYC (DIR-3 KYC)", due: "30th September", type: "Annual" }
-                                ].map((row, i) => (
-                                    <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-6 hover:bg-gray-50 transition">
-                                        <div className="flex-1">
-                                            <h4 className="font-bold text-navy text-lg">{row.name}</h4>
-                                        </div>
-                                        <div className="md:w-1/3 mt-2 md:mt-0">
-                                            <span className="text-sm text-slate-500 font-medium uppercase tracking-wider">Due Date</span>
-                                            <p className="text-bronze-dark font-semibold">{row.due}</p>
-                                        </div>
-                                        <div className="md:w-1/6 mt-2 md:mt-0 text-right">
-                                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${row.type === 'Annual' ? 'bg-blue-50 text-navy' : 'bg-beige/30 text-bronze-dark'}`}>
-                                                {row.type}
-                                            </span>
-                                        </div>
+
+                    {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
+                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                        {/* Background Deco */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
+
+                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling for Your NGO?</h2>
+                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Award size={24} />
                                     </div>
-                                ))}
+                                    <div>
+                                        <h4 className="font-bold text-lg">Guaranteed License</h4>
+                                        <p className="text-gray-300 text-sm">Our experts meticulously draft the MOA & AOA to ensure your Section 8 License is approved without rejection.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Zap size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">12A & 80G Support</h4>
+                                        <p className="text-gray-300 text-sm">We don't stop at registration. We help you get tax exemption certificates so you can attract more donors.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Shield size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">CSR Advisory</h4>
+                                        <p className="text-gray-300 text-sm">Our consultants guide you on how to structure your projects to be eligible for Corporate Social Responsibility funds.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Users size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">FCRA Guidance</h4>
+                                        <p className="text-gray-300 text-sm">Planning to receive foreign funds? We provide roadmap and compliance support for FCRA registration.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -350,7 +500,7 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                     {/* FAQs */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
-                            <Shield className="text-rose-600" /> Frequently Asked Questions
+                            <HelpCircle className="text-bronze" /> Frequently Asked Questions
                         </h2>
                         <div className="space-y-4">
                             {faqs.map((faq, i) => (
@@ -369,62 +519,72 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
 
                 </div>
 
-                {/* SIDEBAR */}
+                {/* RIGHT SIDEBAR (4 Cols) */}
                 <div className="lg:col-span-4">
                     <div className="sticky top-32 space-y-8">
+
+                        {/* Documents Sidebar */}
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <FileText className="text-rose-600" /> Documents Required
+                                <FileText className="text-bronze" /> Requirements
                             </h3>
 
                             <div className="space-y-6">
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Directors</h4>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Directors (Min 2)</h4>
                                     <ul className="space-y-3">
-                                        {["PAN Card", "Aadhaar Card", "Voter ID / Passport", "Photo"].map((d, i) => (
-                                            <li key={i} className="flex gap-3 text-sm text-gray-700">
-                                                <CheckCircle size={16} className="text-rose-500 flex-shrink-0 mt-0.5" />
-                                                {d}
-                                            </li>
-                                        ))}
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> PAN & Aadhaar Card</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Voter ID or Passport</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Passport Photo</li>
                                     </ul>
                                 </div>
+
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Office & Others</h4>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Office Address</h4>
                                     <ul className="space-y-3">
-                                        {["Electricity Bill", "NOC from Owner", "Objective Declaration"].map((d, i) => (
-                                            <li key={i} className="flex gap-3 text-sm text-gray-700">
-                                                <CheckCircle size={16} className="text-rose-500 flex-shrink-0 mt-0.5" />
-                                                {d}
-                                            </li>
-                                        ))}
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Electricity Bill</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Rent Agreement (if rented)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> NOC from Landlord</li>
                                     </ul>
                                 </div>
                             </div>
+
+                            <button className="w-full mt-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-sm transition">View Plans <ArrowRight size={18} /></button>
+                        </div>
+
+                        {/* Support Card */}
+                        <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
+                            <h4 className="font-bold text-lg mb-2">Need Help?</h4>
+                            <p className="text-gray-300 text-sm mb-4">Our NGO experts can guide you on tax exemptions.</p>
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                                    <Users size={20} className="text-yellow-400" />
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-400 uppercase">Call Us</p>
+                                    <p className="font-bold">+91 98765 43210</p>
+                                </div>
+                            </div>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
 
-            </div>
 
-
-            <AnimatePresence>
-                {showRegisterModal && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                        <div className="relative w-full max-w-6xl max-h-[95vh] rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 bg-white ring-1 ring-white/20">
-                            <Section8Registration isLoggedIn={isLoggedIn} isModal={true} initialPlan={selectedPlan} onClose={() => setShowRegisterModal(false)} />
+                <AnimatePresence>
+                    {showRegisterModal && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
+                            <div className="relative w-full max-w-6xl max-h-[95vh] rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 bg-white ring-1 ring-white/20 overflow-y-auto">
+                                <Section8Registration isLoggedIn={isLoggedIn} isModal={true} planProp={selectedPlan} onClose={() => setShowRegisterModal(false)} />
+                            </div>
                         </div>
-                    </div>
-                )}
-            </AnimatePresence>
-        </div>
+                    )}
+                </AnimatePresence>
+            </div>
+        </div >
     );
 };
 
-// Simple Gift Icon component since it was missing from Lucide imports in thought, or just use Heart
-const Gift = ({ size, className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="3" y="8" width="18" height="4" rx="1"></rect><path d="M12 8v13"></path><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.906 4.906 0 0 1 4.5 5 2.5 2.5 0 0 1 0 5"></path></svg>
-);
-
 export default Section8Page;
+
 

@@ -1,245 +1,326 @@
-import React, { useEffect, useState } from 'react';
-import { Briefcase, AlertCircle, FileText, ChevronRight, Zap, Plus, ArrowUpRight, Download, Clock, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import {
+    FileText, CheckCircle, AlertCircle,
+    TrendingUp, ArrowRight, Download, MoreHorizontal, Activity, Star, Clock, Loader2, Headset
+} from 'lucide-react';
 import { motion } from 'framer-motion';
-import { getUserApplications, getUserStats, BASE_URL, getServiceCatalog } from '../../api';
-import { getInactiveServices } from '../../utils/serviceManager';
-import { SERVICE_DATA } from '../../data/services';
+import { getUserApplications } from '../../api';
 
 const ClientHome = ({ setActiveTab }) => {
-    const [recentOrders, setRecentOrders] = useState([]);
-    const [stats, setStats] = useState({ activeServices: 0, pendingActions: 0, totalDocuments: 0 });
+    const [stats, setStats] = useState([
+        { label: 'Total Filings', value: '0', icon: FileText, bg: 'bg-[#10232A]', text: 'text-white', subtext: 'text-slate-400', isPrimary: true },
+        { label: 'In Progress', value: '0', icon: Activity, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
+        { label: 'Completed', value: '0', icon: CheckCircle, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
+        { label: 'Actions Needed', value: '0', icon: AlertCircle, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' }
+    ]);
+    const [recentServices, setRecentServices] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState({ firstName: 'User' });
-    const [featuredServices, setFeaturedServices] = useState([]);
+    const [analyticsData, setAnalyticsData] = useState([0, 0, 0, 0, 0, 0, 0]); // Fallback/Visual
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const userStr = localStorage.getItem('user');
-                if (userStr) {
-                    const userData = JSON.parse(userStr);
-                    setUser({ firstName: userData.fullName?.split(' ')[0] || 'User' });
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (!user || !user.email) return;
 
-                    const [apps, statData, servicesData] = await Promise.all([
-                        getUserApplications(userData.email),
-                        getUserStats(userData.id),
-                        getServiceCatalog()
+                const applications = await getUserApplications(user.email);
+
+                if (applications) {
+                    // Update Stats
+                    const total = applications.length;
+                    const inProgress = applications.filter(a => !['Completed', 'Action Required', 'Draft'].includes(a.status)).length;
+                    const completed = applications.filter(a => a.status === 'Completed').length;
+                    const actionNeeded = applications.filter(a => a.status === 'Action Required').length;
+
+                    setStats([
+                        { label: 'Total Filings', value: total.toString(), icon: FileText, bg: 'bg-[#10232A]', text: 'text-white', subtext: 'text-slate-400', isPrimary: true },
+                        { label: 'In Progress', value: inProgress.toString(), icon: Activity, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
+                        { label: 'Completed', value: completed.toString(), icon: CheckCircle, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
+                        { label: 'Actions Needed', value: actionNeeded.toString(), icon: AlertCircle, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' }
                     ]);
 
-                    setRecentOrders(apps ? apps.slice(0, 5) : []);
-                    if (statData) setStats(statData);
+                    // Update Recent Services (Top 5)
+                    const sorted = [...applications].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    setRecentServices(sorted.slice(0, 5).map(app => ({
+                        id: app.id,
+                        name: app.serviceName || 'Service Request',
+                        status: app.status || 'Processing',
+                        icon: getIconForService(app.serviceName),
+                        date: getTimeAgo(app.createdAt)
+                    })));
 
-                    // Process Featured Services from Admin Control
-                    const inactiveList = getInactiveServices();
-                    let rawServices = servicesData && servicesData.length > 0 ? servicesData : [];
-                    if (rawServices.length === 0) {
-                        Object.values(SERVICE_DATA).forEach(cat => {
-                            cat.items.forEach((item, index) => {
-                                rawServices.push({
-                                    id: `${cat.id}_${index}`,
-                                    name: item,
-                                    category: cat.label,
-                                    categoryId: cat.id,
-                                    icon: cat.icon
-                                });
-                            });
-                        });
-                    }
-                    const activeServices = rawServices.filter(s => {
-                        const isInactiveGlobally = s.status === 'INACTIVE';
-                        const isInactiveLocally = inactiveList.includes(s.id || s.name);
-                        return !isInactiveGlobally && !isInactiveLocally;
+                    // Calculate Weekly Activity (Last 7 weeks)
+                    // Group by week relative to current date
+                    const weeks = [0, 0, 0, 0, 0, 0, 0];
+                    const now = new Date();
+
+                    sorted.forEach(app => {
+                        const date = new Date(app.createdAt);
+                        const diffTime = Math.abs(now - date);
+                        const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
+
+                        if (diffWeeks < 7) {
+                            // index 6 is this week (0 diff), index 0 is 7 weeks ago
+                            const index = 6 - diffWeeks;
+                            if (index >= 0 && index < 7) {
+                                weeks[index] += 10; // Increment by 10 for visibility (or 20 etc)
+                            }
+                        }
                     });
 
-                    // Pick 3 random or first 3
-                    setFeaturedServices(activeServices.sort(() => 0.5 - Math.random()).slice(0, 3));
+                    // Normalize to max 100 for percentage height
+                    const maxVal = Math.max(...weeks, 1);
+                    const normalizedWeeks = weeks.map(w => w === 0 ? 5 : Math.min(100, (w / maxVal) * 90));
+                    setAnalyticsData(normalizedWeeks);
+
                 }
-            } catch (err) {
-                console.error("Error fetching home data", err);
+            } catch (error) {
+                console.error("Failed to load dashboard data", error);
             } finally {
                 setLoading(false);
             }
         };
+
         fetchData();
     }, []);
 
-    const getGreeting = () => {
-        const hour = new Date().getHours();
-        if (hour < 12) return 'Good Morning';
-        if (hour < 18) return 'Good Afternoon';
-        return 'Good Evening';
+    // Helper to get time ago
+    const getTimeAgo = (date) => {
+        if (!date) return 'N/A';
+        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + "y ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + "mo ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + "d ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + "h ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + "m ago";
+        return "Just now";
     };
 
-    const statCards = [
-        { label: 'Active Services', value: stats.activeServices, icon: Briefcase, color: 'text-[#B58863]', bg: 'bg-[#B58863]/10' },
-        { label: 'Pending Actions', value: stats.pendingActions, icon: Clock, color: 'text-orange-500', bg: 'bg-orange-50' },
-        { label: 'Completed', value: stats.totalDocuments, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-    ];
+    const getIconForService = (name) => {
+        if (!name) return '📄';
+        const n = name.toLowerCase();
+        if (n.includes('gst') || n.includes('tax')) return '📊';
+        if (n.includes('trademark') || n.includes('copyright')) return '®️';
+        if (n.includes('company') || n.includes('pvt') || n.includes('llp')) return '🏢';
+        if (n.includes('license') || n.includes('fssai')) return '📜';
+        return '📄';
+    };
+
 
     return (
-        <div className="space-y-8 pb-12">
+        <div className="space-y-8 animate-in fade-in duration-500 pb-10">
+            {/* Welcome Section */}
+            <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+                <div>
+                    <h2 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">Dashboard</h2>
+                    <p className="text-slate-500 dark:text-slate-400 mt-1">Welcome back! Here's what's happening with your business today.</p>
+                </div>
+                <div className="flex gap-3">
+                    <button onClick={() => setActiveTab('new-filing')} className="px-5 py-2.5 bg-[#B58863] hover:bg-[#A57753] text-white font-bold rounded-xl shadow-lg shadow-[#B58863]/20 transition-all flex items-center gap-2">
+                        + New Service
+                    </button>
+                </div>
+            </div>
 
-            {/* 1. Top Section: Welcome + Stats (Left) | Hero Banner (Right) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Top Stats Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {stats.map((stat, i) => (
+                    <div key={i} className={`${stat.bg} ${stat.isPrimary ? 'shadow-xl shadow-[#10232A]/20' : 'shadow-sm border border-slate-100 dark:border-[#1C3540]'} rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden group hover:scale-[1.02] transition-all duration-300`}>
+                        {stat.isPrimary && (
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#B58863]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                        )}
+                        <div className="flex justify-between items-start mb-4 relative z-10">
+                            <div>
+                                <h3 className={`${stat.isPrimary ? 'text-white' : 'text-slate-800 dark:text-white'} text-4xl font-bold mb-1 tracking-tight`}>{loading ? '...' : stat.value}</h3>
+                                <p className={`${stat.isPrimary ? 'text-slate-300' : 'text-slate-500'} text-xs font-bold uppercase tracking-wider`}>{stat.label}</p>
+                            </div>
+                            <div className={`p-3 rounded-xl ${stat.isPrimary ? 'bg-white/10 text-white backdrop-blur-sm' : 'bg-slate-50 dark:bg-[#1C3540] text-slate-500 dark:text-slate-300'}`}>
+                                <stat.icon size={20} />
+                            </div>
+                        </div>
+                        {stat.isPrimary ? (
+                            <div className="relative z-10 mt-2">
+                                <span className="text-xs font-medium text-[#B58863] bg-white px-2 py-1 rounded-md inline-block">Track Status</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-2 text-xs font-bold text-emerald-500 mt-2">
+                                <TrendingUp size={14} /> Updated recently
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
 
-                {/* LEFT COLUMN: Welcome + Stats */}
-                <div className="lg:col-span-5 space-y-6">
-                    {/* Welcome Text */}
-                    <div>
-                        <h1 className="text-3xl font-bold text-[#10232A] leading-tight">
-                            {getGreeting()},<br />
-                            <span className="text-[#B58863]">{user.firstName}</span>.
-                        </h1>
-                        <p className="text-[#3D4D55] mt-3 text-sm font-medium leading-relaxed">
-                            Your business command center is ready.<br />
-                            checks and alerts are up to date.
-                        </p>
+            {/* Middle Section: Chart & Quick Actions */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                {/* Analytics Chart */}
+                <div className="lg:col-span-2 bg-white dark:bg-[#10232A] rounded-2xl p-8 shadow-sm border border-slate-100 dark:border-[#1C3540]">
+                    <div className="flex justify-between items-center mb-8">
+                        <div>
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-white">Activity Overview</h3>
+                            <p className="text-slate-500 text-xs mt-1">Application submissions over the last 7 weeks</p>
+                        </div>
+                        <button className="p-2 hover:bg-slate-50 dark:hover:bg-[#1C3540] rounded-full text-slate-400">
+                            <MoreHorizontal size={20} />
+                        </button>
                     </div>
 
-                    {/* Stats Cards - Stacked Vertically */}
-                    <div className="space-y-3">
-                        {statCards.map((stat, i) => (
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                key={i}
-                                className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <div className="text-3xl font-bold text-[#10232A] mb-1">{stat.value}</div>
-                                        <div className="text-xs font-bold text-[#3D4D55] uppercase tracking-wider">{stat.label}</div>
-                                    </div>
-                                    <div className={`w-12 h-12 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center`}>
-                                        <stat.icon size={24} />
-                                    </div>
+                    <div className="flex items-end justify-between h-48 gap-4 px-2">
+                        {analyticsData.map((h, i) => (
+                            <div key={i} className="flex-1 flex flex-col items-center gap-3 group cursor-pointer">
+                                <div className="w-full bg-[#F3F4F6] dark:bg-[#1C3540] rounded-t-xl h-full relative overflow-hidden">
+                                    <motion.div
+                                        initial={{ height: 0 }}
+                                        animate={{ height: `${h}%` }}
+                                        transition={{ duration: 1, delay: i * 0.1 }}
+                                        className={`absolute bottom-0 w-full rounded-t-xl ${i % 2 === 0 ? 'bg-[#10232A] dark:bg-white' : 'bg-[#B58863]'}`}
+                                    ></motion.div>
                                 </div>
-                            </motion.div>
+                                <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#B58863] transition-colors">Week {i + 1}</span>
+                            </div>
                         ))}
                     </div>
                 </div>
 
-                {/* RIGHT COLUMN: Hero Banner */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="lg:col-span-7 bg-gradient-to-br from-[#1C3540] via-[#2A4550] to-[#3D5560] rounded-2xl p-8 md:p-10 relative overflow-hidden shadow-2xl min-h-[320px] flex flex-col justify-center"
-                >
-                    {/* Background Image Overlay */}
-                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop')] opacity-30 mix-blend-overlay bg-cover bg-center"></div>
-
-                    {/* Gradient Overlay for better text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#10232A]/60 to-transparent"></div>
-
-                    {/* Content */}
-                    <div className="relative z-10 max-w-xl">
-                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-3 leading-tight">
-                            Empower Your Business Today
-                        </h2>
-                        <p className="text-white/90 text-base mb-8 font-medium leading-relaxed">
-                            Launch a new entity or file your taxes with our AI-powered streamlined process.
-                        </p>
-                        <button
-                            onClick={() => setActiveTab('new-filing')}
-                            className="bg-[#B58863] hover:bg-[#A57753] text-white px-7 py-3.5 rounded-full font-bold shadow-lg shadow-[#B58863]/40 hover:shadow-xl hover:-translate-y-0.5 transition-all text-sm flex items-center gap-2"
-                        >
-                            Start New Filing <ArrowUpRight size={18} />
-                        </button>
+                {/* Recent Services List */}
+                <div className="bg-white dark:bg-[#10232A] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-[#1C3540] flex flex-col">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="font-bold text-slate-800 dark:text-white">Recent Services</h3>
+                        <button onClick={() => setActiveTab('orders')} className="text-xs font-bold text-[#B58863] hover:underline">View All</button>
                     </div>
-                </motion.div>
-            </div>
-
-            {/* 2. Visual Service Grid */}
-            <div>
-                <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-xl font-bold text-[#10232A]">Frequent Services</h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                    {/* Card 1: Private Limited */}
-                    <div onClick={() => setActiveTab('new-filing')} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <Briefcase size={80} className="text-[#B58863]" />
-                        </div>
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#B58863] to-[#D4B08C] text-white flex items-center justify-center mb-4 shadow-lg shadow-[#B58863]/20">
-                            <Briefcase size={26} />
-                        </div>
-                        <h4 className="text-lg font-bold text-[#10232A] group-hover:text-[#B58863] transition-colors mb-2">Private Limited</h4>
-                        <p className="text-sm text-[#3D4D55] mb-4">Start your business journey properly.</p>
-                        <span className="text-xs font-bold text-[#B58863] flex items-center gap-1">Learn More <ChevronRight size={14} /></span>
-                    </div>
-
-                    {/* Card 2: GST Registration */}
-                    <div onClick={() => setActiveTab('new-filing')} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <FileText size={80} className="text-blue-600" />
-                        </div>
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 text-white flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20">
-                            <FileText size={26} />
-                        </div>
-                        <h4 className="text-lg font-bold text-[#10232A] group-hover:text-blue-600 transition-colors mb-2">GST Registration</h4>
-                        <p className="text-sm text-[#3D4D55] mb-4">Mandatory for businesses crossing limits.</p>
-                        <span className="text-xs font-bold text-blue-600 flex items-center gap-1">View Details <ChevronRight size={14} /></span>
-                    </div>
-
-                    {/* Card 3: Trademark */}
-                    <div onClick={() => setActiveTab('new-filing')} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <CheckCircle2 size={80} className="text-emerald-600" />
-                        </div>
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-400 text-white flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/20">
-                            <CheckCircle2 size={26} />
-                        </div>
-                        <h4 className="text-lg font-bold text-[#10232A] group-hover:text-emerald-600 transition-colors mb-2">Trademark Filing</h4>
-                        <p className="text-sm text-[#3D4D55] mb-4">Protect your brand identity globally.</p>
-                        <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">Secure Brand <ChevronRight size={14} /></span>
+                    <div className="flex-1 space-y-3 overflow-y-auto no-scrollbar max-h-[300px]">
+                        {loading ? (
+                            <div className="flex justify-center p-4"><Loader2 className="animate-spin text-slate-400" size={20} /></div>
+                        ) : recentServices.length > 0 ? (
+                            recentServices.map((item, i) => (
+                                <div key={i} className="flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-[#1C3540] rounded-xl transition cursor-pointer group border border-transparent hover:border-slate-100 dark:border-[#2A4550]">
+                                    <div className="w-10 h-10 bg-slate-100 dark:bg-[#0D1C22] rounded-lg flex items-center justify-center text-lg shadow-sm group-hover:bg-white dark:group-hover:bg-[#10232A] transition-colors">
+                                        {item.icon}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-sm font-bold text-slate-800 dark:text-white truncate">{item.name}</h4>
+                                        <div className="flex items-center justify-between mt-0.5">
+                                            <p className={`text-[10px] font-bold ${item.status === 'Completed' ? 'text-emerald-500' :
+                                                item.status === 'Action Required' ? 'text-rose-500' :
+                                                    'text-amber-500'
+                                                }`}>{item.status}</p>
+                                            <p className="text-[9px] text-slate-400 flex items-center gap-1"><Clock size={10} />{item.date}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-slate-400 text-xs">No recent activity</div>
+                        )}
                     </div>
                 </div>
             </div>
 
-            {/* 3. Recent Files (Visual Thumbnails) */}
-            <div>
-                <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-xl font-bold text-[#10232A]">Recent Files</h3>
-                    <button onClick={() => setActiveTab('orders')} className="text-sm font-bold text-[#B58863] hover:underline">View All</button>
+            {/* Bottom Grid: Promo & Health */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                {/* Profile Health (Horizontal Layout) */}
+                <div className="bg-white dark:bg-[#10232A] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-[#1C3540] flex items-center justify-between relative overflow-hidden">
+                    <div className="relative z-10 max-w-[60%]">
+                        <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-2">Profile Health</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">Your profile is 85% complete. Add a secondary contact number to reach 100%.</p>
+                        <button onClick={() => setActiveTab('profile')} className="text-xs font-bold text-white bg-[#10232A] dark:bg-[#B58863] px-4 py-2 rounded-lg hover:opacity-90 transition">Complete Now</button>
+                    </div>
+
+                    <div className="relative">
+                        <svg className="w-32 h-32 transform -rotate-90">
+                            <circle cx="64" cy="64" r="54" className="stroke-slate-100 dark:stroke-[#1C3540]" strokeWidth="8" fill="transparent" />
+                            <motion.circle
+                                initial={{ strokeDasharray: "339 339", strokeDashoffset: 339 }}
+                                animate={{
+                                    strokeDashoffset: 339 - (339 * ((() => {
+                                        const u = JSON.parse(localStorage.getItem('user') || '{}');
+                                        let score = 0;
+                                        if (u.fullName) score += 20;
+                                        if (u.email) score += 20;
+                                        if (u.mobile) score += 20;
+                                        if (u.city || u.address) score += 20;
+                                        if (u.profileImage) score += 20;
+                                        return score / 100;
+                                    })()))
+                                }}
+                                transition={{ duration: 1.5, ease: "easeOut" }}
+                                cx="64" cy="64" r="54"
+                                className="stroke-[#B58863]"
+                                strokeWidth="8"
+                                fill="transparent"
+                                strokeLinecap="round"
+                            />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-2xl font-bold text-[#10232A] dark:text-white">{(() => {
+                                const u = JSON.parse(localStorage.getItem('user') || '{}');
+                                let score = 0;
+                                if (u.fullName) score += 20;
+                                if (u.email) score += 20;
+                                if (u.mobile) score += 20;
+                                if (u.city || u.address) score += 20;
+                                if (u.profileImage) score += 20;
+                                return score;
+                            })()}%</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-                    {/* Dynamic List from recentOrders */}
-                    {recentOrders.length > 0 ? recentOrders.slice(0, 5).map((ord, i) => (
-                        <div key={i} className="group cursor-pointer">
-                            <div className="bg-gradient-to-br from-slate-100 to-slate-200 aspect-[3/4] rounded-xl relative overflow-hidden mb-3 border border-slate-200 shadow-sm group-hover:shadow-lg transition-all">
-                                {/* Simulated Document Preview */}
-                                <div className="absolute inset-3 bg-white shadow-md rounded flex flex-col p-3 items-center justify-center">
-                                    <FileText size={32} className="text-slate-300 mb-2" />
-                                    <div className="w-full h-1.5 bg-slate-100 mb-1.5 rounded"></div>
-                                    <div className="w-full h-1.5 bg-slate-100 mb-1.5 rounded"></div>
-                                    <div className="w-3/4 h-1.5 bg-slate-100 rounded"></div>
-                                    <div className="text-[9px] text-slate-400 text-center mt-auto font-mono">#{ord.id}</div>
+                {/* Premium Support / Promo */}
+                <div className="bg-[#10232A] rounded-2xl p-8 text-white relative overflow-hidden shadow-lg group cursor-pointer">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#B58863]/30 rounded-full blur-[60px] translate-x-1/3 -translate-y-1/3"></div>
+
+                    <div className="relative z-10 flex flex-col h-full justify-between">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Star size={16} className="text-[#B58863] fill-[#B58863]" />
+                                    <span className="text-[#B58863] text-xs font-bold uppercase tracking-wider">Premium Plan</span>
                                 </div>
-                                <div className="absolute inset-0 bg-[#10232A]/0 group-hover:bg-[#10232A]/90 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                    <button className="bg-white text-[#10232A] rounded-full p-3 hover:scale-110 transition-transform shadow-lg">
-                                        <Download size={20} />
-                                    </button>
-                                </div>
+                                <h3 className="text-2xl font-bold">Priority Support</h3>
                             </div>
-                            <h4 className="text-xs font-bold text-[#10232A] truncate mb-0.5">{ord.serviceName}</h4>
-                            <p className="text-[10px] text-[#3D4D55] font-medium">{new Date(ord.createdAt).toLocaleDateString()}</p>
+                            <div className="bg-white/10 p-2.5 rounded-xl backdrop-blur-md">
+                                <Headset size={20} className="text-white" />
+                            </div>
                         </div>
-                    )) : (
-                        // Empty State Placeholder
-                        <div className="col-span-full py-12 text-center border-2 border-dashed border-slate-200 rounded-xl bg-white/50">
-                            <FileText size={40} className="mx-auto text-slate-300 mb-3" />
-                            <p className="text-slate-400 text-sm font-bold">No files generated yet.</p>
-                            <button onClick={() => setActiveTab('new-filing')} className="mt-3 text-xs font-bold text-[#B58863] hover:underline">Start Your First Filing</button>
+
+                        <div className="mt-6 flex items-center justify-between">
+                            <p className="text-white/60 text-xs max-w-[70%]">Get your queries resolved instantly with our dedicated relationship managers.</p>
+                            <button className="bg-[#B58863] text-white p-2 rounded-lg hover:bg-[#A57753] transition shadow-lg">
+                                <ArrowRight size={20} />
+                            </button>
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
+
+            {/* Mobile App Banner - Small */}
+            <div className="bg-gradient-to-r from-[#10232A] to-[#2A4550] rounded-2xl p-1 relative overflow-hidden">
+                <div className="bg-[#0D1C22] rounded-xl p-4 flex items-center justify-between relative z-10">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-[#B58863]/20 rounded-xl text-[#B58863]">
+                            <Download size={20} />
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-white text-sm">Download Mobile App</h4>
+                            <p className="text-xs text-white/50">Manage your business on the go.</p>
+                        </div>
+                    </div>
+                    <button className="text-xs font-bold text-white bg-[#B58863] px-3 py-1.5 rounded-lg hover:bg-[#A57753] transition">Get App</button>
+                </div>
+            </div>
+
         </div>
     );
 };
+
+
 
 export default ClientHome;

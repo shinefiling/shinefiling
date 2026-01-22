@@ -252,6 +252,7 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn }) => {
             const finalPayload = {
                 submissionId: `ROCCAP-${Date.now()}`,
                 userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                plan: planType,
                 existingCapital: parseFloat(formData.existingCapital),
                 newCapital: parseFloat(formData.newCapital),
                 formData: formData,

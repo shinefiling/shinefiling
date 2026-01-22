@@ -9,6 +9,8 @@ public class DesignRegistrationRequest {
     private String userEmail;
     private String articleName;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private DesignFormData formData;
     private List<UploadedDocumentDTO> documents;
@@ -37,4 +39,3 @@ public class DesignRegistrationRequest {
         private String description;
     }
 }
-

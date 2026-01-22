@@ -20,7 +20,11 @@ public class User {
 
     private String password;
 
-    private String role; // USER, ADMIN, MASTER_ADMIN, SUB_ADMIN, AGENT_ADMIN
+    private String role; // CLIENT, SUPER_ADMIN, ADMIN, CA, EMPLOYEE, AGENT
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_user_id")
+    private User parentUser; // Links EMPLOYEE to CA, or AGENT to ADMIN
 
     private String status = "Active"; // Default to Active
 

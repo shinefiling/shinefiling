@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Upload, CheckCircle, AlertCircle, FileText, ChevronRight, Save } from 'lucide-react';
 import { submitDigitalSignature } from '../../../api';
+import { uploadFile } from '../../../utils/uploadFile';
 
 const ApplyDigitalSignature = () => {
     const navigate = useNavigate();
@@ -55,30 +56,49 @@ const ApplyDigitalSignature = () => {
         setLoading(true);
         setError(null);
         try {
-            const processedDocs = {};
+            const uploadedDocsList = [];
+            // Upload files first
             for (const [key, file] of Object.entries(documents)) {
                 if (file) {
-                    processedDocs[key] = `File: ${file.name}`;
+                    try {
+                        const uploadRes = await uploadFile(file, 'digital-signature');
+                        uploadedDocsList.push({
+                            id: key,
+                            filename: uploadRes.originalName || file.name,
+                            fileUrl: uploadRes.fileUrl,
+                            type: key
+                        });
+                    } catch (e) {
+                        console.error("File upload failed for " + key, e);
+                    }
                 }
             }
 
-            const payload = {
+            const dscFormData = {
                 applicantName: formData.applicantName,
                 applicantType: formData.userType,
                 classType: formData.classType,
                 validityYears: formData.validity,
-                tokenRequired: "Yes", // Default
+                tokenRequired: "Yes",
                 mobile: formData.mobile,
                 email: formData.email,
                 panNumber: formData.panNumber,
                 aadhaarNumber: formData.aadhaarNumber,
-                gstNumber: "", // Not collected
-                // Extra
-                status: "PENDING",
-                notes: JSON.stringify(processedDocs)
+                gstNumber: ""
             };
 
-            await submitDigitalSignature(payload);
+            const finalPayload = {
+                submissionId: `DSC-${Date.now()}`,
+                userEmail: formData.email,
+                plan: formData.classType.toLowerCase().replace(" ", "") || 'class3',
+                amountPaid: formData.validity === '3 Years' ? 2499 : 1999, // Dynamic
+                status: "INITIATED",
+                formData: dscFormData,
+                documents: uploadedDocsList,
+                automationQueue: []
+            };
+
+            await submitDigitalSignature(finalPayload);
             navigate('/dashboard?tab=orders');
         } catch (err) {
             setError(err.message || "Submission failed");

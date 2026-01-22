@@ -10,6 +10,25 @@ public class LabourWelfareFundRequest {
     private String businessName;
     private String status;
 
+    public String getPlan() {
+        return plan;
+    }
+
+    public void setPlan(String plan) {
+        this.plan = plan;
+    }
+
+    public Double getAmountPaid() {
+        return amountPaid;
+    }
+
+    public void setAmountPaid(Double amountPaid) {
+        this.amountPaid = amountPaid;
+    }
+
+    private String plan;
+    private Double amountPaid;
+
     private LWFFormData formData;
     private List<EmployeeDataDTO> employees;
     private List<UploadedDocumentDTO> documents;
@@ -51,5 +70,3 @@ public class LabourWelfareFundRequest {
         private String description;
     }
 }
-
-

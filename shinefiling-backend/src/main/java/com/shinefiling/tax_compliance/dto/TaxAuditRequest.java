@@ -17,9 +17,11 @@ public class TaxAuditRequest {
     @Data
     public static class TaxAuditFormData {
         private String businessName;
+        private String pan;
         private String assessmentYear; // e.g., "2024-2025"
         private String taxpayerType; // "Business", "Professional"
         private Double turnoverAmount; // For checking limits
+        private String natureOfBusiness;
         private Boolean gstRegistered;
 
         // Audit Specifics
@@ -41,5 +43,3 @@ public class TaxAuditRequest {
         private String description;
     }
 }
-
-

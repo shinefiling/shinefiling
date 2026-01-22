@@ -1,6 +1,10 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Rocket, TrendingUp, DollarSign, Award, HelpCircle, FileText, BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
+import {
+    CheckCircle, Rocket, TrendingUp, DollarSign, Award, HelpCircle, FileText,
+    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck,
+    Briefcase, Target, Layers, PieChart, Lightbulb, X
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const StartupIndia = ({ isLoggedIn }) => {
@@ -15,11 +19,13 @@ const StartupIndia = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "What is Startup India Recognition?", a: "It is an initiative by the Government of India to build a strong ecosystem for nurturing innovation and startups in the country." },
-        { q: "What are the benefits?", a: "Benefits include tax exemptions (Section 80-IAC), easy winding up, self-certification compliance, and rebate on IP fees." },
-        { q: "Who is eligible?", a: "An entity works towards innovation, development, or improvement of products or processes, or has a scalable business model." },
-        { q: "Is there a turnover limit?", a: "Yes, the turnover should not exceed ₹100 Crores for any of the previous financial years." },
-        { q: "How old can the company be?", a: "The startup should be less than 10 years old from the date of incorporation." },
+        { q: "What is Startup India Recognition?", a: "It is an initiative by the Government of India to build a strong ecosystem for nurturing innovation and startups in the country. It offers tax benefits, easier compliance, and IPR fast-tracking." },
+        { q: "Does Recognition grant Tax Holiday automatically?", a: "No. DPIIT Recognition is the first step. To avail the 3-year Income Tax Holiday (u/s 80-IAC), you must apply separately for Inter-Ministerial Board (IMB) approval." },
+        { q: "What is the turnover limit?", a: "The entity's turnover should not have exceeded ₹100 Crores in any of the previous financial years since incorporation." },
+        { q: "How old can the company be?", a: "The entity should be in existence for up to 10 years from the date of its incorporation/registration." },
+        { q: "Is a Pitch Deck required?", a: "Yes, a detailed pitch deck or video describing your innovation, product, and revenue model is mandatory for the application." },
+        { q: "Who is eligible?", a: "Private Limited Companies, Registered Partnership Firms, and Limited Liability Partnerships (LLPs) working towards innovation/improvement of products/services." },
+        { q: "What about Angel Tax?", a: "Recognized startups can apply for exemption from Angel Tax (Section 56(2)(viib)) by filing a self-declaration Form 2." },
     ];
 
     return (
@@ -78,7 +84,7 @@ const StartupIndia = ({ isLoggedIn }) => {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Recognition</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Unlock tax holidays, angel tax exemption, and government funding support for your high-growth startup.
+                                    Unlock <strong>3-Year Tax Holidays</strong>, <strong>Angel Tax Exemption</strong>, and <strong>Govt Funding Support</strong> for your high-growth startup.
                                 </p>
                             </motion.div>
 
@@ -113,7 +119,7 @@ const StartupIndia = ({ isLoggedIn }) => {
                                     Get Recognized
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
-                                    <BookOpen size={18} /> Learn More
+                                    <BookOpen size={18} /> Eligibility Check
                                 </button>
                             </div>
                         </div>
@@ -126,8 +132,10 @@ const StartupIndia = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Govt Scheme</div>
-                                <div className="text-center mb-6">
+                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Govt Scheme</div>
+
+                                <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">DPIIT Recognition</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹4,999</h3>
@@ -135,26 +143,114 @@ const StartupIndia = ({ isLoggedIn }) => {
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["DPIIT Certificate Issue", "80-IAC Tax Exemption Application", "Pitch Deck Review", "Angel Tax Exemption Support", "SIDBI Fund Preparation"].map((item, i) => (
+
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {["DPIIT Certificate Issue", "Drafting of Pitch Deck", "80-IAC Assessment", "Seed Fund Guidance", "Prioritized Support"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
                                         </div>
                                     ))}
                                 </div>
+
                                 <button
-                                    onClick={() => handlePlanSelect('registration')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Get Recognized <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
                     </div>
                 </div>
             </div>
+
+            {/* PRICING PLANS SECTION */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Choose Your Plan</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: BASIC (Recognition) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
+                            <p className="text-slate-500 text-sm mb-6">DPIIT Recognition Only.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹4,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> DPIIT Certificate</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Startup India Profile</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> IPR Benefits Access</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> Pitch Deck Drafting</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Basic</button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD (Pitch Deck) - POPULAR */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
+                            <p className="text-gray-400 text-sm mb-6">Recognition + Pitch Deck.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹9,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹15,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Everything in Basic</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Professional Pitch Deck</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Business Model Review</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> 10 Slides Presentation</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Standard</button>
+                        </motion.div>
+
+                        {/* PLAN 3: PREMIUM (Tax Exemption) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Premium</h3>
+                            <p className="text-slate-500 text-sm mb-6">With 80-IAC Tax Exemption.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹14,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹25,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> DPIIT Recognition</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> 80-IAC Application</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Angel Tax Exemption</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> IMB Query Support</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Premium</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
 
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -165,33 +261,51 @@ const StartupIndia = ({ isLoggedIn }) => {
                     {/* Eligibility Section */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> Eligibility Criteria
+                            <Target className="text-bronze" /> Eligibility Criteria
                         </h2>
                         <div className="grid md:grid-cols-2 gap-6">
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                <h3 className="text-xl font-bold text-navy mb-3">Entity Type</h3>
-                                <p className="text-gray-600 text-sm">Must be a Private Limited Company, LLP, or Registered Partnership Firm.</p>
+                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-lg transition">
+                                <div className="absolute top-0 right-0 w-20 h-20 bg-bronze/5 rounded-bl-[100px] z-0"></div>
+                                <h3 className="text-xl font-bold text-navy mb-3 relative z-10 flex items-center gap-2">
+                                    <Briefcase size={20} className="text-bronze" /> Entity Type
+                                </h3>
+                                <p className="text-gray-600 text-sm relative z-10">Must be a Private Limited Company (Pvt Ltd), Limited Liability Partnership (LLP), or Registered Partnership Firm.</p>
                             </div>
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                <h3 className="text-xl font-bold text-navy mb-3">Age & TO</h3>
-                                <p className="text-gray-600 text-sm">Establishment must be &lt; 10 years old and turnover &lt; ₹100 Cr.</p>
+                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-lg transition">
+                                <div className="absolute top-0 right-0 w-20 h-20 bg-navy/5 rounded-bl-[100px] z-0"></div>
+                                <h3 className="text-xl font-bold text-navy mb-3 relative z-10 flex items-center gap-2">
+                                    <Clock size={20} className="text-navy" /> Age Limit
+                                </h3>
+                                <p className="text-gray-600 text-sm relative z-10">The entity should not be more than 10 years old from the date of incorporation/registration.</p>
                             </div>
-                            <div className="col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                <h3 className="text-xl font-bold text-navy mb-3">Innovation & Scalability</h3>
-                                <p className="text-gray-600 text-sm">The entity should be working towards innovation, development or improvement of products or processes or services, or if it is a scalable business model with a high potential of employment generation or wealth creation.</p>
+                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-lg transition">
+                                <div className="absolute top-0 right-0 w-20 h-20 bg-green-500/5 rounded-bl-[100px] z-0"></div>
+                                <h3 className="text-xl font-bold text-navy mb-3 relative z-10 flex items-center gap-2">
+                                    <PieChart size={20} className="text-green-600" /> Turnover Limit
+                                </h3>
+                                <p className="text-gray-600 text-sm relative z-10">Annual turnover should not have exceeded ₹100 Crore in any of the previous financial years.</p>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-lg transition">
+                                <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-500/5 rounded-bl-[100px] z-0"></div>
+                                <h3 className="text-xl font-bold text-navy mb-3 relative z-10 flex items-center gap-2">
+                                    <Lightbulb size={20} className="text-yellow-600" /> Innovation
+                                </h3>
+                                <p className="text-gray-600 text-sm relative z-10">Working towards innovation, development or improvement of products/services with scalable business model.</p>
                             </div>
                         </div>
                     </section>
 
                     {/* BENEFITS GRID */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Key Benefits</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Why Get Recognized?</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Income Tax Exemption", desc: "Tax holiday for 3 consecutive years out of first 10 years.", icon: DollarSign },
-                                { title: "Simple Compliance", desc: "Self-certify compliance for 9 labour and 3 environmental laws.", icon: FileText },
-                                { title: "IPR Benefits", desc: "Fast-tracking of patent application and 80% rebate in filing fees.", icon: Award },
-                                { title: "Easy Winding Up", desc: "Wind up the company within 90 days under Insolvency Code.", icon: TrendingUp },
+                                { title: "Income Tax Exemption", desc: "Eligible for 3 consecutive years tax holiday (u/s 80-IAC) post IMB approval.", icon: DollarSign },
+                                { title: "Angel Tax Exemption", desc: "Exemption on investments above fair market value (u/s 56(2)(viib)).", icon: TrendingUp },
+                                { title: "Simple Compliance", desc: "Allowed to self-certify compliance for 9 labour and 3 environmental laws.", icon: FileText },
+                                { title: "IPR Benefits", desc: "Fast-track patent applications and 80% rebate in filing fees.", icon: Award },
+                                { title: "Seed Fund Scheme", desc: "Access to capital via Startup India Seed Fund Scheme (SISFS).", icon: Layers },
+                                { title: "Public Procurement", desc: "Relaxation in prior turnover and experience criteria for tenders.", icon: CheckCircle },
                             ].map((item, i) => (
                                 <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-bronze transition group">
                                     <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
@@ -206,36 +320,61 @@ const StartupIndia = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Startup Recognition</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹4,999</div>
-                                <p className="text-xs text-gray-400 mb-6">/ One-time</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> DPIIT Certificate</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Pitch Deck Review</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Tax Exemption Assessment</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('registration')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Recognition</button>
-                            </div>
+                    {/* Process Flow */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Registration Process</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Profile Creation", days: "Day 1", desc: "We create your profile on the Startup India portal as an individual." },
+                                { step: "Step 2", title: "Business Profile", days: "Day 2", desc: "We enter your entity details, directors info, and contact information." },
+                                { step: "Step 3", title: "Pitch Deck Drafting", days: "Day 2-3", desc: "Our experts help you refine your pitch deck to highlight innovation and scalability (Crucial Step)." },
+                                { step: "Step 4", title: "Application Submission", days: "Day 4", desc: "We file the application with all mandatory documents and declarations." },
+                                { step: "Step 5", title: "Recognition", days: "Day 5-7", desc: "Get the DPIIT Recognition Certificate via email." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-48 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Estimated</span>
+                                        <span className="text-navy font-bold text-lg">{item.days}</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                            {/* Tax Exemption */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Tax Exemption Filing</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹9,999</div>
-                                <p className="text-xs text-slate-400 mb-6">/ Application</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Form 80-IAC Filing</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Angel Tax Exemption</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Detailed Documentation</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('tax_exemption')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Tax Filing</button>
-                            </div>
+
+
+                    {/* Why Choose ShineFiling - SEO Section */}
+                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
+                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling?</h2>
+                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
+                            {[
+                                { t: "Pitch Deck Experts", d: "Our team helps polish your pitch deck to meet DPIIT standards, reducing rejection chances." },
+                                { t: "Tax Exemption Success", d: "We have a high success rate in getting IMB approval for 80-IAC tax exemptions." },
+                                { t: "Seed Fund Guidance", d: "We guide you on how to apply for the Startup India Seed Fund Scheme (SISFS)." },
+                                { t: "360° Support", d: "From Incorporation to Recognition and Tax Filing, we handle your entire startup lifecycle." }
+                            ].map((item, i) => (
+                                <div key={i} className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <CheckCircle size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">{item.t}</h4>
+                                        <p className="text-gray-300 text-sm">{item.d}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
@@ -281,7 +420,7 @@ const StartupIndia = ({ isLoggedIn }) => {
                                 <div>
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Startup</h4>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Pitch Deck</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Pitch Deck (PDF)</li>
                                         <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Product Website/Video</li>
                                     </ul>
                                 </div>
@@ -290,11 +429,9 @@ const StartupIndia = ({ isLoggedIn }) => {
 
                         {/* Support Card */}
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">Refused?</h4>
-                            <p className="text-gray-300 text-sm mb-4">Did your application get rejected?</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Appeal Now
-                            </button>
+                            <h4 className="font-bold text-lg mb-2">Already Rejected?</h4>
+                            <p className="text-gray-300 text-sm mb-4">Rejection is common due to poor pitch decks. We can help you re-apply.</p>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -305,3 +442,5 @@ const StartupIndia = ({ isLoggedIn }) => {
 };
 
 export default StartupIndia;
+
+

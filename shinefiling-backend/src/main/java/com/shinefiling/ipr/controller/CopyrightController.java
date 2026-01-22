@@ -55,8 +55,8 @@ public class CopyrightController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(2999.0); // Professional Fee
+            createdRequest.setPlan(requestDTO.getPlan() != null ? requestDTO.getPlan() : "standard");
+            createdRequest.setAmount(requestDTO.getAmountPaid() != null ? requestDTO.getAmountPaid() : 2999.0);
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 
@@ -77,5 +77,3 @@ public class CopyrightController {
         return t;
     }
 }
-
-

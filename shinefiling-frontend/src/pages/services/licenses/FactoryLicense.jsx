@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, BookOpen, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Factory, Building, Gavel } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -75,7 +75,7 @@ const FactoryLicensePage = ({ isLoggedIn }) => {
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
                                     Factory <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Plan & License</span>
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">License</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
                                     Complete compliance for manufacturing units—from Site Plan Approval to Final Licensing. Ensuring safety and health for your workforce.
@@ -135,7 +135,7 @@ const FactoryLicensePage = ({ isLoggedIn }) => {
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {["Plan Approval (Blueprints)", "Stability Certificate", "License Application (Form 2)", "DISH Office Liaison", "Inspection Support"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
@@ -144,11 +144,9 @@ const FactoryLicensePage = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('comprehensive')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Get Started <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -162,86 +160,133 @@ const FactoryLicensePage = ({ isLoggedIn }) => {
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Introduction */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> What is a Factory License?
-                        </h2>
-                        <div className="prose prose-lg text-gray-600">
-                            <p className="lead text-xl text-gray-800 font-medium mb-4">
-                                Under the <b>Factories Act, 1948</b>, every factory owner must obtain approval for building plans and a factory license before commencing manufacturing operations.
-                            </p>
-                            <p>
-                                It is granted by the <b>Chief Inspector of Factories</b> (or DISH) and acts as a primary document proving that your unit complies with all statutory health, safety, and welfare norms.
-                            </p>
+                    {/* DETAILED SEO CONTENT SECTION - COMPREHENSIVE GUIDE */}
+                    <section className="mt-10 space-y-12 mb-20">
+                        <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl border border-gray-100">
+                            <h2 className="text-3xl font-bold text-navy mb-8 border-b pb-4">Comprehensive Guide to Factory Act Compliance</h2>
+
+                            <div className="prose prose-slate max-w-none space-y-8 text-gray-700 leading-relaxed">
+                                {/* Introduction */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-navy mb-4 flex items-center gap-2">
+                                        <Factory className="text-bronze" /> Manufacturing Compliance in India
+                                    </h3>
+                                    <p className="lead text-xl text-gray-800 font-medium">
+                                        Under the <strong>Factories Act, 1948</strong>, every factory owner must obtain prior approval of building plans and a factory license before commencing manufacturing operations.
+                                    </p>
+                                    <p>
+                                        The license is granted by the <strong>Chief Inspector of Factories</strong> (Director of Industrial Safety & Health - DISH) and acts as the primary document proving that your unit complies with all statutory health, safety, and welfare norms.
+                                    </p>
+                                </div>
+
+                                {/* Who Needs It Grid */}
+                                <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                    <h3 className="text-xl font-bold text-navy mb-4">Who Must Apply?</h3>
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><Zap size={24} /></div>
+                                                <h4 className="font-bold text-navy text-lg">With Power</h4>
+                                            </div>
+                                            <p className="text-gray-600">Any premises where <strong className="text-navy">10 or more workers</strong> are working, and a manufacturing process is carried on with the aid of power.</p>
+                                        </div>
+                                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <div className="p-2 bg-amber-50 rounded-lg text-amber-600"><Users size={24} /></div>
+                                                <h4 className="font-bold text-navy text-lg">Without Power</h4>
+                                            </div>
+                                            <p className="text-gray-600">Any premises where <strong className="text-navy">20 or more workers</strong> are working, and a manufacturing process is carried on without the aid of power.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* The Process Steps */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-navy mb-6">The 3-Stage Licensing Process</h3>
+                                    <div className="space-y-6">
+                                        <div className="flex gap-4">
+                                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-bronze text-white flex items-center justify-center font-bold">1</div>
+                                            <div>
+                                                <h4 className="text-lg font-bold text-navy">Plan Approval</h4>
+                                                <p className="text-sm text-gray-600 mt-1">Submission of factory blueprints (Site Plan, Layout Plan) to the Director of Factories for approval before construction or installation of machinery.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-4">
+                                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-bronze text-white flex items-center justify-center font-bold">2</div>
+                                            <div>
+                                                <h4 className="text-lg font-bold text-navy">License Application (Form 2)</h4>
+                                                <p className="text-sm text-gray-600 mt-1">Once plans are approved and the factory is ready, apply for the grant of license along with fee payment.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-4">
+                                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-bronze text-white flex items-center justify-center font-bold">3</div>
+                                            <div>
+                                                <h4 className="text-lg font-bold text-navy">Inspection & Grant</h4>
+                                                <p className="text-sm text-gray-600 mt-1">A Factory Inspector will visit the premises to verify safety measures. If satisfied, the license is granted.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
-                    {/* Eligibility Section */}
-                    <section className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-bronze/10 rounded-bl-[100px] -mr-10 -mt-10"></div>
-                        <h2 className="text-2xl font-bold text-navy mb-6 relative z-10">Who Must Apply?</h2>
-                        <div className="grid md:grid-cols-2 gap-6 relative z-10">
-                            <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
-                                <div className="flex items-center gap-3 mb-3">
-                                    <div className="p-2 bg-blue-100 rounded-lg text-navy"><Zap size={20} /></div>
-                                    <h3 className="font-bold text-navy">With Power</h3>
-                                </div>
-                                <p className="text-sm text-gray-800 font-bold">10 or more workers</p>
-                                <p className="text-xs text-gray-600 mt-2">If manufacturing process uses power.</p>
+                    {/* MANDATORY DELIVERABLES */}
+                    <section className="mb-20">
+                        <h2 className="text-3xl font-bold text-navy mb-8">What You Will Receive</h2>
+                        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+                            <div className="p-6 bg-navy text-white">
+                                <p className="text-sm opacity-80">Official department documents.</p>
                             </div>
-                            <div className="bg-amber-50/50 p-6 rounded-2xl border border-amber-100">
-                                <div className="flex items-center gap-3 mb-3">
-                                    <div className="p-2 bg-amber-100 rounded-lg text-navy"><Users size={20} /></div>
-                                    <h3 className="font-bold text-navy">Without Power</h3>
-                                </div>
-                                <p className="text-sm text-gray-800 font-bold">20 or more workers</p>
-                                <p className="text-xs text-gray-600 mt-2">If manufacturing process does not use power.</p>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Three Stage Process */}
-                    <section>
-                        <h2 className="text-2xl font-bold text-[#2B3446] mb-8">The Licensing Process</h2>
-                        <div className="relative">
-                            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-                            <div className="space-y-8">
-                                <div className="relative pl-24">
-                                    <div className="absolute left-0 top-0 w-16 h-16 bg-white border-2 border-bronze rounded-2xl flex items-center justify-center font-black text-2xl text-bronze shadow-sm z-10">01</div>
-                                    <h3 className="text-lg font-bold text-navy">Plan Approval</h3>
-                                    <p className="text-gray-600 mt-1">Submit detailed factory plans (Blueprints) for approval from the Director of Factories before construction.</p>
-                                </div>
-                                <div className="relative pl-24">
-                                    <div className="absolute left-0 top-0 w-16 h-16 bg-white border-2 border-gray-200 rounded-2xl flex items-center justify-center font-black text-2xl text-gray-400 shadow-sm z-10">02</div>
-                                    <h3 className="text-lg font-bold text-navy">License Application</h3>
-                                    <p className="text-gray-600 mt-1">Once approved and machinery installed, apply for the license (Form 2) usually 15 days before operations.</p>
-                                </div>
-                                <div className="relative pl-24">
-                                    <div className="absolute left-0 top-0 w-16 h-16 bg-white border-2 border-gray-200 rounded-2xl flex items-center justify-center font-black text-2xl text-gray-400 shadow-sm z-10">03</div>
-                                    <h3 className="text-lg font-bold text-navy">Inspection & Grant</h3>
-                                    <p className="text-gray-600 mt-1">A factory inspector visits to verify safety compliance. If satisfied, the license is granted.</p>
-                                </div>
+                            <div className="divide-y divide-gray-100">
+                                {[
+                                    { name: "Factory License (Form 4)", type: "Digital / Physical", due: "Approval" },
+                                    { name: "Approved Blueprints", type: "Plan Approval", due: "Stage 1" },
+                                    { name: "Stability Certificate", type: "Signed by Engineer", due: "Submission" },
+                                    { name: "Payment Receipt", type: "Challan", due: "Day 1" },
+                                    { name: "Compliance Registers Guide", type: "Support", due: "Lifetime" }
+                                ].map((row, i) => (
+                                    <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-6 hover:bg-gray-50 transition">
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-navy text-lg">{row.name}</h4>
+                                        </div>
+                                        <div className="md:w-1/3 mt-2 md:mt-0">
+                                            <span className="text-sm text-slate-500 font-medium uppercase tracking-wider">Format</span>
+                                            <p className="text-bronze-dark font-semibold">{row.due}</p>
+                                        </div>
+                                        <div className="md:w-1/6 mt-2 md:mt-0 text-right">
+                                            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-navy">
+                                                {row.type}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </section>
 
                     {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
+                    <section id="pricing-plans" className="bg-white relative overflow-hidden rounded-3xl p-8 border border-gray-100 shadow-sm mb-20">
+                        <div className="text-center mb-16">
+                            <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Plan</span>
+                            <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Simple Pricing</h2>
+                            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                        </div>
                         <div className="grid md:grid-cols-2 gap-6">
                             {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Plan + License</h3>
+                            <div className="bg-[#10232A] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 flex flex-col">
+                                {/* Top Gold Line */}
+                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+                                <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                                <h3 className="text-xl font-bold text-white mb-2 mt-4">Plan + License</h3>
                                 <div className="text-4xl font-black text-white mb-1">₹14,999</div>
                                 <p className="text-xs text-gray-400 mb-6">+ Govt Fees (Actuals)</p>
                                 <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Plan Submission</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Stability Cert Support</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Final License Filing</li>
+                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Plan Submission</li>
+                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Stability Cert Support</li>
+                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Final License Filing</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('comprehensive')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Comprehensive</button>
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">Select Comprehensive</button>
                             </div>
 
                             {/* Basic License Only */}
@@ -255,7 +300,57 @@ const FactoryLicensePage = ({ isLoggedIn }) => {
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Document Verification</li>
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Department Liaison</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('license_only')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Basic</button>
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Basic</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* WHY CHOOSE SHINEFILING - SEO SECTION */}
+                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-20">
+                        {/* Background Deco */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
+
+                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling?</h2>
+                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Briefcase size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Detailed Drawing Support</h4>
+                                        <p className="text-gray-300 text-sm">We assist in preparing factory layout plans as per rule, ensuring ventilation and safety norms are met.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Shield size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Department Liaison</h4>
+                                        <p className="text-gray-300 text-sm">We handle the follow-ups with the Chief Inspector of Factories so you can focus on production.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Gavel size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Stability Certificate</h4>
+                                        <p className="text-gray-300 text-sm">We connect you with authorized competent persons to get the mandatory structural stability certificate.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Clock size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Timely Renewals</h4>
+                                        <p className="text-gray-300 text-sm">We proactively track your license expiry and initiate renewal to prevent heavy penalties.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -314,9 +409,7 @@ const FactoryLicensePage = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Need Help?</h4>
                             <p className="text-gray-300 text-sm mb-4">We help with factory drawings and stability certificates.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Talk to Expert
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -327,3 +420,5 @@ const FactoryLicensePage = ({ isLoggedIn }) => {
 };
 
 export default FactoryLicensePage;
+
+

@@ -9,6 +9,8 @@ public class PFFilingRequest {
     private String userEmail;
     private String pfEstablishmentCode;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private PFFilingFormData formData;
     private List<UploadedDocumentDTO> documents;
@@ -36,5 +38,3 @@ public class PFFilingRequest {
         private String description;
     }
 }
-
-

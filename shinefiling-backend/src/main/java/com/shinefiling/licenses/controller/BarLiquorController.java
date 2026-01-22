@@ -64,15 +64,8 @@ public class BarLiquorController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            // Pricing varies heavily
-            double price = 24999.0;
-            if ("EVENT".equalsIgnoreCase(requestDTO.getLicenseType()))
-                price = 9999.0;
-            if ("BREWERY".equalsIgnoreCase(requestDTO.getLicenseType()))
-                price = 49999.0;
-
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(price);
+            createdRequest.setPlan(requestDTO.getPlan());
+            createdRequest.setAmount(requestDTO.getAmountPaid());
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 

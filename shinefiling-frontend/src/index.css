@@ -95,3 +95,8 @@
 .animate-marquee {
   animation: marquee 25s linear infinite;
 }
+
+/* Safe Area for Mobile Web Apps (PWA) */
+.pb-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}

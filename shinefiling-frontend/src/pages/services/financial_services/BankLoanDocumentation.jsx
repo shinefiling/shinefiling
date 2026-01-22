@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Landmark, Coins, FileText, Scale, HelpCircle, Shield, BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -135,7 +135,7 @@ const BankLoanDocumentation = ({ isLoggedIn }) => {
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Excl. Govt Fees</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {["30 Years Title Search", "Encumbrance (EC) Check", "Senior Advocate Report", "Document Verification", "Digital Delivery"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
@@ -144,11 +144,9 @@ const BankLoanDocumentation = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('legal_opinion')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Get Opinion <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -156,16 +154,149 @@ const BankLoanDocumentation = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+            {/* --- PRICING SECTION (MATCHING PRIVATE LIMITED PAGE) --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Expert Legal Services</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center max-w-6xl mx-auto">
+                        {/* Legal Opinion */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Legal Opinion</h3>
+                            <p className="text-slate-500 text-sm mb-6">Essential for Home / Mortgage Loans.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹3,999</span>
+                                <span className="text-slate-400 text-sm">/ Property</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "30 Years Title Search",
+                                    "Lawyer Verification",
+                                    "Encumbrance Check (EC)",
+                                    "Document Verification",
+                                    "2-Day Delivery"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200 text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Select Legal Opinion
+                            </button>
+                        </motion.div>
+
+                        {/* Valuation Report (New Middle Card) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 group flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Mandatory
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Valuation Report</h3>
+                            <p className="text-gray-400 text-sm mb-6">Govt. Approved Valuer Report.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹4,999</span>
+                                <span className="text-gray-500 text-sm">/ Report</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Govt Approved Valuer",
+                                    "Fair Market Value",
+                                    "Distress Sale Value",
+                                    "Site Visit Included",
+                                    "Accepted by All Banks",
+                                    "3-Day Delivery"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Select Valuation
+                            </button>
+                        </motion.div>
+
+                        {/* Full Loan Kit (Premium) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Full Loan Kit</h3>
+                            <p className="text-slate-500 text-sm mb-6">Complete legal & valuation support.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹7,999</span>
+                                <span className="text-slate-400 text-sm">/ Application</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Everything in Legal Opinion",
+                                    "Property Valuation Report",
+                                    "Drafting Loan Agreements",
+                                    "Stamp Duty Calculation",
+                                    "ROC Charge Filing (CHG-1)"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Select Full Kit
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Services Section */}
+                    {/* Intro Section */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <Shield className="text-bronze" /> Services We Offer
+                            <Scale className="text-bronze" /> Why Professional Documentation?
+                        </h2>
+                        <div className="prose prose-lg text-gray-600">
+                            <p className="lead text-xl text-gray-800 font-medium">
+                                <strong>Legal scrutiny</strong> is the primary reason for delays or rejection in loan disbursements. Banks require a watertight assurance that the property being mortgaged has a clear and marketable title.
+                            </p>
+                            <p>
+                                A single missing link in the property chain or an improper stamp duty payment can stall your loan for months. Our expert legal team ensures that your documentation is <strong>100% compliant</strong> with banking standards.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* Services Section (Refined) */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
+                            <Shield className="text-bronze" /> Scope of Services
                         </h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
@@ -189,36 +320,53 @@ const BankLoanDocumentation = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Legal Opinion</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹3,999</div>
-                                <p className="text-xs text-gray-400 mb-6">/ Property</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Full Title Search</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Lawyer Verified</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Quick Turnaround</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('legal_opinion')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Legal Opinion</button>
+                    {/* Checklist Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6">Documentation Checklist</h2>
+                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+                            <p className="mb-6 text-gray-600">We verify the following:</p>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8">
+                                {[
+                                    "Title Deeds (30 Yrs)", "Encumbrance Cert (EC)", "Property Tax Receipts",
+                                    "Sanction Plan", "Commencement Cert", "Conversion Order",
+                                    "Khata / Patta", "Sale Agreement", "NOC from Society"
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <CheckCircle size={18} className="text-bronze flex-shrink-0" />
+                                        <span className="font-medium text-gray-700">{item}</span>
+                                    </div>
+                                ))}
                             </div>
+                        </div>
+                    </section>
 
-                            {/* Full Package */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Full Loan Kit</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹6,999</div>
-                                <p className="text-xs text-slate-400 mb-6">/ Application</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Legal + Valuation</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Drafting Agreements</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> ROC Charge Filing</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('full_kit')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Full Kit</button>
-                            </div>
+                    {/* Process Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Verification Process</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Document Collection", days: "Day 1", desc: "We collect photocopies of all property documents and loan sanction letters." },
+                                { step: "Step 2", title: "Registrar Search", days: "Day 1-2", desc: "Our lawyer visits the Sub-Registrar office to verify the authenticity of the title deeds." },
+                                { step: "Step 3", title: "Drafting", days: "Day 2", desc: "We draft the Legal Opinion report and calculate the exact stamp duty payable." },
+                                { step: "Step 4", title: "Final Opinion", days: "Day 3", desc: "The final Legal Scrutiny Report (LSR) is signed by our panel advocate and delivered." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-navy font-bold text-sm">{item.days}</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
@@ -268,9 +416,7 @@ const BankLoanDocumentation = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Need Project Report?</h4>
                             <p className="text-gray-300 text-sm mb-4">We also prepare Detailed Project Reports (DPR) and CMA Data for bank loans.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                View Service
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -281,3 +427,5 @@ const BankLoanDocumentation = ({ isLoggedIn }) => {
 };
 
 export default BankLoanDocumentation;
+
+

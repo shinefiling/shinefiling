@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lightbulb, FileText, Cpu, Clock, Search, Shield, CheckCircle, BookOpen, Zap, HelpCircle, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,10 +15,11 @@ const PatentFilingPage = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "What is a Patent?", a: "A patent is an exclusive right granted for an invention, which is a product or a process that provides, in general, a new way of doing something, or offers a new technical solution to a problem." },
-        { q: "What is a Provisional Patent?", a: "It is an initial application filed to secure a priority date for your invention, giving you 12 months to complete R&D and file the final specification." },
-        { q: "How long is a patent valid?", a: "A patent is valid for 20 years from the date of filing the application." },
-        { q: "Can I patent software?", a: "Software per se is not patentable in India, but it can be patented if it's attached to a novel hardware or has a technical effect." },
+        { q: "What is the difference between Provisional and Complete Patent?", a: "A Provisional application is a preliminary draft filed to secure a priority date. It gives you 12 months to file the Complete Specification, which details the full invention." },
+        { q: "Is patent search mandatory?", a: "No, but it is highly recommended to ensure your invention is actually 'new'. If similar prior art exists, your application may be rejected." },
+        { q: "Can I patent a business idea?", a: "No. Patents are for technical inventions (product or process). Abstract ideas, business models, or mathematical methods cannot be patented in India." },
+        { q: "How long until my patent is granted?", a: "The entire process in India (filing to grant) typically takes 3-5 years, depending on the examination backlog and objections." },
+        { q: "Does an Indian patent protect me globally?", a: "No, patents are territorial. An Indian patent only protects you in India. For global protection, you can file a PCT application." }
     ];
 
     return (
@@ -70,14 +71,14 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-                                    <Lightbulb size={12} className="fill-bronze" /> Innovation Protection
+                                    <Lightbulb size={12} className="fill-bronze" /> Secure Your Invention
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
                                     Patent <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Filing</span>
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Registration</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Secure your invention for 20 years. File Provisional or Complete Specifications with expert patent attorneys.
+                                    Don't let others copy your hard work. Secure a 20-year monopoly on your invention by filing a Provisional or Complete Patent Application.
                                 </p>
                             </motion.div>
 
@@ -125,17 +126,17 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Gold Standard</div>
+                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Popular</div>
                                 <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Patent Filing</h3>
+                                    <h3 className="text-navy font-bold text-xl mb-2">Provisional Filing</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹14,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ Filing</span>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹9,999</h3>
+                                        <span className="text-lg text-slate-400 font-medium">/ App</span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
+                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Excl. Govt Fees</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["Prior Art Search (Basic)", "Drafting Provisional Spec", "Filing Forms 1, 2, 3, 5", "Priority Date Security", "12-Month Support"].map((item, i) => (
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {["Drafting Technical Specs", "Filing Form 1 & 2", "Priority Date Locking", "12 Months Protection", "Guidance for Complete Spec"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
@@ -143,19 +144,135 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('provisional')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Start Protection <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
-
                     </div>
                 </div>
             </div>
 
-            {/* EXTENSIVE CONTENT SECTION */}
+            {/* --- PRICING SECTION (3 PLANS) --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Patent Solutions</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: CONSULTATION */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Patent Search</h3>
+                            <p className="text-slate-500 text-sm mb-6">Novelty Check.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹4,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Comprehensive Prior Art Search",
+                                    "Patentability Report",
+                                    "Competitor Analysis",
+                                    "Detailed Consultation"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                                <li className="flex items-center gap-3 text-sm text-slate-400">
+                                    <Zap size={16} className="shrink-0" /> No Filing
+                                </li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Check Novelty
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD (POPULAR) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Step 1
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Provisional App</h3>
+                            <p className="text-gray-400 text-sm mb-6">Protect & Develop Later.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹9,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹15,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Provisional Drafting",
+                                    "Forms Filing (1, 2, 3)",
+                                    "Priority Date Locked",
+                                    "12-Month Grace Period",
+                                    "Govt Fee Extra (₹1600)"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                File Provisional
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 3: COMPLEX */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Complete Spec</h3>
+                            <p className="text-slate-500 text-sm mb-6">Full Non-Provisional Filing.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹24,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹40,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Complete Specification",
+                                    "Detailed Claims Drafting",
+                                    "Drawings (Formal)",
+                                    "Abstract & Summary",
+                                    "Govt Fee Extra (₹1600)"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                File Complete
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* EXTENSIVE CONTENT GRID */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
@@ -164,27 +281,27 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                     {/* Introduction */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> Patent Registration India
+                            <BookOpen className="text-bronze" /> Why File a Patent?
                         </h2>
                         <div className="prose prose-lg text-gray-600">
                             <p className="lead text-xl text-gray-800 font-medium mb-4">
-                                A patent gives you the exclusive right to exclude others from making, using, or selling your invention for a limited period of 20 years.
+                                Patents provide inventors with a <span className="text-navy font-bold">20-year exclusive monopoly</span>. This prevents competitors from copying, manufacturing, or selling your invention without permission.
                             </p>
                             <p>
-                                It is a territorial right, meaning an Indian patent protects your invention only within India. For global protection, you need to file a PCT application.
+                                In today's competitive market, a patent is a valuable asset that can be licensed, sold, or used to attract investment.
                             </p>
                         </div>
                     </section>
 
-                    {/* BENEFITS GRID */}
+                    {/* TIMELINE GRID */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Filing Options</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Patent Lifecycle</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Provisional", desc: "For early priority date. Used when R&D is ongoing. Gives 12 months to file complete.", icon: Clock },
-                                { title: "Complete", desc: "For final inventions. Includes detailed claims and drawings.", icon: FileText },
-                                { title: "PCT / International", desc: "Protect your invention in multiple countries via WIPO.", icon: Search },
-                                { title: "Convention", desc: "Direct filing in convention countries within 12 months.", icon: Shield },
+                                { title: "Filing", desc: "File Provisional or Complete application to secure priority date.", icon: FileText },
+                                { title: "Publication", desc: "After 18 months, the application is published in the journal for public view.", icon: BookOpen },
+                                { title: "Examination", desc: "The Patent Office examines the application for novelty and inventiveness.", icon: Search },
+                                { title: "Grant", desc: "If all objections are cleared, the patent is granted for 20 years from filing date.", icon: Shield },
                             ].map((item, i) => (
                                 <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-bronze transition group">
                                     <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
@@ -199,36 +316,34 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Provisional */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Fast Protection</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Provisional</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹14,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees (₹1,600/₹8,000)</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Technical Drafting</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Form 1, 2 Filing</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Secure Priority Date</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('provisional')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Provisional</button>
-                            </div>
-
-                            {/* Complete */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Complete Spec</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹24,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Detailed Claims Drafting</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Drawings Formalization</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Comprehensive Filing</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('complete')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Complete</button>
-                            </div>
+                    {/* PROCESS SECTION */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">How We Work</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Non-Disclosure Agreement", desc: "We sign an NDA to ensure your idea remains 100% confidential throughout the process." },
+                                { step: "Step 2", title: "Patent Search", desc: "Our team searches global databases to ensure your invention is unique and patentable." },
+                                { step: "Step 3", title: "Drafting", desc: "Our patent attorneys draft the technical and legal specification (Provisional or Complete)." },
+                                { step: "Step 4", title: "Filing", desc: "We file the application online with the Indian Patent Office and provide the filing receipt." },
+                                { step: "Step 5", title: "Continued Support", desc: "We track deadlines for publication, examination, and hearing requests." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-48 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Step</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
@@ -260,32 +375,24 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                         {/* Documents Sidebar */}
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <FileText className="text-bronze" /> Information Needed
+                                <FileText className="text-bronze" /> Requirements
                             </h3>
                             <div className="space-y-6">
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Technical Details</h4>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Technical</h4>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Invention Title</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Invention Description</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Drawings / Flowcharts</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Full Invention Description</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Drawings / Diagrams</li>
                                     </ul>
                                 </div>
-                                <div className="p-4 bg-bronze/10 rounded-xl border border-bronze/20">
-                                    <p className="text-xs text-navy font-medium">
-                                        <strong>Remember:</strong> Do not publish your invention before filing a patent application.
-                                    </p>
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Applicant</h4>
+                                    <ul className="space-y-3">
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Name, Address, Nationality</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Form 26 (Power of Attorney)</li>
+                                    </ul>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Support Card */}
-                        <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">NDA First?</h4>
-                            <p className="text-gray-300 text-sm mb-4">We can sign a Non-Disclosure Agreement before discussing details.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Request NDA
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -296,3 +403,5 @@ const PatentFilingPage = ({ isLoggedIn }) => {
 };
 
 export default PatentFilingPage;
+
+

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Store, UserCheck, FileText, CheckCircle, MapPin, Building, Shield, ClipboardList, ArrowRight, Star, HelpCircle, ChevronRight, BookOpen, Users, Briefcase } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -145,9 +145,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
                                 <button
                                     onClick={handleApply}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Get License <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -214,7 +212,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Intimation Receipt</li>
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Payment & Challan</li>
                                 </ul>
-                                <button onClick={handleApply} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
+                                <button onClick={handleApply} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">View Plans <ArrowRight size={18} /></button>
                             </div>
 
                             {/* Premium - Large Establishment */}
@@ -227,7 +225,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Labour Dept Liasioning</li>
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Certificate Issue</li>
                                 </ul>
-                                <button onClick={handleApply} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Premium</button>
+                                <button onClick={handleApply} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">View Plans <ArrowRight size={18} /></button>
                             </div>
                         </div>
                     </section>
@@ -285,9 +283,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Need Help?</h4>
                             <p className="text-gray-300 text-sm mb-4">We cover all Mumbai & Maharashtra municipal corporations.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Talk to Expert
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -298,3 +294,4 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
 };
 
 export default GumasthaLicensePage;
+

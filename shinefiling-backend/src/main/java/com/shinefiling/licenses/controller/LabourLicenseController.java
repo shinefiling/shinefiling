@@ -52,8 +52,8 @@ public class LabourLicenseController {
             // Calculate Govt Fee Buffer (Example Logic)
             double securityDepositEstimate = requestDTO.getNumberOfLabourers() * 500.0; // Estimate 500 per head
 
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(3999.0); // Professional Fee
+            createdRequest.setPlan(requestDTO.getPlan());
+            createdRequest.setAmount(requestDTO.getAmountPaid());
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 

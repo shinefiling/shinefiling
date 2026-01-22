@@ -101,11 +101,11 @@ public class TaxProfessionalTaxController {
     private Double getPlanAmount(String plan) {
         switch (plan.toLowerCase()) {
             case "basic":
-                return 999.0;
+                return 1999.0;
             case "standard":
-                return 2499.0;
+                return 3999.0;
             case "premium":
-                return 4999.0;
+                return 5999.0;
             default:
                 return 0.0;
         }

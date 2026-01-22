@@ -17,4 +17,10 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest, 
     List<ServiceRequest> findByUserAndServiceName(User user, String serviceName);
 
     List<ServiceRequest> findByAgentEmail(String agentEmail);
+
+    List<ServiceRequest> findByAssignedCa(User ca);
+
+    List<ServiceRequest> findByAssignedEmployee(User employee);
+
+    List<ServiceRequest> findByBiddingStatus(String biddingStatus);
 }

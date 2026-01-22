@@ -27,7 +27,7 @@ const FSSAILicenseRegistration = ({ isLoggedIn }) => {
 
     useEffect(() => {
         const typeParam = searchParams.get('type');
-        if (typeParam && ['basic', 'state', 'central'].includes(typeParam.toLowerCase())) {
+        if (typeParam && ['basic', 'state', 'central', 'renewal'].includes(typeParam.toLowerCase())) {
             setLicenseType(typeParam.toLowerCase());
         }
     }, [searchParams]);
@@ -53,12 +53,14 @@ const FSSAILicenseRegistration = ({ isLoggedIn }) => {
     const pricing = {
         basic: { serviceFee: 1499, title: "Basic Registration" },
         state: { serviceFee: 4999, title: "State License" },
-        central: { serviceFee: 7499, title: "Central License" }
+        central: { serviceFee: 7499, title: "Central License" },
+        renewal: { serviceFee: 999, title: "License Renewal" }
     };
 
     // Auto-calculate license type based on turnover input
     useEffect(() => {
         if (!formData.turnover) return;
+        if (licenseType === 'renewal') return; // Don't auto-calculate for renewal
 
         // If Importer, force Central
         if (formData.isImporterExporter) {
@@ -78,7 +80,7 @@ const FSSAILicenseRegistration = ({ isLoggedIn }) => {
             // Basic
             if (licenseType !== 'basic') setLicenseType('basic');
         }
-    }, [formData.turnover, formData.isImporterExporter]);
+    }, [formData.turnover, formData.isImporterExporter, licenseType]);
 
 
     const handleInputChange = (e) => {
@@ -295,6 +297,8 @@ const FSSAILicenseRegistration = ({ isLoggedIn }) => {
             const finalPayload = {
                 submissionId: `FSSAI-${Date.now()}`,
                 userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                plan: licenseType,
+                amountPaid: pricing[licenseType].serviceFee,
                 businessName: formData.businessName,
                 businessType: formData.businessType,
                 businessCategory: formData.foodCategory, // Sending as category

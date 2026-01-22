@@ -74,7 +74,7 @@ const ChangeRegisteredOfficePage = ({ isLoggedIn }) => {
                                     Change of <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Registered Office</span>
                                 </h1>
-                                <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
+                                <p className="text-gray-300 text-xl max-w-xl font-light leading-relaxed">
                                     Moving your business? Ensure your company's official address is updated with the ROC. We handle everything from local shifts to complex inter-state transfers.
                                 </p>
                             </motion.div>
@@ -120,8 +120,12 @@ const ChangeRegisteredOfficePage = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Local Shift</div>
-                                <div className="text-center mb-6">
+                                {/* Top Gold Line */}
+                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+
+                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
+
+                                <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">Same City</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹1,999</h3>
@@ -129,7 +133,7 @@ const ChangeRegisteredOfficePage = ({ isLoggedIn }) => {
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Simplest Process</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {["Board Resolution Drafting", "Rent Agreement Verification", "Form INC-22 Filing", "NOC Template", "Liaison with ROC"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
@@ -149,138 +153,193 @@ const ChangeRegisteredOfficePage = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+            {/* --- PRICING SECTION (3 PLANS) --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Process</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Transparent Pricing</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {/* SAME CITY - Featured */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            {/* Top Gold Line */}
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Fastest
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-4">Local Shift</h3>
+                            <div className="text-5xl font-black text-white mb-2">₹1,999</div>
+                            <p className="text-xs text-gray-400 mb-6 font-bold uppercase tracking-wide">+ Govt Fees</p>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Same City/Town</li>
+                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Form INC-22 Filing</li>
+                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Verification</li>
+                            </ul>
+                            <button onClick={() => handlePlanSelect('same_city')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Select Local
+                            </button>
+                        </motion.div>
+
+                        {/* SAME ROC */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">State Shift</h3>
+                            <div className="text-4xl font-black text-navy mb-2">₹4,999</div>
+                            <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-widest">+ Govt Fees</p>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Different City</li>
+                                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Special Resolution</li>
+                                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Form MGT-14 + INC-22</li>
+                            </ul>
+                            <button onClick={() => handlePlanSelect('same_roc')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Select State
+                            </button>
+                        </motion.div>
+
+                        {/* DIFFERENT STATE */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Inter-State</h3>
+                            <div className="text-4xl font-black text-navy mb-2">₹19,999</div>
+                            <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-widest">+ Govt Fees & Ads</p>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> RD Approval</li>
+                                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Form INC-23</li>
+                                <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Newspaper Ads</li>
+                            </ul>
+                            <button onClick={() => handlePlanSelect('different_state')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Select Inter-State
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
                 <div className="lg:col-span-8 space-y-20">
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> Shifting Office?
-                        </h2>
-                        <div className="prose prose-lg text-gray-600">
-                            <p className="lead text-xl text-gray-800 font-medium">
-                                A company must always have a registered office capable of receiving communications. Any change in this address must be reported to the ROC within 30 days to avoid huge penalties (INC-22).
-                            </p>
-                            <p>
-                                The complexity of the process depends on whether you are shifting within the same city, to a different city in the same state, or to a completely different state.
-                            </p>
+                    {/* DETAILED SEO CONTENT SECTION - COMPREHENSIVE GUIDE */}
+                    <section className="mt-10 space-y-12 mb-20">
+                        <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl border border-gray-100">
+                            <h2 className="text-3xl font-bold text-navy mb-8 border-b pb-4">Comprehensive Guide to Shifting Office</h2>
+
+                            <div className="prose prose-slate max-w-none space-y-8 text-gray-700 leading-relaxed">
+
+                                {/* Introduction */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-navy mb-4 flex items-center gap-2">
+                                        <BookOpen className="text-bronze" /> Shifting Office?
+                                    </h3>
+                                    <p className="lead text-xl text-gray-800 font-medium">
+                                        A company must always have a registered office capable of receiving communications. Any change in this address must be reported to the ROC within 30 days to avoid huge penalties (INC-22).
+                                    </p>
+                                    <p>
+                                        The complexity of the process depends on whether you are shifting within the same city, to a different city in the same state, or to a completely different state.
+                                    </p>
+                                </div>
+
+                                {/* Scenarios */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-navy mb-4">Which Process Applies to You?</h3>
+                                    <div className="grid gap-6">
+                                        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-4 items-start">
+                                            <div className="shrink-0"><Building size={32} className="text-blue-600" /></div>
+                                            <div>
+                                                <h4 className="font-bold text-navy text-lg">Scenario 1: Within Same City/Town</h4>
+                                                <p className="text-sm text-gray-600">e.g., Andheri to Bandra (Mumbai). Only verification (INC-22) needed.</p>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-4 items-start">
+                                            <div className="shrink-0"><MapPin size={32} className="text-purple-600" /></div>
+                                            <div>
+                                                <h4 className="font-bold text-navy text-lg">Scenario 2: Different City (Same State)</h4>
+                                                <p className="text-sm text-gray-600">e.g., Mumbai to Pune. Needs RD Approval (Form INC-23).</p>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-4 items-start">
+                                            <div className="shrink-0"><Truck size={32} className="text-orange-600" /></div>
+                                            <div>
+                                                <h4 className="font-bold text-navy text-lg">Scenario 3: Inter-State Transfer</h4>
+                                                <p className="text-sm text-gray-600">e.g., Karnataka to Tamil Nadu. Complex process involving Central Govt approval.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Inter-State Process */}
+                                <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+                                    <h3 className="text-xl font-bold text-navy mb-4">Process for Inter-State Shifting</h3>
+                                    <ul className="space-y-4">
+                                        {[
+                                            "Pass Board Resolution and Special Resolution in EGM.",
+                                            "File MGT-14 with ROC within 30 days.",
+                                            "File INC-23 with the Regional Director (RD) seeking approval.",
+                                            "Publish notice in one English and one Vernacular newspaper.",
+                                            "Obtain RD order, file INC-28, and finally INC-22."
+                                        ].map((step, i) => (
+                                            <li key={i} className="flex gap-3 text-sm text-gray-700">
+                                                <div className="font-bold text-bronze">{i + 1}.</div> {step}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
-                    {/* SCENARIO GUIDE */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Which Process Applies to You?</h2>
-                        <div className="grid gap-6">
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-6 items-start">
-                                <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
-                                    <Building size={32} />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-navy mb-2">Scenario 1: Within Same City/Town</h3>
-                                    <p className="text-gray-600 mb-3 text-sm">Example: Moving from Andheri to Bandra (Mumbai).</p>
-                                    <div className="inline-flex gap-2">
-                                        <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded border border-green-100">Simple</span>
-                                        <span className="px-3 py-1 bg-gray-50 text-gray-600 text-xs font-bold rounded border border-gray-200">Form INC-22</span>
-                                    </div>
-                                </div>
+                    {/* MANDATORY DELIVERABLES */}
+                    <section className="mb-20">
+                        <h2 className="text-3xl font-bold text-navy mb-8">What You Will Receive</h2>
+                        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+                            <div className="p-6 bg-navy text-white">
+                                <p className="text-sm opacity-80">Legal proof of your new address.</p>
                             </div>
-
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-6 items-start">
-                                <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shrink-0">
-                                    <MapPin size={32} />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-navy mb-2">Scenario 2: Different City (Same State)</h3>
-                                    <p className="text-gray-600 mb-3 text-sm">Example: Moving from Mumbai to Pune (Same State but different ROC jurisdiction).</p>
-                                    <div className="inline-flex gap-2">
-                                        <span className="px-3 py-1 bg-yellow-50 text-yellow-700 text-xs font-bold rounded border border-yellow-100">Moderate</span>
-                                        <span className="px-3 py-1 bg-gray-50 text-gray-600 text-xs font-bold rounded border border-gray-200">INC-23 + RD Approval</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-6 items-start">
-                                <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 shrink-0">
-                                    <Truck size={32} />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-navy mb-2">Scenario 3: Inter-State Transfer</h3>
-                                    <p className="text-gray-600 mb-3 text-sm">Example: Moving from Bangalore (Karnataka) to Chennai (Tamil Nadu).</p>
-                                    <div className="inline-flex gap-2">
-                                        <span className="px-3 py-1 bg-red-50 text-red-700 text-xs font-bold rounded border border-red-100">Complex</span>
-                                        <span className="px-3 py-1 bg-gray-50 text-gray-600 text-xs font-bold rounded border border-gray-200">Central Govt Approval + Ads</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* INTER STATE PROCESS */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Process for Inter-State Shifting</h2>
-                        <div className="bg-slate-50 rounded-3xl p-8 border border-slate-200">
-                            <ul className="space-y-6">
+                            <div className="divide-y divide-gray-100">
                                 {[
-                                    { title: "Board & General Meeting", desc: "Pass Board Resolution and Special Resolution in EGM." },
-                                    { title: "MGT-14 Filing", desc: "File Special Resolution with ROC within 30 days." },
-                                    { title: "Application to Federal Govt", desc: "File INC-23 with the Regional Director (RD) seeking approval." },
-                                    { title: "Newspaper Advertisement", desc: "Publish notice in one English and one Vernacular newspaper." },
-                                    { title: "Final Approval & Filing", desc: "Obtain RD order, file INC-28, and finally INC-22." },
-                                ].map((step, i) => (
-                                    <li key={i} className="flex gap-4">
-                                        <div className="w-8 h-8 rounded-full bg-navy text-white flex items-center justify-center font-bold text-sm shrink-0">
-                                            {i + 1}
+                                    { name: "Filing Receipt", type: "INC-22 / INC-23", due: "Immediate" },
+                                    { name: "Rent Agreement Draft", type: "Word/PDF", due: "Day 1" },
+                                    { name: "NOC from Owner", type: "Legal Draft", due: "Day 1" },
+                                    { name: "Board Resolution", type: "Draft", due: "Day 1" },
+                                    { name: "New COI", type: "Certificate", due: "State Change Only" }
+                                ].map((row, i) => (
+                                    <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-6 hover:bg-gray-50 transition">
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-navy text-lg">{row.name}</h4>
                                         </div>
-                                        <div>
-                                            <h4 className="font-bold text-navy">{step.title}</h4>
-                                            <p className="text-sm text-gray-600">{step.desc}</p>
+                                        <div className="md:w-1/3 mt-2 md:mt-0">
+                                            <span className="text-sm text-slate-500 font-medium uppercase tracking-wider">Format</span>
+                                            <p className="text-bronze-dark font-semibold">{row.due}</p>
                                         </div>
-                                    </li>
+                                        <div className="md:w-1/6 mt-2 md:mt-0 text-right">
+                                            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-navy">
+                                                {row.type}
+                                            </span>
+                                        </div>
+                                    </div>
                                 ))}
-                            </ul>
-                        </div>
-                    </section>
-
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-3 gap-6">
-                            {/* SAME CITY */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Fastest</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Local Shift</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹1,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Same City/Town</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Form INC-22 Filing</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Verification</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('same_city')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Local</button>
-                            </div>
-
-                            {/* SAME ROC */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">State Shift</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹4,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Different City</li>
-                                    <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Special Resolution</li>
-                                    <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Form MGT-14 + INC-22</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('same_roc')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select State</button>
-                            </div>
-
-                            {/* DIFFERENT STATE */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Inter-State</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹19,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees & Ads</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> RD Approval</li>
-                                    <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Form INC-23</li>
-                                    <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Newspaper Ads</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('different_state')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Inter-State</button>
                             </div>
                         </div>
                     </section>

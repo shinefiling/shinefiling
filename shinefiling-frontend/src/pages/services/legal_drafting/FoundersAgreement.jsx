@@ -1,6 +1,9 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Target, Users, Briefcase, FileText, Scale, HelpCircle, Shield, BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
+import {
+    CheckCircle, Target, Users, Briefcase, FileText, Scale, HelpCircle, Shield,
+    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck, X, AlertTriangle
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FoundersAgreement = ({ isLoggedIn }) => {
@@ -15,11 +18,12 @@ const FoundersAgreement = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "When should we sign this?", a: "Ideally, as soon as you start working together on the idea, even before incorporation." },
-        { q: "What is Vesting?", a: "Vesting ensures founders earn their equity over time (usually 4 years). If they leave early, they don't walk away with full equity." },
-        { q: "Is it legally binding?", a: "Yes, once signed by all parties, it acts as a legally binding contract governing the co-founder relationship." },
-        { q: "Can we modify it later?", a: "Yes, it can be amended with mutual consent of all founders as the startup evolves." },
-        { q: "What about IP assignment?", a: "The agreement mandates that all IP created by founders belongs to the company, not individuals." },
+        { q: "When should we sign this?", a: "Ideally, as soon as you start working together on the idea, even before incorporation. Signing it early prevents 'equity anxiety' and ensures everyone is aligned on the long-term vision." },
+        { q: "What is Vesting?", a: "Vesting ensures founders earn their equity over time (usually 4 years). If a founder leaves after 1 year, they only keep 25% of their equity (if 4-year vesting). This protects the company from 'dead equity' on the cap table." },
+        { q: "Is it legally binding?", a: "Yes, once signed by all parties, it acts as a legally binding contract governing the co-founder relationship. It can be enforced in a court of law." },
+        { q: "Can we modify it later?", a: "Yes, startup dynamics change rapidly. The agreement can be amended at any time with the mutual consent of all founders. Typically, this happens during a pivot or a new funding round." },
+        { q: "What about IP assignment?", a: "The agreement mandates that all Intellectual Property (code, designs, business models) created by founders belongs to the company, not individuals. This is CRITICAL for investors." },
+        { q: "What is a Cliff Period?", a: "The 'Cliff' is usually a 1-year period before any equity vests. If a founder leaves before 1 year, they get nothing. This tests commitment." },
     ];
 
     return (
@@ -78,7 +82,7 @@ const FoundersAgreement = ({ isLoggedIn }) => {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Agreement</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Secure your startup's future. Define equity split, vesting schedules, roles, and exit strategies with a rock-solid agreement.
+                                    Secure your startup's future. Define <strong>Equity Split</strong>, <strong>Vesting Schedules</strong>, and <strong>Exit Strategies</strong> with a rock-solid agreement.
                                 </p>
                             </motion.div>
 
@@ -110,10 +114,10 @@ const FoundersAgreement = ({ isLoggedIn }) => {
 
                             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
-                                    Draft Now
+                                    Start Drafting
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
-                                    <BookOpen size={18} /> Learn More
+                                    <BookOpen size={18} /> Learn Benefits
                                 </button>
                             </div>
                         </div>
@@ -127,16 +131,16 @@ const FoundersAgreement = ({ isLoggedIn }) => {
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
                                 <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Startup</div>
-                                <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Founder Package</h3>
+                                <div className="text-center mb-6 mt-4">
+                                    <h3 className="text-navy font-bold text-xl mb-2">Standard Plan</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹3,999</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ Agreement</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Lawyer Drafted</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["Detailed Clause Drafting", "Vesting Schedule Design", "Role definition", "Exit Strategy Planning", "2 Rounds of Revisions"].map((item, i) => (
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {["Detailed Clause Drafting", "Vesting Schedule Design", "Role & Power Definition", "Exit Strategy Strategy", "2 Rounds of Revisions"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
@@ -144,11 +148,9 @@ const FoundersAgreement = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('founder_package')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Start Drafting <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -156,25 +158,150 @@ const FoundersAgreement = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+            {/* --- PRICING SECTION --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Startup Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Invest in Clarity</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: BASIC (Template) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
+                            <p className="text-slate-500 text-sm mb-6">Standard Founder Template.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹1,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹3,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Standard Template</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Word/PDF Format</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Basic Vesting Clause</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> Customization</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Basic</button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD (Custom) - POPULAR */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
+                            <p className="text-gray-400 text-sm mb-6">Tailored for your Startup.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹3,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹6,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Custom Drafting</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Custom Vesting Schedule</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> IP Assignment Clauses</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Quick Delivery</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Standard</button>
+                        </motion.div>
+
+                        {/* PLAN 3: PREMIUM */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Premium</h3>
+                            <p className="text-slate-500 text-sm mb-6">Consultation + Complex Terms.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹6,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹10,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Senior Lawyer Consult</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Complexity (Series A+)</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Unlimited Revisions</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Priority Support</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Premium</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Key Inclusions Section */}
+                    {/* Intro Section */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <Target className="text-bronze" /> Key Inclusions
+                            <Target className="text-bronze" /> Introduction
+                        </h2>
+                        <div className="prose prose-lg text-gray-600">
+                            <p className="lead text-xl text-gray-800 font-medium">
+                                A <strong>Founders' Agreement</strong> is the "prenup" for your startup co-founders. It is arguably the most critical document you will sign in the early stages of your venture.
+                            </p>
+                            <p>
+                                It is designed to prevent future conflicts by clearly answering difficult "What if?" scenarios upfront: What if a founder leaves? What if we disagree on a pivot? Who owns the code? ShineFiling helps you draft a balanced, forward-looking agreement that protects both the business entity and the individuals involved.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* VESTING Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
+                            <Clock className="text-bronze" /> Understanding Vesting
+                        </h2>
+                        <div className="bg-slate-50 p-8 rounded-2xl border border-slate-200">
+                            <p className="text-gray-700 mb-6">
+                                <strong>Vesting</strong> is a mechanism where founders earn their equity over time rather than getting it all on Day 1. This ensures long-term commitment.
+                            </p>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="bg-white p-5 rounded-xl shadow-sm">
+                                    <h4 className="font-bold text-navy mb-2 text-lg">Standard Vesting (4 Years)</h4>
+                                    <p className="text-sm text-slate-600">Founders earn 25% of their equity each year for 4 years. If they leave after 2 years, they keep 50% and forfeit 50%.</p>
+                                </div>
+                                <div className="bg-white p-5 rounded-xl shadow-sm">
+                                    <h4 className="font-bold text-navy mb-2 text-lg">One Year Cliff</h4>
+                                    <p className="text-sm text-slate-600">A probation period. If a founder leaves within the first 12 months, they walk away with 0% equity. This filters out short-termers.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Importance/Features Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
+                            <Shield className="text-bronze" /> Why a Written Agreement?
                         </h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Equity Ownership", desc: "Clear cap table split among co-founders." },
-                                { title: "Vesting Schedule", desc: "4-year vesting with 1-year cliff to ensure commitment." },
-                                { title: "Roles & Responsibilities", desc: "Who does what (CEO, CTO, COO etc)." },
-                                { title: "Decision Making", desc: "Voting rights and deadlock resolution mechanisms." },
-                                { title: "Exit Strategy", desc: "Buyback rights and tag-along/drag-along clauses." },
-                                { title: "IP Assignment", desc: "Transfer of all IP to the company entity." },
+                                { title: "Clear Equity Split", desc: "No ambiguity on who owns how much of the company (e.g., 50-50 vs 60-40)." },
+                                { title: "IP Protection", desc: "Ensures all IP (Code, Brand, Data) belongs to the Company, not the individual founder." },
+                                { title: "Role Clarity", desc: "Defines who is CEO, CTO, etc., and what their specific decision-making powers are." },
+                                { title: "Deadlock Resolution", desc: "Clear mechanism (e.g., Advisor vote) to solve disputes when founders disagree 50-50." },
+                                { title: "Exit Strategy", desc: "Pre-agreed terms for buyback (Right of First Refusal) if a founder wants to sell shares." },
+                                { title: "Investor Readiness", desc: "Investors will NOT invest in a startup without a clear, signed Founders Agreement." },
                             ].map((item, i) => (
                                 <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
                                     <div className="flex items-start gap-4">
@@ -189,36 +316,73 @@ const FoundersAgreement = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Startup Founder Package</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹3,999</div>
-                                <p className="text-xs text-gray-400 mb-6">/ Agreement</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Full Customization</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Lawyer Review</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Edit Revisions</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('founder_package')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Package</button>
-                            </div>
+                    {/* Common Mistakes */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
+                            <AlertTriangle className="text-red-500" /> Common Mistakes to Avoid
+                        </h2>
+                        <div className="space-y-4">
+                            {[
+                                "Splitting equity 50-50 just to be 'nice' without considering value add.",
+                                "Not having a Vesting Schedule (Huge risk if a co-founder quits early).",
+                                "Forgetting IP Assignment (The departing founder could claim ownership of the code).",
+                                "Vague roles (Leading to 'Too many cooks in the kitchen' scenarios)."
+                            ].map((mistake, i) => (
+                                <div key={i} className="flex items-center gap-3 p-4 bg-red-50 rounded-xl border border-red-100 text-red-800">
+                                    <X size={18} className="flex-shrink-0" />
+                                    <span className="font-medium text-sm">{mistake}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                            {/* Consultation */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Consultation Only</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹1,999</div>
-                                <p className="text-xs text-slate-400 mb-6">/ Session</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Discuss Terms</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Expert Advice</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Structure Planning</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('consultation')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Book Consultation</button>
+                    {/* Key Clauses Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6">Key Clauses We Draft</h2>
+                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+                            <p className="mb-6 text-gray-600">Our agreement covers:</p>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8">
+                                {[
+                                    "Ownership Structure", "Vesting & Cliff", "IP Assignment",
+                                    "Roles & Responsibilities", "Compensation/Salary", "Decision Making (Voting)",
+                                    "Non-Compete", "Termination Clause", "Dispute Resolution"
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <Scale size={18} className="text-bronze flex-shrink-0" />
+                                        <span className="font-medium text-gray-700">{item}</span>
+                                    </div>
+                                ))}
                             </div>
+                        </div>
+                    </section>
+
+                    {/* Process Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Drafting Process</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Founder Questionnaire", days: "Day 1", desc: "We ask the hard questions about equity, leaving scenarios, and roles." },
+                                { step: "Step 2", title: "Structure Consulting", days: "Day 1", desc: "We advise on standard market practices for vesting and cliffs (for Premium)." },
+                                { step: "Step 3", title: "Drafting", days: "Day 2-3", desc: "Creating the first draft of the agreement based on your inputs." },
+                                { step: "Step 4", title: "Finalization", days: "Day 4", desc: "Reviewing with all founders and finalizing the document for signature." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-navy font-bold text-sm">{item.days}</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
@@ -268,9 +432,7 @@ const FoundersAgreement = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Complex Structure?</h4>
                             <p className="text-gray-300 text-sm mb-4">Need help designing the vesting schedule or equity pools?</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Talk to Expert
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -279,5 +441,6 @@ const FoundersAgreement = ({ isLoggedIn }) => {
         </div>
     );
 };
-
 export default FoundersAgreement;
+
+

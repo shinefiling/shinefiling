@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../components/Navbar';
 import { submitShareholdersAgreement } from '../../../api';
-import { ArrowLeft, Loader, CheckCircle } from 'lucide-react';
+import { uploadFile } from '../../../utils/uploadFile';
+import { ArrowLeft, Loader, CheckCircle, Upload } from 'lucide-react';
 
 const ApplyShareholdersAgreement = () => {
     const navigate = useNavigate();
@@ -16,6 +17,7 @@ const ApplyShareholdersAgreement = () => {
         email: '',
         mobile: ''
     });
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     useEffect(() => {
         const userStr = localStorage.getItem('user');
@@ -27,13 +29,41 @@ const ApplyShareholdersAgreement = () => {
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+    const handleFileChange = (e) => {
+        if (e.target.files) {
+            setSelectedFiles(Array.from(e.target.files));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await submitShareholdersAgreement(formData);
+            const finalPayload = {
+                submissionId: `SHAREHOLDER-${Date.now()}`,
+                userEmail: formData.email,
+                plan: "standard",
+                amountPaid: 2999,
+                status: "INITIATED",
+                formData: formData,
+                documents: [],
+                automationQueue: []
+            };
+
+            const uploadedDocs = [];
+            for (const file of selectedFiles) {
+                const url = await uploadFile(file);
+                uploadedDocs.push({
+                    documentType: "User Upload",
+                    fileName: file.name,
+                    fileUrl: url
+                });
+            }
+            finalPayload.documents = uploadedDocs;
+
+            await submitShareholdersAgreement(finalPayload);
             setSuccess(true);
-            setTimeout(() => navigate('/dashboard'), 2000);
+            setTimeout(() => navigate('/dashboard?tab=orders'), 2000);
         } catch (err) { setError(err.message || 'Failed'); } finally { setLoading(false); }
     };
 
@@ -52,6 +82,26 @@ const ApplyShareholdersAgreement = () => {
                             <div><label className="block text-sm font-medium mb-2">Company Name</label><input type="text" name="companyName" value={formData.companyName} onChange={handleChange} required className="w-full border rounded-lg p-3" /></div>
                             <div><label className="block text-sm font-medium mb-2">Shareholder Names (Separate by comma)</label><textarea name="shareholderNames" value={formData.shareholderNames} onChange={handleChange} required rows="3" className="w-full border rounded-lg p-3" placeholder="e.g. John Doe, Jane Smith"></textarea></div>
                             <div><label className="block text-sm font-medium mb-2">Share Capital Details (Authorized/Paid-up)</label><textarea name="shareCapitalDetails" value={formData.shareCapitalDetails} onChange={handleChange} required rows="3" className="w-full border rounded-lg p-3" placeholder="e.g. Authorized Capital: 10 Lakhs, Paid-up: 1 Lakh"></textarea></div>
+
+
+                            <div className="border-t border-gray-100 pt-6">
+                                <h3 className="text-lg font-bold text-gray-800 mb-4">Upload Documents (Optional)</h3>
+                                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer relative">
+                                    <input type="file" multiple onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                                    <Upload className="mx-auto text-gray-400 mb-2" size={32} />
+                                    <p className="text-sm text-gray-600 font-medium">Click to upload drafts or notes</p>
+                                    <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG allowed</p>
+                                    {selectedFiles.length > 0 && (
+                                        <div className="mt-4 text-left">
+                                            <p className="text-sm font-bold text-green-600 mb-2">Selected Files:</p>
+                                            <ul className="text-xs text-gray-600 space-y-1">
+                                                {selectedFiles.map((f, i) => <li key={i} className="flex items-center gap-1"><CheckCircle size={10} /> {f.name}</li>)}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
                             <button type="submit" disabled={loading} className="w-full bg-slate-800 text-white font-bold py-4 rounded-xl hover:bg-slate-700 transition flex justify-center">{loading ? <Loader className="animate-spin" /> : 'Submit'}</button>
                         </form>
                     )}

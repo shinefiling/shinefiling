@@ -11,6 +11,8 @@ public class BarLiquorRequest {
     private String state;
     private String licenseType; // RETAIL, BAR, WHOLESALE, BREWERY, EVENT
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private BarLiquorFormData formData;
     private List<UploadedDocumentDTO> documents;

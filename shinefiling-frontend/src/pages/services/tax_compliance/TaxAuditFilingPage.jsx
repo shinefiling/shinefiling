@@ -1,22 +1,26 @@
-import TaxAuditRegistration from './TaxAuditRegistration';
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Truck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+    CheckCircle, ArrowRight, Star, Shield, Users, Landmark, Globe, FileCheck, Check, X, Calendar, Zap, Clock, Award, ShieldCheck, Sparkles, ChevronDown, Search, Briefcase, CreditCard, Layers, History, HelpCircle, Gavel, ClipboardCheck, Scale, FileText, Activity, Calculator, Banknote, Handshake
+} from 'lucide-react';
+import TaxAuditRegistration from './TaxAuditRegistration';
 
 const TaxAuditFilingPage = ({ isLoggedIn }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState('basic');
+    const [selectedPlan, setSelectedPlan] = useState('standard');
     const navigate = useNavigate();
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const faqs = [
-        { q: "What is the limit for Tax Audit?", a: "It is mandatory if business turnover exceeds ₹1 Cr. The limit is increased to ₹10 Cr if cash receipts and payments are less than 5%." },
-        { q: "What about Professionals?", a: "For professionals, tax audit is mandatory if gross receipts exceed ₹50 Lakhs." },
-        { q: "What forms are filed?", a: "Form 3CA/3CB (Audit Report) and Form 3CD (Statement of Particulars) must be filed electronically." },
-        { q: "Who conducts the audit?", a: "A practicing Chartered Accountant (CA) must conduct the audit and sign the report." },
-        { q: "What is the due date?", a: "The due date for filing the Tax Audit Report is typically 30th September of the assessment year." },
+        { q: "What is the turnover limit for Tax Audit?", a: "Mandatory if business turnover exceeds ₹1 Cr. For businesses with >95% digital transactions, the limit is ₹10 Cr. For professionals, it's ₹50 Lakhs." },
+        { q: "What are the common audit forms?", a: "Form 3CA (for entities already audited under other laws), Form 3CB (for other entities), and Form 3CD (detailed statement of particulars)." },
+        { q: "Who can sign the Tax Audit Report?", a: "Only a practicing Chartered Accountant (CA) can conduct the audit and digitally sign the report using their DSC." },
+        { q: "What is the penalty for non-compliance?", a: "Under Section 271B, the penalty is 0.5% of turnover or ₹1,50,000, whichever is lower." },
+        { q: "What is the due date for filing?", a: "The statutory due date is 30th September of the assessment year (one month before the ITR filing due date)." },
+        { q: "Can a tax audit report be revised?", a: "Yes, it can be revised if there is a change in law or for specific calculation errors, provided a reason is mentioned in the revised report." }
     ];
 
     const handlePlanSelect = (plan) => {
@@ -24,28 +28,62 @@ const TaxAuditFilingPage = ({ isLoggedIn }) => {
             setSelectedPlan(plan);
             setShowRegisterModal(true);
         } else {
-            const url = window.location.pathname;
-            navigate('/login', { state: { from: url } });
+            navigate('/login', { state: { from: window.location.pathname } });
         }
     };
 
     return (
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
 
-            {/* HERO SECTION */}
+            {/* HERO SECTION - PREMIUM DARK THEME */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
+                {/* Background Image with Overlay */}
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80&w=2070"
-                        alt="Background"
+                        src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&q=80&w=2070"
+                        alt="Audit Architecture"
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-navy/95 via-navy/90 to-navy/80 mix-blend-multiply"></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-navy to-transparent"></div>
+
+                    {/* Animated Blob */}
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            opacity: [0.3, 0.5, 0.3],
+                        }}
+                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute -top-20 -right-20 w-96 h-96 bg-bronze/20 rounded-full blur-3xl mix-blend-overlay"
+                    />
+                </div>
+
+                {/* Animated Background Elements */}
+                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            opacity: [0.1, 0.2, 0.1],
+                            rotate: [0, 45, 0]
+                        }}
+                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-bronze/20 rounded-full blur-[120px]"
+                    />
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.1, 1],
+                            opacity: [0.1, 0.15, 0.1],
+                            x: [0, -50, 0]
+                        }}
+                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/20 rounded-full blur-[100px]"
+                    />
                 </div>
 
                 <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
+
+                        {/* Hero Content - Left Aligned */}
                         <div className="flex-1 text-center lg:text-left space-y-8">
                             <motion.div
                                 initial={{ opacity: 0, y: 30 }}
@@ -53,14 +91,14 @@ const TaxAuditFilingPage = ({ isLoggedIn }) => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-                                    <Star size={12} className="fill-bronze" /> Statutory Mandate
+                                    <Gavel size={12} className="fill-bronze" /> Sec 44AB Mandate Layer
                                 </span>
-                                <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
-                                    Tax Audit <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Report Filing</span>
+                                <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6 text-white tracking-tight">
+                                    Tax <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white italic uppercase">Audit Protocol</span>
                                 </h1>
-                                <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Compulsory audit by a Chartered Accountant for businesses with high turnover. Ensure 100% compliance with Income Tax Act.
+                                <p className="text-gray-300 text-xl max-w-xl font-light leading-relaxed">
+                                    High-stakes <strong className="text-white font-semibold">Form 3CA/CB/CD</strong> certification. Expert scrutiny for businesses exceeding the ₹1Cr - ₹10Cr turnover thresholds.
                                 </p>
                             </motion.div>
 
@@ -72,205 +110,356 @@ const TaxAuditFilingPage = ({ isLoggedIn }) => {
                             >
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <Clock size={20} />
+                                        <Calendar size={20} />
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Due Date</p>
-                                        <p className="font-bold text-sm text-white">30th Sep</p>
+                                        <p className="font-bold text-sm text-white">30 September</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <Users size={20} />
+                                        <Award size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Auditors</p>
-                                        <p className="font-bold text-sm text-white">Expert CAs</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Certification</p>
+                                        <p className="font-bold text-sm text-white">CA DSC Verified</p>
                                     </div>
                                 </div>
                             </motion.div>
 
-                            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
-                                    Book Audit Now
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.6 }}
+                                className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+                            >
+                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                    Initialize Audit
                                 </button>
-                            </div>
+                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                    <Globe size={18} /> Learn More
+                                </button>
+                            </motion.div>
                         </div>
 
-                        {/* Pricing Card */}
+                        {/* Hero Floating Card */}
+                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Best Value</div>
-                                <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Standard Plan</h3>
-                                    <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹9,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">+ GST</span>
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                                {/* Top Gold Line (Matching other pages) */}
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+
+                                {/* Header - COMPACT */}
+                                <div className="flex flex-col items-center justify-center text-center mb-5 mt-2">
+                                    <div className="mb-3 relative">
+                                        <div className="w-14 h-14 rounded-full bg-bronze/10 flex items-center justify-center">
+                                            <Shield size={28} className="text-bronze fill-bronze/20" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle size={14} className="text-green-500 fill-white" />
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Turnover 2-5Cr</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">
+                                        Official <br />Registration
+                                    </h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">Tax Audit Filing</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["Detailed Books Verification", "Form 3CA/3CB Preparation", "Form 3CD Filing", "Compliance Check", "CA Sign & Certify"].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                                            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
-                                            <span className="leading-snug">{item}</span>
+
+                                {/* Divider */}
+                                <div className="h-px w-full bg-slate-100 mb-5"></div>
+
+                                {/* Stats Grid - COMPACT */}
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    {/* Left Stat */}
+                                    <div className="text-center relative">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Handshake size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">100%</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Process <br />Online</p>
+                                        <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
+                                    </div>
+
+                                    {/* Right Stat */}
+                                    <div className="text-center">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Shield size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Legal</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Protection <br />Assured</p>
+                                    </div>
+                                </div>
+
+                                {/* Check List - COMPACT */}
+                                <div className="space-y-3 mb-6 pl-2">
+                                    {[
+                                        "Vouching of Expenses",
+                                        "Fixed Asset Verification",
+                                        "Loan & Interest Check"
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="bg-green-100 rounded-full p-1 shrink-0">
+                                                <CheckCircle size={12} className="text-green-600" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-xs tracking-wide">{item}</span>
                                         </div>
                                     ))}
                                 </div>
+
+                                {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
-                                    className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
-                                    Start Audit <ArrowRight size={18} />
+                                    Start Registration <ArrowRight size={16} />
                                 </button>
+
+                                <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
+                                    Compare all plans below
+                                </p>
                             </div>
                         </motion.div>
                     </div>
                 </div>
             </div>
 
-            {/* CONTENT SECTION */}
-            <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
+            {/* PRICING */}
+            <section id="pricing-section" className="py-24 px-6 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <History className="text-bronze mx-auto mb-4" size={40} />
+                        <h2 className="text-4xl font-bold text-navy mb-4">Audit Tiers</h2>
+                        <p className="text-slate-500 max-w-2xl mx-auto">Professional fees for statutory compliance and assurance.</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-stretch">
+                        {/* PRESUMPTIVE */}
+                        <div className="bg-white rounded-3xl p-8 border border-gray-200 hover:border-bronze/30 hover:shadow-xl transition-all flex flex-col group">
+                            <h3 className="text-xl font-bold text-navy mb-2">Presumptive</h3>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Review Only</p>
+                            <div className="flex items-baseline gap-2 mb-8">
+                                <span className="text-4xl font-black text-navy">₹2,499</span>
+                                <span className="text-slate-300 line-through text-lg">₹5k</span>
+                            </div>
+                            <ul className="space-y-4 mb-10 flex-1 text-sm text-slate-600">
+                                {["Turnover Verification", "Section 44AD Check", "Profit Margin Analysis", "Draft Computation"].map((f, i) => (
+                                    <li key={i} className="flex gap-3"><CheckCircle size={18} className="text-bronze" /> {f}</li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('presumptive')} className="w-full py-3 bg-slate-50 text-navy font-bold rounded-xl hover:bg-navy hover:text-white transition-colors border border-slate-200">Select Review</button>
+                        </div>
+
+                        {/* STANDARD */}
+                        {/* STANDARD */}
+                        <div className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
+                            {/* Top Gold Line */}
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Most Popular
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Full Audit</h3>
+                            <p className="text-gray-400 text-sm mb-6">Comprehensive expert assisted registration.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹4,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹8k</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {["Detailed Book Scrutiny", "Stock Valuation Check", "Depreciation Schedule", "Form 3CB-3CD Filing", "Compliance Report"].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Start Audit
+                            </button>
+                        </div>
+
+                        {/* CORPORATE */}
+                        <div className="bg-white rounded-3xl p-8 border border-gray-200 hover:border-bronze/30 hover:shadow-xl transition-all flex flex-col group">
+                            <h3 className="text-xl font-bold text-navy mb-2">Corporate</h3>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Complex Cases</p>
+                            <div className="flex items-baseline gap-2 mb-8">
+                                <span className="text-4xl font-black text-navy">₹9,999</span>
+                                <span className="text-slate-300 line-through text-lg">₹15k</span>
+                            </div>
+                            <ul className="space-y-4 mb-10 flex-1 text-sm text-slate-600">
+                                {["Multi-Location Audit", "Transfer Pricing (Preliminary)", "Detailed Management Letter", "Internal Control Check"].map((f, i) => (
+                                    <li key={i} className="flex gap-3"><CheckCircle size={18} className="text-bronze" /> {f}</li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('corporate')} className="w-full py-3 bg-slate-50 text-navy font-bold rounded-xl hover:bg-navy hover:text-white transition-colors border border-slate-200">Select Corporate</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16 text-slate-600 leading-relaxed">
                 <div className="lg:col-span-8 space-y-20">
+                    {/* AUDIT WORKFLOW SECTION */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> What is Tax Audit?
-                        </h2>
-                        <div className="prose prose-lg text-gray-600">
-                            <p className="lead text-xl text-gray-800 font-medium">
-                                Tax Audit involves an examination of a taxpayer's books of accounts and other relevant records. It ensures that the books are maintained in accordance with the Income Tax Act and correctly reflect the taxable income.
-                            </p>
-                        </div>
-                    </section>
-
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Why is it Important?</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
+                        <h2 className="text-3xl font-bold text-navy mb-8">Tax Audit Workflow</h2>
+                        <div className="space-y-6">
                             {[
-                                { title: "Ensure Accuracy", desc: "Verifies the correctness of income tax returns filed and deductions claimed.", icon: CheckCircle },
-                                { title: "Avoid Penalty", desc: "Penalty for non-filing is 0.5% of turnover (up to ₹1.5 Lakhs).", icon: Shield },
-                                { title: "Bank Loans", desc: "Audited financial statements are highly credible and essential for sanctioning large business loans.", icon: TrendingUp },
-                                { title: "Identify Errors", desc: "Helps in detecting discrepancies in accounting methods and rectifying them.", icon: Scale },
-                            ].map((benefit, i) => (
-                                <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-beige transition group">
-                                    <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
-                                        <benefit.icon size={28} />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-navy mb-2 text-lg">{benefit.title}</h4>
-                                        <p className="text-sm text-gray-600 leading-relaxed">{benefit.desc}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-
-                    {/* AUDIT FORMS EXPLAINED */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Understanding Audit Forms</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {[
-                                { form: "Form 3CA", for: "Companies", desc: "Applicable for businesses where accounts are already audited under any other law (e.g., Companies Act)." },
-                                { form: "Form 3CB", for: "Others", desc: "Applicable for businesses/professionals where accounts are NOT required to be audited under any other law (e.g., Proprietorships, Partnerships)." },
-                                { form: "Form 3CD", for: "Everyone", desc: "A detailed statement of particulars (approx 44 clauses) containing various compliance details reported by the CA." },
+                                { step: "Step 1", title: "Document Collation", desc: "Gather all bank statements, purchase/sales registers, expense vouchers, and previous year's audit reports." },
+                                { step: "Step 2", title: "CA Scrutiny", desc: "Our Chartered Accountants perform physical or digital vouching of entries to ensure compliance with Income Tax Act modules." },
+                                { step: "Step 3", title: "Draft Report (3CD)", desc: "A draft Form 3CD is prepared with all factual observations, tax disallowances, and compliance notes." },
+                                { step: "Step 4", title: "Final Filing", desc: "The report is digitally signed by the CA (UDIN generation) and uploaded to the Income Tax Portal for your approval." },
                             ].map((item, i) => (
-                                <div key={i} className={`bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition ${i === 2 ? 'md:col-span-2' : ''}`}>
-                                    <h4 className="text-xl font-bold text-navy mb-1">{item.form}</h4>
-                                    <span className="inline-block px-2 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded mb-3">
-                                        For: {item.for}
-                                    </span>
-                                    <p className="text-sm text-gray-600 leading-relaxed">
-                                        {item.desc}
-                                    </p>
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-navy font-bold text-sm">Phase</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </section>
 
-                    {/* PENALTY WARNING */}
+                    {/* AUDIT FORMS TABLE */}
                     <section>
-                        <div className="bg-red-50 border border-red-100 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8">
-                            <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-600 shrink-0">
-                                <Shield size={32} />
-                            </div>
-                            <div>
-                                <h3 className="text-2xl font-bold text-navy mb-2">Penalty for Non-Compliance</h3>
-                                <p className="text-gray-700 leading-relaxed max-w-2xl">
-                                    If a taxpayer who is required to get their accounts audited fails to do so, the penalty under <strong>Section 271B</strong> is:
-                                </p>
-                                <ul className="mt-4 space-y-2">
-                                    <li className="flex items-center gap-2 text-red-700 font-bold">
-                                        <X size={16} /> 0.5% of total sales/turnover
-                                    </li>
-                                    <li className="text-sm text-gray-500 pl-6">OR</li>
-                                    <li className="flex items-center gap-2 text-red-700 font-bold">
-                                        <X size={16} /> ₹1,50,000
-                                    </li>
-                                </ul>
-                                <p className="mt-2 text-sm text-gray-500 italic">(Whichever is lower)</p>
-                            </div>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Standard Audit Forms</h2>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse rounded-2xl overflow-hidden shadow-sm">
+                                <thead>
+                                    <tr className="bg-navy text-white">
+                                        <th className="p-4 text-sm font-bold uppercase tracking-wider">Form</th>
+                                        <th className="p-4 text-sm font-bold uppercase tracking-wider">Applicability</th>
+                                        <th className="p-4 text-sm font-bold uppercase tracking-wider">Contents</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-100">
+                                    {[
+                                        { f: "Form 3CA", r: "Entities audited under other laws (e.g., Companies)", c: "Audit Report & Annexures" },
+                                        { f: "Form 3CB", r: "Entities not audited under other laws (e.g., Professionals)", c: "Audit Report & Financial Statements" },
+                                        { f: "Form 3CD", r: "Common for all Audit cases", c: "Detailed 44-point statement of particulars" },
+                                        { f: "Form 3CE", r: "Non-residents/Foreign Companies", c: "Specific to international transactions" },
+                                    ].map((row, i) => (
+                                        <tr key={i} className="hover:bg-gray-50 transition">
+                                            <td className="p-4 font-bold text-navy border-r border-gray-100">{row.f}</td>
+                                            <td className="p-4 text-slate-600 border-r border-gray-100">{row.r}</td>
+                                            <td className="p-4 text-slate-600">{row.c}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </section>
 
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-3 gap-6">
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Turnover &lt; 2Cr</h3>
-                                <div className="text-3xl font-black text-navy mb-1">₹4,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ GST</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Low Transaction Volume</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Form 3CB-3CD</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Basic Compliance</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Basic</button>
-                            </div>
-
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Turnover 2-5Cr</h3>
-                                <div className="text-3xl font-black text-white mb-1">₹9,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ GST</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Medium Volume</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Detailed Scrutiny</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Dedicated CA</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
-                            </div>
-
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Turnover 5Cr+</h3>
-                                <div className="text-3xl font-black text-navy mb-1">₹14,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ GST</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> High Volume</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Complex Transactions</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Priority Filing</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Premium</button>
-                            </div>
+                    {/* PENALTY TABLE */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Non-Compliance Risks</h2>
+                        <div className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden">
+                            <table className="w-full text-left">
+                                <thead className="bg-orange-50 text-orange-900 border-b border-orange-100">
+                                    <tr>
+                                        <th className="p-4 font-bold text-sm uppercase tracking-wider">Default Case</th>
+                                        <th className="p-4 font-bold text-sm uppercase tracking-wider">Penalty Section</th>
+                                        <th className="p-4 font-bold text-sm uppercase tracking-wider">Penalty Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    <tr className="hover:bg-gray-50 transition">
+                                        <td className="p-4 text-navy font-bold">Delay in filing Audit Report</td>
+                                        <td className="p-4 text-slate-600">271B</td>
+                                        <td className="p-4 text-red-600 font-bold">0.5% of Turnover (Max ₹1.5L)</td>
+                                    </tr>
+                                    <tr className="hover:bg-gray-50 transition">
+                                        <td className="p-4 text-navy font-bold">Incorrect Particulars in 3CD</td>
+                                        <td className="p-4 text-slate-600">270A</td>
+                                        <td className="p-4 text-red-600 font-bold">200% of Tax evaded</td>
+                                    </tr>
+                                    <tr className="hover:bg-gray-50 transition">
+                                        <td className="p-4 text-navy font-bold">Failure to keep books</td>
+                                        <td className="p-4 text-slate-600">271A</td>
+                                        <td className="p-4 text-red-600 font-bold">₹25,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </section>
 
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
-                            <HelpCircle className="text-bronze" /> Frequently Asked Questions
+                            <ShieldCheck className="text-bronze" /> Strategic Assurance
+                        </h2>
+                        <div className="prose prose-lg text-gray-600">
+                            <p className="lead text-lg font-medium">
+                                A <strong>Tax Audit</strong> is more than a compliance tick-box. It provides independent assurance to stakeholders that your <span className="text-navy font-bold underline decoration-bronze decoration-2">Financial Statements</span> are free from material misstatements.
+                            </p>
+                            <div className="mt-12 grid md:grid-cols-2 gap-6">
+                                {[
+                                    { title: "Penalty Shield", desc: "Avoid the flat penalty of 0.5% of turnover for non-compliance.", icon: Shield },
+                                    { title: "Bank Credit", desc: "Audited financials are mandatory for renewing bank OD/CC limits.", icon: Landmark },
+                                    { title: "Error Detection", desc: "Identify accounting errors before the department finds them.", icon: Search },
+                                    { title: "Tax Planning", desc: "Expert advice on deductions and allowances during the audit process.", icon: Calculator },
+                                ].map((box, i) => (
+                                    <div key={i} className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-bronze/30 transition-all group">
+                                        <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-navy mb-4 group-hover:bg-navy group-hover:text-bronze transition-colors">
+                                            <box.icon size={24} />
+                                        </div>
+                                        <h4 className="font-bold text-lg text-navy mb-2">{box.title}</h4>
+                                        <p className="text-sm text-slate-500 leading-relaxed">{box.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-lg">
+                        <div className="bg-navy p-8 flex items-center justify-between text-white">
+                            <h2 className="text-2xl font-bold flex items-center gap-3"><Clock className="text-bronze" /> Audit Thresholds</h2>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm">
+                                <thead className="bg-[#2B3446]/5 text-slate-500 border-b border-gray-200 uppercase tracking-wider font-bold">
+                                    <tr>
+                                        <th className="px-8 py-4">Category</th>
+                                        <th className="px-8 py-4">Revenue Limit</th>
+                                        <th className="px-8 py-4">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 font-medium text-slate-700">
+                                    <tr className="hover:bg-gray-50"><td className="px-8 py-4">Business (Normal)</td><td className="px-8 py-4 text-navy font-bold">&gt; ₹1 Crore</td><td className="px-8 py-4">Mandatory Audit</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-8 py-4">Business (Digital)</td><td className="px-8 py-4 text-navy font-bold">&gt; ₹10 Crore</td><td className="px-8 py-4">Mandatory Audit</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-8 py-4">Professionals</td><td className="px-8 py-4 text-navy font-bold">&gt; ₹50 Lakhs</td><td className="px-8 py-4">Mandatory Audit</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-8 py-4">Presumptive</td><td className="px-8 py-4 text-navy font-bold">Declaring Lower Income</td><td className="px-8 py-4">Mandatory Audit</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
+                            <HelpCircle className="text-bronze" /> Expert Insights
                         </h2>
                         <div className="space-y-4">
                             {faqs.map((faq, i) => (
-                                <details key={i} className="group bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm open:shadow-md transition text-left">
-                                    <summary className="flex justify-between items-center px-6 py-4 cursor-pointer font-bold text-gray-800 hover:bg-gray-50 transition select-none">
-                                        <span className="pr-4">{faq.q}</span>
-                                        <ChevronRight className="text-gray-400 group-open:rotate-90 transition-transform flex-shrink-0" />
+                                <details key={i} className="group bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm transition-all open:shadow-md">
+                                    <summary className="flex justify-between items-center px-6 py-4 cursor-pointer font-bold text-navy hover:bg-gray-50 transition-colors list-none select-none">
+                                        <span>{faq.q}</span>
+                                        <ChevronDown className="group-open:rotate-180 transition-transform text-slate-400" />
                                     </summary>
-                                    <div className="px-6 pb-6 pt-2 text-gray-600 text-sm leading-relaxed border-t border-gray-50">
+                                    <div className="px-6 pb-6 pt-2 text-slate-600 text-sm leading-relaxed border-t border-gray-100">
                                         {faq.a}
                                     </div>
                                 </details>
@@ -281,40 +470,77 @@ const TaxAuditFilingPage = ({ isLoggedIn }) => {
 
                 <div className="lg:col-span-4">
                     <div className="sticky top-32 space-y-8">
-                        <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
+                        <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 relative overflow-hidden">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <FileText className="text-bronze" /> Documents Needed
+                                <ClipboardCheck className="text-bronze" /> Audit Checklist
                             </h3>
-                            <ul className="space-y-4">
-                                <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Balance Sheet & P&L</li>
-                                <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> GST Returns (GSTR-9/9C)</li>
-                                <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Bank Statements</li>
-                                <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Invoice Copies</li>
-                            </ul>
-                            <div className="mt-6 bg-slate-50 p-4 rounded-xl text-xs text-slate-500">
-                                You can upload these in the client dashboard.
+
+                            <div className="space-y-6">
+                                <div>
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">PRIMARY BOOKS</p>
+                                    <ul className="space-y-3">
+                                        {["Cash Book & Bank Book", "Purchase & Sales Register", "Journal Vouchers", "Ledgers"].map((doc, i) => (
+                                            <li key={i} className="flex gap-3 text-sm text-gray-600">
+                                                <CheckCircle size={16} className="text-bronze shrink-0 mt-0.5" /> {doc}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">SUPPORTING</p>
+                                    <ul className="space-y-3">
+                                        {["Stock Valuation Report", "Loan Sanction Letters", "Fixed Asset Register", "TDS Returns"].map((doc, i) => (
+                                            <li key={i} className="flex gap-3 text-sm text-gray-600">
+                                                <CheckCircle size={16} className="text-bronze shrink-0 mt-0.5" /> {doc}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
+
+                            <button className="w-full mt-8 py-3 bg-slate-50 hover:bg-slate-100 text-navy font-bold rounded-xl text-sm transition-colors border border-slate-200">
+                                Download Audit Docs List
+                            </button>
                         </div>
-                        <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">Need Guidance?</h4>
-                            <p className="text-gray-300 text-sm mb-4">Discuss your audit requirements with us.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Talk to Expert
+
+                        <div className="bg-navy text-white p-8 rounded-3xl shadow-lg relative overflow-hidden group">
+
+                            <h4 className="font-bold text-xl mb-4">Lead Auditor</h4>
+                            <p className="text-gray-400 text-sm mb-6 leading-relaxed">Schedule a preliminary discussion with our Lead CA.</p>
+
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shadow-inner">
+                                    <Users size={24} />
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Direct Help</p>
+                                    <p className="font-bold text-xl text-white">080-FILE-SHINE</p>
+                                </div>
+                            </div>
+                            <button className="w-full py-3 bg-bronze text-white rounded-xl font-bold text-sm hover:bg-white hover:text-navy transition-all shadow-lg shadow-bronze/20">
+                                Consult Auditor
                             </button>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <AnimatePresence>
-                    {showRegisterModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                            <div className="relative w-full max-w-6xl max-h-[95vh] rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 bg-white ring-1 ring-white/20">
-                                <TaxAuditRegistration isLoggedIn={isLoggedIn} isModal={true} initialPlan={selectedPlan} onClose={() => setShowRegisterModal(false)} />
+            <AnimatePresence>
+                {showRegisterModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
+                        <div className="relative w-full max-w-6xl max-h-[95vh] rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 bg-white ring-1 ring-white/20">
+                            <div className="absolute top-4 right-4 z-50">
+                                <button onClick={() => setShowRegisterModal(false)} className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition-colors">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <div className="overflow-y-auto max-h-[95vh]">
+                                <TaxAuditRegistration isLoggedIn={isLoggedIn} initialPlan={selectedPlan} onClose={() => setShowRegisterModal(false)} />
                             </div>
                         </div>
-                    )}
-                </AnimatePresence>
-            </div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

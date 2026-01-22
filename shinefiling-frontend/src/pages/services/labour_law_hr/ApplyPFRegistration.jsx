@@ -1,268 +1,304 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Upload, CheckCircle, AlertCircle, FileText, ChevronRight, Save } from 'lucide-react';
-import { submitPFRegistration } from '../../../api';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import {
+    CheckCircle, Upload, FileText,
+    ArrowLeft, ArrowRight, IndianRupee, Lightbulb, AlertTriangle, Users
+} from 'lucide-react';
+import { uploadFile, submitPFRegistration } from '../../../api';
 
-const ApplyPFRegistration = () => {
+const ApplyPFRegistration = ({ isLoggedIn }) => {
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const location = useLocation();
-    const [step, setStep] = useState(1);
-    const [formData, setFormData] = useState({
-        establishmentName: '',
-        establishmentType: 'Company', // Company, Partnership, Proprietorship, etc.
-        employerName: '',
-        contactNumber: '',
-        email: '',
-        address: '',
-        employeeCount: '',
-    });
-    const [documents, setDocuments] = useState({
-        businessProof: null,
-        panCard: null,
-        addressProof: null,
-        employeeList: null
-    });
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
 
-    // Prefill email/mobile if available in user session (optional)
+    const [currentStep, setCurrentStep] = useState(1);
+    const [planType, setPlanType] = useState('standard');
+
+    // Protect Route
     useEffect(() => {
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            const user = JSON.parse(userStr);
-            setFormData(prev => ({
-                ...prev,
-                email: user.email || '',
-                contactNumber: user.mobile || ''
-            }));
+        const storedUser = localStorage.getItem('user');
+        const isReallyLoggedIn = isLoggedIn || !!storedUser;
+
+        if (!isReallyLoggedIn) {
+            navigate('/login', { state: { from: `/services/labour/pf-registration/apply` } });
         }
-    }, []);
+    }, [isLoggedIn, navigate]);
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    useEffect(() => {
+        const plan = searchParams.get('plan');
+        if (plan) setPlanType(plan);
+    }, [searchParams]);
 
-    const handleFileChange = (e, docType) => {
-        if (e.target.files && e.target.files[0]) {
-            setDocuments({ ...documents, [docType]: e.target.files[0] });
-        }
-    };
-
-    // Helper to upload file to a cloud/server (mocked here or use a real upload API if you have one)
-    // For this implementation, we will assume we assume the API handles base64 or multipart.
-    // But our current api.js submit functions typically expect JSON. 
-    // Usually we implemented a file upload to /api/upload separately, or send as Base64. 
-    // Given the previous patterns, I will implement a basic "upload first, get URL" logic if exists, or send generic "File Uploaded" string for demo if no upload endpoint ready.
-    // CHECK: api.js does NOT have a generic uploadFile function. 
-    // The previous implementations usually just sent metadata or expected the backend to handle it.
-    // However, looking at `ApplyTrademarkRegistration.jsx` (implied from context), it likely uses a `uploadFile` helper or handles it.
-    // To match the user's "Implement full" request, I should probably handle file uploads properly.
-    // For now, I will simulate the upload by just passing filenames or base64 if small.
-    // Actually, looking at `submitTrademarkRegistration` in `api.js`, it takes `requestData` as JSON.
-    // I will mock the file upload to return a "path" string for now, or use a placeholder system.
-    // BETTER: I will assume the user has an `/api/upload` endpoint (common in Spring Boot) or I should create one. 
-    // But I can't create generic upload endpoint easily without checking backend.
-    // I will stick to sending metadata JSON and assume "Pending Document Upload" status or similar, OR 
-    // use a simplified flow where we just submit text data first.
-    // But form asks for documents. 
-    // I'll implement a `mockUpload` for now to proceed, or just submit the `formData` and `uploadedDocuments` names.
-
-    // REVISION: I will convert files to Data URLs (Base64) to send in JSON (not efficient but works for small files in this demo context).
-    const fileToBase64 = (file) => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result); // Returns "data:image/png;base64,..."
-        reader.onerror = error => reject(error);
+    const [formData, setFormData] = useState({
+        businessName: '',
+        businessType: 'PVT_LTD',
+        employeeCount: '',
+        incorporationDate: ''
     });
 
-    const handleSubmit = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            // Process documents to Base64 (or URLs if already uploaded)
-            const processedDocs = {};
-            for (const [key, file] of Object.entries(documents)) {
-                if (file) {
-                    // For a real app, upload to S3/Server here and get URL.
-                    // Here we send filename for reference or base64 if backend supports it.
-                    // We'll send a placeholder string "Uploaded: [Filename]" to indicate success.
-                    processedDocs[key] = `File: ${file.name}`;
-                }
-            }
+    const [uploadedFiles, setUploadedFiles] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [apiError, setApiError] = useState(null);
+    const [errors, setErrors] = useState({});
 
-            const payload = {
-                ...formData,
-                uploadedDocuments: processedDocs,
-                status: "Pending Review"
-            };
+    // Plans
+    const plans = {
+        standard: { title: "PF Registration", serviceFee: 1999 },
+    };
 
-            await submitPFRegistration(payload);
-            navigate('/dashboard?tab=orders'); // Redirect to orders
-        } catch (err) {
-            setError(err.message || "Submission failed");
-        } finally {
-            setLoading(false);
+    const getTotalPrice = () => {
+        return (plans[planType]?.serviceFee || 1999);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
+    };
+
+    const validateStep = (step) => {
+        const newErrors = {};
+        let isValid = true;
+
+        if (step === 1) { // Details
+            if (!formData.businessName) { newErrors.businessName = "Business Name required"; isValid = false; }
+            if (!formData.employeeCount) { newErrors.employeeCount = "Employee count required"; isValid = false; }
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    const handleNext = () => {
+        if (validateStep(currentStep)) {
+            setCurrentStep(prev => Math.min(3, prev + 1));
         }
     };
 
-    return (
-        <div className="min-h-screen bg-slate-50 pb-12">
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition">
-                            <ArrowLeft size={20} />
-                        </button>
-                        <h1 className="text-lg font-bold text-slate-800">PF Registration Application</h1>
-                    </div>
-                    <div className="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-                        Step {step} of 2
-                    </div>
-                </div>
-            </div>
+    const handleFileUpload = async (e, key) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {error && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 text-red-700">
-                        <AlertCircle size={20} className="mt-0.5 shrink-0" />
-                        <p className="text-sm">{error}</p>
-                    </div>
-                )}
+        try {
+            const response = await uploadFile(file, 'pf-registration');
+            setUploadedFiles(prev => ({
+                ...prev,
+                [key]: {
+                    originalFile: file,
+                    name: response.originalName || file.name,
+                    fileUrl: response.fileUrl,
+                    fileId: response.id
+                }
+            }));
+        } catch (error) {
+            console.error("Upload failed", error);
+            alert("File upload failed. Please try again.");
+        }
+    };
 
-                {/* STEPS */}
-                {step === 1 && (
-                    <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-                            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                <FileText size={20} className="text-blue-600" /> Establishment Details
-                            </h2>
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 1: // Business Details
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
+                                <Users size={20} className="text-blue-500" /> ESTABLISHMENT DETAILS
+                            </h3>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Establishment Name</label>
-                                    <input
-                                        type="text"
-                                        name="establishmentName"
-                                        value={formData.establishmentName}
-                                        onChange={handleChange}
-                                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition font-medium text-slate-800"
-                                        placeholder="e.g. ABC Technologies Pvt Ltd"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Type of Entity</label>
-                                    <select
-                                        name="establishmentType"
-                                        value={formData.establishmentType}
-                                        onChange={handleChange}
-                                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition font-medium text-slate-800"
-                                    >
-                                        <option value="Company">Private Limited Company</option>
-                                        <option value="Partnership">Partnership Firm</option>
+                            <div className="mb-4">
+                                <label className="text-xs font-bold text-gray-500 block mb-1">Company / Establishment Name</label>
+                                <input type="text" name="businessName" value={formData.businessName} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.businessName ? 'border-red-500' : 'border-gray-200'}`} placeholder="e.g. ABC Technologies Pvt Ltd" />
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 block mb-1">Entity Type</label>
+                                    <select name="businessType" value={formData.businessType} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200">
+                                        <option value="PVT_LTD">Private Limited</option>
                                         <option value="LLP">LLP</option>
-                                        <option value="Proprietorship">Proprietorship</option>
-                                        <option value="Trust">Trust / NGO</option>
+                                        <option value="PARTNERSHIP">Partnership</option>
+                                        <option value="PROPRIETORSHIP">Proprietorship</option>
                                     </select>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Employer / Director Name</label>
-                                    <input
-                                        type="text"
-                                        name="employerName"
-                                        value={formData.employerName}
-                                        onChange={handleChange}
-                                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition font-medium text-slate-800"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Employee Count</label>
-                                    <input
-                                        type="number"
-                                        name="employeeCount"
-                                        value={formData.employeeCount}
-                                        onChange={handleChange}
-                                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition font-medium text-slate-800"
-                                        placeholder="Total employees"
-                                    />
-                                </div>
-                                <div className="space-y-2 md:col-span-2">
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Registered Address</label>
-                                    <textarea
-                                        name="address"
-                                        value={formData.address}
-                                        onChange={handleChange}
-                                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition font-medium text-slate-800 h-24 resize-none"
-                                        placeholder="Full address with Pincode"
-                                    ></textarea>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 block mb-1">Total Employees</label>
+                                    <input type="number" name="employeeCount" value={formData.employeeCount} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.employeeCount ? 'border-red-500' : 'border-gray-200'}`} placeholder="e.g. 25" />
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="flex justify-end pt-4">
-                            <button
-                                onClick={() => setStep(2)}
-                                disabled={!formData.establishmentName || !formData.employerName}
-                                className="flex items-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Next Step <ChevronRight size={18} />
-                            </button>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 block mb-1">Incorporation Date</label>
+                                <input type="date" name="incorporationDate" value={formData.incorporationDate} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200" />
+                            </div>
                         </div>
                     </div>
-                )}
+                );
 
-                {step === 2 && (
-                    <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-                            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                <Upload size={20} className="text-blue-600" /> Document Upload
-                            </h2>
-                            <p className="text-sm text-slate-500">Please upload clear copies of the following documents (PDF/JPG).</p>
+            case 2: // Documents
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
+                                <Upload size={20} className="text-blue-500" /> REQUIRED DOCUMENTS
+                            </h3>
 
-                            <div className="grid grid-cols-1 gap-4">
+                            <div className="grid md:grid-cols-2 gap-4">
                                 {[
-                                    { id: 'businessProof', label: 'Business Proof (COI / Partnership Deed)' },
-                                    { id: 'panCard', label: 'PAN Card of Establishment' },
-                                    { id: 'addressProof', label: 'Address Proof (Rent Agreement / Utility Bill)' },
-                                    { id: 'employeeList', label: 'Employee List (Excel/PDF)' }
+                                    { id: 'PAN', label: 'Establishment PAN' },
+                                    { id: 'ADDRESS_PROOF', label: 'Address Proof (Utility Bill/Rent Agreement)' },
+                                    { id: 'INCORPORATION_CERT', label: 'Incorporation Certificate / GST' },
+                                    { id: 'CANCELLED_CHEQUE', label: 'Cancelled Cheque' }
                                 ].map((doc) => (
-                                    <div key={doc.id} className="flex items-center justify-between p-4 border border-dashed border-slate-300 rounded-xl hover:bg-slate-50 transition group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition">
-                                                {documents[doc.id] ? <CheckCircle size={20} /> : <FileText size={20} />}
+                                    <div key={doc.id} className="border border-dashed p-6 rounded-xl text-center group hover:border-blue-300 transition">
+                                        <label className="cursor-pointer block">
+                                            <div className="mb-2 mx-auto w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-blue-500 group-hover:scale-110 transition">
+                                                <FileText size={24} />
                                             </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-slate-700">{doc.label}</p>
-                                                {documents[doc.id] && <p className="text-xs text-green-600 font-medium mt-0.5">{documents[doc.id].name}</p>}
-                                            </div>
-                                        </div>
-                                        <label className="cursor-pointer px-4 py-2 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-100 transition shadow-sm">
-                                            {documents[doc.id] ? 'Change' : 'Upload'}
-                                            <input type="file" className="hidden" onChange={(e) => handleFileChange(e, doc.id)} />
+                                            <span className="font-bold text-gray-700 block mb-1">{doc.label}</span>
+                                            <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, doc.id)} accept=".pdf,.jpg,.png" />
+                                            {uploadedFiles[doc.id] ?
+                                                <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">{uploadedFiles[doc.id].name}</span> :
+                                                <span className="inline-block px-4 py-2 bg-gray-900 text-white rounded-lg text-xs font-bold">Choose File</span>
+                                            }
                                         </label>
                                     </div>
                                 ))}
                             </div>
                         </div>
+                    </div>
+                );
 
-                        <div className="flex justify-between pt-4">
-                            <button
-                                onClick={() => setStep(1)}
-                                className="flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition"
-                            >
-                                <ArrowLeft size={18} /> Back
-                            </button>
-                            <button
-                                onClick={handleSubmit}
-                                disabled={loading}
-                                className="flex items-center gap-2 px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition disabled:opacity-50 shadow-lg shadow-green-600/20"
-                            >
-                                {loading ? 'Submitting...' : 'Submit Application'} {!loading && <Save size={18} />}
-                            </button>
+            case 3: // Payment
+                return (
+                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
+                        <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-600">
+                            <IndianRupee size={32} />
+                        </div>
+                        <h2 className="text-2xl font-black text-[#2B3446] mb-2">Payment Summary</h2>
+                        <p className="text-gray-500 mb-8">Professional Fee for PF Registration</p>
+
+                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
+                            <div className="flex justify-between items-end mb-2">
+                                <span className="text-gray-500">Service Fee</span>
+                                <span className="text-lg font-bold text-[#2B3446]">₹1,999</span>
+                            </div>
+                            <div className="border-t pt-2 flex justify-between items-end">
+                                <span className="font-black text-gray-700">Total</span>
+                                <span className="text-3xl font-black text-blue-600">₹1,999</span>
+                            </div>
+                        </div>
+
+                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
+                            {isSubmitting ? 'Processing...' : 'Pay & Register'}
+                            {!isSubmitting && <ArrowRight size={18} />}
+                        </button>
+                    </div>
+                );
+
+            default: return null;
+        }
+    };
+
+    const submitApplication = async () => {
+        setIsSubmitting(true);
+        setApiError(null);
+        try {
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
+                id: k,
+                filename: v.name,
+                fileUrl: v.fileUrl,
+                type: k
+            }));
+
+            const finalPayload = {
+                submissionId: `PF-REG-${Date.now()}`,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                businessName: formData.businessName,
+                plan: planType,
+                amountPaid: getTotalPrice(),
+                status: "PAYMENT_SUCCESSFUL",
+                formData: formData,
+                documents: docsList
+            };
+
+            await submitPFRegistration(finalPayload);
+            setIsSuccess(true);
+
+        } catch (error) {
+            console.error(error);
+            setApiError(error.message);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-[#F0F4FF] pb-20 pt-24 px-4 md:px-8">
+            {isSuccess ? (
+                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
+                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle size={48} className="text-green-600" />
+                    </div>
+                    <h1 className="text-3xl font-black text-[#2B3446] mb-4">Registration Initiated!</h1>
+                    <p className="text-gray-500 mb-8">
+                        We have received your details for <b>{formData.businessName}</b>. Our team will file the application with EPFO.
+                    </p>
+                    <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
+                </div>
+            ) : (
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-8">
+                        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition"><ArrowLeft size={14} /> Back</button>
+                        <h1 className="text-3xl font-black text-[#2B3446]">PF Registration</h1>
+                        <p className="text-gray-500">Employer Registration with EPFO</p>
+                    </div>
+
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        <div className="w-full lg:w-80 space-y-6">
+                            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
+                                {['Establishment Details', 'Required Documents', 'Payment'].map((step, i) => (
+                                    <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
+                                        <div>
+                                            <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
+                                            <span className={`font-bold text-sm ${currentStep === i + 1 ? 'text-blue-700' : 'text-gray-600'}`}>{step}</span>
+                                        </div>
+                                        {currentStep > i + 1 && <CheckCircle size={16} className="text-green-500" />}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 text-xs text-blue-800">
+                                <strong>Service Fee:</strong> <br />
+                                <span className="text-lg font-bold">Standard Plan</span>
+                                <div className="mt-2 text-xl font-black text-blue-900">₹1,999</div>
+                                <div className="text-[10px] text-blue-600 mt-1 opacity-75">Professional Fees</div>
+                            </div>
+                        </div>
+
+                        <div className="flex-1">
+                            {renderStepContent()}
+
+                            {apiError && (
+                                <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 flex items-center gap-2">
+                                    <AlertTriangle size={20} />
+                                    <span>{apiError}</span>
+                                </div>
+                            )}
+
+                            {!isSuccess && currentStep < 3 && (
+                                <div className="mt-8 flex justify-between">
+                                    <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
+
+                                    <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
+                                        Next Step <ArrowRight size={18} />
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };

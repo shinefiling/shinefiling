@@ -43,15 +43,8 @@ public class FireNocController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            // Dynamic Pricing based on Building Type
-            double price = 9999.0;
-            if (isHighRise)
-                price = 14999.0;
-            if ("INDUSTRIAL".equalsIgnoreCase(requestDTO.getFormData().getBuildingType()))
-                price = 19999.0;
-
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(price);
+            createdRequest.setPlan(requestDTO.getPlan());
+            createdRequest.setAmount(requestDTO.getAmountPaid());
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 

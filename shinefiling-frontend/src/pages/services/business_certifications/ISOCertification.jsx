@@ -1,6 +1,10 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Award, ShieldCheck, Globe, HelpCircle, FileText, Star, BookOpen, Clock, Zap, ChevronRight, ArrowRight, UserCheck } from 'lucide-react';
+import {
+    CheckCircle, Award, ShieldCheck, Globe, HelpCircle, FileText, Star,
+    BookOpen, Clock, Zap, ChevronRight, ArrowRight, UserCheck, Lock,
+    Leaf, Briefcase, BarChart, Settings, MousePointer, Shield, X
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ISOCertification = ({ isLoggedIn }) => {
@@ -14,13 +18,41 @@ const ISOCertification = ({ isLoggedIn }) => {
         else navigate('/login', { state: { from: url } });
     };
 
+    const standards = [
+        {
+            code: "ISO 9001:2015",
+            name: "Quality Management System (QMS)",
+            desc: "The world's most recognized quality management standard. It ensures that your products and services consistently meet customer requirements, and that quality is consistently improved.",
+            icon: Star,
+            color: "text-amber-500",
+            bg: "bg-amber-500/10"
+        },
+        {
+            code: "ISO 14001:2015",
+            name: "Environmental Management System (EMS)",
+            desc: "Helps organizations improve their environmental performance through more efficient use of resources and reduction of waste, gaining a competitive advantage and the trust of stakeholders.",
+            icon: Leaf,
+            color: "text-green-600",
+            bg: "bg-green-600/10"
+        },
+        {
+            code: "ISO 27001:2013",
+            name: "Information Security Management (ISMS)",
+            desc: "Provides a framework for Information Security Management Systems (ISMS) to provide continued confidentiality, integrity and availability of information as well as legal compliance.",
+            icon: Lock,
+            color: "text-blue-600",
+            bg: "bg-blue-600/10"
+        }
+    ];
+
     const faqs = [
-        { q: "What is ISO Certification?", a: "ISO certification is a seal of approval from a third party body that a company runs to one of the international standards developed and published by the International Organization for Standardization (ISO)." },
-        { q: "What is ISO 9001?", a: "ISO 9001 is defined as the international standard that specifies requirements for a Quality Management System (QMS)." },
-        { q: "How long does it take?", a: "The time depends on the size and complexity of the organization, but typically it takes 15-30 days." },
-        { q: "Is it valid globally?", a: "Yes, ISO standards are recognized worldwide and enhance international trade." },
-        { q: "What is ISO 14001?", a: "It sets out the criteria for an environmental management system and can be certified to." },
-        { q: "Do I need to renew it?", a: "Yes, ISO certificates are usually valid for 3 years and require annual surveillance audits." },
+        { q: "What is ISO Certification?", a: "ISO certification is a seal of approval from a third-party body that a company runs to one of the international standards developed and published by the International Organization for Standardization (ISO)." },
+        { q: "What is the difference between IAF and Non-IAF?", a: "IAF (International Accreditation Forum) certificates are globally recognized and usually required for government tenders. Non-IAF certificates are for branding purposes and are faster to obtain but less authoritative." },
+        { q: "How long does the process take?", a: "For Non-IAF, it can be done in 2-4 days. For IAF accredited certificates, the process typically takes 15-30 days pending audits." },
+        { q: "Is a physical audit mandatory?", a: "For IAF ISO certification, a physical or remote video audit by the certifying body is often establishing compliance. For Non-IAF, it is document-based." },
+        { q: "What is the validity of the certificate?", a: "ISO certificates are valid for 3 years, subject to successful completion of annual surveillance audits." },
+        { q: "Can I get ISO 9001 and 14001 together?", a: "Yes, this is called an Integrated Management System (IMS). It is cost-effective and streamlined to implement multiple standards simultaneously." },
+        { q: "What documents are required?", a: "Scope of business, letterhead, GST/Registration certificate, and internal process documentation (SOPs) which we help prepare." },
     ];
 
     return (
@@ -79,7 +111,7 @@ const ISOCertification = ({ isLoggedIn }) => {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Certification</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Build trust and credibility with ISO 9001:2015 & ISO 14001 certification. Demonstrate your commitment to quality and excellence.
+                                    Build trust and credibility with <strong>ISO 9001, 14001, & 27001</strong> certification. Demonstrate your commitment to quality, environment, and security.
                                 </p>
                             </motion.div>
 
@@ -114,7 +146,7 @@ const ISOCertification = ({ isLoggedIn }) => {
                                     Get Certified
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
-                                    <BookOpen size={18} /> Learn More
+                                    <BookOpen size={18} /> View Standards
                                 </button>
                             </div>
                         </div>
@@ -127,35 +159,125 @@ const ISOCertification = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Certification</div>
-                                <div className="text-center mb-6">
+                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">IAF Accredited</div>
+
+                                <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">ISO 9001:2015</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹3,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ 3 Years</span>
+                                        <span className="text-lg text-slate-400 font-medium line-through">₹7,000</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees & Audit Charges</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["IAF Accredited Certificate", "Documentation Support", "Audit Coordination", "Digital Certificate", "Fast Track Processing"].map((item, i) => (
+
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {["Internationally Recognized", "Documentation Support", "Audit Coordination", "Digital Certificate", "Fast Track Processing"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
                                         </div>
                                     ))}
                                 </div>
+
                                 <button
-                                    onClick={() => handlePlanSelect('iso9001')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Get Certified <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
                     </div>
                 </div>
             </div>
+
+            {/* PRICING PLANS SECTION */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Choose Your Plan</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: ESSENTIAL (Non-IAF) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Essential</h3>
+                            <p className="text-slate-500 text-sm mb-6">Fastest certification for branding.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹1,499</span>
+                                <span className="text-slate-400 line-through text-sm">₹3,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> ISO 9001:2015</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Non-IAF Certificate</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Digital Copy</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> Tender Eligibility</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Essential</button>
+                        </motion.div>
+
+                        {/* PLAN 2: PROFESSIONAL (IAF) - POPULAR */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Professional</h3>
+                            <p className="text-gray-400 text-sm mb-6">Globally accepted IAF certificate.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹3,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹7,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> ISO 9001:2015 (IAF)</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Global Acceptance</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Valid for Tenders</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Full Documentation</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Professional</button>
+                        </motion.div>
+
+                        {/* PLAN 3: ENTERPRISE (Integrated) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Enterprise</h3>
+                            <p className="text-slate-500 text-sm mb-6">QMS + EMS Integrated.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹6,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹12,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> ISO 9001 + 14001</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Integrated Audit</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Priority Support</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Consultant Included</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Enterprise</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
 
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -165,61 +287,106 @@ const ISOCertification = ({ isLoggedIn }) => {
 
                     {/* Standards Section */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> Popular Standards
+                        <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
+                            <BookOpen className="text-bronze" /> Our Standards
                         </h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex gap-4 group hover:shadow-lg transition">
-                                <div className="w-12 h-12 bg-bronze/10 text-bronze rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                                    <Star size={24} />
+                        <div className="space-y-6">
+                            {standards.map((std, i) => (
+                                <div key={i} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-6 group hover:shadow-lg hover:border-bronze/30 transition-all duration-300">
+                                    <div className={`w-16 h-16 ${std.bg} ${std.color} rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                                        <std.icon size={32} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="text-xl font-bold text-navy">{std.name}</h3>
+                                            <span className="px-3 py-1 bg-gray-100 text-gray-500 text-xs font-bold rounded-full uppercase">{std.code}</span>
+                                        </div>
+                                        <p className="text-gray-600 leading-relaxed mb-4">{std.desc}</p>
+                                        <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="text-bronze font-bold text-sm flex items-center gap-2 hover:gap-3 transition-all">
+                                            Get Quote <ChevronRight size={16} />
+                                        </button>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-navy mb-2">ISO 9001:2015</h3>
-                                    <p className="text-sm text-gray-600">Quality Management System (QMS). Ensures customer satisfaction and process efficiency.</p>
-                                </div>
-                            </div>
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex gap-4 group hover:shadow-lg transition">
-                                <div className="w-12 h-12 bg-green-500/10 text-green-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                                    <ShieldCheck size={24} />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-navy mb-2">ISO 14001:2015</h3>
-                                    <p className="text-sm text-gray-600">Environmental Management System (EMS). Reduces environmental footprint.</p>
-                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* How it Works / Process */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Certification Process</h2>
+                        <div className="relative">
+                            {/* Vertical Line */}
+                            <div className="absolute left-8 top-8 bottom-8 w-0.5 bg-gradient-to-b from-bronze/20 via-bronze/50 to-bronze/20 md:hidden"></div>
+
+                            <div className="space-y-8">
+                                {[
+                                    { title: "Application & Consulting", desc: "We analyze your business scope and select the appropriate standard and certifying body (IAF/Non-IAF)." },
+                                    { title: "Documentation", desc: "Our experts prepare the required Quality Manuals, SOPs, and Policy documents for your approval." },
+                                    { title: "Implementation", desc: "You implement the documented processes in your daily operations to ensure compliance." },
+                                    { title: "Auditing", desc: "An external auditor reviews your documents and processes (Physical or Video audit depending on standard)." },
+                                    { title: "Certification", desc: "Upon successful audit, the ISO Certificate is issued, valid for 3 years." }
+                                ].map((step, i) => (
+                                    <div key={i} className="relative flex gap-6 items-start group">
+                                        <div className="hidden md:block absolute left-8 top-12 bottom-[-2rem] w-0.5 bg-gray-100 group-last:hidden"></div>
+                                        <div className="w-16 h-16 rounded-full bg-white border-4 border-gray-50 text-navy font-bold text-xl flex items-center justify-center shadow-sm shrink-0 z-10 group-hover:border-bronze group-hover:text-bronze transition-colors">
+                                            {i + 1}
+                                        </div>
+                                        <div className="flex-1 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
+                                            <h3 className="text-lg font-bold text-navy mb-2">{step.title}</h3>
+                                            <p className="text-gray-600 text-sm leading-relaxed">{step.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
+                    {/* Benefits Grid */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Why Get Certified?</h2>
                         <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">ISO 9001</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹3,999</div>
-                                <p className="text-xs text-gray-400 mb-6">/ 3 Years</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Quality Management</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Process Optimization</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Global Acceptance</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('iso9001')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select ISO 9001</button>
-                            </div>
+                            {[
+                                { title: "Tender Eligibility", desc: "Mandatory qualification for most Govt and large corporate tenders.", icon: FileText },
+                                { title: "Global Recognition", desc: "Enhances your brand image globally and builds customer trust.", icon: Globe },
+                                { title: "Internal Efficiency", desc: "Standardized processes lead to fewer errors and higher productivity.", icon: Settings },
+                                { title: "Marketing Edge", desc: "Use the ISO mark on your website, products, and letterheads.", icon: Zap },
+                            ].map((item, i) => (
+                                <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-bronze transition group">
+                                    <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
+                                        <item.icon size={28} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-navy mb-2 text-lg">{item.title}</h4>
+                                        <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                            {/* ISO 14001 */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">ISO 14001</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹4,999</div>
-                                <p className="text-xs text-slate-400 mb-6">/ 3 Years</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Enviro Management</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Sustainable Growth</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Compliance</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('iso14001')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select ISO 14001</button>
-                            </div>
+
+
+                    {/* Why Choose ShineFiling - SEO Section */}
+                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
+                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling?</h2>
+                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
+                            {[
+                                { t: "Expert Auditors", d: "We partner with top global certifying bodies to ensure your certificate is universally accepted." },
+                                { t: "100% Approval Rate", d: "Our internal audit team reviews your documents before final submission to guarantee success." },
+                                { t: "Fast Track Process", d: "Get Non-IAF certificates in as little as 48 hours for urgent tender requirements." },
+                                { t: "End-to-End Support", d: "From SOP drafting to final audit coordination, we handle everything for you." }
+                            ].map((item, i) => (
+                                <div key={i} className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <CheckCircle size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">{item.t}</h4>
+                                        <p className="text-gray-300 text-sm">{item.d}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
@@ -251,16 +418,22 @@ const ISOCertification = ({ isLoggedIn }) => {
                         {/* Documents Sidebar */}
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <FileText className="text-bronze" /> Required Documents
+                                <FileText className="text-bronze" /> Checklist
                             </h3>
                             <div className="space-y-6">
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Business</h4>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Mandatory</h4>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Registration Certificate</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Letterhead / Invoices</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Scope of Work</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Company Registration</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Letterhead & Invoices</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> PAN & GST</li>
                                     </ul>
+                                </div>
+                                <div className="mt-8 bg-beige/10 p-4 rounded-xl border border-blue-100">
+                                    <p className="text-xs text-blue-800 font-medium leading-relaxed flex gap-2">
+                                        <span className="text-lg">💡</span>
+                                        <span><strong>Pro Tip:</strong> Decide if you need IAF or Non-IAF based on your tender requirements.</span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -269,9 +442,7 @@ const ISOCertification = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Not sure which ISO?</h4>
                             <p className="text-gray-300 text-sm mb-4">Our consultants will help you pick the right standard.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Talk to Expert
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -282,3 +453,5 @@ const ISOCertification = ({ isLoggedIn }) => {
 };
 
 export default ISOCertification;
+
+

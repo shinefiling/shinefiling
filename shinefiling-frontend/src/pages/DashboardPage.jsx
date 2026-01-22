@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, FileText, Bell, Plus,
-    CreditCard, HelpCircle, Menu, X, User, Package, LogOut, Zap
+    CreditCard, HelpCircle, Menu, X, User, Package, LogOut, Zap,
+    Sun, Moon, Settings, Search, ChevronDown, Folder, Calendar
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getNotifications, getServiceCatalog } from '../api';
 import { getInactiveServices } from '../utils/serviceManager';
 import { SERVICE_DATA } from '../data/services';
@@ -15,12 +17,22 @@ import ClientPayments from './client/ClientPayments';
 import ClientProfile from './client/ClientProfile';
 import ClientSupport from './client/ClientSupport';
 import ClientNotifications from './client/ClientNotifications';
+import ClientDocuments from './client/ClientDocuments';
+import ClientCompliance from './client/ClientCompliance';
 import ComingSoon from '../components/ComingSoon';
 
 const DashboardPage = ({ onLogout }) => {
     const [activeTab, setActiveTab] = useState('overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    // Initialize user from localStorage to prevent flash of guest content
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('theme') === 'dark' ||
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        }
+        return false;
+    });
+
+    // Initialize user from localStorage
     const [user, setUser] = useState(() => {
         const saved = localStorage.getItem('user');
         return saved ? JSON.parse(saved) : { fullName: 'Guest', email: '' };
@@ -32,13 +44,25 @@ const DashboardPage = ({ onLogout }) => {
 
     const location = useLocation();
 
+    // Theme Effect
+    useEffect(() => {
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }, [isDarkMode]);
+
+    const toggleDarkMode = () => setIsDarkMode(prev => !prev);
+
     useEffect(() => {
         let interval;
         const fetchNotes = async () => {
             const userStr = localStorage.getItem('user');
             if (userStr) {
                 const userData = JSON.parse(userStr);
-                // Only set user if it's different to avoid loops/re-renders if strict mode
                 if (JSON.stringify(userData) !== JSON.stringify(user)) {
                     setUser(userData);
                 }
@@ -56,9 +80,8 @@ const DashboardPage = ({ onLogout }) => {
         };
 
         fetchNotes();
-        interval = setInterval(fetchNotes, 10000); // Poll every 10s
+        interval = setInterval(fetchNotes, 10000);
 
-        // Parse tab from URL
         const params = new URLSearchParams(location.search);
         const tab = params.get('tab');
         if (tab) {
@@ -68,7 +91,7 @@ const DashboardPage = ({ onLogout }) => {
         return () => clearInterval(interval);
     }, [location]);
 
-    // Fetch Services for Sidebar (Dynamic Control)
+    // Fetch Services for Sidebar (Dynamic Logic Preserved)
     useEffect(() => {
         const loadServices = async () => {
             try {
@@ -107,18 +130,18 @@ const DashboardPage = ({ onLogout }) => {
         return () => window.removeEventListener('serviceStatusChanged', loadServices);
     }, []);
 
-    const SidebarItem = ({ icon: Icon, label, id }) => (
-        <button
-            onClick={() => { setActiveTab(id); setIsSidebarOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group duration-200 ${activeTab === id
-                ? 'bg-[#B58863]/10 text-[#B58863] shadow-sm ring-1 ring-[#B58863]/20'
-                : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                }`}
-        >
-            <Icon size={18} className={`transition-colors ${activeTab === id ? 'text-[#B58863]' : 'text-slate-500 group-hover:text-white'}`} />
-            {label}
-        </button>
-    );
+    // Listen for User Updates
+    useEffect(() => {
+        const handleUserUpdate = () => {
+            const stored = localStorage.getItem('user');
+            if (stored) {
+                setUser(JSON.parse(stored));
+            }
+        };
+        window.addEventListener('userUpdated', handleUserUpdate);
+        return () => window.removeEventListener('userUpdated', handleUserUpdate);
+    }, []);
+
 
     const isEmployee = user?.role?.toUpperCase() === 'EMPLOYEE';
 
@@ -131,6 +154,8 @@ const DashboardPage = ({ onLogout }) => {
             case 'overview': return <ClientHome setActiveTab={setActiveTab} />;
             case 'new-filing': return <NewFiling setActiveTab={setActiveTab} initialCategory={selectedCategory} />;
             case 'orders': return <MyOrders />;
+            case 'documents': return <ClientDocuments />;
+            case 'compliance': return <ClientCompliance />;
             case 'payments': return <ClientPayments />;
             case 'profile': return <ClientProfile />;
             case 'support': return <ClientSupport />;
@@ -139,128 +164,193 @@ const DashboardPage = ({ onLogout }) => {
         }
     };
 
+    // Refined Sidebar Item to match Admin Dashboard Style
+    const SidebarItem = ({ icon: Icon, label, id, hot }) => {
+        const isActive = activeTab === id;
+        return (
+            <div className="mb-0.5">
+                <button
+                    onClick={() => { setActiveTab(id); if (window.innerWidth < 768) setIsSidebarOpen(false); }}
+                    className={`
+                        w-full flex items-center justify-between px-6 py-2.5 transition-all duration-200 group text-left relative
+                        ${isActive
+                            ? 'text-white font-bold bg-[#B58863]/10 border-r-4 border-[#B58863]'
+                            : 'text-slate-400 hover:text-white hover:bg-white/5'}
+                    `}
+                >
+                    <div className="flex items-center gap-3">
+                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isActive ? 'bg-[#B58863] scale-125' : 'bg-transparent'}`}></div>
+                        <Icon size={18} className={isActive ? 'text-[#B58863]' : 'text-slate-400 group-hover:text-white'} />
+                        <span className="text-sm">{label}</span>
+                    </div>
+                </button>
+            </div>
+        );
+    };
+
     return (
-        <div className="min-h-screen bg-[#FDFBF7] font-sans flex text-slate-800 selection:bg-[#B58863]/20">
+        <div className="flex h-screen bg-[#F3F4F6] dark:bg-[#0D1C22] font-[Roboto,sans-serif] overflow-hidden transition-colors duration-200 text-slate-800 dark:text-slate-200">
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+            `}</style>
 
-            {/* Mobile Header */}
-            <div className="md:hidden flex items-center justify-between p-4 bg-[#10232A] text-white sticky top-0 z-50 w-full shadow-md">
-                <div className="flex items-center gap-2 font-bold text-lg tracking-tight">
-                    <span className="text-white">Shine<span className="text-[#B58863]">Filing</span></span>
-                </div>
-                <button onClick={() => setIsSidebarOpen(true)} className="p-2 hover:bg-white/10 rounded-lg transition text-white"><Menu size={24} /></button>
-            </div>
+            {/* Sidebar */}
+            <AnimatePresence>
+                {(isSidebarOpen || window.innerWidth >= 768) && (
+                    <motion.div
+                        initial={{ x: -300 }}
+                        animate={{ x: 0 }}
+                        exit={{ x: -300 }}
+                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                        className={`fixed inset-y-0 left-0 w-64 bg-[#10232A] text-white z-50 flex flex-col shadow-xl md:shadow-md border-r border-white/5 ${isSidebarOpen ? 'block' : 'hidden md:flex'}`}
+                    >
+                        <div className="h-16 flex items-center px-6 border-b border-white/5">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full border-2 border-[#B58863] flex items-center justify-center">
+                                    <div className="w-4 h-4 bg-[#B58863] rounded-full"></div>
+                                </div>
+                                <span className="text-xl font-bold tracking-tight text-white">Shine<span className="text-[#B58863]">Filing</span></span>
+                            </div>
+                            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden ml-auto text-slate-400"><X size={20} /></button>
+                        </div>
 
-            {/* Sidebar (Deep Navy Theme) */}
-            <div className={`fixed inset-y-0 left-0 w-72 bg-[#10232A] text-white transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 z-50 flex flex-col shadow-2xl md:shadow-none border-r border-white/5`}>
-                <div className="p-8 flex justify-between items-center">
-                    <div className="flex items-center gap-0 font-bold text-2xl tracking-tighter">
-                        {/* Simple Text Logo for Clean Look */}
-                        <span className="text-white">Shine<span className="text-[#B58863]">Filing</span></span>
-                    </div>
-                    <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-white transition p-1"><X size={20} /></button>
-                </div>
+                        <div className="flex-1 overflow-y-auto py-4 space-y-6 no-scrollbar">
+                            {/* CTA Button */}
+                            {!isEmployee && (
+                                <div className="px-6 mb-2">
+                                    <button
+                                        onClick={() => { setActiveTab('new-filing'); setIsSidebarOpen(false); }}
+                                        className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-[#B58863]/20 group ${activeTab === 'new-filing'
+                                            ? 'bg-[#B58863] text-white'
+                                            : 'bg-gradient-to-r from-[#B58863] to-[#C19A78] text-white hover:brightness-110'
+                                            }`}
+                                    >
+                                        <Plus size={18} /> New Filing
+                                    </button>
+                                </div>
+                            )}
 
-                <div className="px-4 py-2 space-y-2 flex-1 overflow-y-auto hidden-scrollbar">
-                    {isEmployee ? (
-                        <>
-                            <div className="px-4 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-4">Menu</div>
-                            <SidebarItem icon={LayoutDashboard} label="Dashboard" id="overview" />
-                        </>
-                    ) : (
-                        <>
-                            <div className="px-4 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">Start Here</div>
-                            <button
-                                onClick={() => { setActiveTab('new-filing'); setIsSidebarOpen(false); }}
-                                className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold transition-all mb-6 mt-1 shadow-lg shadow-[#B58863]/20 group ${activeTab === 'new-filing'
-                                    ? 'bg-[#B58863] text-white'
-                                    : 'bg-gradient-to-r from-[#B58863] to-[#C19A78] text-white hover:brightness-110'
-                                    }`}
-                            >
-                                <Plus size={18} className="stroke-[3px]" /> New Filing
-                            </button>
+                            <div>
+                                <div className="px-6 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Main Menu</div>
+                                <SidebarItem icon={LayoutDashboard} label="Dashboard" id="overview" />
+                                {!isEmployee && (
+                                    <>
+                                        <SidebarItem icon={Package} label="My Applications" id="orders" />
+                                        <SidebarItem icon={Folder} label="My Documents" id="documents" />
+                                        <SidebarItem icon={Calendar} label="Compliance Calendar" id="compliance" />
+                                        <SidebarItem icon={CreditCard} label="Billing & Invoices" id="payments" />
+                                    </>
+                                )}
+                            </div>
 
-                            <div className="px-4 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Main Menu</div>
-                            <SidebarItem icon={LayoutDashboard} label="Dashboard" id="overview" />
-                            <SidebarItem icon={Package} label="My Applications" id="orders" />
-                            <SidebarItem icon={CreditCard} label="Billing & Invoices" id="payments" />
+                            {!isEmployee && (
+                                <div>
+                                    <div className="px-6 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Account</div>
+                                    <SidebarItem icon={User} label="Profile & KYC" id="profile" />
+                                    <SidebarItem icon={HelpCircle} label="Help & Support" id="support" />
+                                </div>
+                            )}
 
-                            <div className="px-4 py-2 mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Account</div>
-                            <SidebarItem icon={User} label="Profile & KYC" id="profile" />
-                            <SidebarItem icon={HelpCircle} label="Help & Support" id="support" />
-                        </>
-                    )}
-                </div>
 
-                <div className="p-6 border-t border-white/5 bg-[#0D1C22]">
-                    <button onClick={onLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition-all group">
-                        <LogOut size={18} className="text-slate-500 group-hover:text-white transition-colors" /> Sign Out
-                    </button>
-                    <div className="mt-4 text-[10px] text-slate-600 text-center font-bold tracking-wide uppercase">
-                        ShineFiling © 2024
-                    </div>
-                </div>
-            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Mobile Overlay */}
-            {isSidebarOpen && <div className="fixed inset-0 bg-[#10232A]/80 z-40 md:hidden backdrop-blur-sm transition-opacity" onClick={() => setIsSidebarOpen(false)} />}
-
+            {isSidebarOpen && <div className="fixed inset-0 bg-black/20 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />}
             {/* Main Content Area */}
-            <div className="flex-1 md:ml-72 flex flex-col min-h-screen transition-all duration-300">
-
-                {/* Header with Logo */}
-                <header className="sticky top-0 z-30 bg-[#FDFBF7]/90 backdrop-blur-md px-8 py-5 flex items-center justify-between border-b border-slate-100">
-                    <div className="flex items-center gap-3">
-                        {/* Logo */}
-                        <div className="flex items-center gap-0 font-bold text-xl tracking-tighter">
-                            <span className="text-[#10232A]">Shine<span className="text-[#B58863]">Filing</span></span>
-                        </div>
-                        <h1 className="text-xl font-bold text-[#10232A] tracking-tight hidden md:block">
+            <div className="flex-1 md:ml-64 flex flex-col h-screen overflow-hidden">
+                {/* Header */}
+                <div className="h-16 bg-white dark:bg-[#10232A] border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-6 z-30 sticky top-0 transition-colors duration-200">
+                    <div className="flex items-center gap-4">
+                        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden text-slate-500"><Menu size={24} /></button>
+                        <h1 className="text-lg font-bold text-slate-800 dark:text-white tracking-tight hidden md:block">
                             {activeTab === 'overview' ? 'Overview' :
                                 activeTab === 'new-filing' ? 'New Service' :
                                     activeTab === 'orders' ? 'My Applications' :
-                                        activeTab === 'payments' ? 'Billing' :
-                                            activeTab === 'profile' ? 'Profile' : 'Support'}
+                                        activeTab === 'documents' ? 'Document Vault' :
+                                            activeTab === 'compliance' ? 'Compliance Calendar' :
+                                                activeTab === 'payments' ? 'Billing' :
+                                                    activeTab === 'profile' ? 'Profile' :
+                                                        activeTab === 'notifications' ? 'Notifications' : 'Support'}
                         </h1>
                     </div>
+                    <div className="flex items-center gap-4">
+                        <button onClick={toggleDarkMode} className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition-colors">{isDarkMode ? <Sun size={20} /> : <Moon size={20} />}</button>
 
-                    <div className="flex items-center gap-8">
-                        <button
-                            onClick={() => setActiveTab('notifications')}
-                            className="relative text-[#3D4D55] hover:text-[#B58863] transition-colors"
-                        >
-                            <Bell size={22} />
-                            {unreadCount > 0 && (
-                                <span className="absolute -top-1 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#FDFBF7]"></span>
-                            )}
+                        <button onClick={() => setActiveTab('notifications')} className="relative p-2 rounded-full transition-colors text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700">
+                            <Bell size={20} />
+                            {unreadCount > 0 && <span className="absolute top-1.5 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></span>}
                         </button>
 
-                        <div className="flex items-center gap-4 cursor-pointer group">
-                            {/* User Avatar - Circle with Image or Initials */}
-                            <div className="w-10 h-10 rounded-full bg-[#10232A] text-white flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-white border border-[#3D4D55]/20 overflow-hidden">
+                        <button onClick={onLogout} className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition-colors" title="Sign Out">
+                            <LogOut size={20} />
+                        </button>
+
+                        <div className="flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-slate-700 ml-2">
+                            <div className="hidden md:block text-right">
+                                <p className="text-sm font-bold text-slate-800 dark:text-white leading-none">{user.fullName || 'User'}</p>
+                                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1">{isEmployee ? 'Employee' : 'Client'}</p>
+                            </div>
+                            <button className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden ring-2 ring-transparent hover:ring-[#B58863] transition-all relative group">
                                 {user.profileImage ? (
                                     <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
-                                    user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'
+                                    <div className="w-full h-full bg-gradient-to-br from-[#B58863] to-[#A67C52] flex items-center justify-center text-white font-bold text-sm">
+                                        {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
+                                    </div>
                                 )}
-                            </div>
-                            <div className="hidden md:block">
-                                <p className="text-sm font-bold text-[#10232A] leading-none mb-1 group-hover:text-[#B58863] transition-colors">{user.fullName || 'User'}</p>
-                                <p className="text-[10px] text-[#3D4D55] font-bold uppercase tracking-wide">
-                                    {isEmployee ? 'Employee' : 'Business Owner'}
-                                </p>
-                            </div>
+                            </button>
                         </div>
                     </div>
-                </header>
+                </div>
 
-                {/* Main Content */}
-                <main className="flex-1 p-8 overflow-y-auto hidden-scrollbar max-w-[1400px] w-full mx-auto">
-                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                        {renderContent()}
+                {/* Main Content Render */}
+                <main className="flex-1 p-6 bg-[#F3F4F6] dark:bg-[#0D1C22] overflow-y-auto relative scroll-smooth transition-colors duration-200">
+                    <div className="max-w-7xl mx-auto pb-20 md:pb-0">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={activeTab}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                {renderContent()}
+                            </motion.div>
+                        </AnimatePresence>
                     </div>
                 </main>
-
             </div>
+
+            {/* Mobile Bottom Nav for quick access (Optional, keeping consistent with old design but updating style) */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#10232A] border-t border-slate-200 dark:border-white/10 h-[70px] z-[100] flex justify-between items-center px-6 shadow-lg pb-safe-bottom">
+                <button onClick={() => setActiveTab('overview')} className={`flex flex-col items-center gap-1 ${activeTab === 'overview' ? 'text-[#B58863]' : 'text-slate-400'}`}>
+                    <LayoutDashboard size={20} />
+                    <span className="text-[10px] font-bold">Home</span>
+                </button>
+                <button onClick={() => setActiveTab('orders')} className={`flex flex-col items-center gap-1 ${activeTab === 'orders' ? 'text-[#B58863]' : 'text-slate-400'}`}>
+                    <Package size={20} />
+                    <span className="text-[10px] font-bold">Apps</span>
+                </button>
+                <div className="relative -top-6">
+                    <button onClick={() => setActiveTab('new-filing')} className="w-14 h-14 rounded-full bg-[#10232A] dark:bg-[#B58863] text-white flex items-center justify-center shadow-lg ring-4 ring-[#F3F4F6] dark:ring-[#0D1C22]">
+                        <Plus size={28} />
+                    </button>
+                </div>
+                <button onClick={() => setActiveTab('notifications')} className={`flex flex-col items-center gap-1 ${activeTab === 'notifications' ? 'text-[#B58863]' : 'text-slate-400'}`}>
+                    <Bell size={20} />
+                    <span className="text-[10px] font-bold">Alerts</span>
+                </button>
+                <button onClick={() => setActiveTab('profile')} className={`flex flex-col items-center gap-1 ${activeTab === 'profile' ? 'text-[#B58863]' : 'text-slate-400'}`}>
+                    <User size={20} />
+                    <span className="text-[10px] font-bold">Profile</span>
+                </button>
+            </div>
+
         </div>
     );
 };

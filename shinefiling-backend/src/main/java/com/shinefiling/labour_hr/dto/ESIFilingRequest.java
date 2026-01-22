@@ -9,6 +9,8 @@ public class ESIFilingRequest {
     private String userEmail;
     private String esicCode;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private ESIFilingFormData formData;
     private List<UploadedDocumentDTO> documents;
@@ -36,5 +38,3 @@ public class ESIFilingRequest {
         private String description;
     }
 }
-
-

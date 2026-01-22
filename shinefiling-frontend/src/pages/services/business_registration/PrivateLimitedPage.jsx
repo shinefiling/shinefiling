@@ -1,14 +1,13 @@
-
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X } from 'lucide-react';
+import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, X, Banknote, Handshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PrivateLimitedRegistration from './PrivateLimitedRegistration';
 
 const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
-    const [showRegisterModal, setShowRegisterModal] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState('basic');
     const navigate = useNavigate();
+    const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState('startup');
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -22,18 +21,37 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
         { q: "How long is the registration valid?", a: "The company has perpetual existence. It continues until you formally close it." }
     ];
 
-    // --- LOGIC: LOGIN CHECK ON PLAN SELECTION ---
     const handlePlanSelect = (plan) => {
         if (isLoggedIn) {
             setSelectedPlan(plan);
-            setShowRegisterModal(true);
+            setShowRegistrationModal(true);
         } else {
-            navigate('/login', { state: { from: window.location.pathname } });
+            const targetUrl = `/services/private-limited-company/register?plan=${plan}`;
+            navigate('/login', { state: { from: targetUrl } });
         }
     };
 
     return (
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
+            <AnimatePresence>
+                {showRegistrationModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <PrivateLimitedRegistration
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                planProp={selectedPlan}
+                                onClose={() => setShowRegistrationModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* HERO SECTION - PREMIUM DARK THEME */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -133,52 +151,84 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                             </motion.div>
                         </div>
 
-                        {/* Pricing Card - Floating Glass Effect */}
+                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                {/* Top Gold Line */}
-                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                                {/* Top Gold Line (Matching other pages) */}
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
-                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
-
-                                <div className="text-center mb-6 mt-4">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Growth</h3>
-                                    <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹14,999</h3>
-                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">₹25,000</span>
+                                {/* Header - COMPACT */}
+                                <div className="flex flex-col items-center justify-center text-center mb-5 mt-2">
+                                    <div className="mb-3 relative">
+                                        <div className="w-14 h-14 rounded-full bg-bronze/10 flex items-center justify-center">
+                                            <Shield size={28} className="text-bronze fill-bronze/20" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle size={14} className="text-green-500 fill-white" />
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees as applicable</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">
+                                        Official <br />Registration
+                                    </h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">Ministry of Corporate Affairs</p>
                                 </div>
 
-                                <div className="space-y-4 mb-8">
+                                {/* Divider */}
+                                <div className="h-px w-full bg-slate-100 mb-5"></div>
+
+                                {/* Stats Grid - COMPACT */}
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    {/* Left Stat */}
+                                    <div className="text-center relative">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Building size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">100%</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Online <br />Process</p>
+                                        <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
+                                    </div>
+
+                                    {/* Right Stat */}
+                                    <div className="text-center">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Shield size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Legal</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Liability <br />Protection</p>
+                                    </div>
+                                </div>
+
+                                {/* Check List - COMPACT */}
+                                <div className="space-y-3 mb-6 pl-2">
                                     {[
-                                        "Everything in Startup",
-                                        "GST Registration",
-                                        "Udyam (MSME) Registration",
-                                        "Business Bank Account Support",
-                                        "Accounting Software (1 Year)",
-                                        "Dedicated Account Manager"
+                                        "Separate Legal Entity",
+                                        "Easy Funding Access",
+                                        "Perpetual Succession"
                                     ].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                                            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
-                                            <span className="leading-snug">{item}</span>
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="bg-green-100 rounded-full p-1 shrink-0">
+                                                <CheckCircle size={12} className="text-green-600" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-xs tracking-wide">{item}</span>
                                         </div>
                                     ))}
                                 </div>
 
+                                {/* CTA Button - COMPACT */}
                                 <button
                                     onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
-                                    className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                    className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
-                                    View Plans <ArrowRight size={18} />
+                                    Start Registration <ArrowRight size={16} />
                                 </button>
-                                <p className="text-center text-[10px] text-slate-400 mt-4 font-medium">
-                                    Compare all plans & features below
+
+                                <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
+                                    Compare all plans below
                                 </p>
                             </div>
                         </motion.div>
@@ -212,7 +262,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                                 <span className="text-slate-400 line-through text-sm">₹12,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8">
+                            <ul className="space-y-4 mb-8 flex-1">
                                 {[
                                     "2 DSC & 2 DIN",
                                     "Name Approval",
@@ -232,49 +282,45 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                                     <X size={16} className="shrink-0" /> 1st Year Compliance
                                 </li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Basic
                             </button>
                         </motion.div>
 
                         {/* PLAN 2: STANDARD (POPULAR) */}
+                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10"
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
-                            {/* Top Gold Line - Thicker and Rounded to match card */}
+                            {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
                             <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Popular
                             </div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Growth</h3>
-                            <p className="text-gray-400 text-sm mb-6">Complete setup to start business operations.</p>
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Private Limited</h3>
+                            <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹14,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹25,000</span>
+                                <span className="text-5xl font-black text-white">₹6,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹12k</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8">
-                                {[
-                                    "Everything in Startup",
-                                    "GST Registration",
-                                    "Udyam (MSME) Registration",
-                                    "Business Bank Account Support",
-                                    "Accounting Software (1 Year)",
-                                    "Dedicated Account Manager"
-                                ].map((feat, i) => (
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {["Everything in Startup",
+                                        "GST Registration",
+                                        "Udyam (MSME) Registration"].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
                                         <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
                                     </li>
                                 ))}
                             </ul>
                             <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
-                                Select Growth Plan
+                                Get Started
                             </button>
                         </motion.div>
 
@@ -293,7 +339,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                                 <span className="text-slate-400 line-through text-sm">₹40,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8">
+                            <ul className="space-y-4 mb-8 flex-1">
                                 {[
                                     "Everything in Growth",
                                     "Trademark Filing (1 Class)",
@@ -307,7 +353,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Enterprise
                             </button>
                         </motion.div>
@@ -319,17 +365,20 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Introduction */}
+                    {/* Introduction - Expanded for SEO */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
                             <Building className="text-bronze" /> What is a Private Limited Company?
                         </h2>
                         <div className="prose prose-lg text-gray-600">
                             <p className="lead text-xl text-gray-800 font-medium">
-                                A <strong>Private Limited Company (Pvt Ltd)</strong> is the most popular corporate legal entity in India. It is preferred by startups and growing businesses because it offers limited liability protection to its shareholders.
+                                A <strong>Private Limited Company (Pvt Ltd)</strong> is the most popular corporate legal entity in India, governed by the <strong>Companies Act, 2013</strong>. It is the preferred structure for startups and growing businesses because it offers limited liability protection to its shareholders and separates ownership from management.
                             </p>
                             <p>
-                                It is a separate legal entity from its owners, meaning the company is responsible for its own debts. It is the best structure if you plan to raise external funding from VCs or Angel Investors.
+                                As a separate legal entity, a Private Limited Company is responsible for its own debts and liabilities, meaning the personal assets of the directors and shareholders are safe. It is also the most credible structure for raising external funding from Venture Capitalists (VCs), Angel Investors, and banks.
+                            </p>
+                            <p>
+                                With ShineFiling, you can register your Private Limited Company online in just 7-10 days. Our expert team of Chartered Accountants (CAs) and Company Secretaries (CS) handles the entire process—from Name Approval and DSC to Incorporation Certificate and Bank Account opening—ensuring a 100% compliant and hassle-free experience.
                             </p>
                         </div>
                     </section>
@@ -475,6 +524,57 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                         </div>
                     </section>
 
+
+                    {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
+                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                        {/* Background Deco */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
+
+                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling?</h2>
+                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Award size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Expert CA/CS Assistance</h4>
+                                        <p className="text-gray-300 text-sm">Your application is handled by qualified professionals, minimizing rejection risks.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Zap size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Fastest Turnaround</h4>
+                                        <p className="text-gray-300 text-sm">We leverage technology to complete your registration faster than traditional agents.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Shield size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">No Hidden Fees</h4>
+                                        <p className="text-gray-300 text-sm">Transparent pricing. What you see is what you pay. No last-minute surprises.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Users size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Lifetime Support</h4>
+                                        <p className="text-gray-300 text-sm">We don't just register your company; we partner with you for all your future compliances.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* FAQs */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
@@ -560,9 +660,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                                 </p>
                             </div>
 
-                            <button className="w-full mt-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-sm transition">
-                                Download Checklist PDF
-                            </button>
+                            <button className="w-full mt-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
 
                         {/* Support Card */}
@@ -578,27 +676,15 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                                     <p className="font-bold">+91 98765 43210</p>
                                 </div>
                             </div>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Request Callback
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
-
-
-                <AnimatePresence>
-                    {showRegisterModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                            <div className="relative w-full max-w-6xl max-h-[95vh] rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 bg-white ring-1 ring-white/20 overflow-y-auto">
-                                <PrivateLimitedRegistration isLoggedIn={isLoggedIn} initialPlan={selectedPlan} onClose={() => setShowRegisterModal(false)} />
-                            </div>
-                        </div>
-                    )}
-                </AnimatePresence>
             </div>
         </div >
     );
 };
 
 export default PrivateLimitedPage;
+
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, BookOpen, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -77,7 +77,7 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                                     Share Transfer <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Filing</span>
                                 </h1>
-                                <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
+                                <p className="text-gray-300 text-xl max-w-xl font-light leading-relaxed">
                                     Legally transfer shares between parties with proper documentation, stamp duty payment, and Board approval to ensure validity.
                                 </p>
                             </motion.div>
@@ -109,7 +109,7 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                             </motion.div>
 
                             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Start Transfer
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
@@ -126,9 +126,12 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Best Value</div>
+                                {/* Top Gold Line */}
+                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
-                                <div className="text-center mb-6">
+                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
+
+                                <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">Standard Plan</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹2,499</h3>
@@ -137,7 +140,7 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Stamp Duty</p>
                                 </div>
 
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {[
                                         "Drafting Share Transfer Deed (SH-4)",
                                         "Stamp Duty Calculation",
@@ -153,11 +156,9 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                                 </div>
 
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Transfer Shares <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                                 <p className="text-center text-[10px] text-slate-400 mt-4 font-medium">
                                     100% Online process • No hidden charges
                                 </p>
@@ -168,99 +169,176 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+            {/* --- PRICING SECTION (3 PLANS) --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Plan</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Simple Pricing</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {/* Consultation */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Consultation</h3>
+                            <div className="text-4xl font-black text-navy mb-2">₹999</div>
+                            <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-wide">Expert Advice</p>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {["Procedure Guide", "Stamp Duty Check", "Documentation Review"].map((f, i) => (
+                                    <li key={i} className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" />{f}</li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Select Basic
+                            </button>
+                        </motion.div>
+
+                        {/* Standard - Most Popular */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            {/* Top Gold Line */}
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Most Popular
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-4">Standard</h3>
+                            <div className="text-4xl font-black text-white mb-2">₹2,499</div>
+                            <p className="text-xs text-gray-400 mb-6 font-bold uppercase tracking-wide">+ Stamp Duty</p>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {["SH-4 Drafting", "Board Resolutions", "Certificate Handling", "Register Update"].map((f, i) => (
+                                    <li key={i} className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div>{f}</li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Select Standard
+                            </button>
+                        </motion.div>
+
+                        {/* Premium */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Bulk Transfer</h3>
+                            <div className="text-4xl font-black text-navy mb-2">₹4,999</div>
+                            <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-wide">+ Stamp Duty</p>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {["Multiple Transfers", "Valuation Guidance", "Priority Service", "Detailed Advisory"].map((f, i) => (
+                                    <li key={i} className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" />{f}</li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Select Premium
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Introduction */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> What is Share Transfer?
-                        </h2>
-                        <div className="prose prose-lg text-gray-600">
-                            <p className="lead text-xl text-gray-800 font-medium">
-                                Share transfer is the voluntary act of a shareholder transferring their ownership rights in shares to another person. In Private Limited companies, this right is restricted and heavily regulated by the Articles of Association (AOA).
-                            </p>
+                    <section className="mb-20">
+                        <h2 className="text-3xl font-bold text-navy mb-8">What You Will Receive</h2>
+                        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+                            <div className="p-6 bg-navy text-white">
+                                <p className="text-sm opacity-80">Official transfer documents and records.</p>
+                            </div>
+                            <div className="divide-y divide-gray-100">
+                                {[
+                                    { name: "Share Transfer Deed", type: "SH-4 Form", due: "Immediate" },
+                                    { name: "Stamp Duty Challan", type: "Govt Receipt", due: "Day 2" },
+                                    { name: "Board Resolution", type: "Draft", due: "Day 3" },
+                                    { name: "Updated Certificate", type: "Endorsed", due: "Day 3" },
+                                    { name: "MGT-1 Update", type: "Register Entry", due: "Day 3" }
+                                ].map((row, i) => (
+                                    <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-6 hover:bg-gray-50 transition">
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-navy text-lg">{row.name}</h4>
+                                        </div>
+                                        <div className="md:w-1/3 mt-2 md:mt-0">
+                                            <span className="text-sm text-slate-500 font-medium uppercase tracking-wider">Format</span>
+                                            <p className="text-bronze-dark font-semibold">{row.due}</p>
+                                        </div>
+                                        <div className="md:w-1/6 mt-2 md:mt-0 text-right">
+                                            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-navy">
+                                                {row.type}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </section>
 
-                    {/* PROCESS TIMELINE */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Transfer Process</h2>
-                        <div className="space-y-6">
-                            {[
-                                { step: "Step 1", title: "Information Collection", days: "Day 1", desc: "We collect details of Transferor, Transferee, and Share Certificates." },
-                                { step: "Step 2", title: "Deed Execution (SH-4)", days: "Day 1-2", desc: "We draft the SH-4 deed. Both parties sign it." },
-                                { step: "Step 3", title: "Stamp Duty Payment", days: "Day 2", desc: "Stamp duty is paid (@0.015%) to make the deed legally valid." },
-                                { step: "Step 4", title: "Board Approval", days: "Day 3", desc: "A Board Meeting is held to approve the transfer." },
-                                { step: "Step 5", title: "Endorsement", days: "Day 3", desc: "Share Certificates are endorsed in the name of the new holder." }
-                            ].map((item, i) => (
-                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
-                                    <div className="flex-shrink-0 w-full md:w-48 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
-                                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
-                                            {i + 1}
-                                        </div>
-                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Estimated</span>
-                                        <span className="text-navy font-bold text-lg">{item.days}</span>
+                    {/* WHY CHOOSE SHINEFILING - SEO SECTION */}
+                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-20">
+                        {/* Background Deco */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
+
+                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Trust Us with Share Transfers?</h2>
+                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Shield size={24} />
                                     </div>
-                                    <div className="flex-1 flex flex-col justify-center">
-                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
-                                            {item.title}
-                                        </h3>
-                                        <p className="text-slate-600 leading-relaxed text-sm">
-                                            {item.desc}
-                                        </p>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Legal Precision</h4>
+                                        <p className="text-gray-300 text-sm">Share transfers are scrutinized during due diligence. We ensure your SH-4 deeds are watertight.</p>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </section>
-
-
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-section">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-3 gap-6">
-                            {/* Consultation */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Consultation</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹999</div>
-                                <p className="text-xs text-slate-400 mb-6">Expert Advice</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    {["Procedure Guide", "Stamp Duty Check", "Documentation Review"].map((f, i) => (
-                                        <li key={i} className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" />{f}</li>
-                                    ))}
-                                </ul>
-                                <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Basic</button>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <FileText size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Stamp Duty Compliance</h4>
+                                        <p className="text-gray-300 text-sm">We assist in correct calculation and payment of stamp duty to avoid invalid transfers.</p>
+                                    </div>
+                                </div>
                             </div>
-
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Standard</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹2,499</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Stamp Duty</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    {["SH-4 Drafting", "Board Resolutions", "Certificate Handling", "Register Update"].map((f, i) => (
-                                        <li key={i} className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" />{f}</li>
-                                    ))}
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
-                            </div>
-
-                            {/* Premium */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Bulk Transfer</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹4,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Stamp Duty</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    {["Multiple Transfers", "Valuation Guidance", "Priority Service", "Detailed Advisory"].map((f, i) => (
-                                        <li key={i} className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" />{f}</li>
-                                    ))}
-                                </ul>
-                                <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Premium</button>
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Users size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Resolution Handling</h4>
+                                        <p className="text-gray-300 text-sm">We draft the specific Board Resolution required to accept the transfer, keeping your minutes book clean.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <CheckCircle size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Secretarial Records</h4>
+                                        <p className="text-gray-300 text-sm">We help update your Register of Members (MGT-1) so your ownership records are always audit-ready.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -326,9 +404,7 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                                     <p className="font-bold">+91 98765 43210</p>
                                 </div>
                             </div>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Request Callback
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -339,3 +415,5 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
 };
 
 export default ShareTransferFilingPage;
+
+

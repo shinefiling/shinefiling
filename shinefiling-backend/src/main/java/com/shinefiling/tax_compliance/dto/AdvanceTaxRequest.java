@@ -21,7 +21,18 @@ public class AdvanceTaxRequest {
         private String installment; // "June", "September", "December", "March"
         private String taxpayerType; // "Individual", "Company", "Firm"
 
-        // Income Estimates (Optional)
+        // Income Details
+        private Double businessIncome;
+        private Double salaryIncome;
+        private Double capitalGains;
+        private Double interestIncome;
+        private Double otherIncome;
+
+        // Deductions
+        private Double deduction80C;
+        private Double deduction80D;
+        private Double otherDeductions;
+
         private Double estimatedAnnualIncome;
         private Double taxAlreadyPaid; // TDS/TCS
     }
@@ -41,5 +52,3 @@ public class AdvanceTaxRequest {
         private String description;
     }
 }
-
-

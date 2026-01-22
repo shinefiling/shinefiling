@@ -11,6 +11,8 @@ public class TradeLicenseRequest {
     private String state;
     private String city;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private TradeFormData formData;
     private List<UploadedDocumentDTO> documents;

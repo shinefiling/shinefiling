@@ -30,7 +30,6 @@ public class PollutionControlController {
     public ResponseEntity<?> apply(@RequestBody PollutionControlRequest requestDTO) {
         try {
             // Apply Logic: Categorization Check (Red/Orange/Green)
-            String category = requestDTO.getBusinessCategory();
 
             // Automation Tasks
             List<PollutionControlRequest.AutomationTaskDTO> tasks = generateAutomationTasks(requestDTO);
@@ -42,15 +41,8 @@ public class PollutionControlController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            // Pricing based on Category and Certificate Type
-            double price = 14999.0;
-            if ("RED".equalsIgnoreCase(category))
-                price = 24999.0;
-            if ("WHITE".equalsIgnoreCase(category))
-                price = 4999.0; // Minimal compliance
-
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(price);
+            createdRequest.setPlan(requestDTO.getPlan());
+            createdRequest.setAmount(requestDTO.getAmountPaid());
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 

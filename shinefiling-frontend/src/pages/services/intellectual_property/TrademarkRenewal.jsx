@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCw, Leaf, Calendar, Clock, AlertCircle, CheckCircle, BookOpen, Zap, HelpCircle, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,10 +15,11 @@ const TrademarkRenewalPage = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "When should I renew my trademark?", a: "A trademark can be renewed 6 months before its expiry date (i.e., every 10 years)." },
-        { q: "What if I miss the renewal deadline?", a: "You get a grace period of 6 months after expiry, but you must pay a late fee/surcharge." },
-        { q: "What is Restoration?", a: "If you miss the grace period too (up to 1 year after expiry), you can file for 'Restoration' of the trademark." },
-        { q: "Can I make changes during renewal?", a: "No, renewal only extends the validity. Changes to the mark or logo require a separate application." },
+        { q: "When should I renew my trademark?", a: "A trademark can be renewed within 6 months before its expiry date (i.e., every 10 years). You can also renew it within 6 months after expiry with a surcharge." },
+        { q: "What if I miss the renewal deadline?", a: "If you miss the 6-month grace period, the mark is removed from the register. You can apply for 'Restoration' within 1 year from expiry." },
+        { q: "How long is the renewed validity?", a: "The trademark will be valid for another 10 years from the date of expiry." },
+        { q: "Can I change my trademark logo during renewal?", a: "No, renewal is only for extending the validity of the *same* mark. Any changes require a fresh trademark application." },
+        { q: "What are the government fees?", a: "The government fee for online renewal (Form TM-R) is ₹9,000. For restoration (Form TM-13), it is ₹18,000 (standard fee + penalty)." }
     ];
 
     return (
@@ -70,14 +71,14 @@ const TrademarkRenewalPage = ({ isLoggedIn }) => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-                                    <RefreshCw size={12} className="fill-bronze" /> +10 Years Protection
+                                    <RefreshCw size={12} className="fill-bronze" /> Extend Validity
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
                                     Trademark <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Renewal</span>
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Renewal Service</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Don't let your brand expire. File Form TM-R efficiently to extend your trademark protection for another 10 years.
+                                    Secure your brand for another 10 years. We file Form TM-R / TM-13 efficiently to prevent your trademark from expiring.
                                 </p>
                             </motion.div>
 
@@ -101,7 +102,7 @@ const TrademarkRenewalPage = ({ isLoggedIn }) => {
                                         <Clock size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Validity</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Extension</p>
                                         <p className="font-bold text-sm text-white">+10 Years</p>
                                     </div>
                                 </div>
@@ -112,7 +113,7 @@ const TrademarkRenewalPage = ({ isLoggedIn }) => {
                                     Renew Now
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
-                                    <BookOpen size={18} /> Learn More
+                                    <BookOpen size={18} /> Learn Rules
                                 </button>
                             </div>
                         </div>
@@ -125,17 +126,17 @@ const TrademarkRenewalPage = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Essential</div>
+                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Crucial</div>
                                 <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Trademark Renewal</h3>
+                                    <h3 className="text-navy font-bold text-xl mb-2">Standard Renewal</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹1,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ Mark</span>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹2,499</h3>
+                                        <span className="text-lg text-slate-400 font-medium">/ 10 Yrs</span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
+                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Excl. Govt Fees</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["Track Renewal Deadline", "Drafting Form TM-R", "Filing Online", "Late Fee Check", "Certificate Update"].map((item, i) => (
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {["Drafting Form TM-R", "Filing Online", "Status Tracking", "Certificate of Renewal", "Validity Reminder Setup"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
@@ -143,19 +144,136 @@ const TrademarkRenewalPage = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    File Renewal <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
-
                     </div>
                 </div>
             </div>
 
-            {/* EXTENSIVE CONTENT SECTION */}
+            {/* --- PRICING SECTION (3 PLANS) --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Renewal Options</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: CONSULTATION */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Check Status</h3>
+                            <p className="text-slate-500 text-sm mb-6">Verify if valid for renewal.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹499</span>
+                                <span className="text-slate-400 line-through text-sm">₹1,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Deadline Check",
+                                    "Registration Validity Check",
+                                    "Govt Fee Calculation",
+                                    "Brief Report"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                                <li className="flex items-center gap-3 text-sm text-slate-400">
+                                    <Zap size={16} className="shrink-0" /> No Filing
+                                </li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Check Status
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD (POPULAR) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Standard
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Renewal (TM-R)</h3>
+                            <p className="text-gray-400 text-sm mb-6">Before/Within 6 months of expiry.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹2,499</span>
+                                <span className="text-gray-500 line-through text-sm">₹4,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "File Form TM-R",
+                                    "Renewal for 10 Years",
+                                    "Online Submission",
+                                    "Status Updates",
+                                    "Priority Support",
+                                    "Govt Fee Extra (₹9000)"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Renew Mark
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 3: COMPLEX */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Restoration</h3>
+                            <p className="text-slate-500 text-sm mb-6">Expired &gt; 6 months ago.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹4,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "File Form TM-13",
+                                    "Restoration + Renewal",
+                                    "Affidavit Drafting",
+                                    "Hearing (if needed)",
+                                    "Govt Fee Extra (₹18000)"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Restore Mark
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* EXTENSIVE CONTENT GRID */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
@@ -164,27 +282,27 @@ const TrademarkRenewalPage = ({ isLoggedIn }) => {
                     {/* Introduction */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> When to Renew?
+                            <BookOpen className="text-bronze" /> Renewal Process Explained
                         </h2>
                         <div className="prose prose-lg text-gray-600">
                             <p className="lead text-xl text-gray-800 font-medium mb-4">
-                                A registered trademark is valid for 10 years. It can be renewed indefinitely for consecutive periods of 10 years.
+                                Trademark protection in India is valid for <span className="text-navy font-bold">10 years</span> from the date of application. It can be kept alive indefinitely by renewing it every 10 years.
                             </p>
                             <p>
-                                Timely renewal is critical to maintain your exclusive rights. If you miss the deadline, your mark may be removed from the Register of Trademarks.
+                                The Registrar sends a notice (Form O-3) reminding you to renew. However, even if you don't receive it, it is your duty to file the renewal application (Form TM-R) on time.
                             </p>
                         </div>
                     </section>
 
-                    {/* BENEFITS GRID */}
+                    {/* DEADLINES GRID */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Timelines</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Critical Timelines</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Standard Renewal", desc: "File within 6 months BEFORE expiry to pay standard govt fees.", icon: Calendar },
-                                { title: "Grace Period", desc: "File within 6 months AFTER expiry by paying a surcharge (Late Fee).", icon: Clock },
-                                { title: "Restoration", desc: "If 1 year passed after expiry, apply for Restoration (Form TM-13).", icon: RefreshCw },
-                                { title: "Removal", desc: "After restoration period, the mark is permanently removed.", icon: AlertCircle },
+                                { title: "Normal Renewal", desc: "For lowest fees, file within 6 months BEFORE the expiry date.", icon: Calendar },
+                                { title: "Surcharge Period / Grace", desc: "You have 6 months AFTER expiry date even if you missed the date, but with a fine.", icon: Clock },
+                                { title: "Restoration (TM-13)", desc: "If 6 months have passed after expiry, you can still restore it within 1 year by paying double fees.", icon: RefreshCw },
+                                { title: "Removal", desc: "If more than 1 year has passed since expiry, the mark is removed and cannot be restored.", icon: AlertCircle },
                             ].map((item, i) => (
                                 <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-bronze transition group">
                                     <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
@@ -199,35 +317,63 @@ const TrademarkRenewalPage = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Common</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Standard Renewal</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹1,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees (₹9,000)</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Filing Form TM-R</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Renewal Tracking</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Next Working Day Filing</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
-                            </div>
+                    {/* PROCESS SECTION */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">How it Works</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Eligibility Check", desc: "We check your trademark status and calculate the exact government fee applicable." },
+                                { step: "Step 2", title: "Drafting TM-R", desc: "Our team drafts the renewal application (Form TM-R) with all correct details." },
+                                { step: "Step 3", title: "Filing Online", desc: "We file the application on the IP India portal. You will receive a filing receipt immediately." },
+                                { step: "Step 4", title: "Exam & Approval", desc: "The Registrar reviews the request. Since it's a renewal, it is usually processed quickly." },
+                                { step: "Step 5", title: "Renewal Certificate", desc: "The Registry issues a letter/email confirming renewal for the next 10 years." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-48 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Step</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                            {/* Restoration */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Restoration</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹3,499</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees (₹18,000)</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Filing Form TM-13</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Affidavit for Delay</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Application Revival</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('restoration')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Restore</button>
+                    {/* WHY CHOOSE US */}
+                    <section className="bg-[#10232A] rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-[80px] -mr-16 -mt-16"></div>
+                        <div className="relative z-10">
+                            <h2 className="text-3xl font-bold text-white mb-6">Why ShineFiling?</h2>
+                            <div className="grid md:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <div className="flex gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                            <Star size={24} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-white font-bold text-lg mb-1">Instant Filing</h4>
+                                            <p className="text-gray-400 text-sm">We file within 24 hours to ensure you don't miss deadlines.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                            <ArrowRight size={24} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-white font-bold text-lg mb-1">Complete Tracking</h4>
+                                            <p className="text-gray-400 text-sm">We monitor the status until the renewal is reflected on the website.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -266,8 +412,14 @@ const TrademarkRenewalPage = ({ isLoggedIn }) => {
                                 <div>
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Mandatory</h4>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Prev. Registration Certificate</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Power of Attorney</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Previous Registration Certificate</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Power of Attorney (TM-48)</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">For Restoration</h4>
+                                    <ul className="space-y-3">
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Affidavit explaining Delay</li>
                                     </ul>
                                 </div>
                             </div>
@@ -281,3 +433,5 @@ const TrademarkRenewalPage = ({ isLoggedIn }) => {
 };
 
 export default TrademarkRenewalPage;
+
+

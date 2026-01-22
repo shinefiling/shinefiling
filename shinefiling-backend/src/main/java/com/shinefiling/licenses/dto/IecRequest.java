@@ -10,6 +10,8 @@ public class IecRequest {
     private String firmName;
     private String firmPan; // Limit validation in FE/Controller
     private String status;
+    private String plan;
+    private Double amountPaid;
     private String planType; // PROPRIETOR, PARTNERSHIP, COMPANY
 
     private IecFormData formData;

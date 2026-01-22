@@ -9,6 +9,7 @@ public class FssaiRegistrationRequest {
     private String submissionId;
     private String userEmail;
     private Double amountPaid;
+    private String plan;
     private String paymentId;
     private String status;
 

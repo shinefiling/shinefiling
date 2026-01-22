@@ -7,6 +7,7 @@ import java.util.List;
 public class IncreaseAuthorizedCapitalRequest {
     private String submissionId;
     private String userEmail;
+    private String plan;
     private Double existingCapital;
     private Double newCapital;
     private Double amountPaid; // Professional Fee

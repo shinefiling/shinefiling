@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Repeat, Users, FileSignature, ArrowRightLeft, ShieldCheck, CheckCircle, BookOpen, Clock, Zap, HelpCircle, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,10 +15,11 @@ const TrademarkAssignmentPage = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "Can I sell my registered trademark?", a: "Yes, a trademark is an intellectual property asset that can be sold, assigned, or transferred to another owner." },
-        { q: "What is trademark assignment?", a: "It is the process of legally transferring the ownership rights of a trademark from one party (Assignor) to another (Assignee)." },
-        { q: "What is 'With Goodwill'?", a: "Assignment with goodwill means transferring the brand along with the market reputation and customer value associated with it." },
-        { q: "How long does it take?", a: "The process involves filing Form TM-P. It can take 6-12 months for the registry to process and update the records." },
+        { q: "Can I sell my registered trademark?", a: "Yes, a trademark is an intellectual property asset that can be sold, assigned, or transferred to another owner, just like physical property." },
+        { q: "What is the difference between Assignment and Licensing?", a: "Assignment transfers the ownership completely. Licensing only gives permission to use the mark, while you retain ownership." },
+        { q: "What is 'Assignment with Goodwill'?", a: "It means you are selling the brand along with its market value and customer reputation. The new owner can use the mark for the same goods/services." },
+        { q: "How long does the transfer take?", a: "Once Form TM-P is filed, the Registry reviews it. It can take 6-12 months for the records to be officially updated, but the rights transfer immediately upon signing the deed." },
+        { q: "Do I need a lawyer?", a: "Yes, drafting a legally watertight Deed of Assignment is crucial to prevent future disputes over ownership." }
     ];
 
     return (
@@ -70,14 +71,14 @@ const TrademarkAssignmentPage = ({ isLoggedIn }) => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-                                    <ArrowRightLeft size={12} className="fill-bronze" /> Transfer of Ownership
+                                    <ArrowRightLeft size={12} className="fill-bronze" /> Transfer Ownership
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
                                     Trademark <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Assignment</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Buying or Selling a Brand? Legally transfer trademark ownership with IP India recorded Assignment Deeds.
+                                    Buying or Selling a Brand? We help you legally transfer trademark rights by drafting strong Assignment Deeds and filing with the Registry.
                                 </p>
                             </motion.div>
 
@@ -92,7 +93,7 @@ const TrademarkAssignmentPage = ({ isLoggedIn }) => {
                                         <ShieldCheck size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Rights</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Legal</p>
                                         <p className="font-bold text-sm text-white">Full Transfer</p>
                                     </div>
                                 </div>
@@ -101,15 +102,15 @@ const TrademarkAssignmentPage = ({ isLoggedIn }) => {
                                         <FileSignature size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Legal</p>
-                                        <p className="font-bold text-sm text-white">Form TM-P</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Form</p>
+                                        <p className="font-bold text-sm text-white">TM-P</p>
                                     </div>
                                 </div>
                             </motion.div>
 
                             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
-                                    Start Assignment
+                                    Start Transfer
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <BookOpen size={18} /> Learn More
@@ -125,16 +126,16 @@ const TrademarkAssignmentPage = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Recommended</div>
+                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Crucial</div>
                                 <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Assignment Deed</h3>
+                                    <h3 className="text-navy font-bold text-xl mb-2">Assignment Service</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹6,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ Transfer</span>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹5,999</h3>
+                                        <span className="text-lg text-slate-400 font-medium">/ Mark</span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees (₹9,000)</p>
+                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Deed + Filing</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {["Drafting Assignment Deed", "Form TM-P Filing", "Affidavit of No Legal Cases", "Registry Liaison", "Certificate Update"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
@@ -143,19 +144,136 @@ const TrademarkAssignmentPage = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Proceed <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
-
                     </div>
                 </div>
             </div>
 
-            {/* EXTENSIVE CONTENT SECTION */}
+            {/* --- PRICING SECTION (3 PLANS) --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Transfer Options</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: CONSULTATION */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Legal Consult</h3>
+                            <p className="text-slate-500 text-sm mb-6">Ask an Expert Attorney.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹999</span>
+                                <span className="text-slate-400 line-through text-sm">₹2,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Review of Agreement",
+                                    "Advice on Goodwill",
+                                    "Stamp Duty Calculation",
+                                    "Process Guidance"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                                <li className="flex items-center gap-3 text-sm text-slate-400">
+                                    <Zap size={16} className="shrink-0" /> No Drafting
+                                </li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Book Consult
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD (POPULAR) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Best Value
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Assignment Service</h3>
+                            <p className="text-gray-400 text-sm mb-6">Drafting + Filing (TM-P).</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹5,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹10,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Professional Deed Drafting",
+                                    "Filing Form TM-P",
+                                    "Affidavit Preparation",
+                                    "Status Tracking",
+                                    "Registry Responses",
+                                    "Govt Fee Extra"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Start Assignment
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 3: COMPLEX */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Change Details</h3>
+                            <p className="text-slate-500 text-sm mb-6">Name/Address Change.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹3,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹6,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Company Name Change",
+                                    "Address Update",
+                                    "Clerical Error Correction",
+                                    "Filing Form TM-P",
+                                    "Certificate Update"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Update Details
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* EXTENSIVE CONTENT GRID */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
@@ -164,27 +282,27 @@ const TrademarkAssignmentPage = ({ isLoggedIn }) => {
                     {/* Introduction */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> Trademark Assignment
+                            <BookOpen className="text-bronze" /> Trademark Assignment Explained
                         </h2>
                         <div className="prose prose-lg text-gray-600">
                             <p className="lead text-xl text-gray-800 font-medium mb-4">
-                                Trademark Assignment allows the owner of a trademark to transfer their rights to another person or entity.
+                                Trademark Assignment is the process of legally transferring the ownership of a trademark from one party (Assignor) to another (Assignee).
                             </p>
                             <p>
-                                This is common during business acquisitions, mergers, or simply selling a brand. The assignment must be recorded with the Registrar of Trademarks to be legally valid.
+                                This usually happens when a brand is sold, or during mergers and acquisitions. It is critical to record this assignment with the Registry using <strong>Form TM-P</strong> to ensure the new owner has clear legal title.
                             </p>
                         </div>
                     </section>
 
-                    {/* BENEFITS GRID */}
+                    {/* TYPES OF ASSIGNMENT GRID */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Types of Assignment</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Ways to Transfer</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "With Goodwill", desc: "Transferring rights along with the brand's reputation and customer base.", icon: ShieldCheck },
-                                { title: "Without Goodwill", desc: "Transferring rights but the original owner keeps the business reputation.", icon: ArrowRightLeft },
-                                { title: "Name Change", desc: "Updating registry when the company name changes.", icon: FileSignature },
-                                { title: "Mergers", desc: "Automatic transfer pursuant to court approved amalgamation.", icon: Users },
+                                { title: "With Goodwill", desc: "You buy the brand AND its market reputation. You can use the mark for the same goods/services immediately.", icon: ShieldCheck },
+                                { title: "Without Goodwill", desc: "You buy the mark but NOT the old business goodwill. You may have to use it for different goods or build reputation from scratch.", icon: ArrowRightLeft },
+                                { title: "Merger / Amalgamation", desc: "When companies merge, trademarks transfer automatically by court order, but registry must be updated.", icon: Users },
+                                { title: "Transmission", desc: "Transfer of ownership by operation of law (e.g., inheritance/death of owner).", icon: FileSignature },
                             ].map((item, i) => (
                                 <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-bronze transition group">
                                     <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
@@ -199,35 +317,63 @@ const TrademarkAssignmentPage = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">All Inclusive</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Assignment</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹6,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees (Actuals)</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Deed Drafting</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> TM-P Filing</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Registry Follow-up</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Assignment</button>
-                            </div>
+                    {/* PROCESS SECTION */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Assignment Workflow</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Drafting Deed", desc: "A 'Deed of Assignment' is drafted mentioning terms, consideration amount, and goodwill details." },
+                                { step: "Step 2", title: "Execution", desc: "Both parties sign the deed. It must be notarized and stamped as per the Stamp Act." },
+                                { step: "Step 3", title: "Filing TM-P", desc: "We file Form TM-P with the Registry along with the Deed and NOC." },
+                                { step: "Step 4", title: "Examination", desc: "The Registry checks the documents. They may ask for clarifications." },
+                                { step: "Step 5", title: "Recordal", desc: "The new owner's name is updated in the Register of Trademarks." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-48 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Process</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                            {/* Name Change */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Name Change</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹4,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Filing Form TM-P</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Certificate Update</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Fast Track</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('namechange')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Update</button>
+                    {/* WHY CHOOSE US */}
+                    <section className="bg-[#10232A] rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-[80px] -mr-16 -mt-16"></div>
+                        <div className="relative z-10">
+                            <h2 className="text-3xl font-bold text-white mb-6">Expert Legal Drafting</h2>
+                            <div className="grid md:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <div className="flex gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                            <Star size={24} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-white font-bold text-lg mb-1">Watertight Deeds</h4>
+                                            <p className="text-gray-400 text-sm">Our lawyers ensure the Assignment Deed covers all legal bases to avoid disputes.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                            <UserCheck size={24} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-white font-bold text-lg mb-1">Smooth Process</h4>
+                                            <p className="text-gray-400 text-sm">From stamping to filing, we handle the entire bureaucratic process.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -266,26 +412,17 @@ const TrademarkAssignmentPage = ({ isLoggedIn }) => {
                                 <div>
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Mandatory</h4>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Assignment Deed (Notarized)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Deed of Assignment (Notarized)</li>
                                         <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Power of Attorney</li>
                                     </ul>
                                 </div>
                                 <div>
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Optional</h4>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> NOC from Original Owner</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> NOC from Assignor</li>
                                     </ul>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Support Card */}
-                        <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">Need a Draft?</h4>
-                            <p className="text-gray-300 text-sm mb-4">We can draft the Assignment Deed for you.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Request Deed
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -296,3 +433,5 @@ const TrademarkAssignmentPage = ({ isLoggedIn }) => {
 };
 
 export default TrademarkAssignmentPage;
+
+

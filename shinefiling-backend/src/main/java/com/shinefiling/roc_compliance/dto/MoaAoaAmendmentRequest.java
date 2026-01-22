@@ -7,6 +7,8 @@ import java.util.List;
 public class MoaAoaAmendmentRequest {
     private String submissionId;
     private String userEmail;
+    private String plan;
+    private Double amountPaid;
     private String amendmentType; // "MOA", "AOA", "BOTH"
     private String reasonForAmendment;
     private String status;

@@ -8,8 +8,16 @@ import {
     TrendingUp, FileCheck, Headphones, User, Lightbulb, PenTool
 } from 'lucide-react';
 import { getApprovedTestimonials } from '../api';
-import heroBg from '../assets/hero-bg.png';
+import heroBg from '../assets/hero-bg-final.png';
 import servicesBg from '../assets/services-bg.png';
+import HeroAnimation from '../components/HeroAnimation';
+
+import heroBgProfessional from '../assets/hero-bg-professional.png';
+import ProfessionalBackground from '../components/ProfessionalBackground';
+import HeroIsometricBackground from '../components/HeroIsometricBackground';
+import FloatingIconsAnimation from '../components/FloatingIconsAnimation';
+import Marquee from '../components/Marquee';
+import AnimatedCounter from '../components/AnimatedCounter';
 
 // Animation Variants
 const fadeInUp = {
@@ -45,7 +53,7 @@ const TestimonialsSection = () => {
                     setTestimonials(data.slice(0, 6)); // Show max 6 testimonials
                 }
             } catch (error) {
-                console.error('Failed to fetch testimonials:', error);
+                console.warn('Backend not accessible, loading default testimonials.');
                 // Fallback to default testimonials
                 setTestimonials([
                     { customerName: "Suresh Raina", serviceName: "Private Limited Registration", feedback: "Compliance was a headache until I found ShineFiling. Professional & super fast.", rating: 5 },
@@ -99,6 +107,43 @@ const TestimonialsSection = () => {
 const LandingPage = () => {
     const [activeFaq, setActiveFaq] = useState(0);
 
+    // --- HERO TEXT SLIDER ---
+    const [activeSlide, setActiveSlide] = useState(0);
+
+    const heroSlides = [
+        {
+            title1: "Launch & Grow Your",
+            title2: "Business with Confidence",
+            subtitle: "India's most trusted platform for Company Registration, Trademark Protection, and Tax Filing.",
+            cta: "Get Started for Free"
+        },
+        {
+            title1: "Protect Your Brand",
+            title2: "Identity & Assets",
+            subtitle: "Secure your intellectual property with our expert Trademark and Copyright services.",
+            cta: "Protect Now"
+        },
+        {
+            title1: "Simplify Your",
+            title2: "Tax & Compliance",
+            subtitle: "Seamless GST, ITR, and Annual Compliance services for hassle-free business operations.",
+            cta: "File Taxes"
+        },
+        {
+            title1: "Expert Partner for",
+            title2: "Financial Growth",
+            subtitle: "Expert book-keeping, VC/CFO services, and financial planning to scale your business.",
+            cta: "Explore Services"
+        }
+    ];
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setActiveSlide((prev) => (prev + 1) % heroSlides.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, []);
+
     // --- Data: Matched to User's "Services Grid" Image ---
     const premiumServices = [
         { title: 'Private Limited Company', icon: Building, desc: 'Registration & Incorporation' },
@@ -128,42 +173,50 @@ const LandingPage = () => {
         <div className="font-sans text-navy bg-white selection:bg-bronze/30 selection:text-navy overflow-x-hidden">
 
             {/* --- HERO SECTION --- */}
-            <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-navy">
-                {/* Background Image with Overlay */}
-                <div className="absolute inset-0 z-0">
-                    <img
-                        src={heroBg}
-                        alt="Corporate Legal Tower Night"
-                        className="w-full h-full object-cover opacity-60"
-                    />
-                    <div className="absolute inset-0 bg-[#10232A]/70"></div>
-                </div>
+            <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-navy pt-20">
+                {/* 3D Isometric Animated Background (Center Focused) */}
+                <HeroIsometricBackground />
 
-                <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 w-full text-center mt-8">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="max-w-4xl mx-auto"
-                    >
-                        <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight drop-shadow-xl">
-                            Start Your Business Without the Hassle
-                        </h1>
+                <div className="relative z-20 max-w-5xl mx-auto px-6 w-full flex flex-col items-center justify-start h-full pt-32 pointer-events-none">
 
-                        <p className="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl mx-auto font-light tracking-wide">
-                            Expert Legal & Compliance Solutions for Your Growth.
-                        </p>
 
-                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex justify-center">
-                            <Link to="/signup" className="px-10 py-3.5 bg-[#B58863] hover:bg-[#a37853] text-white font-bold text-sm tracking-widest uppercase rounded shadow-lg transition-all flex items-center gap-2">
-                                GET STARTED NOW <ArrowRight size={14} strokeWidth={3} />
-                            </Link>
+
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeSlide}
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -30 }}
+                            transition={{ duration: 0.6 }}
+                            className="text-center pointer-events-auto"
+                        >
+                            {/* Main Headline */}
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 tracking-tight leading-[1.1] drop-shadow-2xl">
+                                {heroSlides[activeSlide].title1} <br />
+                                <span className="text-[#B58863]">
+                                    {heroSlides[activeSlide].title2}
+                                </span>
+                            </h1>
+
+                            {/* Subtext */}
+                            <p className="max-w-2xl mx-auto text-base sm:text-lg text-slate-200 mb-10 leading-relaxed font-light tracking-wide">
+                                Take control of your business filing, compliance, and auditing with our AI-powered platform.
+                                Fast, secure, and fully digital.
+                            </p>
+
+                            {/* Buttons - Pill Shaped */}
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                                <Link to="/services" className="px-8 py-4 rounded-full bg-[#B58863] text-white font-bold text-lg hover:bg-[#946c4b] hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(181,136,99,0.4)] flex items-center gap-2">
+                                    Start Business <ArrowRight size={20} />
+                                </Link>
+                                <Link to="/contact" className="px-8 py-4 rounded-full border border-[#B58863] bg-[#0f172a]/50 backdrop-blur-sm text-white font-medium text-lg hover:bg-[#B58863] hover:border-[#B58863] transition-all duration-300 flex items-center gap-2 shadow-[0_0_15px_rgba(181,136,99,0.1)]">
+                                    Learn More <Play size={18} fill="currentColor" />
+                                </Link>
+                            </div>
                         </motion.div>
-                    </motion.div>
+                    </AnimatePresence>
                 </div>
             </section>
-
-            {/* --- TRUSTED BY BANNER --- */}
             <motion.div
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -171,27 +224,52 @@ const LandingPage = () => {
                 transition={{ duration: 1 }}
                 className="bg-[#EBE5DE] py-8 border-b border-white/20"
             >
-                <div className="max-w-[1400px] mx-auto px-6 text-center">
-                    <p className="text-[10px] font-bold tracking-[0.2em] text-navy/60 uppercase mb-6">Trusted By Leading Enterprises</p>
-                    <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/2560px-Amazon_logo.svg.png" alt="Company" className="h-6 object-contain" />
-                        <span className="text-xl font-black text-navy tracking-tight">TATA</span>
-                        <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full border-2 border-navy"></div>
-                            <span className="font-bold text-navy">Reliance</span>
+                <div className="max-w-[1400px] mx-auto px-6 text-center overflow-hidden">
+                    <p className="text-[10px] font-bold tracking-[0.2em] text-navy/60 uppercase mb-8">Officially Recognized & Compliant With</p>
+
+                    <Marquee speed={40}>
+                        <div className="flex items-center gap-16 md:gap-24 opacity-70 hover:opacity-100 transition-opacity duration-300">
+
+                            {/* Startup India */}
+                            <div className="flex items-center gap-3 group cursor-pointer">
+                                <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-all"><Award className="text-[#D4B08C]" size={24} /></div>
+                                <span className="text-xl font-bold text-navy/80">Startup India</span>
+                            </div>
+
+                            {/* Digital India */}
+                            <div className="flex items-center gap-3 group cursor-pointer">
+                                <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-all"><Globe className="text-blue-600" size={24} /></div>
+                                <span className="text-xl font-bold text-navy/80">Digital India</span>
+                            </div>
+
+                            {/* MCA */}
+                            <div className="flex items-center gap-3 group cursor-pointer">
+                                <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-all"><Building className="text-slate-600" size={24} /></div>
+                                <span className="text-xl font-bold text-navy/80">MCA Govt</span>
+                            </div>
+
+                            {/* MSME */}
+                            <div className="flex items-center gap-3 group cursor-pointer">
+                                <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-all"><Briefcase className="text-[#B58863]" size={24} /></div>
+                                <span className="text-xl font-bold text-navy/80">MSME</span>
+                            </div>
+
+                            {/* ISO */}
+                            <div className="flex items-center gap-3 group cursor-pointer">
+                                <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-all"><Shield className="text-green-600" size={24} /></div>
+                                <span className="text-xl font-bold text-navy/80">ISO 9001:2015</span>
+                            </div>
+
                         </div>
-                        <div className="flex items-center gap-1 font-serif italic font-bold text-xl text-navy">
-                            <span>HDFC</span>
-                        </div>
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/2560px-Google_2015_logo.svg.png" alt="Google" className="h-6 object-contain" />
-                    </div>
+                    </Marquee>
                 </div>
             </motion.div>
 
             {/* --- SECTION 1: SERVICES GRID (Matched to Image) --- */}
             <section className="py-24 px-6 lg:px-12 relative overflow-hidden bg-slate-50">
+                <FloatingIconsAnimation /> {/* Added Animation here */}
                 <div className="absolute inset-0 z-0">
-                    <img src={servicesBg} alt="Services Background" className="w-full h-full object-cover opacity-30" />
+                    <img src={servicesBg} alt="Services Background" className="w-full h-full object-cover opacity-10" />
                 </div>
                 <div className="max-w-[1400px] mx-auto relative z-10">
                     <motion.div
@@ -201,10 +279,9 @@ const LandingPage = () => {
                         variants={fadeInUp}
                         className="mb-12"
                     >
-                        <h2 className="text-3xl font-bold text-navy">Services Grid</h2>
+                        <h2 className="text-3xl font-bold text-navy">Services</h2>
                         <div className="h-1 w-20 bg-bronze mt-2"></div>
                     </motion.div>
-
                     <motion.div
                         initial="hidden"
                         whileInView="visible"
@@ -354,13 +431,16 @@ const LandingPage = () => {
             </section>
 
             {/* --- SECTION 4: STATS BAR (Dark Band) --- */}
-            <section className="py-16 px-6 lg:px-12 bg-[#10232A] text-white">
-                <div className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-white/10">
+            <section className="py-16 px-6 lg:px-12 bg-[#10232A] text-white relative overflow-hidden">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-500 via-transparent to-transparent"></div>
+
+                <div className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-white/10 relative z-10">
                     {[
-                        { val: "50+", label: "Legal Services" },
-                        { val: "100%", label: "Digital Process" },
-                        { val: "24/7", label: "Expert Support" },
-                        { val: "Zero", label: "Hidden Charges" }
+                        { val: 50, suffix: "+", label: "Legal Services" },
+                        { val: 100, suffix: "%", label: "Digital Process" },
+                        { val: 24, suffix: "/7", label: "Expert Support" },
+                        { val: 0, suffix: "", label: "Hidden Charges" } // 0 doesn't need animation really but consistent
                     ].map((stat, i) => (
                         <motion.div
                             key={i}
@@ -370,7 +450,10 @@ const LandingPage = () => {
                             transition={{ delay: i * 0.1, duration: 0.5 }}
                             className="px-4"
                         >
-                            <h4 className="text-4xl lg:text-5xl font-bold text-[#B58863] mb-2 font-display">{stat.val}</h4>
+                            <h4 className="text-4xl lg:text-5xl font-bold text-[#B58863] mb-2 font-display flex justify-center items-baseline gap-1">
+                                <AnimatedCounter from={0} to={stat.val} duration={2} />
+                                <span>{stat.suffix}</span>
+                            </h4>
                             <p className="text-sm text-slate-400 uppercase tracking-widest font-medium">{stat.label}</p>
                         </motion.div>
                     ))}
@@ -430,7 +513,7 @@ const LandingPage = () => {
             <section className="py-24 px-6 lg:px-12 bg-white">
                 <div className="max-w-[1400px] mx-auto">
 
-                    {/* Featured Article 1 (Text Left, Image Right) */}
+                    {/* Featured Article 1 (Text Left, Image Right)
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -452,8 +535,9 @@ const LandingPage = () => {
                             <img src="https://images.unsplash.com/photo-1576267423048-15c0040fec78?auto=format&fit=crop&q=80&w=1600" alt="Business Handshake" className="w-full h-full object-cover" />
                         </div>
                     </motion.div>
+                    */}
 
-                    {/* Featured Article 2 (Image Left, Text Right) */}
+                    {/* Featured Article 2 (Image Left, Text Right)
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -475,8 +559,9 @@ const LandingPage = () => {
                             </Link>
                         </div>
                     </motion.div>
+                    */}
 
-                    {/* Latest Insights 3-Column Grid */}
+                    {/* Latest Insights 3-Column Grid
                     <div className="mb-12">
                         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-8">
                             <h2 className="text-3xl font-bold text-navy">Latest Insights</h2>
@@ -509,10 +594,10 @@ const LandingPage = () => {
                             ))}
                         </motion.div>
                     </div>
+                    */}
 
                 </div>
             </section>
-
             {/* --- FINAL CTA --- */}
             <section className="py-24 px-6 lg:px-12 bg-navy relative overflow-hidden" >
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>

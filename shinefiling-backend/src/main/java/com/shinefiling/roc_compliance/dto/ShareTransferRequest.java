@@ -7,6 +7,8 @@ import java.util.List;
 public class ShareTransferRequest {
     private String submissionId;
     private String userEmail;
+    private String plan;
+    private Double amountPaid;
     private String companyCin;
     private Double considerationAmount;
     private Double stampDutyAmount;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Upload, CheckCircle, AlertCircle, FileText, ChevronRight, Save } from 'lucide-react';
-import { submitStartupIndia } from '../../../api';
+import { submitStartupIndia, uploadFile } from '../../../api';
 
 const ApplyStartupIndia = () => {
     const navigate = useNavigate();
@@ -51,29 +51,47 @@ const ApplyStartupIndia = () => {
         setLoading(true);
         setError(null);
         try {
-            const processedDocs = {};
+            const uploadedDocsList = [];
+            // Upload files first
             for (const [key, file] of Object.entries(documents)) {
                 if (file) {
-                    processedDocs[key] = `File: ${file.name}`;
+                    try {
+                        const uploadRes = await uploadFile(file, 'startup-india');
+                        uploadedDocsList.push({
+                            id: key,
+                            filename: uploadRes.originalName || file.name,
+                            fileUrl: uploadRes.fileUrl,
+                            type: key
+                        });
+                    } catch (e) {
+                        console.error("File upload failed for " + key, e);
+                    }
                 }
             }
 
-            const payload = {
+            const startupFormData = {
                 startupName: formData.startupName,
-                entityType: "Private Limited", // Default as form doesn't request it
+                entityType: "Private Limited",
                 dateOfIncorporation: formData.dateOfIncorporation,
                 incorporationNumber: formData.cinLlpNumber,
                 industry: formData.industry,
                 sector: formData.sector,
                 mobile: formData.mobile,
-                email: formData.email,
-                // Extra fields
-                status: "PENDING",
-                website: formData.website, // Handled if backend supports, else ignored
-                notes: JSON.stringify(processedDocs)
+                email: formData.email
             };
 
-            await submitStartupIndia(payload);
+            const finalPayload = {
+                submissionId: `STARTUP-${Date.now()}`,
+                userEmail: formData.email || 'guest@example.com',
+                plan: 'standard',
+                amountPaid: 4999, // Dynamic based on future implementation
+                status: "INITIATED",
+                formData: startupFormData,
+                documents: uploadedDocsList,
+                automationQueue: []
+            };
+
+            await submitStartupIndia(finalPayload);
             navigate('/dashboard?tab=orders');
         } catch (err) {
             setError(err.message || "Submission failed");

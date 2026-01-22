@@ -11,6 +11,8 @@ public class DrugLicenseRequest {
     private String state;
     private String licenseType; // RETAIL, WHOLESALE, MANUFACTURING
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private DrugFormData formData;
     private List<UploadedDocumentDTO> documents;

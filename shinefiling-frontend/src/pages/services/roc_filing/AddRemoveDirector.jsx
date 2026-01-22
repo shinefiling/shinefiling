@@ -74,7 +74,7 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
                                     Add / Remove <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Director</span>
                                 </h1>
-                                <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
+                                <p className="text-gray-300 text-xl max-w-xl font-light leading-relaxed">
                                     Appointment of new visionaries or resignation of existing members. We manage end-to-end ROC compliance (Form DIR-12) for smooth management transitions.
                                 </p>
                             </motion.div>
@@ -120,8 +120,12 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Common Choice</div>
-                                <div className="text-center mb-6">
+                                {/* Top Gold Line */}
+                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+
+                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
+
+                                <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">Per Change</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹1,999</h3>
@@ -129,7 +133,7 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {["Drafting Board Resolutions", "Resignation/Appt. Letter", "Form DIR-12 Filing", "Govt Fee Payment", "Master Data Update"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
@@ -149,105 +153,167 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+            {/* --- PRICING SECTION (2 PLANS) --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Transparency First</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Service Packages</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-center">
+                        {/* ADD Director */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            {/* Top Gold Line */}
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Growth
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-4">ADD Director</h3>
+                            <div className="text-5xl font-black text-white mb-2">₹1,999</div>
+                            <p className="text-xs text-gray-400 mb-6 font-bold uppercase tracking-wide">+ Govt Fees</p>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Appointment Letter</li>
+                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Consent (DIR-2)</li>
+                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> DIR-12 Filing</li>
+                            </ul>
+                            <button onClick={() => handlePlanSelect('add')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Select Add Package
+                            </button>
+                        </motion.div>
+
+                        {/* REMOVE Director */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">REMOVE Director</h3>
+                            <div className="text-4xl font-black text-navy mb-2">₹1,999</div>
+                            <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-widest">+ Govt Fees</p>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Resignation Letter</li>
+                                <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Board Resolution</li>
+                                <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> DIR-12 Filing</li>
+                            </ul>
+                            <button onClick={() => handlePlanSelect('remove')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Select Remove Package
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
                 <div className="lg:col-span-8 space-y-20">
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> Managing The Board
-                        </h2>
-                        <div className="prose prose-lg text-gray-600">
-                            <p className="lead text-xl text-gray-800 font-medium">
-                                Companies evolve, and so does their management. Adding new expertise or removing inactive members is a routine corporate action that requires formal notification to the ROC via Form DIR-12.
-                            </p>
-                            <p>
-                                Whether you are bringing in a new partner (Additional Director) or accepting a resignation, compliance within 30 days is mandatory to avoid late fees.
-                            </p>
-                        </div>
-                    </section>
+                    {/* DETAILED SEO CONTENT SECTION - COMPREHENSIVE GUIDE */}
+                    <section className="mt-10 space-y-12 mb-20">
+                        <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl border border-gray-100">
+                            <h2 className="text-3xl font-bold text-navy mb-8 border-b pb-4">Comprehensive Guide to Directorship Changes</h2>
 
-                    {/* PROCESS SECTION */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">The Process</h2>
-                        <div className="space-y-6">
-                            {[
-                                { title: "Digital Signature (DSC)", desc: "The new director must have a valid DSC. If not, we will apply for it first." },
-                                { title: "Director Identification Number (DIN)", desc: "We apply for DIN for the new director. Existing directors already have this." },
-                                { title: "Board Resolution", desc: "A meeting is held to approve the appointment or accept the resignation." },
-                                { title: "Consent & Letters", desc: "For appointment, Form DIR-2 (Consent) is signed. For resignation, a resignation letter is collected." },
-                                { title: "Filing DIR-12", desc: "We file the e-form DIR-12 with the ROC along with the attachments." }
-                            ].map((step, i) => (
-                                <div key={i} className="flex gap-4">
-                                    <div className="flex-col items-center hidden md:flex">
-                                        <div className="w-8 h-8 rounded-full bg-bronze/10 text-bronze font-bold flex items-center justify-center border border-bronze/20">
-                                            {i + 1}
+                            <div className="prose prose-slate max-w-none space-y-8 text-gray-700 leading-relaxed">
+
+                                {/* Introduction */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-navy mb-4 flex items-center gap-2">
+                                        <BookOpen className="text-bronze" /> Managing The Board
+                                    </h3>
+                                    <p className="lead text-xl text-gray-800 font-medium">
+                                        Companies evolve, and so does their management. Adding new expertise or removing inactive members is a routine corporate action that requires formal notification to the ROC via Form DIR-12.
+                                    </p>
+                                    <p>
+                                        Whether you are bringing in a new partner (Additional Director) or accepting a resignation, compliance within 30 days is mandatory to avoid late fees.
+                                    </p>
+                                </div>
+
+                                {/* Process Section */}
+                                <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                    <h3 className="text-xl font-bold text-navy mb-4">The Process</h3>
+                                    <ul className="space-y-3 list-disc pl-5">
+                                        <li><strong>Digital Signature (DSC):</strong> The new director must have a valid DSC. If not, we will apply for it first.</li>
+                                        <li><strong>DIN Allotment:</strong> We apply for DIN for the new director. Existing directors already have this.</li>
+                                        <li><strong>Board Resolution:</strong> A meeting is held to approve the appointment or accept the resignation.</li>
+                                        <li><strong>Consent & Letters:</strong> For appointment, Form DIR-2 (Consent) is signed. For resignation, a resignation letter is collected.</li>
+                                        <li><strong>Filing DIR-12:</strong> We file the e-form DIR-12 with the ROC along with the attachments.</li>
+                                    </ul>
+                                </div>
+
+                                {/* Comparison Section */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-navy mb-4">Types of Changes</h3>
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><UserPlus size={16} /></div>
+                                                <h4 className="font-bold text-navy">Appointment</h4>
+                                            </div>
+                                            <ul className="text-sm space-y-1 text-gray-600 pl-11">
+                                                <li>• Additional Director</li>
+                                                <li>• Alternate Director</li>
+                                                <li>• Nominee Director</li>
+                                            </ul>
                                         </div>
-                                        {i !== 4 && <div className="w-px h-full bg-gray-200 my-2"></div>}
+                                        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600"><UserMinus size={16} /></div>
+                                                <h4 className="font-bold text-navy">Cessation</h4>
+                                            </div>
+                                            <ul className="text-sm space-y-1 text-gray-600 pl-11">
+                                                <li>• Resignation</li>
+                                                <li>• Death of Director</li>
+                                                <li>• Removal by Shareholders</li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex-1 hover:shadow-md transition">
-                                        <h4 className="text-lg font-bold text-navy mb-2">{step.title}</h4>
-                                        <p className="text-gray-600 text-sm">{step.desc}</p>
-                                    </div>
                                 </div>
-                            ))}
-                        </div>
-                    </section>
-
-                    {/* COMPARISON/TYPES SECTION */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Types of Changes</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-green-600 mb-4">
-                                    <UserPlus size={24} />
-                                </div>
-                                <h3 className="text-xl font-bold text-navy mb-2">Appointment</h3>
-                                <ul className="space-y-2 text-sm text-gray-600">
-                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5"></div> Additional Director</li>
-                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5"></div> Alternate Director</li>
-                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5"></div> Nominee Director</li>
-                                </ul>
-                            </div>
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-red-600 mb-4">
-                                    <UserMinus size={24} />
-                                </div>
-                                <h3 className="text-xl font-bold text-navy mb-2">Cessation</h3>
-                                <ul className="space-y-2 text-sm text-gray-600">
-                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5"></div> Resignation</li>
-                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5"></div> Death of Director</li>
-                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5"></div> Removal by Shareholders</li>
-                                </ul>
                             </div>
                         </div>
                     </section>
 
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Growth</div>
-                                <h3 className="text-xl font-bold text-white mb-2">ADD Director</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹1,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-4 mb-8">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-green-500 shrink-0" /> Appointment Letter</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-green-500 shrink-0" /> Consent (DIR-2)</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-green-500 shrink-0" /> DIR-12 Filing</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('add')} className="w-full py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-bold shadow-lg hover:shadow-green-500/20 transition">Select Add Package</button>
+                    {/* MANDATORY DELIVERABLES */}
+                    <section className="mb-20">
+                        <h2 className="text-3xl font-bold text-navy mb-8">What You Will Receive</h2>
+                        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+                            <div className="p-6 bg-navy text-white">
+                                <p className="text-sm opacity-80">Official documents you get after successful filing.</p>
                             </div>
-
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">REMOVE Director</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹1,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-4 mb-8">
-                                    <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-red-500 shrink-0" /> Resignation Letter</li>
-                                    <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-red-500 shrink-0" /> Board Resolution</li>
-                                    <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={16} className="text-red-500 shrink-0" /> DIR-12 Filing</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('remove')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Remove Package</button>
+                            <div className="divide-y divide-gray-100">
+                                {[
+                                    { name: "DIR-12 Receipt", type: "SRN Challan", due: "Immediate" },
+                                    { name: "Board Resolution", type: "Drafted PDF", due: "Day 1" },
+                                    { name: "Resignation/Appt Letter", type: "Legal Draft", due: "Day 1" },
+                                    { name: "Company Master Data", type: "MCA Update", due: "Upon Approval" },
+                                    { name: "Digital Signature", type: "New DSC", due: "If Opted" }
+                                ].map((row, i) => (
+                                    <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-6 hover:bg-gray-50 transition">
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-navy text-lg">{row.name}</h4>
+                                        </div>
+                                        <div className="md:w-1/3 mt-2 md:mt-0">
+                                            <span className="text-sm text-slate-500 font-medium uppercase tracking-wider">Format</span>
+                                            <p className="text-bronze-dark font-semibold">{row.due}</p>
+                                        </div>
+                                        <div className="md:w-1/6 mt-2 md:mt-0 text-right">
+                                            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-navy">
+                                                {row.type}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </section>

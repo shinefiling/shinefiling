@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Gavel, Calendar, Mic2, Briefcase, FileText, CheckCircle, Video, MapPin, BookOpen, Clock, Zap, HelpCircle, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,10 +15,11 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "What is a Trademark Hearing?", a: "A hearing is an official proceeding where the Trademark Registrar gives you an opportunity to explain why your trademark should be registered." },
-        { q: "Why is a hearing scheduled?", a: "It is scheduled when the registrar is not satisfied with your written reply to the examination report or if there is third-party opposition." },
-        { q: "Do I need to attend aggressively?", a: "Unless specified as a physical hearing, most hearings are now conducted via Video Conferencing. Our attorneys will represent you." },
-        { q: "What happens after the hearing?", a: "The registrar may accept your mark (Allowed to be published), reject it (Refused), or adjourn the hearing for more evidence." },
+        { q: "What is a Show Cause Hearing?", a: "A hearing is an official proceeding where the Trademark Registrar gives you a final opportunity to explain why your trademark should be registered, usually after a written reply is rejected." },
+        { q: "Do I need to attend physically?", a: "Most hearings are now conducted via Video Conferencing (Virtual Hearing). Our attorneys will represent you online. Physical presence is rarely required unless specified." },
+        { q: "What happens if I miss the hearing?", a: "If no one appears for the hearing, the Registrar will pass an order 'Refusing' or 'Abandoning' the application immediately." },
+        { q: "What is the outcome of a hearing?", a: "The Registrar may 'Accept' (Advertise) the mark, 'Refuse' it entirely, or 'Adjourn' the hearing to a later date for more evidence." },
+        { q: "Can I represent myself?", a: "You can, but it is risky unless you know Trademark Law thoroughly. Registrars expect legal arguments and case law citations." }
     ];
 
     return (
@@ -70,14 +71,14 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-                                    <Gavel size={12} className="fill-bronze" /> Show Cause Hearing
+                                    <Gavel size={12} className="fill-bronze" /> Trademark Litigation
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
-                                    Represent Your <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Trademark Case</span>
+                                    Trademark <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Show Cause Hearing</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Hearing Scheduled? Our expert attorneys will represent you before the Registrar of Trademarks (Physical or Virtual).
+                                    Received a hearing notice? Don't risk your brand. Our senior attorneys provide expert representation before the Trade Marks Registry.
                                 </p>
                             </motion.div>
 
@@ -112,7 +113,7 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                                     Book Attorney
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
-                                    <BookOpen size={18} /> Learn More
+                                    <BookOpen size={18} /> Process Guide
                                 </button>
                             </div>
                         </div>
@@ -125,17 +126,17 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Legal Fee</div>
+                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Critical</div>
                                 <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Hearing Representation</h3>
+                                    <h3 className="text-navy font-bold text-xl mb-2">Virtual Hearing</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹4,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ Hearing</span>
+                                        <span className="text-lg text-slate-400 font-medium">/ Session</span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Preparation + Appearance</p>
+                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Standard Fee</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["Detailed Case Analysis", "Written Submissions Drafting", "Attorney Appearance (VC)", "Arguments Prevention", "Post-Hearing Report"].map((item, i) => (
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {["Attorney Representation", "Video Conference Setup", "Oral Arguments", "Written Submissions", "Next Steps Strategy"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
@@ -143,19 +144,137 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Schedule Now <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
-
                     </div>
                 </div>
             </div>
 
-            {/* EXTENSIVE CONTENT SECTION */}
+            {/* --- PRICING SECTION (3 PLANS) --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Representation Plans</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: CONSULTATION */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Case Analysis</h3>
+                            <p className="text-slate-500 text-sm mb-6">Hearing Notice Review.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹1,499</span>
+                                <span className="text-slate-400 line-through text-sm">₹3,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Review Hearing Notice",
+                                    "Analyze Previous Reply",
+                                    "Brief Strategy Session",
+                                    "Legal Opinion"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                                <li className="flex items-center gap-3 text-sm text-slate-400">
+                                    <Zap size={16} className="shrink-0" /> No Representation
+                                </li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Book Review
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD (POPULAR) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Most Common
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Virtual Hearing</h3>
+                            <p className="text-gray-400 text-sm mb-6">Complete Representation via VC.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹4,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹8,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Experienced Attorney",
+                                    "Video Conference Link Setup",
+                                    "Strong Oral Arguments",
+                                    "Documentation Review",
+                                    "Status Tracking",
+                                    "Post-Hearing Advice"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Secure Attorney
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 3: COMPLEX */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Physical Hearing</h3>
+                            <p className="text-slate-500 text-sm mb-6">In-Person Representation.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹9,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹15,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Physical Visit to Registry",
+                                    "Submission of Hard Copies",
+                                    "Face-to-Face Arguments",
+                                    "Available in Major Metros",
+                                    "Complex Matter Handling",
+                                    "Priority Case"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Book Physical
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* EXTENSIVE CONTENT GRID */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
@@ -164,27 +283,30 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                     {/* Introduction */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> Trademark Hearing
+                            <BookOpen className="text-bronze" /> Understanding Trademark Hearings
                         </h2>
                         <div className="prose prose-lg text-gray-600">
                             <p className="lead text-xl text-gray-800 font-medium mb-4">
-                                A trademark hearing is the final stage before your application is either accepted or refused.
+                                A trademark hearing is a <span className="text-navy font-bold">quasi-judicial proceeding</span>. It is not a court case, but a formal meeting with the Registrar of Trademarks.
                             </p>
                             <p>
-                                If the Registrar is not convinced by your written reply to the examination report, they will issue a "Show Cause Hearing" notice. It is crucial to be represented by a skilled IP Attorney to argue your case effectively.
+                                It typically happens when the Registrar is not satisfied with the written reply filed against an objection. The Registrar schedules a hearing to give the applicant a chance to present their arguments orally and provide evidence of usage.
+                            </p>
+                            <p>
+                                <strong>Important:</strong> Missing a hearing often leads to immediate abandonment of the application. It is vital to attend (virtually or physically) and present a strong case.
                             </p>
                         </div>
                     </section>
 
-                    {/* BENEFITS GRID */}
+                    {/* REASONS FOR HEARING GRID */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Why Hearing is Called?</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Why is a Hearing Called?</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Unresolved Objections", desc: "Registrar is not satisfied with the reply filed for the exam report.", icon: FileText },
-                                { title: "Third Party Opposition", desc: "A third party has opposed your trademark registration.", icon: Gavel },
-                                { title: "Ambiguous Goods", desc: "Registrar needs clarification on the description of goods/services.", icon: Briefcase },
-                                { title: "Evidence Required", desc: "Registrar demands concrete proof of prior usage.", icon: CheckCircle },
+                                { title: "Unconvincing Reply", desc: "The written reply to the examination report was not sufficient to overcome the objection.", icon: FileText },
+                                { title: "Section 11 Conflict", desc: "Complex similarities with existing marks requiring detailed argumentation on distinctiveness.", icon: Gavel },
+                                { title: "Evidence Deficit", desc: "The officer needs to see more proof of usage (User Affidavit) before granting the mark.", icon: Briefcase },
+                                { title: "Third Party Opposition", desc: "Another party has opposed your mark, leading to a contested hearing.", icon: CheckCircle },
                             ].map((item, i) => (
                                 <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-bronze transition group">
                                     <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
@@ -199,35 +321,74 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard - Hearing */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">All Inclusive</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Hearing Service</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹4,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Adjournments (if any)</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Case Prep</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Attorney Appearance</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Status Reporting</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Hearing</button>
-                            </div>
+                    {/* PROCESS SECTION */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Hearing Process</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Hearing Notice", desc: "You receive a formal notice listing the date, time, and mode (Video/Physical) of the hearing." },
+                                { step: "Step 2", title: "Video Link (TLA / VC)", desc: "For virtual hearings, a link is provided. We test the setup to ensure smooth connectivity." },
+                                { step: "Step 3", title: "Attorney Preparation", desc: "Our attorney reviews your case, prepares written submissions, and compiles evidence." },
+                                { step: "Step 4", title: "The Hearing", desc: "The attorney appears before the hearing officer, argues your case, and distinguishes your mark from cited ones." },
+                                { step: "Step 5", title: "Final Order", desc: "The officer may pass an order instantly (Accepted/Refused) or reserve it for later." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-48 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Workflow</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                            {/* Consultation */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Case Review</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹1,499</div>
-                                <p className="text-xs text-slate-400 mb-6">Expert Opinion</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Hearing Notice Review</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Success Probability</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> 20 min Call</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('consult')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Review</button>
+                    {/* WHY CHOOSE US */}
+                    <section className="bg-[#10232A] rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-[80px] -mr-16 -mt-16"></div>
+                        <div className="relative z-10">
+                            <h2 className="text-3xl font-bold text-white mb-6">Expert Representation</h2>
+                            <div className="grid md:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <div className="flex gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                            <Star size={24} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-white font-bold text-lg mb-1">Senior Attorneys</h4>
+                                            <p className="text-gray-400 text-sm">Our legal team has handled 500+ hearings with a high success rate.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                            <Zap size={24} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-white font-bold text-lg mb-1">No Adjournments</h4>
+                                            <p className="text-gray-400 text-sm">We aim to close the matter in the first hearing itself to save time.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                            <Video size={24} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-white font-bold text-lg mb-1">Seamless Tech</h4>
+                                            <p className="text-gray-400 text-sm">We handle all technical VC requirements so you don't have to worry.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -260,21 +421,22 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                         {/* Documents Sidebar */}
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <FileText className="text-bronze" /> Documents Needed
+                                <FileText className="text-bronze" /> Requirements
                             </h3>
                             <div className="space-y-6">
                                 <div>
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Mandatory</h4>
                                     <ul className="space-y-3">
                                         <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Hearing Notice</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Power of Attorney (TM-48)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Power of Attorney</li>
                                     </ul>
                                 </div>
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Supporting</h4>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Evidence</h4>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Usage Affidavits</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Additional Evidence</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> User Affidavit</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Invoices / Bills</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Advertising Material</li>
                                     </ul>
                                 </div>
                             </div>
@@ -282,11 +444,9 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
 
                         {/* Support Card */}
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">Urgent Hearing?</h4>
-                            <p className="text-gray-300 text-sm mb-4">We can arrange representation at short notice.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Contact Team
-                            </button>
+                            <h4 className="font-bold text-lg mb-2">Notice Received Recently?</h4>
+                            <p className="text-gray-300 text-sm mb-4">You must appoint an attorney immediately to prepare the case.</p>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -297,3 +457,5 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
 };
 
 export default TrademarkHearingPage;
+
+

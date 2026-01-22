@@ -10,6 +10,25 @@ public class ProfessionalTaxRequest {
     private String businessName;
     private String status;
 
+    public String getPlan() {
+        return plan;
+    }
+
+    public void setPlan(String plan) {
+        this.plan = plan;
+    }
+
+    public Double getAmountPaid() {
+        return amountPaid;
+    }
+
+    public void setAmountPaid(Double amountPaid) {
+        this.amountPaid = amountPaid;
+    }
+
+    private String plan;
+    private Double amountPaid;
+
     private PTFormData formData;
     private List<UploadedDocumentDTO> documents;
     private List<AutomationTaskDTO> automationQueue;
@@ -39,5 +58,3 @@ public class ProfessionalTaxRequest {
         private String description;
     }
 }
-
-

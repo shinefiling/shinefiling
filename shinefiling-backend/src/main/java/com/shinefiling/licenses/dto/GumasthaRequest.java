@@ -10,6 +10,8 @@ public class GumasthaRequest {
     private String establishmentName;
     private String city; // Determines Municipality
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private GumasthaFormData formData;
     private List<UploadedDocumentDTO> documents;

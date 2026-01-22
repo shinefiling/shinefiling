@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wine, GlassWater, ShieldCheck, MapPin, Beer, PartyPopper, FileCheck, CheckCircle, Scale, BookOpen, Clock, Zap, HelpCircle, ChevronRight, Star, ArrowRight, UserCheck, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -143,11 +143,9 @@ const BarLiquorLicensePage = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('consult')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Get Started <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -222,7 +220,7 @@ const BarLiquorLicensePage = ({ isLoggedIn }) => {
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Layout Approval Support</li>
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Dept End-to-End Liaison</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('consult')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Assist</button>
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Assist</button>
                             </div>
 
                             {/* Renewal */}
@@ -235,7 +233,7 @@ const BarLiquorLicensePage = ({ isLoggedIn }) => {
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Tax Clearance Assist</li>
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Update Validty</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('renewal')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Renewal</button>
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Renewal</button>
                             </div>
                         </div>
                     </section>
@@ -293,7 +291,7 @@ const BarLiquorLicensePage = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Need Fire NOC?</h4>
                             <p className="text-gray-300 text-sm mb-4">Mandatory for Bar License.</p>
-                            <button onClick={() => navigate('/services/licenses/fire-safety-noc')} className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
                                 Get Fire NOC
                             </button>
                         </div>
@@ -306,3 +304,5 @@ const BarLiquorLicensePage = ({ isLoggedIn }) => {
 };
 
 export default BarLiquorLicensePage;
+
+

@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, BookOpen, Building, Briefcase, MapPin, Store, Utensils, Factory, Truck, AlertTriangle, Star, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, BookOpen, Building, Briefcase, MapPin, Store, Utensils, Factory, Truck, AlertTriangle, Star, ArrowRight, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const TradeLicensePage = ({ isLoggedIn }) => {
@@ -135,7 +135,7 @@ const TradeLicensePage = ({ isLoggedIn }) => {
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {["Eligibility Check", "Application Filing", "Dept Follow-up", "Challan Generation", "Certificate Issue"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
@@ -144,11 +144,9 @@ const TradeLicensePage = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Start Application <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -162,70 +160,139 @@ const TradeLicensePage = ({ isLoggedIn }) => {
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Introduction */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> What is a Trade License?
-                        </h2>
-                        <div className="prose prose-lg text-gray-600">
-                            <p className="lead text-xl text-gray-800 font-medium">
-                                A Trade License is a certificate issued by the municipal corporation (Health Department) that permits the applicant to carry out a specific trade or business at a particular premise.
-                            </p>
-                            <p>
-                                It ensures that the business or trade is carried out in accordance with the relevant rules, standards of safety, and guidelines issued by authorities. It does NOT confer ownership of property.
-                            </p>
-                        </div>
-                    </section>
+                    {/* DETAILED SEO CONTENT SECTION - COMPREHENSIVE GUIDE */}
+                    <section className="mt-10 space-y-12 mb-20">
+                        <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl border border-gray-100">
+                            <h2 className="text-3xl font-bold text-navy mb-8 border-b pb-4">Comprehensive Guide to Trade License</h2>
 
-                    {/* TRADE VS SHOP ACT Comparison */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Trade License vs Shop Act</h2>
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100">
-                                <div className="p-6">
-                                    <h4 className="font-bold text-navy mb-4 flex items-center gap-2"><Briefcase size={18} className="text-bronze" /> Feature</h4>
-                                    <div className="space-y-4 text-sm font-medium text-gray-500">
-                                        <p>Issued By</p>
-                                        <p>Purpose</p>
-                                        <p>Required For</p>
+                            <div className="prose prose-slate max-w-none space-y-8 text-gray-700 leading-relaxed">
+                                {/* Introduction */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-navy mb-4 flex items-center gap-2">
+                                        <BookOpen className="text-bronze" /> What is a Trade License?
+                                    </h3>
+                                    <p className="lead text-xl text-gray-800 font-medium">
+                                        A Trade License is a certificate issued by the <strong>Municipal Corporation</strong> (specifically the Health Department) that permits the applicant to carry out a specific trade or business at a particular premise.
+                                    </p>
+                                    <p>
+                                        Unlike the Start-up registration or Company Incorporation which gives you a legal entity, the Trade License specifically ensures that your business operations (from a health and safety perspective) are permissible in that specific location.
+                                    </p>
+                                </div>
+
+                                {/* Comparison Details */}
+                                <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                    <h3 className="text-xl font-bold text-navy mb-6">Trade License vs Shop Act: What's the difference?</h3>
+                                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                                            <div className="p-6 bg-slate-50">
+                                                <h4 className="font-bold text-navy mb-4 flex items-center gap-2 text-sm uppercase tracking-wider"><Briefcase size={16} className="text-bronze" /> Parameter</h4>
+                                                <div className="space-y-4 text-sm font-bold text-gray-400">
+                                                    <p>Issuing Authority</p>
+                                                    <p>Primary Purpose</p>
+                                                    <p>Applicability</p>
+                                                    <p>Focus Area</p>
+                                                </div>
+                                            </div>
+                                            <div className="p-6">
+                                                <h4 className="font-bold text-navy mb-4 text-lg">Trade License</h4>
+                                                <div className="space-y-4 text-sm text-gray-700 font-medium">
+                                                    <p>Municipal Corp (Health Dept)</p>
+                                                    <p>Public Health & Safety</p>
+                                                    <p>Factories, Hotels, Food, Manufacturing</p>
+                                                    <p>Location & Nuisance Control</p>
+                                                </div>
+                                            </div>
+                                            <div className="p-6">
+                                                <h4 className="font-bold text-navy mb-4 text-lg">Shop Act (Gumasta)</h4>
+                                                <div className="space-y-4 text-sm text-gray-700 font-medium">
+                                                    <p>State Labour Department</p>
+                                                    <p>Employee Conditions</p>
+                                                    <p>All Shops & Offices</p>
+                                                    <p>Working Hours & Wages</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="p-6 bg-slate-50/50">
-                                    <h4 className="font-bold text-navy mb-4">Trade License</h4>
-                                    <div className="space-y-4 text-sm text-gray-700">
-                                        <p>Municipal Corp (Health Dept)</p>
-                                        <p>Ensure Public Health & Safety</p>
-                                        <p>Trading/Manufacturing Units</p>
-                                    </div>
-                                </div>
-                                <div className="p-6">
-                                    <h4 className="font-bold text-navy mb-4">Shop Act (Gumasta)</h4>
-                                    <div className="space-y-4 text-sm text-gray-700">
-                                        <p>State Labour Department</p>
-                                        <p>Regulate Employee Conditions</p>
-                                        <p>All Commercial Establishments</p>
-                                    </div>
+
+                                {/* Who Needs It */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-navy mb-4">Who Mandatory Needs This?</h3>
+                                    <ul className="grid md:grid-cols-2 gap-3 list-none pl-0">
+                                        {[
+                                            "Restaurants, Hotels & Cafes",
+                                            "Manufacturing Units & Factories",
+                                            "Cyber Cafes & Theaters",
+                                            "Food Stalls & Bakeries",
+                                            "Salons & Beauty Parlours",
+                                            "Hazardous Trade Units"
+                                        ].map((item, i) => (
+                                            <li key={i} className="flex items-center gap-2 text-sm text-gray-700 bg-orange-50/50 p-3 rounded-lg border border-orange-50">
+                                                <AlertTriangle size={16} className="text-orange-500" /> {item}
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
                             </div>
                         </div>
                     </section>
 
+                    {/* MANDATORY DELIVERABLES */}
+                    <section className="mb-20">
+                        <h2 className="text-3xl font-bold text-navy mb-8">What You Will Receive</h2>
+                        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+                            <div className="p-6 bg-navy text-white">
+                                <p className="text-sm opacity-80">Official municipal documents.</p>
+                            </div>
+                            <div className="divide-y divide-gray-100">
+                                {[
+                                    { name: "Trade License Certificate", type: "Digital Copy", due: "Approval" },
+                                    { name: "License Number", type: "Unique ID", due: "Immediate" },
+                                    { name: "NOCs (Fire/Health)", type: "If Applicable", due: "Process" },
+                                    { name: "Payment Receipt", type: "Proof", due: "Day 1" },
+                                    { name: "Annual Renewal Guide", type: "Support", due: "Lifetime" }
+                                ].map((row, i) => (
+                                    <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-6 hover:bg-gray-50 transition">
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-navy text-lg">{row.name}</h4>
+                                        </div>
+                                        <div className="md:w-1/3 mt-2 md:mt-0">
+                                            <span className="text-sm text-slate-500 font-medium uppercase tracking-wider">Format</span>
+                                            <p className="text-bronze-dark font-semibold">{row.due}</p>
+                                        </div>
+                                        <div className="md:w-1/6 mt-2 md:mt-0 text-right">
+                                            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-navy">
+                                                {row.type}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
                     {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
+                    <section id="pricing-plans" className="bg-white relative overflow-hidden rounded-3xl p-8 border border-gray-100 shadow-sm mb-20">
+                        <div className="text-center mb-16">
+                            <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Plan</span>
+                            <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Simple Pricing</h2>
+                            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                        </div>
                         <div className="grid md:grid-cols-2 gap-6">
                             {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">New License</h3>
+                            <div className="bg-[#10232A] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 flex flex-col">
+                                {/* Top Gold Line */}
+                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+                                <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                                <h3 className="text-xl font-bold text-white mb-2 mt-4">New License</h3>
                                 <div className="text-4xl font-black text-white mb-1">₹2,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees</p>
+                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees (Actuals)</p>
                                 <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Application Filing</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Document Verification</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Challan Generation</li>
+                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Application Filing</li>
+                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Document Verification</li>
+                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Challan Generation</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">Select Standard</button>
                             </div>
 
                             {/* Renewal */}
@@ -238,7 +305,57 @@ const TradeLicensePage = ({ isLoggedIn }) => {
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Late Fee Support</li>
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Priority Filling</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('renewal')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Renewal</button>
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Renewal</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* WHY CHOOSE SHINEFILING - SEO SECTION */}
+                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-20">
+                        {/* Background Deco */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
+
+                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling?</h2>
+                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Building size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Municipal Liaison</h4>
+                                        <p className="text-gray-300 text-sm">We handle the liaisoning with the Municipal Health Department so you don't have to visit the office.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Shield size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Inspection Support</h4>
+                                        <p className="text-gray-300 text-sm">We guide you on how to prepare your premises for the eventual health inspector visit.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Clock size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Fast Processing</h4>
+                                        <p className="text-gray-300 text-sm">Get your provisional certificate quickly while the final license is under process with the department.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Users size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Online Management</h4>
+                                        <p className="text-gray-300 text-sm">Access your license, renewal dates, and documents from your ShineFiling dashboard anytime.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -296,9 +413,7 @@ const TradeLicensePage = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Check Penalty?</h4>
                             <p className="text-gray-300 text-sm mb-4">Operating without license attracts up to 50% penalty.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Talk to Expert
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -309,3 +424,5 @@ const TradeLicensePage = ({ isLoggedIn }) => {
 };
 
 export default TradeLicensePage;
+
+

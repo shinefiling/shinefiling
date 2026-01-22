@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Palette, Box, Layers, Image, PenTool, CheckCircle, BookOpen, Clock, Zap, HelpCircle, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,10 +15,11 @@ const DesignRegistrationPage = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "What is Design Registration?", a: "It protects the aesthetic look, shape, pattern, or configuration of an article. It does not protect the function or mechanism." },
-        { q: "What is the validity period?", a: "A registered design is valid for 10 years initially, extendable by another 5 years (Total 15 years)." },
-        { q: "Can a logo be registered as a design?", a: "Typically, logos are trademarks. Design registration is for the shape or pattern of a physical product/article." },
-        { q: "What are the image requirements?", a: "You need clear photographs or drawings of the article from all angles (Front, Back, Top, Bottom, Left, Right, Perspective) on a plain background." },
+        { q: "What does Design Registration protect?", a: "It protects the aesthetic look, shape, pattern, configuration, or ornamentation of an article. It does NOT protect the functionality or mechanism (that requires a Patent)." },
+        { q: "What is the validity period?", a: "A registered design is valid for 10 years initially, extendable by another 5 years. Total max validity is 15 years." },
+        { q: "Can a logo be registered as a design?", a: "No, logos are generally trademarks. Design registration is for the 3D shape or pattern applied to a physical product (like a bottle, chair, or car)." },
+        { q: "What are the image requirements?", a: "We need clear photographs or line drawings of the article from all 7 angles: Perspective, Front, Back, Top, Bottom, Left, and Right side views." },
+        { q: "Is prior publication allowed?", a: "No. The design must be 'new' and 'original' and not published anywhere in the world before filing." }
     ];
 
     return (
@@ -77,7 +78,7 @@ const DesignRegistrationPage = ({ isLoggedIn }) => {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Registration</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Protect the unique shape, pattern, and look of your product. Secure your industrial design rights for up to 15 years.
+                                    Protect the unique shape, pattern, and visual appeal of your products. Secure your industrial design rights for 15 years.
                                 </p>
                             </motion.div>
 
@@ -102,7 +103,7 @@ const DesignRegistrationPage = ({ isLoggedIn }) => {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Validity</p>
-                                        <p className="font-bold text-sm text-white">10+5 Years</p>
+                                        <p className="font-bold text-sm text-white">10 + 5 Years</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -112,7 +113,7 @@ const DesignRegistrationPage = ({ isLoggedIn }) => {
                                     Register Design
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
-                                    <BookOpen size={18} /> Learn More
+                                    <BookOpen size={18} /> Learn Rules
                                 </button>
                             </div>
                         </div>
@@ -132,10 +133,10 @@ const DesignRegistrationPage = ({ isLoggedIn }) => {
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹4,999</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ Design</span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
+                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Excl. Govt Fees</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["Classification Check", "Image Formatting Support", "Novelty Statement", "Filing Form 1", "Certificate Issuance"].map((item, i) => (
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {["Application Filing (Form 1)", "Representation Sheet", "Statement of Novelty", "Filing Receipt", "Status Tracking"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
@@ -143,19 +144,135 @@ const DesignRegistrationPage = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Get Registered <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
-
                     </div>
                 </div>
             </div>
 
-            {/* EXTENSIVE CONTENT SECTION */}
+            {/* --- PRICING SECTION (3 PLANS) --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Filing Options</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: CONSULTATION */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Consultation</h3>
+                            <p className="text-slate-500 text-sm mb-6">Expert Review Check.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹999</span>
+                                <span className="text-slate-400 line-through text-sm">₹2,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Novelty Assessment",
+                                    "Class Classification",
+                                    "Image Guidelines Check",
+                                    "Filing Strategy"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                                <li className="flex items-center gap-3 text-sm text-slate-400">
+                                    <Zap size={16} className="shrink-0" /> No Filing
+                                </li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Check Eligibility
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD (POPULAR) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Individual
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard Filing</h3>
+                            <p className="text-gray-400 text-sm mb-6">Individuals / Startups.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹4,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹8,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Filing Form 1",
+                                    "Formatting Images",
+                                    "Statement of Novelty",
+                                    "Status Updates",
+                                    "Govt Fees Extra (₹1000)"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Start Filing
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 3: COMPLEX */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Corporate Filing</h3>
+                            <p className="text-slate-500 text-sm mb-6">For Companies.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹7,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹12,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Corporate Application",
+                                    "Complex Designs",
+                                    "Objection Handling",
+                                    "Govt Fee Extra (₹4000)",
+                                    "Priority Support"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                File for Company
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* EXTENSIVE CONTENT GRID */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
@@ -164,27 +281,29 @@ const DesignRegistrationPage = ({ isLoggedIn }) => {
                     {/* Introduction */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> Design Registration
+                            <BookOpen className="text-bronze" /> About Design Registration
                         </h2>
                         <div className="prose prose-lg text-gray-600">
                             <p className="lead text-xl text-gray-800 font-medium mb-4">
-                                Design Registration protects the visual features of shape, configuration, pattern, or ornament applied to any article.
+                                Industrial Design protection is granted for the <span className="text-navy font-bold">ornamental or aesthetic aspect</span> of an article. It may consist of three-dimensional features, such as the shape of an article, or two-dimensional features, such as patterns, lines, or color.
                             </p>
                             <p>
-                                It gives your product a unique aesthetic identity and prevents competitors from copying your product's look.
+                                Registering your design gives you the exclusive right to prevent others from making, selling, or importing articles bearing a design which is a copy.
                             </p>
                         </div>
                     </section>
 
                     {/* BENEFITS GRID */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">What Can Be Protected?</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Key Benefits</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Shape & Configuration", desc: "The 3D physical structure of the product (e.g., bottle shape, furniture).", icon: Box },
-                                { title: "Pattern & Ornamentation", desc: "Surface patterns, lines, or decorative elements (e.g., textile prints).", icon: Layers },
-                                { title: "Packaging Design", desc: "Unique shape of boxes, containers, or packets.", icon: Image },
-                                { title: "Industrial Products", desc: "Electronics, vehicles, tools, machinery aesthetics.", icon: PenTool },
+                                { title: "Exclusive Rights", desc: "Monopoly over the visual design for 10 years (extendable to 15).", icon: Star },
+                                { title: "Brand Value", desc: "Adds to your brand's intellectual property portfolio and valuation.", icon: Layers },
+                                { title: "Legal Protection", desc: "Right to sue imitators and claim damages for infringement.", icon: ShieldCheck },
+                                { title: "Licensing Income", desc: "Rent or sell your design rights to others for royalty income.", icon: ArrowRight },
+                                { title: "Market Edge", desc: "Differentiates your product from competitors on the shelf.", icon: Box },
+                                { title: "Global Priority", desc: "Use Indian filing date to claim priority in other convention countries.", icon: Image },
                             ].map((item, i) => (
                                 <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-bronze transition group">
                                     <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
@@ -199,36 +318,34 @@ const DesignRegistrationPage = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">All Inclusive</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Design Filing</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹4,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees (₹1,000/₹4,000)</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Application Filing</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Image Formatting</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Novelty Statement</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
-                            </div>
-
-                            {/* Design + Objection */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Filing + Objection</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹6,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Everything in Standard</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Objection Reply Drafting</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Priority Support</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Premium</button>
-                            </div>
+                    {/* PROCESS SECTION */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Registration Steps</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Eligibility Check", desc: "We check if your design is new, original, and not previously published." },
+                                { step: "Step 2", title: "Representation", desc: "Our team helps you prepare correct images/drawings from all required angles." },
+                                { step: "Step 3", title: "Filing", desc: "We file the application with the Patent Office (Design Wing) in Kolkata." },
+                                { step: "Step 4", title: "Examination", desc: "The office examines the design for novelty and formal requirements." },
+                                { step: "Step 5", title: "Registration", desc: "If approved, the certificate is issued, and the design is published in the Official Gazette." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-48 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Step</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
@@ -260,32 +377,25 @@ const DesignRegistrationPage = ({ isLoggedIn }) => {
                         {/* Documents Sidebar */}
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <Image className="text-bronze" /> Image Guidelines
+                                <Image className="text-bronze" /> Checklist
                             </h3>
                             <div className="space-y-6">
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Requirements</h4>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Mandatory</h4>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Plain White Background</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> No shadows or obstacles</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> All 6 views (Front, Back, etc)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Photos (All 7 Views)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Applicant Details</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> No Prior Publication</li>
                                     </ul>
-                                </div>
-                                <div className="p-4 bg-bronze/10 rounded-xl border border-bronze/20">
-                                    <p className="text-xs text-navy font-medium">
-                                        <strong>Crucial:</strong> The design must not be published anywhere prior to filing.
-                                    </p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Support Card */}
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">CAD Design Help?</h4>
-                            <p className="text-gray-300 text-sm mb-4">We can help convert raw images to line drawings.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Contact Support
-                            </button>
+                            <h4 className="font-bold text-lg mb-2">Need CAD Help?</h4>
+                            <p className="text-gray-300 text-sm mb-4">We convert your photos into registry-compliant line drawings.</p>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -296,3 +406,5 @@ const DesignRegistrationPage = ({ isLoggedIn }) => {
 };
 
 export default DesignRegistrationPage;
+
+

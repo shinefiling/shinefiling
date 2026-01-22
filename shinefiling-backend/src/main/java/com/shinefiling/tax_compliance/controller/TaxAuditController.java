@@ -99,16 +99,13 @@ public class TaxAuditController {
     private Double getPlanAmount(String plan) {
         switch (plan.toLowerCase()) {
             case "basic":
-                return 5999.0;
+                return 4999.0;
             case "standard":
                 return 9999.0;
             case "premium":
-                return 17999.0;
+                return 14999.0;
             default:
                 return 0.0;
         }
     }
 }
-
-
-

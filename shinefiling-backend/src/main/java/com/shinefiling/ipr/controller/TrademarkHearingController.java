@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+
 import java.time.temporal.ChronoUnit;
 
 @RestController
@@ -62,8 +62,8 @@ public class TrademarkHearingController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(4999.0); // Professional Fee for Hearing Appearance
+            createdRequest.setPlan(requestDTO.getPlan() != null ? requestDTO.getPlan() : "standard");
+            createdRequest.setAmount(requestDTO.getAmountPaid() != null ? requestDTO.getAmountPaid() : 4999.0);
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 
@@ -84,5 +84,3 @@ public class TrademarkHearingController {
         return t;
     }
 }
-
-

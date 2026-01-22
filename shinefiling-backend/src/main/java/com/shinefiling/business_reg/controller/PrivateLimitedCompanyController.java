@@ -39,7 +39,7 @@ public class PrivateLimitedCompanyController {
             String email = requestDTO.getUserEmail();
             String plan = requestDTO.getPlan();
             if (plan == null)
-                plan = "basic";
+                plan = "startup";
 
             // 2. Generate Plan-Based Automation Tasks
             List<PrivateLimitedRegistrationRequest.AutomationTaskDTO> tasks = generateAutomationTasks(plan);
@@ -113,6 +113,16 @@ public class PrivateLimitedCompanyController {
                             + formData.getState() + " - " + formData.getPincode());
                     pvtApp.setAuthorizedCapital(formData.getAuthorizedCapital());
                     pvtApp.setPaidUpCapital(formData.getPaidUpCapital());
+
+                    // New Fields Mapping
+                    pvtApp.setNatureOfBusiness(formData.getNatureOfBusiness());
+                    pvtApp.setEmployeeCount(formData.getEmployeeCount());
+                    pvtApp.setBankPreference(formData.getBankPreference());
+                    pvtApp.setTurnoverEstimate(formData.getTurnoverEstimate());
+                    pvtApp.setAccountingStartDate(formData.getAccountingStartDate());
+                    pvtApp.setTrademarkName(formData.getTrademarkName());
+                    pvtApp.setTrademarkClass(formData.getTrademarkClass());
+                    pvtApp.setAuditorPreference(formData.getAuditorPreference());
 
                     if (formData.getDirectors() != null) {
                         List<com.shinefiling.business_reg.model.PvtLtdDirector> dirList = new ArrayList<>();
@@ -212,26 +222,30 @@ public class PrivateLimitedCompanyController {
     private List<PrivateLimitedRegistrationRequest.AutomationTaskDTO> generateAutomationTasks(String plan) {
         List<PrivateLimitedRegistrationRequest.AutomationTaskDTO> tasks = new ArrayList<>();
 
-        // Common Tasks (All Plans)
+        // Common Tasks (All Plans - Startup)
         addTask(tasks, "DOCUMENT_VERIFICATION", "Verify KYC & Office Proofs", "HIGH");
         addTask(tasks, "DSC_DIN_APPLICATION", "Apply for Digital Signatures & DIN", "HIGH");
         addTask(tasks, "NAME_APPROVAL", "File RUN Service for Name Approval", "MEDIUM");
         addTask(tasks, "MOA_AOA_DRAFTING", "Draft MOA & AOA with Clauses", "MEDIUM");
         addTask(tasks, "SPICE_SUBMISSION", "File SPICe+ Part B", "HIGH");
         addTask(tasks, "COI_GENERATION", "Generate Certificate of Incorporation", "HIGH");
+        addTask(tasks, "PAN_TAN_ALLOCATION", "Ensure PAN & TAN Dispatch", "MEDIUM");
+        addTask(tasks, "PF_ESIC_REGISTRATION", "File for PF & ESIC Registration", "MEDIUM");
+        addTask(tasks, "GST_REGISTRATION", "File for GST Registration", "HIGH");
 
-        // Standard & Premium
-        if (!"basic".equalsIgnoreCase(plan)) {
-            addTask(tasks, "SHARE_CERTIFICATES", "Issue Share Certificates", "MEDIUM");
-            addTask(tasks, "PAN_TAN_ALLOCATION", "Ensure PAN & TAN Dispatch", "MEDIUM");
-        }
-
-        // Premium Only
-        if ("premium".equalsIgnoreCase(plan)) {
-            addTask(tasks, "GST_REGISTRATION", "File for GST Registration", "HIGH");
+        // Growth Plan Extras
+        if ("growth".equalsIgnoreCase(plan) || "enterprise".equalsIgnoreCase(plan)) {
             addTask(tasks, "MSME_REGISTRATION", "File Udyam Registration", "MEDIUM");
             addTask(tasks, "BANK_ACCOUNT_OPENING", "Initiate Bank Account Opening", "MEDIUM");
-            addTask(tasks, "FIRST_BOARD_RESOLUTION", "Draft First Board Resolution", "LOW");
+            addTask(tasks, "ACCOUNTING_SETUP", "Setup Accounting Software", "LOW");
+        }
+
+        // Enterprise Plan Extras
+        if ("enterprise".equalsIgnoreCase(plan)) {
+            addTask(tasks, "TRADEMARK_FILING", "File Trademark Application", "HIGH");
+            addTask(tasks, "INC_20A_FILING", "File Commencement of Business (INC-20A)", "MEDIUM");
+            addTask(tasks, "ADT_1_FILING", "File Auditor Appointment (ADT-1)", "MEDIUM");
+            addTask(tasks, "COMPLIANCE_SETUP", "Setup Annual Compliance Calendar", "LOW");
         }
 
         return tasks;
@@ -248,14 +262,100 @@ public class PrivateLimitedCompanyController {
 
     private Double getPlanAmount(String plan) {
         switch (plan.toLowerCase()) {
-            case "basic":
-                return 4999.0;
-            case "standard":
-                return 8999.0;
-            case "premium":
-                return 12999.0;
+            case "startup":
+                return 6999.0;
+            case "growth":
+                return 14999.0;
+            case "enterprise":
+                return 24999.0;
             default:
-                return 0.0;
+                return 6999.0;
         }
+    }
+    // --- ADMIN WORKFLOW ENDPOINTS ---
+
+    @PostMapping("/{submissionId}/verify-docs")
+    public ResponseEntity<?> verifyDocs(@PathVariable String submissionId) {
+        try {
+            pvtLtdService.verifyDocuments(submissionId);
+            return ResponseEntity.ok(Map.of("message", "Documents Verified"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{submissionId}/generate-docs")
+    public ResponseEntity<?> generateDocs(@PathVariable String submissionId) {
+        try {
+            pvtLtdService.generateStubDocuments(submissionId);
+            return ResponseEntity.ok(Map.of("message", "Documents Generated"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{submissionId}/gov-submission")
+    public ResponseEntity<?> markGovSubmitted(@PathVariable String submissionId, @RequestParam String srn) {
+        try {
+            pvtLtdService.markGovSubmitted(submissionId, srn);
+            return ResponseEntity.ok(Map.of("message", "Marked as Filed"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{submissionId}/upload-certificate")
+    public ResponseEntity<?> uploadCertificate(@PathVariable String submissionId,
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        try {
+            // Mock upload - in real app, save to S3/Local
+            String fileUrl = "http://localhost:8080/uploads/" + file.getOriginalFilename();
+            pvtLtdService.completeApplication(submissionId, fileUrl);
+            return ResponseEntity.ok(Map.of("message", "Certificate Uploaded"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{submissionId}/raise-query")
+    public ResponseEntity<?> raiseQuery(@PathVariable String submissionId, @RequestBody Map<String, String> payload) {
+        try {
+            pvtLtdService.raiseQuery(submissionId, payload.get("query"));
+            return ResponseEntity.ok(Map.of("message", "Query Raised"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{submissionId}/accept-doc")
+    public ResponseEntity<?> acceptDoc(@PathVariable String submissionId, @RequestParam String docType) {
+        try {
+            pvtLtdService.acceptDocument(submissionId, docType);
+            return ResponseEntity.ok(Map.of("message", "Document Accepted"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{submissionId}/reject-doc")
+    public ResponseEntity<?> rejectDoc(@PathVariable String submissionId, @RequestBody Map<String, String> payload) {
+        try {
+            pvtLtdService.rejectDocument(submissionId, payload.get("docType"), payload.get("reason"));
+            return ResponseEntity.ok(Map.of("message", "Document Rejected"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{submissionId}/download-docs")
+    public ResponseEntity<?> downloadDocs(@PathVariable String submissionId, @RequestParam String type) {
+        com.shinefiling.business_reg.model.PrivateLimitedApplication app = pvtLtdService.getApplication(submissionId);
+        if (app != null && app.getUploadedDocuments() != null) {
+            String url = app.getUploadedDocuments().get(type);
+            if (url != null) {
+                return ResponseEntity.status(302).header("Location", url).build();
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 }

@@ -1,6 +1,9 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, BarChart3, TrendingUp, PieChart, Landmark, Scale, HelpCircle, Shield, BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, Calculator, FileText } from 'lucide-react';
+import {
+    CheckCircle, BarChart2, FileText, TrendingUp, HelpCircle, Shield,
+    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, X, DollarSign
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const BusinessValuation = ({ isLoggedIn }) => {
@@ -15,11 +18,11 @@ const BusinessValuation = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "Who can issue a Valuation Report?", a: "For Income Tax / Rights Issue - a Chartered Accountant (CA). For FDI / Compulsory Convertible Debentures - a Merchant Banker. For Insolvency / Companies Act - an IBBI Registered Valuer." },
-        { q: "What is Rule 11UA Valuation?", a: "It is the valuation method prescribed under the Income Tax Act for determining the Fair Market Value (FMV) of unquoted shares." },
-        { q: "What is DCF Method?", a: "Discounted Cash Flow (DCF) creates a valuation based on the future cash flow projections of the business." },
-        { q: "Required for Startups?", a: "Yes, valuation is mandatory when raising funds from Angel Investors or VCs to determine the share price." },
-        { q: "Turnaround Time?", a: "A standard CA valuation takes 3-4 days. A Merchant Banker or Registered Valuer report takes 7-10 days." },
+        { q: "What is Business Valuation?", a: "It is the process of determining the economic value of a whole business or company unit. It's used for sale value, establishing partner ownership, taxation, and divorce proceedings." },
+        { q: "Why do I need a valuation?", a: "You need it for fundraising (equity dilution), Mergers & Acquisitions (M&A), ESOPs, or compliance with RBI/Income Tax during share transfer." },
+        { q: "Which methods do you use?", a: "We use DCF (Discounted Cash Flow), Comparable Company Analysis, and Net Asset Value (NAV) methods depending on the business stage." },
+        { q: "Who certifies the valuation?", a: "For Regulatory purposes (FEMA/Income Tax), a Merchant Banker or a Registered Valuer (IBBI) certification is required." },
+        { q: "How long does it take?", a: "A standard valuation report takes 4-7 working days depending on the complexity and data availability." },
     ];
 
     return (
@@ -30,8 +33,8 @@ const BusinessValuation = ({ isLoggedIn }) => {
                 {/* Background Image with Overlay */}
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=2015"
-                        alt="Financial Charts"
+                        src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&q=80&w=2071"
+                        alt="Business Value"
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-navy/95 via-navy/90 to-navy/80 mix-blend-multiply"></div>
@@ -47,7 +50,7 @@ const BusinessValuation = ({ isLoggedIn }) => {
                             rotate: [0, 45, 0]
                         }}
                         transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-blue-600/20 rounded-full blur-[120px]"
+                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-purple-900/20 rounded-full blur-[120px]"
                     />
                     <motion.div
                         animate={{
@@ -56,7 +59,7 @@ const BusinessValuation = ({ isLoggedIn }) => {
                             x: [0, -50, 0]
                         }}
                         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-emerald-600/20 rounded-full blur-[100px]"
+                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-pink-600/20 rounded-full blur-[100px]"
                     />
                 </div>
 
@@ -71,14 +74,14 @@ const BusinessValuation = ({ isLoggedIn }) => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-                                    <BarChart3 size={12} className="fill-bronze" /> Financial Intelligence
+                                    <DollarSign size={12} className="text-bronze" /> Equity Value
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
                                     Business <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Valuation</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Certified Business Valuation for Funding, M&A, ESOPs, and Compliance. Reports from Registered Valuers and Merchant Bankers.
+                                    Determine the true worth of your company. Expert Valuation services by Registered Valuers for <strong>Fundraising</strong>, <strong>Mergers</strong>, and <strong>Regulatory Compliance</strong>.
                                 </p>
                             </motion.div>
 
@@ -93,17 +96,17 @@ const BusinessValuation = ({ isLoggedIn }) => {
                                         <TrendingUp size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Growth</p>
-                                        <p className="font-bold text-sm text-white">Potential</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">DCF</p>
+                                        <p className="font-bold text-sm text-white">Method</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <Shield size={20} />
+                                        <CheckCircle size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Certified</p>
-                                        <p className="font-bold text-sm text-white">Reports</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">IBBI</p>
+                                        <p className="font-bold text-sm text-white">Regd. Valuer</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -126,17 +129,17 @@ const BusinessValuation = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Standard</div>
-                                <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">CA Valuation</h3>
+                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Startups</div>
+                                <div className="text-center mb-6 mt-4">
+                                    <h3 className="text-navy font-bold text-xl mb-2">Funding Valuation</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹14,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ Report</span>
+                                        <span className="text-lg text-slate-400 font-medium">/ Onwards</span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">For Internal / Tax</p>
+                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">CA Certified</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["Rule 11UA Compliance", "Net Asset Value (NAV)", "DCF Projections", "Chartered Accountant Sign", "4-5 Days Delivery"].map((item, i) => (
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {["DCF Modeling", "Pre-Money Valuation", "Post-Money Valuation", "Cap Table Management", "Investor Ready Report"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
@@ -144,11 +147,9 @@ const BusinessValuation = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('ca_valuation')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Start Process <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -156,25 +157,124 @@ const BusinessValuation = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+            {/* --- PRICING SECTION --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Choose Your Plan</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: INTERNAL */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Standard</h3>
+                            <p className="text-slate-500 text-sm mb-6">Internal Assessment.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹9,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹15,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Internal Usage Only</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Approx Valuation</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Basic Financial Model</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> No Certification</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Standard</button>
+                        </motion.div>
+
+                        {/* PLAN 2: FUNDING - POPULAR */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">CA Certified</h3>
+                            <p className="text-gray-400 text-sm mb-6">For Investors / Income Tax.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹19,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹30,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> CA Certification (Rule 11UA)</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> DCF / NAV Method</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> For Angel Tax compliance</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Detailed Report</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Certified</button>
+                        </motion.div>
+
+                        {/* PLAN 3: MERCHANT BANKER */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Merchant Banker</h3>
+                            <p className="text-slate-500 text-sm mb-6">FEMA / RBI Compliance.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹39,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹50,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> SEBI Regd. Banker Cert.</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> For Foreign Investment (FDI)</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> As per FEMA Guidelines</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Comprehensive Analysis</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Merchant Banker</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Use Cases Section */}
+                    {/* Intro Section */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <Shield className="text-bronze" /> Why Valuation is Needed
+                            <BarChart2 className="text-bronze" /> Know Your Worth
                         </h2>
+                        <div className="prose prose-lg text-gray-600">
+                            <p className="lead text-xl text-gray-800 font-medium">
+                                <strong>Business Valuation</strong> is distinct from simple accounting. It combines financial analysis with market trends, risk assessment, and future growth potential to put a price on your business.
+                            </p>
+                            <p>
+                                It is mandatory for startups raising funds to issue shares at a premium. Without a valid valuation report, the excess money received can be taxed as income (Angel Tax).
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* Methods Table */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Valuation Methods</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Startup Funding", desc: "Required to determine equity dilution for Angel/VC rounds." },
-                                { title: "Regulatory Compliance", desc: "For FDI (FEMA), Income Tax (11UA), or Companies Act." },
-                                { title: "Mergers & Acquisitions", desc: "To arrive at a fair exchange ratio for M&A deals." },
-                                { title: "ESOP Granting", desc: "To determine the exercise price for employee stock options." },
-                                { title: "Dispute Resolution", desc: "Settling shareholder exits or family settlements." },
-                                { title: "Bank Loans", desc: "Sometimes required for collateral assessment." },
+                                { title: "Discounted Cash Flow (DCF)", desc: "Most popular for startups. Values business based on future cash flow projections discounted to present value." },
+                                { title: "Net Asset Value (NAV)", desc: "Calculates Net Worth by subtracting liabilities from assets. Used for asset-heavy or loss-making firms." },
+                                { title: "Comparable Company Analysis", desc: "Values your firm based on trading multiples of similar public companies (P/E Ratio, Revenue Multiple)." },
+                                { title: "Precedent Transactions", desc: "Looks at the prices paid for similar companies in recent M&A deals." },
                             ].map((item, i) => (
                                 <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
                                     <div className="flex items-start gap-4">
@@ -189,55 +289,33 @@ const BusinessValuation = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* Methods Section */}
-                    <section className="bg-[#2B3446] rounded-3xl p-8 text-white relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                        <h2 className="text-2xl font-bold mb-6 relative z-10">Our Methodology</h2>
-                        <div className="grid md:grid-cols-3 gap-6 relative z-10">
+                    {/* Process Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Valuation Process</h2>
+                        <div className="space-y-6">
                             {[
-                                { title: "DCF Method", desc: "Discounted Cash Flow. Best for startups with high growth potential." },
-                                { title: "NAV Method", desc: "Net Asset Value. Best for asset-heavy or holding companies." },
-                                { title: "Market Multiples", desc: "Comparing with similar listed companies' P/E or EBITDA." }
-                            ].map((method, i) => (
-                                <div key={i} className="bg-white/5 backdrop-blur-sm border border-white/10 p-5 rounded-xl">
-                                    <div className="w-10 h-10 rounded-full bg-bronze/20 flex items-center justify-center text-bronze mb-4 font-bold text-lg">{i + 1}</div>
-                                    <h3 className="font-bold text-lg mb-2">{method.title}</h3>
-                                    <p className="text-sm text-gray-300">{method.desc}</p>
+                                { step: "Step 1", title: "Engagement", days: "Day 1", desc: "Defining the purpose (Funding, Sale, Internal) and scope of valuation." },
+                                { step: "Step 2", title: "Information Request", days: "Day 1", desc: "Collecting financial statements, projections, and cap table." },
+                                { step: "Step 3", title: "Draft Valuation", days: "Day 4", desc: "Preliminary value derived using applicable methods for discussion." },
+                                { step: "Step 4", title: "Final Report", days: "Day 6", desc: "Issuance of signed valuation report by CA/Merchant Banker." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-navy font-bold text-sm">{item.days}</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
                                 </div>
                             ))}
-                        </div>
-                    </section>
-
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">CA Certified</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹14,999</div>
-                                <p className="text-xs text-gray-400 mb-6">/ Report</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Income Tax Purpose</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Rights Issue</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Internal Assessment</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('ca_valuation')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select CA Report</button>
-                            </div>
-
-                            {/* Premium */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Merchant Banker</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹24,999</div>
-                                <p className="text-xs text-slate-400 mb-6">/ Report</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> For FEMA / FDI</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> IBBI Registered Valuer</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Detailed Modeling</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('merchant_banker')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select MB Report</button>
-                            </div>
                         </div>
                     </section>
 
@@ -269,15 +347,15 @@ const BusinessValuation = ({ isLoggedIn }) => {
                         {/* Documents Sidebar */}
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <FileText className="text-bronze" /> Data Required
+                                <FileText className="text-bronze" /> Checklist
                             </h3>
                             <div className="space-y-6">
                                 <div>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Audited Financials (3 Yrs)</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Provisional Balance Sheet</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Financial Projections (Excel)</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Cap Table / Shareholding</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Audited Financials</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Projected P&L (5 Yrs)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Cap Table (Shareholding)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Pitch Deck</li>
                                     </ul>
                                 </div>
                             </div>
@@ -285,11 +363,9 @@ const BusinessValuation = ({ isLoggedIn }) => {
 
                         {/* Support Card */}
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">Need Pitch Deck?</h4>
-                            <p className="text-gray-300 text-sm mb-4">We can help you create a compelling pitch deck for investors along with valuation.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                View Pitch Deck
-                            </button>
+                            <h4 className="font-bold text-lg mb-2">Foreign Investor?</h4>
+                            <p className="text-gray-300 text-sm mb-4">You need a certification from a SEBI Registered Merchant Banker, not just a CA.</p>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -298,5 +374,6 @@ const BusinessValuation = ({ isLoggedIn }) => {
         </div>
     );
 };
-
 export default BusinessValuation;
+
+

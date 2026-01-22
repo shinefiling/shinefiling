@@ -56,7 +56,7 @@ public class DataInitializer implements CommandLineRunner {
         agent.setVerified(true);
         userRepository.save(agent);
         System.out.println("Agent synced: agent@shinefiling.com");
-        // Ensure Client User exists and has password 'admin' (Upsert)
+        // Ensure Client User exists
         User client = userRepository.findByEmail("client@shinefiling.com").orElse(new User());
         client.setFullName("Test Client");
         client.setEmail("client@shinefiling.com");
@@ -67,6 +67,18 @@ public class DataInitializer implements CommandLineRunner {
         if (client.getStatus() == null)
             client.setStatus("Active");
         userRepository.save(client);
+
+        // CA User
+        User ca = userRepository.findByEmail("ca@shinefiling.com").orElse(new User());
+        ca.setFullName("Chartered Accountant");
+        ca.setEmail("ca@shinefiling.com");
+        ca.setMobile("9988776655");
+        if (ca.getPassword() == null)
+            ca.setPassword(passwordEncoder.encode("admin"));
+        ca.setRole("CA");
+        ca.setVerified(true);
+        userRepository.save(ca);
+        System.out.println("CA synced: ca@shinefiling.com");
 
         // Seed Services
         seedServices();

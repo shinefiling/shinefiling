@@ -1,6 +1,9 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Users, Briefcase, FileText, Scale, HelpCircle, Shield, BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
+import {
+    CheckCircle, Users, Briefcase, FileText, Scale, HelpCircle, Shield,
+    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck, X
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const EmploymentAgreement = ({ isLoggedIn }) => {
@@ -15,11 +18,12 @@ const EmploymentAgreement = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "What is an Employment Agreement?", a: "It's a legally binding contract between an employer and employee outlining the terms of employment." },
-        { q: "Is it mandatory?", a: "While not strictly mandatory by statute for all roles, it is highly recommended to avoid disputes." },
-        { q: "What defines probation?", a: "The agreement specifies the probation duration and conditions for confirmation." },
-        { q: "Can we include a non-compete clause?", a: "Yes, reasonable non-compete clauses can be included to protect business interests." },
-        { q: "What about IP rights?", a: "It ensures that any work created by the employee during employment belongs to the company." },
+        { q: "What is an Employment Agreement?", a: "It's a legally binding contract between an employer and employee outlining the terms of employment, salary, and termination." },
+        { q: "Is it mandatory?", a: "While not strict for all, under various Labour Laws (like Shops & Est Act), providing an appointment letter is mandatory." },
+        { q: "What defines probation?", a: "The agreement specifies the probation duration (e.g., 3-6 months) and the criteria for confirmation or extension." },
+        { q: "Can we include a non-compete clause?", a: "Yes, reasonable non-compete clauses can be included to protect business interests, but they must be specific in duration and geography to be enforceable in India." },
+        { q: "What about IP rights?", a: "This is crucial. The agreement must state that any work/code/ip created by the employee during employment belongs to the COMPANY, not the employee." },
+        { q: "Does it cover exit policies?", a: "Yes, it defines notice periods (e.g., 30/60/90 days) and the consequences of leaving without notice (e.g., salary deduction)." },
     ];
 
     return (
@@ -78,7 +82,7 @@ const EmploymentAgreement = ({ isLoggedIn }) => {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Agreement</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Secure your business and employee relationships with comprehensive, legally sound employment contracts.
+                                    Secure your business assets and IP. Define <strong>Roles</strong>, <strong>Confidentiality</strong>, and <strong>Non-Compete</strong> clauses clearly.
                                 </p>
                             </motion.div>
 
@@ -127,7 +131,7 @@ const EmploymentAgreement = ({ isLoggedIn }) => {
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
                                 <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Essential</div>
-                                <div className="text-center mb-6">
+                                <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">Standard Draft</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹1,499</h3>
@@ -135,7 +139,7 @@ const EmploymentAgreement = ({ isLoggedIn }) => {
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Professional Vetting</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {["Customized Drafting", "IP Protection Clauses", "Non-Compete Terms", "Notice Period Details", "Termination Guidelines"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
@@ -144,11 +148,9 @@ const EmploymentAgreement = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Start Drafting <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -156,11 +158,141 @@ const EmploymentAgreement = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+            {/* --- PRICING SECTION --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">HR Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Employment Contracts</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: BASIC */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
+                            <p className="text-slate-500 text-sm mb-6">For Interns & Jr. Staff.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹999</span>
+                                <span className="text-slate-400 line-through text-sm">₹1,500</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Standard Template</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Basic NDA</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Word Format</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> Non-Compete</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Basic</button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD - POPULAR */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
+                            <p className="text-gray-400 text-sm mb-6">For Full-Time Employees.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹1,499</span>
+                                <span className="text-gray-500 line-through text-sm">₹3,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Detailed Roles</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Strict Non-Compete</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> IP Assignment</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Notice Period Terms</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Standard</button>
+                        </motion.div>
+
+                        {/* PLAN 3: PREMIUM */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Executive</h3>
+                            <p className="text-slate-500 text-sm mb-6">For Directors / C-Suite.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹2,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹5,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> ESOP Clauses</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Exit/Severance Pay</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Directorship Terms</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Lawyer Consultation</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Executive</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
+
+                    {/* Intro Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
+                            <Briefcase className="text-bronze" /> The Backbone of Hiring
+                        </h2>
+                        <div className="prose prose-lg text-gray-600">
+                            <p className="lead text-xl text-gray-800 font-medium">
+                                An <strong>Employment Agreement</strong> is more than just a formality; it sets the tone for your relationship with your team. It clearly defines expectations, protects your intellectual property, and ensures legal compliance.
+                            </p>
+                            <p>
+                                Whether hiring your first employee or scaling a team, a robust contract minimizes disputes and secures your business assets. In India, having a clearly drafted contract is essential to defend against false labor claims or data theft.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* Importance/Features Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
+                            <Shield className="text-bronze" /> Why a Written Contract?
+                        </h2>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {[
+                                { title: "Role Clarity", desc: "Defines job role, working hours, and reporting structure clearly." },
+                                { title: "IP Protection", desc: "Ensures all code/designs (Intellectual Property) created by staff belong to the company." },
+                                { title: "Non-Compete", desc: "Prevents employees from joining competitors immediately after leaving." },
+                                { title: "Confidentiality", desc: "Strict NDAs to protect trade secrets and client databases." },
+                                { title: "Dispute Resolution", desc: "Sets the legal jurisdiction and arbitration process." },
+                                { title: "Termination Rules", desc: "Defines notice periods and grounds for immediate termination (Cause vs No-Cause)." },
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
+                                    <div className="flex items-start gap-4">
+                                        <CheckCircle size={24} className="text-green-500 shrink-0 mt-1" />
+                                        <div>
+                                            <h3 className="text-lg font-bold text-navy mb-1">{item.title}</h3>
+                                            <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
                     {/* Key Clauses Section */}
                     <section>
@@ -171,56 +303,53 @@ const EmploymentAgreement = ({ isLoggedIn }) => {
                             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
                                 <Shield size={32} className="text-bronze mb-4 group-hover:scale-110 transition" />
                                 <h3 className="text-xl font-bold text-navy mb-2">Confidentiality</h3>
-                                <p className="text-sm text-gray-600">Strict clauses to protect your trade secrets and client data.</p>
+                                <p className="text-sm text-gray-600">Strict clauses to protect your trade secrets, customer lists, and pricing models.</p>
                             </div>
                             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
                                 <Briefcase size={32} className="text-bronze mb-4 group-hover:scale-110 transition" />
-                                <h3 className="text-xl font-bold text-navy mb-2">Roles & Duties</h3>
-                                <p className="text-sm text-gray-600">Clear definition of job responsibilities and reporting structure.</p>
+                                <h3 className="text-xl font-bold text-navy mb-2">Roles & Probation</h3>
+                                <p className="text-sm text-gray-600">Clear definition of job responsibilities and the probation period validation criteria.</p>
                             </div>
                             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
                                 <Scale size={32} className="text-bronze mb-4 group-hover:scale-110 transition" />
                                 <h3 className="text-xl font-bold text-navy mb-2">Non-Compete</h3>
-                                <p className="text-sm text-gray-600">Prevent employees from joining direct competitors for a specific period.</p>
+                                <p className="text-sm text-gray-600">Prevents employees from joining direct competitors for a specific period (enforceability varies).</p>
                             </div>
                             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
                                 <Users size={32} className="text-bronze mb-4 group-hover:scale-110 transition" />
-                                <h3 className="text-xl font-bold text-navy mb-2">Benefits</h3>
-                                <p className="text-sm text-gray-600">Detailed breakdown of salary, leaves, and other perks.</p>
+                                <h3 className="text-xl font-bold text-navy mb-2">Benefits & Leaves</h3>
+                                <p className="text-sm text-gray-600">Detailed breakdown of salary, leaves (sick, casual, earned), and insurance perks.</p>
                             </div>
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Comprehensive Draft</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹1,499</div>
-                                <p className="text-xs text-gray-400 mb-6">/ Agreement</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Full Customization</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Lawyer Review</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Edit Revisions</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('comprehensive')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Comprehensive</button>
-                            </div>
-
-                            {/* Basic */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Basic Draft</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹999</div>
-                                <p className="text-xs text-slate-400 mb-6">/ Agreement</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Standard Template</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Basic Clauses</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Ideal for Interns</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Basic</button>
-                            </div>
+                    {/* Process Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Drafting Process</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Role Analysis", days: "Day 1", desc: "We understand the seniority and sensitivity of the role being hired for." },
+                                { step: "Step 2", title: "Drafting", days: "Day 2", desc: "Creating a customized agreement protecting specific company interests." },
+                                { step: "Step 3", title: "Review", days: "Day 3", desc: "You review the draft and suggested edits are incorporated." },
+                                { step: "Step 4", title: "Finalization", days: "Day 3", desc: "Ready-to-sign agreement is delivered in Word/PDF." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-navy font-bold text-sm">{item.days}</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
@@ -252,7 +381,7 @@ const EmploymentAgreement = ({ isLoggedIn }) => {
                         {/* Documents Sidebar */}
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <FileText className="text-bronze" /> Information Needed
+                                <FileText className="text-bronze" /> Details Needed
                             </h3>
                             <div className="space-y-6">
                                 <div>
@@ -269,10 +398,8 @@ const EmploymentAgreement = ({ isLoggedIn }) => {
                         {/* Support Card */}
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Need HR Advice?</h4>
-                            <p className="text-gray-300 text-sm mb-4">Our HR experts can help structure the salary and policies.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Talk to Expert
-                            </button>
+                            <p className="text-gray-300 text-sm mb-4">Our HR experts can help structure salary, PF, and ESI components.</p>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -281,5 +408,6 @@ const EmploymentAgreement = ({ isLoggedIn }) => {
         </div>
     );
 };
-
 export default EmploymentAgreement;
+
+

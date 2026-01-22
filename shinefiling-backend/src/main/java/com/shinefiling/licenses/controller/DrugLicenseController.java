@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -45,9 +43,10 @@ public class DrugLicenseController {
                         "Wholesale Drug License requires minimum 10 Sq. Meters area (15 Sq. Meters if combined with Retail)."));
             }
 
-            // Automation Tasks
-            List<DrugLicenseRequest.AutomationTaskDTO> tasks = generateAutomationTasks(requestDTO);
-            requestDTO.setAutomationQueue(tasks);
+            // Automation Tasks - REMOVED
+            // List<DrugLicenseRequest.AutomationTaskDTO> tasks =
+            // generateAutomationTasks(requestDTO);
+            // requestDTO.setAutomationQueue(tasks);
             requestDTO.setStatus("INITIATED");
 
             // Save
@@ -55,8 +54,8 @@ public class DrugLicenseController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(4999.0); // Consultants fee
+            createdRequest.setPlan(requestDTO.getPlan());
+            createdRequest.setAmount(requestDTO.getAmountPaid());
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 
@@ -69,34 +68,18 @@ public class DrugLicenseController {
         }
     }
 
-    private List<DrugLicenseRequest.AutomationTaskDTO> generateAutomationTasks(DrugLicenseRequest request) {
-        List<DrugLicenseRequest.AutomationTaskDTO> tasks = new ArrayList<>();
-
-        // Pharmacist Verify
-        String staffType = "RETAIL".equalsIgnoreCase(request.getLicenseType()) ? "Pharmacist" : "Competent Person";
-        tasks.add(createTask("PHARMACIST_VERIFY", "Verify " + staffType + " Registration & Certificates", "CRITICAL"));
-
-        // Cold Storage
-        if (request.getFormData().isHasColdStorage()) {
-            tasks.add(
-                    createTask("COLD_CHAIN_CHECK", "Verify Refrigerator Invoice & Temperature Log capability", "HIGH"));
-        } else {
-            tasks.add(createTask("COLD_CHAIN_ALERT", "User indicated NO Cold Storage. Verify if drugs req fridge.",
-                    "HIGH"));
-        }
-
-        // Dept Filing
-        tasks.add(
-                createTask("DRUG_DEPT_FILING", "File on State Drug Control Portal. Forms 20/21/20B/21B.", "CRITICAL"));
-
-        return tasks;
-    }
-
-    private DrugLicenseRequest.AutomationTaskDTO createTask(String taskName, String desc, String priority) {
-        DrugLicenseRequest.AutomationTaskDTO t = new DrugLicenseRequest.AutomationTaskDTO();
-        t.setTask(taskName);
-        t.setDescription(desc);
-        t.setPriority(priority);
-        return t;
-    }
+    // Automation Removed
+    /*
+     * private List<DrugLicenseRequest.AutomationTaskDTO>
+     * generateAutomationTasks(DrugLicenseRequest request) {
+     * // ...
+     * return new ArrayList<>();
+     * }
+     * 
+     * private DrugLicenseRequest.AutomationTaskDTO createTask(String taskName,
+     * String desc, String priority) {
+     * // ...
+     * return new DrugLicenseRequest.AutomationTaskDTO();
+     * }
+     */
 }

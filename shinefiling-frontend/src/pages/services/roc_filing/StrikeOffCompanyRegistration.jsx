@@ -271,6 +271,8 @@ const StrikeOffCompanyRegistration = ({ isLoggedIn }) => {
             const finalPayload = {
                 submissionId: `STK2-APP-${Date.now()}`,
                 userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                plan: planType,
+                amountPaid: plans[planType]?.price,
                 cin: formData.cin,
                 companyName: formData.companyName,
                 status: "PAYMENT_SUCCESSFUL",

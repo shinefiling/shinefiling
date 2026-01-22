@@ -253,6 +253,8 @@ const CompanyNameChangeRegistration = ({ isLoggedIn }) => {
             const finalPayload = {
                 submissionId: `RUN-APP-${Date.now()}`,
                 userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                plan: planType,
+                amountPaid: plans[planType]?.price,
                 cin: formData.cin,
                 companyName: formData.companyName,
                 status: "PAYMENT_SUCCESSFUL",

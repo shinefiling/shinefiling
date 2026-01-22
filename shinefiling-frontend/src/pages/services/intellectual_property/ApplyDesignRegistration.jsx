@@ -1,34 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle, Upload, AlertTriangle, FileText, ArrowRight, CreditCard, Palette, Image } from 'lucide-react';
-import { uploadFile, submitDesignRegistration } from '../../../api'; // ensure in api.js
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import {
+    CheckCircle, Upload, FileText,
+    ArrowLeft, ArrowRight, IndianRupee, Palette, Image, AlertTriangle
+} from 'lucide-react';
+import { uploadFile, submitDesignRegistration } from '../../../api';
 
 const ApplyDesignRegistration = ({ isLoggedIn }) => {
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [uploadingFiles, setUploadingFiles] = useState({});
+    const [planType, setPlanType] = useState('standard');
 
-    // User data form local storage
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-    const [formData, setFormData] = useState({
-        userEmail: user.email || '',
-        articleName: '',
-
-        // Form Data
-        applicantName: '',
-        applicantNature: 'STARTUP', // STARTUP, MSME, OTHER
-        designDescription: '',
-        isNovel: 'TRUE',
-
-        // Docs
-        uploadedDocuments: []
-    });
-
+    // Protect Route
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         const isReallyLoggedIn = isLoggedIn || !!storedUser;
@@ -38,228 +23,299 @@ const ApplyDesignRegistration = ({ isLoggedIn }) => {
         }
     }, [isLoggedIn, navigate]);
 
-    const handleChange = (e) => {
+    const [formData, setFormData] = useState({
+        articleName: '',
+        applicantName: '',
+        applicantNature: 'STARTUP', // STARTUP, MSME, OTHER
+        designDescription: '',
+        isNovel: 'TRUE',
+    });
+
+    const [uploadedFiles, setUploadedFiles] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [apiError, setApiError] = useState(null);
+    const [errors, setErrors] = useState({});
+
+    // Plans
+    const plans = {
+        standard: { title: "Design Registration", serviceFee: 4999 },
+    };
+
+    const getGovtFee = () => {
+        if (formData.applicantNature === 'STARTUP' || formData.applicantNature === 'MSME') {
+            return 1000;
+        } else {
+            return 4000;
+        }
+    };
+
+    const getTotalPrice = () => {
+        return (plans[planType]?.serviceFee || 4999) + getGovtFee();
+    };
+
+    const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData({ ...formData, [name]: type === 'checkbox' ? (checked ? 'TRUE' : 'FALSE') : value });
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
     };
 
-    const handleFileChange = async (docType, e) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setUploadingFiles(prev => ({ ...prev, [docType]: true }));
+    const validateStep = (step) => {
+        const newErrors = {};
+        let isValid = true;
 
-            try {
-                const response = await uploadFile(file, 'design-registration');
-                if (response && response.fileUrl) {
-                    setFormData(prev => ({
-                        ...prev,
-                        uploadedDocuments: [
-                            ...prev.uploadedDocuments.filter(d => d.id !== docType),
-                            {
-                                id: docType,
-                                type: docType,
-                                filename: response.originalName || file.name,
-                                fileUrl: response.fileUrl
-                            }
-                        ]
-                    }));
-                } else {
-                    alert('Upload failed. Please try again.');
-                }
-            } catch (error) {
-                console.error("File upload error:", error);
-                alert('Error uploading file.');
-            } finally {
-                setUploadingFiles(prev => ({ ...prev, [docType]: false }));
-            }
+        if (step === 1) { // Design Details
+            if (!formData.articleName) { newErrors.articleName = "Article Name required"; isValid = false; }
+            if (!formData.applicantName) { newErrors.applicantName = "Applicant Name required"; isValid = false; }
+            if (!formData.designDescription) { newErrors.designDescription = "Description required"; isValid = false; }
+            if (formData.isNovel === 'FALSE') { newErrors.isNovel = "Novelty declaration required"; isValid = false; }
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    const handleNext = () => {
+        if (validateStep(currentStep)) {
+            setCurrentStep(prev => Math.min(3, prev + 1));
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-
-        if (formData.isNovel === 'FALSE') {
-            setError('Design must be novel to be registered.');
-            setLoading(false);
-            return;
-        }
+    const handleFileUpload = async (e, key) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
         try {
-            const payload = {
-                submissionId: `DES-${Date.now()}`,
-                userEmail: formData.userEmail,
-                articleName: formData.articleName,
-                status: "PAYMENT_SUCCESSFUL",
-                formData: {
-                    applicantName: formData.applicantName,
-                    applicantNature: formData.applicantNature,
-                    designDescription: formData.designDescription,
-                    isNovel: formData.isNovel
-                },
-                documents: formData.uploadedDocuments
-            };
-
-            await submitDesignRegistration(payload);
-            setCurrentStep(3); // Success
-        } catch (err) {
-            setError(err.message || 'Submission failed. Please try again.');
-            console.error(err);
-        } finally {
-            setLoading(false);
+            const response = await uploadFile(file, 'design-registration');
+            setUploadedFiles(prev => ({
+                ...prev,
+                [key]: {
+                    originalFile: file,
+                    name: response.originalName || file.name,
+                    fileUrl: response.fileUrl,
+                    fileId: response.id
+                }
+            }));
+        } catch (error) {
+            console.error("Upload failed", error);
+            alert("File upload failed. Please try again.");
         }
     };
 
-    return (
-        <div className="min-h-screen bg-[#F0F9FF] font-sans pt-24 pb-24">
-            {/* Header */}
-            <div className="bg-[#0369A1] text-white py-6 px-6 shadow-md fixed top-0 left-0 right-0 z-50">
-                <div className="max-w-4xl mx-auto flex items-center justify-between">
-                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sky-200 hover:text-white transition">
-                        <ArrowLeft size={18} /> Back
-                    </button>
-                    <h1 className="text-xl font-bold flex items-center gap-2"><Palette size={20} className="text-sky-400" /> Design Application</h1>
-                </div>
-            </div>
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 1: // Design Details
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
+                                <Palette size={20} className="text-sky-600" /> DESIGN DETAILS
+                            </h3>
 
-            <div className="max-w-3xl mx-auto px-6 mt-12">
-                {/* Progress */}
-                <div className="mb-8 flex items-center justify-between relative">
-                    <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-200 -z-10"></div>
-                    {[1, 2, 3].map((s) => (
-                        <div key={s} className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${currentStep >= s ? 'bg-sky-600 text-white' : 'bg-white border-2 border-slate-200 text-slate-400'}`}>
-                            {s}
+                            <div className="grid md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 block mb-1">Article Name</label>
+                                    <input type="text" name="articleName" value={formData.articleName} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.articleName ? 'border-red-500' : 'border-gray-200'}`} placeholder="e.g. Chair" />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 block mb-1">Applicant Nature</label>
+                                    <select name="applicantNature" value={formData.applicantNature} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200">
+                                        <option value="STARTUP">Startup (Low Govt Fee)</option>
+                                        <option value="MSME">MSME (Low Govt Fee)</option>
+                                        <option value="OTHER">Other Company / Individual</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="text-xs font-bold text-gray-500 block mb-1">Applicant Name</label>
+                                <input type="text" name="applicantName" value={formData.applicantName} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.applicantName ? 'border-red-500' : 'border-gray-200'}`} />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="text-xs font-bold text-gray-500 block mb-1">Brief Description</label>
+                                <textarea name="designDescription" value={formData.designDescription} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.designDescription ? 'border-red-500' : 'border-gray-200'} h-24`} placeholder="Describe the novelty (shape, pattern, etc.)..." />
+                            </div>
+
+                            <div className={`p-4 rounded-xl border flex items-start gap-3 ${errors.isNovel ? 'bg-red-50 border-red-200' : 'bg-sky-50 border-sky-100'}`}>
+                                <input type="checkbox" name="isNovel" checked={formData.isNovel === 'TRUE'} onChange={handleInputChange} className="w-5 h-5 text-sky-600 mt-0.5" />
+                                <div>
+                                    <p className="font-bold text-sky-900 text-sm">Declaration of Novelty</p>
+                                    <p className="text-xs text-sky-700">I confirm that this design is new, original, and has NOT been published anywhere before.</p>
+                                </div>
+                            </div>
                         </div>
-                    ))}
-                </div>
+                    </div>
+                );
 
-                {/* Form Container */}
-                <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
+            case 2: // Upload Views
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
+                                <Image size={20} className="text-sky-600" /> UPLOAD VIEWS
+                            </h3>
 
-                    {currentStep === 1 && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                            <h2 className="text-2xl font-bold text-[#2B3446] mb-2">Design Details</h2>
-                            <p className="text-slate-500 mb-8">Tell us about your product design.</p>
-
-                            <form onSubmit={(e) => { e.preventDefault(); setCurrentStep(2); }} className="space-y-6">
-
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-700 mb-2">Article Name (Product)</label>
-                                        <input type="text" name="articleName" value={formData.articleName} required className="w-full p-3 border border-slate-300 rounded-lg" onChange={handleChange} placeholder="e.g. Water Bottle, Chair" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-700 mb-2">Applicant Nature</label>
-                                        <select name="applicantNature" value={formData.applicantNature} onChange={handleChange} className="w-full p-3 border border-slate-300 rounded-lg">
-                                            <option value="STARTUP">Startup (Fee Benefit)</option>
-                                            <option value="MSME">MSME (Small Enterprise)</option>
-                                            <option value="OTHER">Other (Company / Individual)</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-2">Applicant Name</label>
-                                    <input type="text" name="applicantName" value={formData.applicantName} required className="w-full p-3 border border-slate-300 rounded-lg" onChange={handleChange} />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-2">Brief Description</label>
-                                    <textarea name="designDescription" value={formData.designDescription} required className="w-full p-3 border border-slate-300 rounded-lg h-24" onChange={handleChange} placeholder="Describe the novelty (e.g., unique handle shape, specific pattern)..." />
-                                </div>
-
-                                <div className="bg-sky-50 p-4 rounded-xl border border-sky-100 flex items-start gap-3">
-                                    <input type="checkbox" name="isNovel" checked={formData.isNovel === 'TRUE'} onChange={handleChange} className="w-5 h-5 text-sky-600 mt-0.5" />
-                                    <div>
-                                        <p className="font-bold text-sky-900 text-sm">Declaration of Novelty</p>
-                                        <p className="text-xs text-sky-700">I confirm that this design is new, original, and has NOT been published or sold anywhere in the world before this date.</p>
-                                    </div>
-                                </div>
-
-                                <div className="pt-6">
-                                    <button type="submit" className="w-full py-4 bg-sky-600 text-white font-bold rounded-xl shadow-lg hover:bg-black transition flex items-center justify-center gap-2">
-                                        Next Step <ArrowRight size={18} />
-                                    </button>
-                                </div>
-                            </form>
-                        </motion.div>
-                    )}
-
-                    {currentStep === 2 && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                            <h2 className="text-2xl font-bold text-[#2B3446] mb-2">Upload Views</h2>
-                            <p className="text-slate-500 mb-8">Upload clear images of the article.</p>
-
-                            <div className="space-y-4 mb-8">
+                            <div className="grid md:grid-cols-2 gap-4">
                                 {[
                                     { id: 'FRONT_VIEW', label: 'Front View' },
                                     { id: 'BACK_VIEW', label: 'Back View' },
                                     { id: 'SIDE_VIEW', label: 'Side View' },
                                     { id: 'TOP_VIEW', label: 'Top View' },
-                                    { id: 'POA', label: 'Power of Authority (Optional)' }
-                                ].map((doc, i) => {
-                                    const uploadedDoc = formData.uploadedDocuments.find(d => d.type === doc.id);
-                                    return (
-                                        <div key={i} className={`flex items-center justify-between p-4 border rounded-xl transition-all ${uploadedDoc ? 'bg-sky-50 border-sky-200' : 'bg-slate-50 border-slate-200'}`}>
-                                            <div className="flex items-center gap-4">
-                                                <div className={`p-2 rounded-lg border ${uploadedDoc ? 'bg-white border-sky-200 text-sky-600 shadow-sm' : 'bg-white border-slate-200 text-slate-400'}`}>
-                                                    {uploadedDoc ? <CheckCircle size={20} /> : <Image size={20} />}
-                                                </div>
-                                                <div>
-                                                    <span className={`font-bold text-sm block ${uploadedDoc ? 'text-sky-800' : 'text-slate-700'}`}>{doc.label}</span>
-                                                    {uploadingFiles[doc.id] ? (
-                                                        <span className="text-xs text-blue-600 font-medium animate-pulse">Uploading...</span>
-                                                    ) : uploadedDoc ? (
-                                                        <span className="text-xs text-green-600 font-medium flex items-center gap-1">Attached</span>
-                                                    ) : null}
-                                                </div>
+                                    { id: 'POA', label: 'Power of Authority' }
+                                ].map((doc) => (
+                                    <div key={doc.id} className="border border-dashed p-6 rounded-xl text-center group hover:border-sky-300 transition">
+                                        <label className="cursor-pointer block">
+                                            <div className="mb-2 mx-auto w-12 h-12 bg-sky-50 rounded-full flex items-center justify-center text-sky-500 group-hover:scale-110 transition">
+                                                <FileText size={24} />
                                             </div>
-                                            <label className={`cursor-pointer text-sm font-bold px-4 py-2 rounded-lg transition-all ${uploadingFiles[doc.id] ? 'opacity-50 cursor-not-allowed bg-slate-200 text-slate-500' : uploadedDoc ? 'text-green-700 bg-green-100 hover:bg-green-200' : 'text-sky-600 bg-sky-50 hover:bg-sky-100'}`}>
-                                                {uploadingFiles[doc.id] ? '...' : uploadedDoc ? 'Change' : 'Upload'}
-                                                <input type="file" className="hidden" disabled={uploadingFiles[doc.id]} onChange={(e) => handleFileChange(doc.id, e)} />
-                                            </label>
-                                        </div>
-                                    );
-                                })}
+                                            <span className="font-bold text-gray-700 block mb-1">{doc.label}</span>
+                                            <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, doc.id)} accept=".jpg,.png,.pdf" />
+                                            {uploadedFiles[doc.id] ?
+                                                <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">{uploadedFiles[doc.id].name}</span> :
+                                                <span className="inline-block px-4 py-2 bg-gray-900 text-white rounded-lg text-xs font-bold">Choose File</span>
+                                            }
+                                        </label>
+                                    </div>
+                                ))}
                             </div>
+                        </div>
+                    </div>
+                );
 
-                            {error && <div className="p-4 bg-red-50 text-red-600 rounded-lg text-sm mb-6 border border-red-200 flex items-center gap-2"><AlertTriangle size={18} /> {error}</div>}
+            case 3: // Payment
+                return (
+                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
+                        <div className="w-20 h-20 bg-sky-50 rounded-full flex items-center justify-center mx-auto mb-6 text-sky-600">
+                            <IndianRupee size={32} />
+                        </div>
+                        <h2 className="text-2xl font-black text-[#2B3446] mb-2">Payment Summary</h2>
+                        <p className="text-gray-500 mb-8">Professional + Govt Fee</p>
 
-                            <div className="flex gap-4">
-                                <button onClick={() => setCurrentStep(1)} className="flex-1 py-4 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition">
-                                    Back
-                                </button>
-                                <button onClick={handleSubmit} disabled={loading} className="flex-1 py-4 bg-sky-600 text-white font-bold rounded-xl shadow-lg hover:bg-sky-700 transition flex justify-center items-center">
-                                    {loading ? 'Processing...' : 'Register Design'}
-                                </button>
+                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
+                            <div className="flex justify-between items-end mb-2">
+                                <span className="text-gray-500">Service Fee</span>
+                                <span className="text-lg font-bold text-[#2B3446]">₹4,999</span>
                             </div>
-                        </motion.div>
-                    )}
-
-                    {currentStep === 3 && (
-                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center py-8">
-                            <div className="w-20 h-20 bg-sky-100 rounded-full flex items-center justify-center text-sky-600 mx-auto mb-6">
-                                <CheckCircle size={40} />
+                            <div className="flex justify-between items-end mb-2">
+                                <span className="text-gray-500">Govt Fee ({formData.applicantNature})</span>
+                                <span className="text-lg font-bold text-[#2B3446]">₹{getGovtFee().toLocaleString()}</span>
                             </div>
-                            <h2 className="text-3xl font-black text-[#2B3446] mb-4">Design Initiated!</h2>
-                            <p className="text-slate-500 mb-8 max-w-md mx-auto">
-                                We've received your Design Request for <strong>{formData.articleName}</strong>. We will identify the Locarno Class and review your images.
-                            </p>
-
-                            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 mb-8 max-w-xs mx-auto">
-                                <p className="text-sm text-slate-500 mb-2 uppercase tracking-wide font-bold">Total Fees</p>
-                                <p className="text-4xl font-black text-[#2B3446]">₹4,999<span className="text-sm font-normal text-slate-400 block">+ Govt Fee</span></p>
+                            <div className="border-t pt-2 flex justify-between items-end">
+                                <span className="font-black text-gray-700">Total</span>
+                                <span className="text-3xl font-black text-sky-600">₹{getTotalPrice().toLocaleString()}</span>
                             </div>
+                        </div>
 
-                            <button onClick={() => navigate('/dashboard')} className="w-full max-w-xs py-4 bg-sky-600 text-white font-bold rounded-xl shadow-lg hover:bg-sky-700 transition flex items-center justify-center gap-2 mx-auto">
-                                <CreditCard size={18} /> Proceed to Dashboard
-                            </button>
-                        </motion.div>
-                    )}
+                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
+                            {isSubmitting ? 'Processing...' : 'Pay & Register'}
+                            {!isSubmitting && <ArrowRight size={18} />}
+                        </button>
+                    </div>
+                );
 
+            default: return null;
+        }
+    };
+
+    const submitApplication = async () => {
+        setIsSubmitting(true);
+        setApiError(null);
+        try {
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
+                id: k,
+                filename: v.name,
+                fileUrl: v.fileUrl,
+                type: k
+            }));
+
+            const finalPayload = {
+                submissionId: `DES-${Date.now()}`,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                articleName: formData.articleName,
+                plan: planType,
+                amountPaid: getTotalPrice(),
+                status: "PAYMENT_SUCCESSFUL",
+                formData: formData,
+                documents: docsList
+            };
+
+            await submitDesignRegistration(finalPayload);
+            setIsSuccess(true);
+
+        } catch (error) {
+            console.error(error);
+            setApiError(error.message);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-[#F0F9FF] pb-20 pt-24 px-4 md:px-8">
+            {isSuccess ? (
+                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
+                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle size={48} className="text-green-600" />
+                    </div>
+                    <h1 className="text-3xl font-black text-[#2B3446] mb-4">Registration Initiated!</h1>
+                    <p className="text-gray-500 mb-8">
+                        Your design application for <b>{formData.articleName}</b> has been received.
+                    </p>
+                    <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
                 </div>
-            </div>
+            ) : (
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-8">
+                        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition"><ArrowLeft size={14} /> Back</button>
+                        <h1 className="text-3xl font-black text-[#2B3446]">Design Registration</h1>
+                        <p className="text-gray-500">Protect the Aesthetics of your Product</p>
+                    </div>
+
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        <div className="w-full lg:w-80 space-y-6">
+                            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
+                                {['Design Details', 'Upload Views', 'Payment'].map((step, i) => (
+                                    <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-sky-50 border-sky-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
+                                        <div>
+                                            <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
+                                            <span className={`font-bold text-sm ${currentStep === i + 1 ? 'text-sky-700' : 'text-gray-600'}`}>{step}</span>
+                                        </div>
+                                        {currentStep > i + 1 && <CheckCircle size={16} className="text-green-500" />}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="bg-sky-50 p-4 rounded-xl border border-sky-100 text-xs text-sky-800">
+                                <strong>Estimated Fees:</strong> <br />
+                                <span className="text-lg font-bold">Registration + Govt Fee</span>
+                                <div className="mt-2 text-xl font-black text-sky-900">₹{getTotalPrice().toLocaleString()}</div>
+                            </div>
+                        </div>
+
+                        <div className="flex-1">
+                            {renderStepContent()}
+
+                            {apiError && (
+                                <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 flex items-center gap-2">
+                                    <AlertTriangle size={20} />
+                                    <span>{apiError}</span>
+                                </div>
+                            )}
+
+                            {!isSuccess && currentStep < 3 && (
+                                <div className="mt-8 flex justify-between">
+                                    <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
+
+                                    <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
+                                        Next Step <ArrowRight size={18} />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

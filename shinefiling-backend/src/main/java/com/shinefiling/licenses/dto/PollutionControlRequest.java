@@ -12,6 +12,8 @@ public class PollutionControlRequest {
     private String businessCategory; // RED, ORANGE, GREEN, WHITE
     private String certificateType; // CTE (Establish), CTO (Operate)
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private PollutionFormData formData;
     private List<UploadedDocumentDTO> documents;

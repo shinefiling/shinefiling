@@ -1,8 +1,9 @@
-import OpcRegistration from './OpcRegistration';
+﻿
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, ChevronRight, User, Key, Building, Scale, Award, Users, Globe, Briefcase, X, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, User, Banknote, Handshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import OnePersonCompanyRegistration from './OnePersonCompanyRegistration';
 
 const OpcPage = ({ isLoggedIn, onLogout }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -12,14 +13,12 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const faqs = [
-        { q: "What is the difference between OPC and Sole Proprietorship?", a: "The main difference is Liability. In a Proprietorship, you have unlimited liability (your personal assets are at risk). In an OPC, your liability is LIMITED to the company assets. Also, an OPC is a separate legal entity, whereas a Proprietorship is not." },
-        { q: "Who can be a Nominee?", a: "The Nominee must be 1) A natural person, 2) An Indian Citizen, and 3) Resident in India. They cannot be a minor. A person can be a nominee in only one OPC at a time." },
-        { q: "Can I convert OPC to Private Limited later?", a: "Yes! You can convert voluntarily after 2 years. Or, if your paid-up share capital exceeds ₹50 Lakhs OR average turnover exceeds ₹2 Crores, you MUST convert it individually into a Private Limited Company." },
-        { q: "Is Audit mandatory for OPC?", a: "Yes. Like a Private Limited Company, an OPC must get its accounts audited by a Chartered Accountant every year and file financial statements (AOC-4) with the ROC." },
-        { q: "Can I raise Venture Capital (VC) funding?", a: "It is difficult. VCs usually prefer 'Private Limited Companies' because they want to buy shares. In an OPC, there can be only 1 shareholder. So, you will have to convert to Pvt Ltd to accept VC money." },
-        { q: "Can a salaried person start an OPC?", a: "Yes, subject to your employment contract. You can be the shareholder and director. However, check if your employer allows dual employment or directorship." },
-        { q: "What happens if the Director dies?", a: "The Nominee automatically becomes the sole member (owner) of the company. They will then have to appoint a new nominee within 15 days." },
-        { q: "How much tax does an OPC pay?", a: "An OPC is taxed at a flat rate of 25% (plus surcharge/cess) if turnover is up to ₹400 Cr. It does not get the slab rates that individuals/proprietors enjoy." }
+        { q: "What is difference between OPC and Sole Proprietorship?", a: "The main difference is Liability. In Proprietorship, liability is unlimited (personal assets risk). In OPC, liability is LIMITED to company assets. Also, OPC is a separate legal entity." },
+        { q: "Who can be a Nominee?", a: "Nominee must be an Indian Citizen, Resident in India, and not a minor. A person can be a nominee in only one OPC at a time." },
+        { q: "Can I convert OPC to Pvt Ltd later?", a: "Yes! Can convert voluntarily after 2 years. Mandatory if paid-up capital > ₹50 Lakhs OR turnover > ₹2 Crores." },
+        { q: "Is Audit mandatory?", a: "Yes. Like Pvt Ltd, an OPC must get accounts audited by a CA every year and file AOC-4 and MGT-7." },
+        { q: "Can I raise VC funding?", a: "VCs prefer Pvt Ltd with multiple shareholders. However, you can convert OPC to Pvt Ltd to accept funding." },
+        { q: "What if the Director dies?", a: "The Nominee automatically becomes the sole member and appoints a new nominee within 15 days, ensuring perpetual succession." }
     ];
 
     const handlePlanSelect = (plan) => {
@@ -39,7 +38,7 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                 {/* Background Image with Overlay */}
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070"
+                        src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2070"
                         alt="Corporate Background"
                         className="w-full h-full object-cover"
                     />
@@ -87,7 +86,7 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">(OPC) Registration</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Perfect for solo entrepreneurs. Get 100% control with Limited Liability protection.
+                                    The perfect start for the solo entrepreneur. Get <strong className="text-white font-semibold">Limited Liability Policy</strong> with <strong className="text-white font-semibold">100% Control</strong> over your business.
                                 </p>
                             </motion.div>
 
@@ -102,8 +101,8 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                                         <Clock size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Estimated Time</p>
-                                        <p className="font-bold text-sm text-white">10-15 Days</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Fast Track</p>
+                                        <p className="font-bold text-sm text-white">7-10 Days</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
@@ -112,7 +111,7 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Trusted By</p>
-                                        <p className="font-bold text-sm text-white">50k+ Founders</p>
+                                        <p className="font-bold text-sm text-white">10k+ Founders</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -124,7 +123,7 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
                                 <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
-                                    Get Started Now
+                                    Register OPC Now
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn More
@@ -132,50 +131,84 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                             </motion.div>
                         </div>
 
-                        {/* Pricing Card - Floating Glass Effect */}
+                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Best Value</div>
+                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                                {/* Top Gold Line (Matching other pages) */}
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
-                                <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Standard Package</h3>
-                                    <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹8,999</h3>
-                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">₹16,000</span>
+                                {/* Header - COMPACT */}
+                                <div className="flex flex-col items-center justify-center text-center mb-5 mt-2">
+                                    <div className="mb-3 relative">
+                                        <div className="w-14 h-14 rounded-full bg-bronze/10 flex items-center justify-center">
+                                            <Shield size={28} className="text-bronze fill-bronze/20" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle size={14} className="text-green-500 fill-white" />
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees as applicable</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">
+                                        Official <br />Registration
+                                    </h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">One Person Company</p>
                                 </div>
 
-                                <div className="space-y-4 mb-8">
-                                    {/* Default features - can be enhanced if data points exist */}
+                                {/* Divider */}
+                                <div className="h-px w-full bg-slate-100 mb-5"></div>
+
+                                {/* Stats Grid - COMPACT */}
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    {/* Left Stat */}
+                                    <div className="text-center relative">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Handshake size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">100%</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Process <br />Online</p>
+                                        <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
+                                    </div>
+
+                                    {/* Right Stat */}
+                                    <div className="text-center">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Shield size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Legal</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Protection <br />Assured</p>
+                                    </div>
+                                </div>
+
+                                {/* Check List - COMPACT */}
+                                <div className="space-y-3 mb-6 pl-2">
                                     {[
-                                        "DSC & DIN Included",
-                                        "Name Approval",
-                                        "Govt Registration Filing",
-                                        "Certificate of Incorporation",
-                                        "PAN & TAN Allocation",
-                                        "Bank Account Support"
+                                        "Everything in Startup",
+                                        "Nominee Consent Filing",
+                                        "Digital Share Certificates"
                                     ].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                                            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
-                                            <span className="leading-snug">{item}</span>
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="bg-green-100 rounded-full p-1 shrink-0">
+                                                <CheckCircle size={12} className="text-green-600" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-xs tracking-wide">{item}</span>
                                         </div>
                                     ))}
                                 </div>
 
+                                {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
-                                    className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
-                                    Start Registration <ArrowRight size={18} />
+                                    Start Registration <ArrowRight size={16} />
                                 </button>
-                                <p className="text-center text-[10px] text-slate-400 mt-4 font-medium">
-                                    100% Online process • No hidden charges
+                                
+                                <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
+                                    Compare all plans below
                                 </p>
                             </div>
                         </motion.div>
@@ -184,40 +217,163 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                 </div>
             </div>
 
-            {/* CONTENT SECTION */}
+            {/* --- PRICING SECTION (3 PLANS) --- */}
+            <section id="pricing-section" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Solo Entrepreneurship</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">OPC Registration Plans</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: BASIC */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Startup</h3>
+                            <p className="text-slate-500 text-sm mb-6">Foundational setup for solo founders.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹4,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "1 DSC & 1 DIN",
+                                    "Name Approval",
+                                    "MOA & AOA Drafting",
+                                    "Certificate of Incorporation",
+                                    "PAN & TAN Allotment",
+                                    "Nominee Consent Filing"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                                <li className="flex items-center gap-3 text-sm text-slate-400">
+                                    <X size={16} className="shrink-0" /> GST Registration
+                                </li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400">
+                                    <X size={16} className="shrink-0" /> MSME Registration
+                                </li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Choose Basic
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD (POPULAR) */}
+                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            {/* Top Gold Line */}
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Most Popular
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Opc</h3>
+                            <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹6,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹12k</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {["Everything in Startup",
+                                        "Nominee Consent Filing",
+                                        "Digital Share Certificate"].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Get Started
+                            </button>
+                        </motion.div>
+
+                        {/* PLAN 3: PREMIUM */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Elite</h3>
+                            <p className="text-slate-500 text-sm mb-6">Full business readiness & compliance.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹12,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹20,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {[
+                                    "Everything in Growth",
+                                    "GST Registration",
+                                    "MSME/Udyam Registration",
+                                    "First Board Resolutions",
+                                    "Domain + Email (1 Yr)",
+                                    "Zero Balance Current A/c"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Choose Elite
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
+                {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Introduction */}
+                    {/* Introduction - Expanded for SEO */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <Building className="text-bronze" /> What is an OPC?
+                            <Building className="text-bronze" /> What is an One Person Company (OPC)?
                         </h2>
                         <div className="prose prose-lg text-gray-600">
                             <p className="lead text-xl text-gray-800 font-medium">
-                                An <strong>One Person Company (OPC)</strong> is a company that has only ONE shareholder who is also the Director. It was introduced in 2013 to encourage solo entrepreneurs.
+                                An <strong>One Person Company (OPC)</strong> is a revolutionary business structure introduced by the <strong>Companies Act, 2013</strong> that allows a single entrepreneur to operate a corporate entity with Limited Liability protection. It combines the benefits of a Sole Proprietorship (full control) with the legal standing of a Private Limited Company (corporate status).
                             </p>
                             <p>
-                                Before OPC, if you were a single founder, you had to forcefully find a second person (often a family member) just to register a Private Limited Company. With OPC, you can register a formal legal entity all by yourself.
+                                Unlike a Proprietorship, the OPC is a <strong>separate legal entity</strong> from its owner. This means your personal assets (house, car, savings) are safe even if the business faces losses or debts. It requires only one member (shareholder) and one nominee (who takes over in case of death/incapacity).
                             </p>
                             <p>
-                                However, you must appoint a <strong>Nominee</strong>. A nominee is a person who will take over the company in the unfortunate event of the owner's death or incapacity.
+                                With ShineFiling, registering an OPC is seamless. We handle everything from Digital Signature (DSC) to Nominee Consent (Form INC-3) and final Incorporation. It is the perfect starting point for solo founders looking to build a scalable and legally secure business.
                             </p>
                         </div>
                     </section>
 
-                    {/* Benefits Grid */}
+                    {/* 6 KEY BENEFITS GRID */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Why Choose OPC over Proprietorship?</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Key Benefits of OPC</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Limited Liability Protection", desc: "This is the #1 reason. In Proprietorship, if business fails, you lose personal assets. In OPC, your personal house/car is SAFE. Liability is limited to share capital.", icon: Shield },
-                                { title: "Complete Control (100%)", desc: "You are the King/Queen. No interference from other directors or partners. You make all decisions instantly without needing board meetings.", icon: Key },
-                                { title: "Legal Entity Status", desc: "An OPC is a separate legal person. It can buy property, sue others, and be sued in its own name. It has perpetual succession.", icon: Scale },
-                                { title: "Better Banking Facilities", desc: "Banks prefer lending to Companies (OPC) rather than Proprietors. It is easier to get Business Loans and Current Accounts.", icon: Briefcase },
-                                { title: "Brand Image", desc: "Your name sounds professional: 'XYZ Technologies (OPC) Private Limited'. It creates trust with clients and vendors.", icon: Star },
-                                { title: "Easy Management", desc: "Less compliance burden compared to a full Pvt Ltd. You don't need to hold Annual General Meetings (AGM).", icon: Zap },
+                                { title: "Limited Liability", desc: "Your personal assets (home, car) are safe. Liability is limited only to the unpaid share capital of the company.", icon: Shield },
+                                { title: "Complete Control", desc: "You are the single director and shareholder. You have 100% control over decision making with no interference.", icon: User },
+                                { title: "Separate Legal Status", desc: "The OPC can own property/assets in its own name. It has better standing than a proprietorship.", icon: Briefcase },
+                                { title: "Perpetual Succession", desc: "The company lives on through the Nominee even in the event of death or incapacity of the member.", icon: Clock },
+                                { title: "Easy Banking", desc: "Banks and Financial Institutions prefer OPCs over Proprietorships for loans and credits.", icon: Building },
+                                { title: "Brand Protection", desc: "Your company name is protected by the ROC. No one else can use it.", icon: Award },
                             ].map((benefit, i) => (
                                 <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-beige transition group">
                                     <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
@@ -232,83 +388,73 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                         </div>
                     </section>
 
-                    {/* PRICING CARDS SECTION */}
-                    <section id="pricing-section" className="mb-20">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl font-bold text-navy">Choose Your OPC Registration Plan</h2>
-                            <p className="text-slate-500 mt-3">Select the package that best fits your business needs.</p>
+                    {/* WHO SHOULD REGISTER SECTION */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6">Who Should Register an OPC?</h2>
+                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+                            <p className="mb-6 text-gray-600">Ideal for solopreneurs in:</p>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8">
+                                {[
+                                    "Consulting Services", "IT & Software Dev", "E-commerce Sellers",
+                                    "Freelancers", "Marketing Agencies", "Export/Import",
+                                    "Content Creators", "Designers", "Traders"
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <CheckCircle size={18} className="text-bronze flex-shrink-0" />
+                                        <span className="font-medium text-gray-700">{item}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
+                    </section>
 
-                        <div className="grid md:grid-cols-3 gap-8">
-                            {/* Basic Plan */}
-                            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
-                                <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
-                                <div className="text-3xl font-bold text-navy mb-1">₹4,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-4 mb-8">
-                                    {["1 DSC & 1 DIN", "Name Approval", "Certificate of Inc.", "MOA & AOA Drafting", "PAN & TAN", "GST & Bank Support"].map((feat, i) => (
-                                        <li key={i} className="flex gap-3 text-sm text-slate-600">
-                                            <CheckCircle size={16} className="text-bronze shrink-0" /> {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-[#2B3446] hover:text-white transition">Select Basic</button>
-                            </div>
-
-                            {/* Standard Plan - Hero */}
-                            <div className="bg-[#2B3446] rounded-3xl p-8 shadow-2xl relative overflow-hidden transform md:-translate-y-4">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Recommended</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Standard</h3>
-                                <div className="text-3xl font-bold text-white mb-1">₹8,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-4 mb-8">
-                                    {["Everything in Basic", "Nominee Consent Filing", "Share Certificate", "PAN & TAN Allocation", "GST & Bank Account"].map((feat, i) => (
-                                        <li key={i} className="flex gap-3 text-sm text-gray-300">
-                                            <CheckCircle size={16} className="text-bronze shrink-0" /> {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-bronze-dark text-navy font-bold shadow-lg hover:shadow-bronze/50 transition">Choose Standard</button>
-                            </div>
-
-                            {/* Premium Plan */}
-                            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
-                                <h3 className="text-xl font-bold text-navy mb-2">Premium</h3>
-                                <div className="text-3xl font-bold text-navy mb-1">₹12,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-4 mb-8">
-                                    {["Everything in Standard", "GST Registration", "MSME Registration", "Bank Account (Full)", "First Board Resolution", "Compliance Guidance (1Y)"].map((feat, i) => (
-                                        <li key={i} className="flex gap-3 text-sm text-slate-600">
-                                            <CheckCircle size={16} className="text-bronze shrink-0" /> {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-[#2B3446] hover:text-white transition">Select Premium</button>
-                            </div>
+                    {/* DETAILED COMPARISON TABLE */}
+                    <section className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="bg-[#2B3446] p-6">
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Scale size={20} className="text-bronze" /> OPC vs Proprietorship
+                            </h2>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-[#2B3446]/5 text-navy">
+                                    <tr>
+                                        <th className="px-6 py-4">Feature</th>
+                                        <th className="px-6 py-4 bg-beige/10 border-b-2 border-yellow-500">OPC</th>
+                                        <th className="px-6 py-4">Proprietorship</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Liability Shield</td><td className="px-6 py-4 text-slate font-bold bg-beige/10 text-green-600">LIMITED</td><td className="px-6 py-4 text-red-500 font-bold">UNLIMITED</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Legal Status</td><td className="px-6 py-4 text-slate font-bold bg-beige/10">Separate Entity</td><td className="px-6 py-4 text-slate-500">Not Separate</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Taxation</td><td className="px-6 py-4 text-slate font-bold bg-beige/10">30% (Flat)</td><td className="px-6 py-4 text-slate font-bold">Slab Rates</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Registration</td><td className="px-6 py-4 text-slate font-bold bg-beige/10">Central (MCA)</td><td className="px-6 py-4 text-slate-500">Local (Shop Act/GST)</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Succession</td><td className="px-6 py-4 text-slate font-bold bg-beige/10">Nominee</td><td className="px-6 py-4 text-slate-500">Difficult</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </section>
 
                     {/* DETAILED PROCESS SECTION */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Comprehensive Registration Process</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Registration Process</h2>
                         <div className="space-y-6">
                             {[
-                                { step: "Step 1", title: "DSC & Name Approval", days: "Day 1-2", desc: "We apply for Digital Signature Certificate (DSC) and reserve your unique company name." },
-                                { step: "Step 2", title: "Incorporation Doc", days: "Day 3-5", desc: "Drafting of MOA, AOA, and Nominee Consent Form." },
-                                { step: "Step 3", title: "Filing SPICe+", days: "Day 6-10", desc: "Submission of final forms to ROC." },
-                                { step: "Step 4", title: "Certificate of Inc", days: "Day 12-15", desc: "Issuance of COI, PAN, and TAN by Government." },
-                                { step: "Step 5", title: "Bank Account", days: "Post-Reg", desc: "Assistance in opening the OPC current bank account." }
+                                { step: "Step 1", title: "DSC & Name Application", days: "Day 1-2", desc: "We apply for Digital Signature Certificate (DSC) and check/reserve your Company Name on MCA." },
+                                { step: "Step 2", title: "Incorporation Filling", days: "Day 3-5", desc: "We draft MOA, AOA, and Nominee Consent (Form INC-3) and file SPICe+ forms with ROC." },
+                                { step: "Step 3", title: "Certificate Issue", days: "Day 6-8", desc: "ROC approves the forms and issues the Certificate of Incorporation (COI), PAN, and TAN." },
+                                { step: "Step 4", title: "Bank & Compliance", days: "Post-Reg", desc: "Support for opening current bank account and 1st year compliance guidance." }
                             ].map((item, i) => (
                                 <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
-                                    <div className="flex-shrink-0 w-full md:w-48 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
-                                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                    <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
                                             {i + 1}
                                         </div>
-                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Estimated</span>
-                                        <span className="text-navy font-bold text-lg">{item.days}</span>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Duration</span>
+                                        <span className="text-navy font-bold text-sm">{item.days}</span>
                                     </div>
                                     <div className="flex-1 flex flex-col justify-center">
-                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
                                             {item.title}
                                         </h3>
                                         <p className="text-slate-600 leading-relaxed text-sm">
@@ -320,37 +466,53 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                         </div>
                     </section>
 
-                    {/* MANDATORY COMPLIANCES SECTION */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Mandatory Annual Compliances</h2>
-                        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
-                            <div className="p-6 bg-navy text-white">
-                                <p className="text-sm opacity-80">Keep your business active and penalty-free with these filings.</p>
-                            </div>
-                            <div className="divide-y divide-gray-100">
-                                {[
-                                    { name: "Auditor Appointment (ADT-1)", due: "Within 30 days of Inc", type: "One Time" },
-                                    { name: "Commencement of Business (INC-20A)", due: "Within 180 days of Inc", type: "One Time" },
-                                    { name: "Income Tax Return (ITR-6)", due: "30th September", type: "Annual" },
-                                    { name: "Financial Statements (AOC-4)", due: "30 days from AGM", type: "Annual" },
-                                    { name: "Annual Return (MGT-7)", due: "60 days from AGM", type: "Annual" },
-                                    { name: "Director KYC (DIR-3 KYC)", due: "30th September", type: "Annual" }
-                                ].map((row, i) => (
-                                    <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-6 hover:bg-gray-50 transition">
-                                        <div className="flex-1">
-                                            <h4 className="font-bold text-navy text-lg">{row.name}</h4>
-                                        </div>
-                                        <div className="md:w-1/3 mt-2 md:mt-0">
-                                            <span className="text-sm text-slate-500 font-medium uppercase tracking-wider">Due Date</span>
-                                            <p className="text-bronze-dark font-semibold">{row.due}</p>
-                                        </div>
-                                        <div className="md:w-1/6 mt-2 md:mt-0 text-right">
-                                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${row.type === 'Annual' ? 'bg-blue-50 text-navy' : 'bg-beige/30 text-bronze-dark'}`}>
-                                                {row.type}
-                                            </span>
-                                        </div>
+
+                    {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
+                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                        {/* Background Deco */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
+
+                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling for OPC?</h2>
+                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Award size={24} />
                                     </div>
-                                ))}
+                                    <div>
+                                        <h4 className="font-bold text-lg">Nominee Guidance</h4>
+                                        <p className="text-gray-300 text-sm">We help you correctly file Form INC-3 for your Nominee, avoiding future legal complications.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Zap size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Fast Track Filing</h4>
+                                        <p className="text-gray-300 text-sm">Our SPICe+ expert team ensures your OPC is registered in as little as 7 working days.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Shield size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Audit Assistance</h4>
+                                        <p className="text-gray-300 text-sm">We provide connections to CAs for your mandatory annual statutory audit at affordable rates.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Users size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Lifetime Compliance Partner</h4>
+                                        <p className="text-gray-300 text-sm">From registration to conversion (if you grow big), we are with you at every step.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -358,7 +520,7 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                     {/* FAQs */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
-                            <Shield className="text-bronze" /> Frequently Asked Questions
+                            <HelpCircle className="text-bronze" /> Frequently Asked Questions
                         </h2>
                         <div className="space-y-4">
                             {faqs.map((faq, i) => (
@@ -377,9 +539,11 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
 
                 </div>
 
-                {/* RIGHT SIDEBAR */}
+                {/* RIGHT SIDEBAR (4 Cols) */}
                 <div className="lg:col-span-4">
                     <div className="sticky top-32 space-y-8">
+
+                        {/* Documents Sidebar */}
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
                                 <FileText className="text-bronze" /> Required Documents
@@ -387,54 +551,28 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
 
                             <div className="space-y-6">
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Owner (Director)</h4>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Director & Nominee</h4>
                                     <ul className="space-y-3">
-                                        {["PAN Card", "Aadhaar Card", "Bank Statement / Bill", "Passport Photo"].map((d, i) => (
-                                            <li key={i} className="flex gap-3 text-sm text-gray-700">
-                                                <CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" />
-                                                {d}
-                                            </li>
-                                        ))}
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> PAN Card, Aadhaar Card</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Passport Photo (Both)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Bank Statement/Utility Bill (Not older than 2 months)</li>
                                     </ul>
                                 </div>
 
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Nominee</h4>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Registered Office</h4>
                                     <ul className="space-y-3">
-                                        {["PAN Card", "Aadhaar Card", "Consent Form (We provide)"].map((d, i) => (
-                                            <li key={i} className="flex gap-3 text-sm text-gray-700">
-                                                <CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" />
-                                                {d}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">Office</h4>
-                                    <ul className="space-y-3">
-                                        {["Electricity Bill", "NOC from Owner"].map((d, i) => (
-                                            <li key={i} className="flex gap-3 text-sm text-gray-700">
-                                                <CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" />
-                                                {d}
-                                            </li>
-                                        ))}
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Electricity Bill / Water Bill</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Rent Agreement (if rented)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> NOC from Owner (Mandatory)</li>
                                     </ul>
                                 </div>
                             </div>
 
-                            <div className="mt-8 bg-beige/10 p-4 rounded-xl border border-blue-100">
-                                <p className="text-xs text-blue-800 font-medium leading-relaxed flex gap-2">
-                                    <span className="text-lg">💡</span>
-                                    <span><strong>Pro Tip:</strong> Nominee must be an Indian Citizen resident in India.</span>
-                                </p>
-                            </div>
-
-                            <button className="w-full mt-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-sm transition">
-                                Download Checklist PDF
-                            </button>
+                            <button className="w-full mt-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
 
+                        {/* Support Card */}
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Need Help?</h4>
                             <p className="text-gray-300 text-sm mb-4">Our experts are available 24/7 to guide you through the process.</p>
@@ -447,9 +585,7 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                                     <p className="font-bold">+91 98765 43210</p>
                                 </div>
                             </div>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Request Callback
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -458,8 +594,8 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                 <AnimatePresence>
                     {showRegisterModal && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                            <div className="relative w-full max-w-6xl max-h-[95vh] rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 bg-white ring-1 ring-white/20">
-                                <OpcRegistration isLoggedIn={isLoggedIn} isModal={true} initialPlan={selectedPlan} onClose={() => setShowRegisterModal(false)} />
+                            <div className="relative w-full max-w-6xl max-h-[95vh] rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 bg-white ring-1 ring-white/20 overflow-y-auto">
+                                <OnePersonCompanyRegistration isLoggedIn={isLoggedIn} isModal={true} planProp={selectedPlan} onClose={() => setShowRegisterModal(false)} />
                             </div>
                         </div>
                     )}
@@ -470,4 +606,5 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
 };
 
 export default OpcPage;
+
 

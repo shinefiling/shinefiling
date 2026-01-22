@@ -1,0 +1,78 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - img "Background" [ref=e8]
+      - generic [ref=e10]:
+        - link "ShineFiling" [ref=e11] [cursor=pointer]:
+          - /url: /
+          - img [ref=e13]
+          - generic [ref=e15]: ShineFiling
+        - heading "Secure Access to Your Empire." [level=1] [ref=e16]:
+          - text: Secure Access to
+          - text: Your Empire.
+        - paragraph [ref=e17]: Effortlessly manage your business compliance, tax filings, and legal documents in one powerful dashboard.
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - img [ref=e21]
+            - generic [ref=e24]:
+              - paragraph [ref=e25]: Bank-Grade Encryption
+              - paragraph [ref=e26]: Your data is always safe.
+          - generic [ref=e27]:
+            - img [ref=e29]
+            - generic [ref=e32]:
+              - paragraph [ref=e33]: Real-time Updates
+              - paragraph [ref=e34]: Track progress as it happens.
+          - generic [ref=e35]:
+            - img [ref=e37]
+            - generic [ref=e40]:
+              - paragraph [ref=e41]: 24/7 Expert Support
+              - paragraph [ref=e42]: Direct access to professionals.
+      - generic [ref=e43]:
+        - paragraph [ref=e44]: © 2026 ShineFiling.
+        - generic [ref=e45]:
+          - link "Privacy" [ref=e46] [cursor=pointer]:
+            - /url: "#"
+          - link "Terms" [ref=e47] [cursor=pointer]:
+            - /url: "#"
+    - generic [ref=e49]:
+      - generic [ref=e50]:
+        - heading "Welcome Back" [level=2] [ref=e51]
+        - paragraph [ref=e52]: Please enter your details to sign in.
+      - generic [ref=e53]:
+        - button "Email Login" [ref=e54] [cursor=pointer]
+        - button "Mobile OTP" [ref=e55] [cursor=pointer]
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - text: Email Address
+          - generic [ref=e58]:
+            - img [ref=e59]
+            - textbox "you@company.com" [ref=e62]: admin@shinefiling.com
+        - generic [ref=e63]:
+          - generic [ref=e64]:
+            - generic [ref=e65]: Password
+            - link "Forgot Password?" [ref=e66] [cursor=pointer]:
+              - /url: /forgot-password
+          - generic [ref=e67]:
+            - img [ref=e68]
+            - textbox "••••••••" [active] [ref=e71]: wrongpassword
+            - button [ref=e72] [cursor=pointer]:
+              - img [ref=e73]
+        - button "Login Securely" [ref=e76] [cursor=pointer]:
+          - text: Login Securely
+          - img [ref=e77]
+      - generic [ref=e83]: Or continue with
+      - button "Sign in with Google" [ref=e84] [cursor=pointer]:
+        - img [ref=e85]
+        - text: Sign in with Google
+      - paragraph [ref=e87]:
+        - text: Don't have an account?
+        - link "Create Account" [ref=e88] [cursor=pointer]:
+          - /url: /signup
+          - text: Create Account
+          - img [ref=e89]
+  - button [ref=e92] [cursor=pointer]:
+    - img [ref=e93]
+```

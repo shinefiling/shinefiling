@@ -1,6 +1,9 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Users, Briefcase, FileText, Scale, HelpCircle, Shield, BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck, PieChart } from 'lucide-react';
+import {
+    CheckCircle, Users, Briefcase, FileText, Scale, HelpCircle, Shield,
+    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, UserCheck, PieChart, X
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ShareholdersAgreement = ({ isLoggedIn }) => {
@@ -15,11 +18,12 @@ const ShareholdersAgreement = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "What is the purpose of this agreement?", a: "It regulates the relationship between shareholders and outlines their rights and obligations." },
-        { q: "Does it override MOA/AOA?", a: "Generally, the Articles of Association (AOA) should be amended to reflect the terms of the Shareholders' Agreement (SHA) for better enforceability." },
-        { q: "What is ROFR?", a: "Right of First Refusal: Existing shareholders have the right to match an offer before shares are sold to an outsider." },
-        { q: "What are Tag-Along rights?", a: "If a majority shareholder sells their stake, minority shareholders have the right to join the deal and sell their shares too." },
-        { q: "What are Drag-Along rights?", a: "Majority shareholders can force minority shareholders to sell their stake during a company sale." },
+        { q: "What is the purpose of this agreement?", a: "It regulates the relationship between shareholders and outlines their rights and obligations. It provides a roadmap for dispute resolution and exit strategies." },
+        { q: "Does it override MOA/AOA?", a: "No, the Articles of Association (AOA) are the primary charter. However, generally, the AOA should be amended to reflect the terms of the Shareholders' Agreement (SHA) to ensure enforceability." },
+        { q: "What is ROFR?", a: "Right of First Refusal (ROFR) means if a shareholder wants to sell their shares, they must first offer them to existing shareholders before selling to an outside third party." },
+        { q: "What are Tag-Along rights?", a: "Tag-Along rights protect minority shareholders. If a majority shareholder sells their stake to a 3rd party, minority shareholders have the right to 'tag along' and sell their shares at the same price." },
+        { q: "What are Drag-Along rights?", a: "Drag-Along rights favor majority shareholders. They can force minority shareholders to sell their stake during a company sale (Exit) to ensure 100% of the company can be sold to a buyer." },
+        { q: "Do I need this for a 2-person startup?", a: "Yes, absolutely. It acts as a 'business prenup'. If you fall out with your co-founder later, this document defines how one can buy out the other." },
     ];
 
     return (
@@ -78,7 +82,7 @@ const ShareholdersAgreement = ({ isLoggedIn }) => {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Agreement</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Definitive agreement governing the relationship between the company and its shareholders, protecting minority rights and defining exit routes.
+                                    Definitive agreement governing the relationship between the company and its shareholders. Protect <strong>Minority Rights</strong>, and define clear <strong>Exit Routes</strong>.
                                 </p>
                             </motion.div>
 
@@ -113,7 +117,7 @@ const ShareholdersAgreement = ({ isLoggedIn }) => {
                                     Draft Now
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
-                                    <BookOpen size={18} /> Learn More
+                                    <BookOpen size={18} /> Please Learn More
                                 </button>
                             </div>
                         </div>
@@ -127,7 +131,7 @@ const ShareholdersAgreement = ({ isLoggedIn }) => {
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
                                 <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Investor</div>
-                                <div className="text-center mb-6">
+                                <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">Standard SHA</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹4,999</h3>
@@ -135,7 +139,7 @@ const ShareholdersAgreement = ({ isLoggedIn }) => {
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Expert Vetting</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {["Transfer Restrictions (ROFR)", "Board Composition Clause", "Anti-Dilution Terms", "Exit Strategy (Tag/Drag)", "Information Rights"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
@@ -144,11 +148,9 @@ const ShareholdersAgreement = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Start Drafting <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -156,25 +158,163 @@ const ShareholdersAgreement = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+
+            {/* --- PRICING SECTION --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Investment Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Choose Your Plan</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: BASIC (Review) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Review</h3>
+                            <p className="text-slate-500 text-sm mb-6">Review Existing Draft.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹2,499</span>
+                                <span className="text-slate-400 line-through text-sm">₹4,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Review by Expert</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Risk Analysis</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Commenting Red Flags</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> Redrafting</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Review</button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD - POPULAR */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
+                            <p className="text-gray-400 text-sm mb-6">Comprehensive Draft.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹4,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹8,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Full Drafting</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> ROFR / Tag / Drag</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Anti-Dilution</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> 2 Rounds of Edits</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Standard</button>
+                        </motion.div>
+
+                        {/* PLAN 3: PREMIUM */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Premium</h3>
+                            <p className="text-slate-500 text-sm mb-6">Complex / Investor Support.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹9,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹15,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Senior Lawyer Consult</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Multiple Share classes</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Investor Negotiation</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Unlimited Revisions</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Premium</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Key Clauses Section */}
+                    {/* Intro Section */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <Shield className="text-bronze" /> Critical Clauses
+                            <Briefcase className="text-bronze" /> Protecting Your Equity
+                        </h2>
+                        <div className="prose prose-lg text-gray-600">
+                            <p className="lead text-xl text-gray-800 font-medium">
+                                A <strong>Shareholders' Agreement (SHA)</strong> is the rulebook for a company's owners. It goes beyond the standard Articles of Association (AOA) to offer specific protections to both founders and investors.
+                            </p>
+                            <p>
+                                Whether you are raising funds from VCs/Angels or just starting with multiple partners, an SHA defines how the company will be run, how decisions are made, and how shares can be sold or transferred. It is the ultimate safeguard against hostile takeovers or internal disputes.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* SHA vs AOA Table */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">SHA vs. AOA</h2>
+                        <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+                            <div className="grid grid-cols-3 bg-navy text-white text-center p-4 font-bold text-sm tracking-wider uppercase">
+                                <div>Topic</div>
+                                <div>Shareholders' Agreement</div>
+                                <div>Articles of Association</div>
+                            </div>
+                            <div className="divide-y divide-gray-100 bg-white">
+                                <div className="grid grid-cols-3 p-4 hover:bg-gray-50 transition items-center">
+                                    <div className="font-bold text-navy text-sm">Nature</div>
+                                    <div className="text-sm text-slate-600 text-center">Private Contract</div>
+                                    <div className="text-sm text-slate-600 text-center">Public Document</div>
+                                </div>
+                                <div className="grid grid-cols-3 p-4 hover:bg-gray-50 transition items-center">
+                                    <div className="font-bold text-navy text-sm">Privacy</div>
+                                    <div className="text-sm text-green-600 font-semibold text-center">Confidential</div>
+                                    <div className="text-sm text-orange-600 font-semibold text-center">Publicly Available (MCA)</div>
+                                </div>
+                                <div className="grid grid-cols-3 p-4 hover:bg-gray-50 transition items-center">
+                                    <div className="font-bold text-navy text-sm">Flexibility</div>
+                                    <div className="text-sm text-green-600 font-semibold text-center">Highly Flexible</div>
+                                    <div className="text-sm text-orange-600 font-semibold text-center">Governed by Companies Act</div>
+                                </div>
+                                <div className="grid grid-cols-3 p-4 hover:bg-gray-50 transition items-center">
+                                    <div className="font-bold text-navy text-sm">Priority</div>
+                                    <div className="text-sm text-slate-600 text-center">Subservient to AOA</div>
+                                    <div className="text-sm text-slate-600 text-center">Supreme Internal Rule</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Importance/Features Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
+                            <Shield className="text-bronze" /> Critical Protections
                         </h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Right of First Refusal", desc: "Prevents shares from being sold to unknown 3rd parties." },
-                                { title: "Tag-Along / Drag-Along", desc: "Protects minority and majority rights during exits." },
-                                { title: "Board Representation", desc: "Guarantees a board seat for major investors." },
-                                { title: "Anti-Dilution", desc: "Protects investors if shares are sold at a lower price later." },
-                                { title: "Voting Rights", desc: "Super-majority requirements for key decisions." },
-                                { title: "Information Rights", desc: "Right to receive periodic financial statements." },
+                                { title: "Control the Transfer", desc: "ROFR ensures shares aren't sold to strangers without your consent." },
+                                { title: "Protect Minority", desc: "Tag-Along rights allow minority holders to sell if majority sells." },
+                                { title: "Facilitate Exits", desc: "Drag-Along rights help in selling the entire company easily." },
+                                { title: "Board Seats", desc: "Secures the right to appoint directors for major shareholders." },
+                                { title: "Maintain Value", desc: "Anti-dilution clauses protect against value drop in future rounds." },
+                                { title: "Information Access", desc: "Guarantees specific access to financial reports and key data." },
                             ].map((item, i) => (
                                 <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
                                     <div className="flex items-start gap-4">
@@ -189,36 +329,53 @@ const ShareholdersAgreement = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Best Value</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Standard SHA</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹4,999</div>
-                                <p className="text-xs text-gray-400 mb-6">/ Agreement</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Thorough Customization</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> 2 Rounds Revision</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Senior Lawyer Draft</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
+                    {/* Key Clauses Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-6">Key Clauses We Draft</h2>
+                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+                            <p className="mb-6 text-gray-600">Our agreement covers:</p>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8">
+                                {[
+                                    "Right of First Refusal (ROFR)", "Tag-Along Rights", "Drag-Along Rights",
+                                    "Anti-Dilution Protection", "Liquidation Preference", "Board Composition",
+                                    "Reserved Matters (Veto)", "Non-Compete Clauses", "Exit Mechanism"
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <Scale size={18} className="text-bronze flex-shrink-0" />
+                                        <span className="font-medium text-gray-700">{item}</span>
+                                    </div>
+                                ))}
                             </div>
+                        </div>
+                    </section>
 
-                            {/* Review */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">SHA Review</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹2,499</div>
-                                <p className="text-xs text-slate-400 mb-6">/ Review</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Review Investor Draft</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Highlight Risks</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Negotiation Points</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('review')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Review</button>
-                            </div>
+                    {/* Process Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Drafting Process</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Term Sheet Review", days: "Day 1", desc: "We analyze the Term Sheet or standard requirements of the company." },
+                                { step: "Step 2", title: "First Draft", days: "Day 2-3", desc: "Drafting the detailed agreement covering all governance and exit clauses." },
+                                { step: "Step 3", title: "Negotiation/Review", days: "Day 3-4", desc: "Incorporating feedback from investors or other shareholders." },
+                                { step: "Step 4", title: "Execution Version", days: "Day 5", desc: "Finalizing the clean copy ready for stamping and signing." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-navy font-bold text-sm">{item.days}</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
@@ -268,9 +425,7 @@ const ShareholdersAgreement = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Raising Funds?</h4>
                             <p className="text-gray-300 text-sm mb-4">We also review Term Sheets and Subscription Agreements.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                View Services
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -279,5 +434,6 @@ const ShareholdersAgreement = ({ isLoggedIn }) => {
         </div>
     );
 };
-
 export default ShareholdersAgreement;
+
+

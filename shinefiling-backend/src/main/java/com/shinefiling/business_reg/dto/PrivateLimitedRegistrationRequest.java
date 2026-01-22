@@ -36,6 +36,16 @@ public class PrivateLimitedRegistrationRequest {
         private String bankSupport;
 
         private List<DirectorDTO> directors;
+
+        // New Fields
+        private String natureOfBusiness;
+        private String employeeCount; // Startup
+        private String bankPreference; // Growth
+        private String turnoverEstimate; // Growth
+        private String accountingStartDate; // Growth
+        private String trademarkName; // Enterprise
+        private String trademarkClass; // Enterprise
+        private String auditorPreference; // Enterprise
     }
 
     @Data
@@ -75,4 +85,3 @@ public class PrivateLimitedRegistrationRequest {
         private String description;
     }
 }
-

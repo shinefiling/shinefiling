@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Save, Lock, Database, Camera, ShieldCheck, ChevronRight } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Save, Lock, Database, Camera, ShieldCheck, ChevronRight, Fingerprint, AlertTriangle } from 'lucide-react';
 import { updateUserProfile, uploadProfilePicture } from '../../api';
 
 const ClientProfile = () => {
@@ -19,22 +19,15 @@ const ClientProfile = () => {
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if (!file || !user.id) return;
-
         try {
             setLoading(true);
             const res = await uploadProfilePicture(user.id, file);
-
-            // Update state
-            const newImage = res.profileImage;
-            const updatedUser = { ...user, profileImage: newImage };
-
+            const updatedUser = { ...user, profileImage: res.profileImage };
             setUser(updatedUser);
             localStorage.setItem('user', JSON.stringify(updatedUser)); // Persist to local storage
-
-            alert("Profile Picture Updated!");
-            window.location.reload(); // Refresh to update header avatar
+            window.dispatchEvent(new Event('userUpdated'));
+            setMsg({ type: 'success', text: "Profile Picture Updated!" });
         } catch (error) {
-            console.error(error);
             setMsg({ type: 'error', text: 'Failed to upload photo.' });
         } finally {
             setLoading(false);
@@ -48,6 +41,7 @@ const ClientProfile = () => {
         try {
             await updateUserProfile(user.id, user);
             localStorage.setItem('user', JSON.stringify(user));
+            window.dispatchEvent(new Event('userUpdated'));
             setMsg({ type: 'success', text: 'Profile updated successfully!' });
         } catch (error) {
             setMsg({ type: 'error', text: 'Failed to update profile.' });
@@ -57,126 +51,132 @@ const ClientProfile = () => {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="space-y-8 animate-in fade-in duration-500 pb-10">
+            {/* Header */}
+            <div>
+                <h2 className="text-3xl font-bold text-[#10232A] dark:text-white">Account Settings</h2>
+                <p className="text-slate-500 dark:text-slate-400 mt-1">Manage your personal information and security preferences.</p>
+            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Profile Form */}
-                <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                    <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                        <h3 className="font-bold text-lg text-[#10232A] flex items-center gap-2">
-                            <User size={20} className="text-[#3D4D55]" /> Personal Information
+                <div className="lg:col-span-2 bg-white dark:bg-[#10232A] rounded-3xl shadow-sm border border-slate-100 dark:border-[#1C3540] overflow-hidden">
+                    <div className="p-8 border-b border-slate-100 dark:border-[#1C3540] flex justify-between items-center bg-[#FDFBF7] dark:bg-[#10232A]">
+                        <h3 className="font-bold text-lg text-[#10232A] dark:text-white flex items-center gap-2">
+                            Profile Details
                         </h3>
-                        <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-emerald-200">
+                        <span className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-emerald-100 dark:border-emerald-800">
                             <ShieldCheck size={12} /> KYC Verified
                         </span>
                     </div>
 
                     <div className="p-8">
-                        <div className="flex items-center gap-6 mb-8">
-                            <div className="relative group cursor-pointer overflow-hidden rounded-full border-4 border-white shadow-xl w-24 h-24">
-                                {user.profileImage ? (
-                                    <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-[#B58863] to-[#D4B08C] flex items-center justify-center text-white">
-                                        {user.fullName ? <span className="text-3xl font-bold">{user.fullName.charAt(0)}</span> : <User size={36} />}
-                                    </div>
-                                )}
-                                <label className="absolute inset-0 bg-[#10232A]/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                    <Camera size={24} className="text-white" />
+                        <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-10">
+                            <div className="relative group cursor-pointer">
+                                <div className="overflow-hidden rounded-full border-4 border-white shadow-2xl w-32 h-32 relative z-10">
+                                    {user.profileImage ? (
+                                        <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full bg-[#B58863] flex items-center justify-center text-white">
+                                            {user.fullName ? <span className="text-4xl font-bold">{user.fullName.charAt(0)}</span> : <User size={48} />}
+                                        </div>
+                                    )}
+                                </div>
+                                <label className="absolute bottom-0 right-0 z-20 bg-[#10232A] text-white p-2.5 rounded-full shadow-lg cursor-pointer hover:bg-[#B58863] transition hover:scale-110">
+                                    <Camera size={18} />
                                     <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                                 </label>
                             </div>
-                            <div>
-                                <h2 className="text-2xl font-bold text-[#10232A] mb-1">{user.fullName || 'User Name'}</h2>
-                                <p className="text-[#3D4D55] text-sm font-medium">Client Account • ID: #{user.id || '---'}</p>
+
+                            <div className="text-center md:text-left pt-2">
+                                <h2 className="text-2xl font-bold text-[#10232A] dark:text-white mb-1">{user.fullName || 'User Name'}</h2>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-3">Client Account • ID: <span className="font-mono text-xs bg-slate-100 dark:bg-[#1C3540] px-1.5 py-0.5 rounded">#{user.id || '---'}</span></p>
+                                <p className="text-xs text-slate-400 max-w-xs">Update your photo and personal details here.</p>
                             </div>
                         </div>
 
                         {msg.text && (
-                            <div className={`mb-6 p-4 rounded-xl text-sm font-bold ${msg.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
-                                {msg.text}
+                            <div className={`mb-8 p-4 rounded-2xl text-sm font-bold flex items-center gap-2 ${msg.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
+                                {msg.type === 'success' ? <ShieldCheck size={18} /> : <AlertTriangle size={18} />} {msg.text}
                             </div>
                         )}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-[#3D4D55] uppercase tracking-wider">Full Name</label>
-                                <div className="flex items-center gap-3 p-3.5 bg-white border border-slate-200 rounded-xl focus-within:border-[#B58863] focus-within:ring-2 focus-within:ring-[#B58863]/20 transition">
-                                    <User size={18} className="text-[#3D4D55]" />
-                                    <input name="fullName" value={user.fullName || ''} onChange={handleChange} className="bg-transparent w-full text-[#10232A] font-medium text-sm focus:outline-none" />
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Full Name</label>
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#B58863] focus-within:ring-4 focus-within:ring-[#B58863]/10 transition">
+                                    <User size={18} className="text-slate-400" />
+                                    <input name="fullName" value={user.fullName || ''} onChange={handleChange} className="bg-transparent w-full text-slate-800 dark:text-white font-bold text-sm focus:outline-none" />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-[#3D4D55] uppercase tracking-wider">Email Address</label>
-                                <div className="flex items-center gap-3 p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-                                    <Mail size={18} className="text-[#3D4D55]" />
-                                    <input disabled value={user.email || ''} className="bg-transparent w-full text-[#3D4D55] font-medium text-sm focus:outline-none cursor-not-allowed" />
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Email Address</label>
+                                <div className="flex items-center gap-3 p-4 bg-slate-100 dark:bg-[#152a33] border border-slate-200 dark:border-[#2A4550] rounded-xl cursor-not-allowed opacity-75">
+                                    <Mail size={18} className="text-slate-400" />
+                                    <input disabled value={user.email || ''} className="bg-transparent w-full text-slate-500 dark:text-slate-400 font-bold text-sm focus:outline-none cursor-not-allowed" />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-[#3D4D55] uppercase tracking-wider">Mobile Number</label>
-                                <div className="flex items-center gap-3 p-3.5 bg-white border border-slate-200 rounded-xl focus-within:border-[#B58863] focus-within:ring-2 focus-within:ring-[#B58863]/20 transition">
-                                    <Phone size={18} className="text-[#3D4D55]" />
-                                    <input name="mobile" value={user.mobile || ''} onChange={handleChange} type="tel" className="bg-transparent w-full text-[#10232A] font-medium text-sm focus:outline-none" />
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Mobile Number</label>
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#B58863] focus-within:ring-4 focus-within:ring-[#B58863]/10 transition">
+                                    <Phone size={18} className="text-slate-400" />
+                                    <input name="mobile" value={user.mobile || ''} onChange={handleChange} type="tel" className="bg-transparent w-full text-slate-800 dark:text-white font-bold text-sm focus:outline-none" />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-[#3D4D55] uppercase tracking-wider">Location</label>
-                                <div className="flex items-center gap-3 p-3.5 bg-white border border-slate-200 rounded-xl focus-within:border-[#B58863] focus-within:ring-2 focus-within:ring-[#B58863]/20 transition">
-                                    <MapPin size={18} className="text-[#3D4D55]" />
-                                    <input name="address" value={user.address || ''} onChange={handleChange} placeholder="City, State" className="bg-transparent w-full text-[#10232A] font-medium text-sm focus:outline-none" />
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Location</label>
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#B58863] focus-within:ring-4 focus-within:ring-[#B58863]/10 transition">
+                                    <MapPin size={18} className="text-slate-400" />
+                                    <input name="address" value={user.address || ''} onChange={handleChange} placeholder="City, State" className="bg-transparent w-full text-slate-800 dark:text-white font-bold text-sm focus:outline-none" />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end">
-                            <button onClick={handleSave} disabled={loading} className="px-6 py-3 bg-[#10232A] text-white font-bold rounded-xl shadow-lg hover:bg-[#B58863] transition-all flex items-center gap-2 hover:-translate-y-0.5 disabled:opacity-50 text-sm">
-                                <Save size={18} /> {loading ? 'Saving...' : 'Save Changes'}
+                        <div className="mt-10 pt-8 border-t border-slate-100 dark:border-[#1C3540] flex justify-end">
+                            <button onClick={handleSave} disabled={loading} className="px-8 py-3.5 bg-[#10232A] dark:bg-[#B58863] text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center gap-2 disabled:opacity-50 text-sm">
+                                <Save size={18} /> {loading ? 'Saving Changes...' : 'Save Changes'}
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Sidebar Boxes (DigiLocker & Security) */}
+                {/* Sidebar Boxes */}
                 <div className="space-y-6">
                     {/* DigiLocker */}
-                    <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white p-6 rounded-2xl shadow-xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-[60px] translate-x-1/3 -translate-y-1/3"></div>
                         <div className="relative z-10">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-md border border-white/20">
-                                    <Database size={20} />
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md border border-white/20">
+                                    <Database size={24} />
                                 </div>
-                                <h4 className="font-bold text-lg">DigiLocker</h4>
+                                <div>
+                                    <h4 className="font-bold text-xl leading-none">DigiLocker</h4>
+                                    <span className="text-[10px] opacity-70 uppercase tracking-wider font-bold">Connected India</span>
+                                </div>
                             </div>
-                            <p className="text-blue-100 text-sm mb-6 leading-relaxed">Connect your government DigiLocker account to automatically fetch PAN, Aadhaar, and other KYC documents.</p>
-                            <button className="w-full py-3 bg-white text-blue-700 rounded-xl text-sm font-bold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl">
+                            <p className="text-blue-100/80 text-sm mb-8 leading-relaxed font-medium">Auto-fetch Aadhaar, PAN, and other KYC documents securely from government servers.</p>
+                            <button className="w-full py-3.5 bg-white text-blue-700 rounded-xl text-sm font-bold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl">
                                 Connect Wallet
                             </button>
                         </div>
                     </div>
 
                     {/* Security */}
-                    <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
-                        <div className="flex items-center gap-3 mb-5">
-                            <div className="p-2.5 bg-red-50 text-red-500 rounded-xl">
+                    <div className="bg-white dark:bg-[#10232A] border border-slate-100 dark:border-[#1C3540] p-6 rounded-3xl shadow-sm">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="p-3 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-xl border border-rose-100 dark:border-rose-900/30">
                                 <Lock size={20} />
                             </div>
-                            <h4 className="font-bold text-[#10232A] text-lg">Security</h4>
+                            <h4 className="font-bold text-[#10232A] dark:text-white text-lg">Login & Security</h4>
                         </div>
-                        <div className="space-y-2">
-                            <button className="w-full text-left py-3 px-4 rounded-xl text-sm font-semibold text-[#3D4D55] hover:bg-[#FDFBF7] hover:text-[#10232A] transition-all flex justify-between items-center group">
-                                Change Password
-                                <ChevronRight size={16} className="text-slate-300 group-hover:text-[#B58863] group-hover:translate-x-1 transition-all" />
-                            </button>
-                            <button className="w-full text-left py-3 px-4 rounded-xl text-sm font-semibold text-[#3D4D55] hover:bg-[#FDFBF7] hover:text-[#10232A] transition-all flex justify-between items-center group">
-                                Enable 2FA
-                                <ChevronRight size={16} className="text-slate-300 group-hover:text-[#B58863] group-hover:translate-x-1 transition-all" />
-                            </button>
-                            <button className="w-full text-left py-3 px-4 rounded-xl text-sm font-semibold text-[#3D4D55] hover:bg-[#FDFBF7] hover:text-[#10232A] transition-all flex justify-between items-center group">
-                                Active Sessions
-                                <ChevronRight size={16} className="text-slate-300 group-hover:text-[#B58863] group-hover:translate-x-1 transition-all" />
-                            </button>
+                        <div className="space-y-3">
+                            {['Change Password', 'Two-Factor Authentication', 'Active Sessions'].map((item, i) => (
+                                <button key={i} className="w-full text-left py-4 px-5 rounded-2xl text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-[#1C3540] hover:bg-slate-100 dark:hover:bg-[#2A4550] transition-all flex justify-between items-center group">
+                                    {item}
+                                    <ChevronRight size={16} className="text-slate-300 group-hover:text-[#B58863] group-hover:translate-x-1 transition-all" />
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </div>

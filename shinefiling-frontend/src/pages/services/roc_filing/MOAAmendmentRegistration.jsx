@@ -275,6 +275,8 @@ const MOAAmendmentRegistration = ({ isLoggedIn }) => {
             const finalPayload = {
                 submissionId: `ROC-AMEND-${Date.now()}`,
                 userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                plan: planType,
+                amountPaid: plans[planType]?.price,
                 amendmentType: formData.amendmentType,
                 reasonForAmendment: formData.reasonForAmendment,
                 formData: formData,

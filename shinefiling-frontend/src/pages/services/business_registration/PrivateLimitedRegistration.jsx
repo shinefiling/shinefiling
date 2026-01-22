@@ -1,27 +1,27 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
     CheckCircle, Upload, CreditCard, FileText, User,
-    Building, ArrowLeft, ArrowRight, Shield, AlertCircle, X, Lock, IndianRupee, Users, Plus, Trash2
+    Building, ArrowLeft, ArrowRight, Shield, AlertCircle, Lock, IndianRupee, Users, Plus, Trash2, X
 } from 'lucide-react';
-import { uploadFile, submitPrivateLimitedRegistration } from '../../../api'; // Adjusted import
+import { uploadFile, submitPrivateLimitedRegistration } from '../../../api';
 
-const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan }) => {
+const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    // Protect Route
+    // Protect Route (Skip if in Modal, assume parent handles or let it stay)
     useEffect(() => {
+        if (isModal) return; // Parent handles auth for modal
         const storedUser = localStorage.getItem('user');
         const isReallyLoggedIn = isLoggedIn || !!storedUser;
 
         if (!isReallyLoggedIn) {
-            const plan = searchParams.get('plan') || 'startup';
+            const plan = searchParams.get('plan') || 'basic';
             navigate('/login', { state: { from: `/services/private-limited-company/register?plan=${plan}` } });
         }
-    }, [isLoggedIn, navigate, searchParams]);
+    }, [isLoggedIn, navigate, searchParams, isModal]);
 
     const [currentStep, setCurrentStep] = useState(1);
 
@@ -30,7 +30,7 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan 
         return ['startup', 'growth', 'enterprise'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'startup';
     };
 
-    const [selectedPlan, setSelectedPlan] = useState(validatePlan(initialPlan));
+    const [selectedPlan, setSelectedPlan] = useState(validatePlan(planProp || searchParams.get('plan')));
 
     const [formData, setFormData] = useState({
         companyNames: ['', '', ''],
@@ -43,6 +43,16 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan 
         ownershipStatus: 'rented',
         authorizedCapital: '100000',
         paidUpCapital: '100000',
+
+        // New Fields
+        natureOfBusiness: '',
+        employeeCount: '',
+        bankPreference: '',
+        turnoverEstimate: '',
+        accountingStartDate: '',
+        trademarkName: '',
+        trademarkClass: '',
+        auditorPreference: '',
 
         // Directors (Min 2 for Pvt Ltd)
         directors: [
@@ -63,35 +73,39 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan 
             price: 6999,
             title: 'Startup Plan',
             features: [
-                "2 DSC & 2 DIN", "Name Approval", "MOA & AOA", "COI", "PAN & TAN", "PF & ESIC", "GST Registration"
+                "2 DSC & 2 DIN", "Name Approval", "Certificate of Incorporation", "PAN & TAN", "PF & ESIC Registration", "GST Registration", "1st Year Compliance"
             ],
-            color: 'bg-white border-gray-200'
+            color: 'bg-white border-slate-200'
         },
         growth: {
             price: 14999,
             title: 'Growth Plan',
             features: [
-                "Everything in Startup", "Udyam (MSME)", "Bank Account Support", "Accounting Software", "Dedicated Manager"
+                "Everything in Startup", "GST Registration", "Udyam (MSME) Registration", "Business Bank Account Support", "Accounting Software (1 Year)", "Dedicated Account Manager"
             ],
             recommended: true,
-            color: 'bg-beige/10 border-beige'
+            color: 'bg-indigo-50 border-indigo-200'
         },
         enterprise: {
             price: 24999,
             title: 'Enterprise Plan',
             features: [
-                "Everything in Growth", "Trademark Filing", "ROC Compliance", "ADT-1", "INC-20A", "Zero Balance A/c"
+                "Everything in Growth", "Trademark Filing (1 Class)", "1st Year ROC Compliance", "ADT-1 Auditor Appointment", "INC-20A Filing", "Zero Balance Current Account"
             ],
-            color: 'bg-beige/10 border-beige'
+            color: 'bg-purple-50 border-purple-200'
         }
     };
 
     useEffect(() => {
-        const planParam = searchParams.get('plan');
-        if (planParam && ['startup', 'growth', 'enterprise'].includes(planParam.toLowerCase())) {
-            setSelectedPlan(planParam.toLowerCase());
+        if (planProp) {
+            setSelectedPlan(validatePlan(planProp));
+        } else {
+            const planParam = searchParams.get('plan');
+            if (planParam && ['startup', 'growth', 'enterprise'].includes(planParam.toLowerCase())) {
+                setSelectedPlan(planParam.toLowerCase());
+            }
         }
-    }, [searchParams]);
+    }, [searchParams, planProp]);
 
     const handleInputChange = (e, section = null, index = null) => {
         const { name, value } = e.target;
@@ -212,7 +226,6 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan 
                 status: "PAYMENT_SUCCESSFUL"
             };
 
-            // Using the mock function or real API
             const response = await submitPrivateLimitedRegistration(finalPayload);
 
             setAutomationPayload(response);
@@ -230,12 +243,7 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan 
             case 1: // Company Details
                 return (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        {isModal && (
-                            <button onClick={onClose} className="fixed top-4 right-4 z-50 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-lg hover:bg-white transition text-navy border border-gray-200 group">
-                                <X size={20} className="group-hover:rotate-90 transition-transform duration-300" />
-                            </button>
-                        )}
-
+                        {/* 1. Proposed Info */}
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                             <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><Building size={20} className="text-navy" /> PROPOSED COMPANY NAMES</h3>
                             <div className="grid gap-3">
@@ -249,13 +257,35 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan 
                             </div>
                         </div>
 
+                        {/* 2. Business Activity */}
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                             <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><FileText size={20} className="text-purple-600" /> BUSINESS ACTIVITY</h3>
-                            <textarea name="businessActivity" value={formData.businessActivity} onChange={handleInputChange}
-                                placeholder="Describe main business activity..." className={`w-full p-3 rounded-lg border focus:ring-2 focus:ring-purple-500 ${errors.businessActivity ? 'border-red-500' : 'border-gray-200'}`} rows="3"></textarea>
-                            {errors.businessActivity && <p className="text-red-500 text-xs mt-1">{errors.businessActivity}</p>}
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Main Object / Activity</label>
+                                    <textarea name="businessActivity" value={formData.businessActivity} onChange={handleInputChange}
+                                        placeholder="Describe main business activity..." className={`w-full p-3 rounded-lg border focus:ring-2 focus:ring-purple-500 ${errors.businessActivity ? 'border-red-500' : 'border-gray-200'}`} rows="2"></textarea>
+                                </div>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 mb-1 block">Nature of Business</label>
+                                        <select name="natureOfBusiness" value={formData.natureOfBusiness} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200">
+                                            <option value="">Select Nature</option>
+                                            <option value="IT/Software">IT / Software</option>
+                                            <option value="Manufacturing">Manufacturing</option>
+                                            <option value="Service">Service</option>
+                                            <option value="Trading">Trading</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 mb-1 block">Expected Employees</label>
+                                        <input type="number" name="employeeCount" value={formData.employeeCount} onChange={handleInputChange} placeholder="e.g. 5" className="w-full p-3 rounded-lg border border-gray-200" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
+                        {/* 3. Address */}
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                             <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><Building size={20} className="text-orange-600" /> REGISTERED OFFICE ADDRESS</h3>
                             <div className="grid md:grid-cols-2 gap-4">
@@ -271,6 +301,7 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan 
                             </div>
                         </div>
 
+                        {/* 4. Capital */}
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                             <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><CreditCard size={20} className="text-slate" /> CAPITAL DETAILS</h3>
                             <div className="grid md:grid-cols-2 gap-4">
@@ -284,6 +315,61 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan 
                                 </div>
                             </div>
                         </div>
+
+                        {/* 5. GROWTH & ENTERPRISE EXTRAS */}
+                        {(selectedPlan === 'growth' || selectedPlan === 'enterprise') && (
+                            <div className="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 shadow-sm">
+                                <h3 className="font-bold text-indigo-900 mb-4 flex items-center gap-2"><Users size={20} className="text-indigo-600" /> GROWTH PLAN DETAILS</h3>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs font-bold text-indigo-800 mb-1 block">Preferred Bank</label>
+                                        <select name="bankPreference" value={formData.bankPreference} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-indigo-200 bg-white">
+                                            <option value="">Any Top Bank</option>
+                                            <option value="HDFC">HDFC Bank</option>
+                                            <option value="ICICI">ICICI Bank</option>
+                                            <option value="SBI">SBI</option>
+                                            <option value="Axis">Axis Bank</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-indigo-800 mb-1 block">Est. Annual Turnover</label>
+                                        <select name="turnoverEstimate" value={formData.turnoverEstimate} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-indigo-200 bg-white">
+                                            <option value="<10L">Less than 10 Lakhs</option>
+                                            <option value="10L-50L">10L - 50L</option>
+                                            <option value="50L+">50L+</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-indigo-800 mb-1 block">Accounting Start Date</label>
+                                        <input type="date" name="accountingStartDate" value={formData.accountingStartDate} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-indigo-200 bg-white" />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 6. ENTERPRISE EXTRAS */}
+                        {selectedPlan === 'enterprise' && (
+                            <div className="bg-purple-50 p-6 rounded-2xl border border-purple-100 shadow-sm">
+                                <h3 className="font-bold text-purple-900 mb-4 flex items-center gap-2"><Shield size={20} className="text-purple-600" /> ENTERPRISE EXTRAS</h3>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="md:col-span-2">
+                                        <label className="text-xs font-bold text-purple-800 mb-1 block">Trademark Name (Brand)</label>
+                                        <input type="text" name="trademarkName" value={formData.trademarkName} onChange={handleInputChange} placeholder="Brand Name to Protect" className="w-full p-3 rounded-lg border border-purple-200 bg-white" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-purple-800 mb-1 block">Trademark Class (if known)</label>
+                                        <input type="text" name="trademarkClass" value={formData.trademarkClass} onChange={handleInputChange} placeholder="e.g. Class 35" className="w-full p-3 rounded-lg border border-purple-200 bg-white" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-purple-800 mb-1 block">Preferred Auditor</label>
+                                        <select name="auditorPreference" value={formData.auditorPreference} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-purple-200 bg-white">
+                                            <option value="System Assigned">System Assigned</option>
+                                            <option value="Own Auditor">I have my own</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 );
 
@@ -443,7 +529,7 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan 
     };
 
     return (
-        <div className={isModal ? "bg-[#F8F9FA] p-4 md:p-8" : "min-h-screen bg-[#F8F9FA] pb-20 pt-24 px-4 md:px-8"}>
+        <div className={`bg-[#F8F9FA] ${isModal ? 'h-full overflow-y-auto p-6' : 'min-h-screen pb-20 pt-24 px-4 md:px-8'}`}>
             {isSuccess ? (
                 <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
                     <div className="w-24 h-24 bg-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -463,21 +549,26 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan 
                             <li>Incorporation Filing</li>
                         </ul>
                     </div>
-                    <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
+                    <button onClick={() => isModal ? onClose() : navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">{isModal ? 'Close' : 'Go to Dashboard'}</button>
                 </div>
             ) : (
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <button onClick={() => isModal ? onClose() : navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-navylack transition"><ArrowLeft size={14} /> Back</button>
-                        <h1 className="text-3xl font-bold text-navy">Private Limited Registration</h1>
-                        <p className="text-gray-500">Complete the process to incorporate your Private Limited Company.</p>
+                    <div className="mb-8 flex justify-between items-start">
+                        <div>
+                            <button onClick={() => isModal ? onClose() : navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-navy transition"><ArrowLeft size={14} /> {isModal ? 'Close' : 'Back'}</button>
+                            <h1 className="text-3xl font-bold text-navy">Private Limited Registration</h1>
+                            <p className="text-gray-500">Complete the process to incorporate your Private Limited Company.</p>
+                        </div>
+                        {isModal && <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full"><X size={24} className="text-gray-500" /></button>}
                     </div>
 
                     <div className="flex flex-col lg:flex-row gap-8">
                         <div className="w-full lg:w-80 space-y-6">
                             <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
                                 {['Company Details', 'Directors', 'Documents', 'Review', 'Payment'].map((step, i) => (
-                                    <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-beige/10 border-beige shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
+                                    <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-beige/10 border-beige shadow-sm cursor-default' : 'bg-transparent border-transparent opacity-60 cursor-pointer hover:bg-gray-50'}`}
+                                        onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                    >
                                         <div>
                                             <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
                                             <span className={`font-bold text-sm ${currentStep === i + 1 ? 'text-bronze-dark' : 'text-gray-600'}`}>{step}</span>
@@ -501,7 +592,7 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal, onClose, initialPlan 
                                             </div>
                                         ))}
                                     </div>
-                                    <button onClick={() => navigate('/services/private-limited-company')} className="text-xs font-bold text-gray-500 hover:text-navylack underline">Change Plan</button>
+                                    {!isModal && <button onClick={() => navigate('/services/private-limited-company')} className="text-xs font-bold text-gray-500 hover:text-navy underline">Change Plan</button>}
                                 </div>
                             </div>
                         </div>

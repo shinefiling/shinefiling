@@ -1,6 +1,9 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, BarChart3, PieChart, Calculator, Scale, HelpCircle, Shield, BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, FileSpreadsheet } from 'lucide-react';
+import {
+    CheckCircle, PieChart, FileText, TrendingUp, HelpCircle, Shield,
+    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, X, BarChart
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const CmaDataPreparation = ({ isLoggedIn }) => {
@@ -15,11 +18,11 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "What is CMA Data?", a: "Credit Monitoring Arrangement (CMA) data provides a detailed financial analysis of a company's past and future performance." },
-        { q: "Is it mandatory for bank loans?", a: "Yes, for any Cash Credit (CC) or Term Loan limit above a certain threshold (usually ₹50 Lakhs), banks require CMA data." },
-        { q: "What is MPBF?", a: "Maximum Permissible Bank Finance (MPBF) is calculated in the CMA to determine how much working capital loan a bank can grant." },
-        { q: "How many years of projection?", a: "Typically, banks ask for performance of the last 2 years and projections for the next 3 to 5 years." },
-        { q: "Can you help with ratio analysis?", a: "Yes, our CMA report includes all critical ratios like DSCR, Current Ratio, Debt-Equity Ratio, etc." },
+        { q: "What is CMA Data?", a: "CMA (Credit Monitoring Arrangement) Data is a detailed financial report required by banks for lending decisions. It shows past performance and future projections." },
+        { q: "Who needs CMA Data?", a: "Any business applying for a Cash Credit (CC) limit, Overdraft (OD), or Term Loan from a bank usually needs to submit CMA data." },
+        { q: "What documents are required?", a: "Last 2 years' Audited Balance Sheets, Provisional Financials for current year, and estimated projections for next years." },
+        { q: "How long does it take?", a: "We can prepare comprehensive CMA data within 2-3 working days after receiving all financial inputs." },
+        { q: "Is Ratio Analysis included?", a: "Yes, critical ratios like Current Ratio, Debt-Equity Ratio, DSCR, and Profitability Ratios are calculated." },
     ];
 
     return (
@@ -30,7 +33,7 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
                 {/* Background Image with Overlay */}
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="https://images.unsplash.com/photo-1543286386-2e659306cd6c?auto=format&fit=crop&q=80&w=2070"
+                        src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=2070"
                         alt="Financial Analysis"
                         className="w-full h-full object-cover"
                     />
@@ -47,7 +50,7 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
                             rotate: [0, 45, 0]
                         }}
                         transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-blue-600/20 rounded-full blur-[120px]"
+                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-green-900/20 rounded-full blur-[120px]"
                     />
                     <motion.div
                         animate={{
@@ -56,7 +59,7 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
                             x: [0, -50, 0]
                         }}
                         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[100px]"
+                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-emerald-600/20 rounded-full blur-[100px]"
                     />
                 </div>
 
@@ -71,14 +74,14 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-                                    <BarChart3 size={12} className="fill-bronze" /> Loan Approval
+                                    <PieChart size={12} className="text-bronze" /> Bank Finance
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
                                     CMA Data <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Preparation</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Comprehensive Credit Monitoring Arrangement (CMA) data preparation for bank loans. Accurate reports to fasten your approval.
+                                    Get precise <strong>Credit Monitoring Arrangement (CMA)</strong> reports for CC Limits, Overdrafts, and Business Loans. Expertly projected financials to maximize loan approval chances.
                                 </p>
                             </motion.div>
 
@@ -90,30 +93,30 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
                             >
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <Calculator size={20} />
+                                        <BarChart size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Exact</p>
-                                        <p className="font-bold text-sm text-white">Calculations</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">5-Year</p>
+                                        <p className="font-bold text-sm text-white">Projections</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <Shield size={20} />
+                                        <TrendingUp size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Bank</p>
-                                        <p className="font-bold text-sm text-white">Compliant</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Ratio</p>
+                                        <p className="font-bold text-sm text-white">Analysis</p>
                                     </div>
                                 </div>
                             </motion.div>
 
                             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
-                                    Build Report
+                                    Prepare CMA
                                 </button>
                                 <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
-                                    <BookOpen size={18} /> Learn More
+                                    <BookOpen size={18} /> Learn Process
                                 </button>
                             </div>
                         </div>
@@ -126,17 +129,17 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Startups</div>
-                                <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Standard CMA</h3>
+                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Bank Format</div>
+                                <div className="text-center mb-6 mt-4">
+                                    <h3 className="text-navy font-bold text-xl mb-2">Detailed CMA</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹4,999</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ Report</span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">For Loans &lt; 1 Cr</p>
+                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">For Loan &lt; 5Cr</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["5-Year Projections", "Ratio Analysis (DSCR)", "MPBF Calculation", "Cash Flow Statements", "Projected Balance Sheet"].map((item, i) => (
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {["Operating Statement", "Balance Sheet Analysis", "MPBF Calculation", "Fund Flow Statement", "Key Ratio Indicators"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
@@ -144,11 +147,9 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('standard')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Get CMA Data <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -156,69 +157,183 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+            {/* --- PRICING SECTION --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Packages</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Choose Your Plan</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                        {/* PLAN 1: BASIC */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Basic CMA</h3>
+                            <p className="text-slate-500 text-sm mb-6">Small Loans.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹2,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹5,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Loans upto ₹50 Lakhs</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> 3 Years Projections</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Basic Ratio Analysis</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> No Project Report</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Basic</button>
+                        </motion.div>
+
+                        {/* PLAN 2: STANDARD - POPULAR */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Comprehensive</h3>
+                            <p className="text-gray-400 text-sm mb-6">For CC/OD Limits.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-5xl font-black text-white">₹4,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹8,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Loans upto ₹5 Crores</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> 5 Years Projections</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Detailed Ratio Analysis</li>
+                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Working Capital Assess.</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Standard</button>
+                        </motion.div>
+
+                        {/* PLAN 3: CUSTOM */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Corporate</h3>
+                            <p className="text-slate-500 text-sm mb-6">Large Exposure.</p>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-navy">₹9,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹15,000</span>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Loans above ₹5 Crores</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Complex Structuring</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Consortium Lending</li>
+                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> CA Certification Support</li>
+                            </ul>
+                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Corporate</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Features Section */}
+                    {/* Intro Section */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <Shield className="text-bronze" /> Comparison & Features
+                            <BarChart className="text-bronze" /> Understanding CMA Data
                         </h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {[
-                                { title: "Bank Requirement", desc: "Essential for Working Capital & Term Loans." },
-                                { title: "Working Capital Gap", desc: "Scientific assessment of funds needed for ops." },
-                                { title: "Financial Health", desc: "Shows liquidity, solvency, and profitability ratios." },
-                                { title: "Project Viability", desc: "Demonstrates ROI and repayment capacity." },
-                                { title: "Better Negotiation", desc: "Strong financials help negotiate lower interest rates." },
-                                { title: "RBI Compliance", desc: "Prepares data in standard format accepted by all banks." },
-                            ].map((item, i) => (
-                                <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
-                                    <div className="flex items-start gap-4">
-                                        <CheckCircle size={24} className="text-green-500 shrink-0 mt-1" />
-                                        <div>
-                                            <h3 className="text-lg font-bold text-navy mb-1">{item.title}</h3>
-                                            <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="prose prose-lg text-gray-600">
+                            <p className="lead text-xl text-gray-800 font-medium">
+                                The <strong>Projected Financial Report</strong> or <strong>CMA Data</strong> is the backbone of any business loan application. It creates a bridge between your past performance and future potential.
+                            </p>
+                            <p>
+                                Banks use this data to assess whether your business generates enough cash flow to service the interest obligations and repay the principal amount over the loan tenure.
+                            </p>
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Standard CMA</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹4,999</div>
-                                <p className="text-xs text-gray-400 mb-6">/ Report</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Loans up to 1 Cr</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> 2 Rounds of Revision</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> 3-Day Delivery</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
-                            </div>
+                    {/* Components Table */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Key Components of CMA</h2>
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                            <table className="w-full text-left">
+                                <thead className="bg-[#10232A] text-white">
+                                    <tr>
+                                        <th className="p-4 font-semibold text-sm uppercase tracking-wider">Form</th>
+                                        <th className="p-4 font-semibold text-sm uppercase tracking-wider">Purpose</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    <tr className="hover:bg-gray-50 transition">
+                                        <td className="p-4 text-navy font-bold">Form I</td>
+                                        <td className="p-4 text-gray-600">Particulars of existing & proposed limits from banks.</td>
+                                    </tr>
+                                    <tr className="hover:bg-gray-50 transition">
+                                        <td className="p-4 text-navy font-bold">Form II</td>
+                                        <td className="p-4 text-gray-600">Operating Statement (P&L) - Past, Current & Future.</td>
+                                    </tr>
+                                    <tr className="hover:bg-gray-50 transition">
+                                        <td className="p-4 text-navy font-bold">Form III</td>
+                                        <td className="p-4 text-gray-600">Balance Sheet Analysis - Liabilities & Assets.</td>
+                                    </tr>
+                                    <tr className="hover:bg-gray-50 transition">
+                                        <td className="p-4 text-navy font-bold">Form IV</td>
+                                        <td className="p-4 text-gray-600">Comparative Statement of Current Assets & Liabilities.</td>
+                                    </tr>
+                                    <tr className="hover:bg-gray-50 transition">
+                                        <td className="p-4 text-navy font-bold">Form V</td>
+                                        <td className="p-4 text-gray-600">Maximum Permissible Bank Finance (MPBF) Calculation.</td>
+                                    </tr>
+                                    <tr className="hover:bg-gray-50 transition">
+                                        <td className="p-4 text-navy font-bold">Form VI</td>
+                                        <td className="p-4 text-gray-600">Fund Flow Statement analysis.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
 
-                            {/* Premium */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Premium CMA</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹9,999</div>
-                                <p className="text-xs text-slate-400 mb-6">/ Report</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Loans &gt; 1 Cr</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Bank Query Support</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Detailed Project Report</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Premium</button>
-                            </div>
+                    {/* Process Section */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Preparation Process</h2>
+                        <div className="space-y-6">
+                            {[
+                                { step: "Step 1", title: "Information Gathering", days: "Day 1", desc: "We collect Audited Financials, Sanction Letters, and Sales estimates." },
+                                { step: "Step 2", title: "Projection Modeling", days: "Day 2", desc: "Our financial experts create realistic growth projections acceptable to banks." },
+                                { step: "Step 3", title: "Review & Refine", days: "Day 2", desc: "Draft shared with you to ensure it aligns with your vision." },
+                                { step: "Step 4", title: "Final Delivery", days: "Day 3", desc: "Delivery of Excel/PDF reports ready for bank submission." }
+                            ].map((item, i) => (
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
+                                            {i + 1}
+                                        </div>
+                                        <span className="text-navy font-bold text-sm">{item.days}</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-sm">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
@@ -250,15 +365,15 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
                         {/* Documents Sidebar */}
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <FileSpreadsheet className="text-bronze" /> Data Required
+                                <FileText className="text-bronze" /> Checklist
                             </h3>
                             <div className="space-y-6">
                                 <div>
                                     <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Audited Financials (2 Yrs)</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Provisional Balance Sheet</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Sales Projections</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Sanction Letters (if any)</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> 2 Yr Audited BS</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Provisional Current Yr</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Sanction Letters</li>
+                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Stock & Book Debt Details</li>
                                     </ul>
                                 </div>
                             </div>
@@ -266,11 +381,9 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
 
                         {/* Support Card */}
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">Need a Loan?</h4>
-                            <p className="text-gray-300 text-sm mb-4">We can connect you with our partner banks for faster loan processing.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Contact Experts
-                            </button>
+                            <h4 className="font-bold text-lg mb-2">Need Project Report?</h4>
+                            <p className="text-gray-300 text-sm mb-4">For Term Loans (Machinery/Building), you need a Detailed Project Report (DPR) along with CMA.</p>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -279,5 +392,6 @@ const CmaDataPreparation = ({ isLoggedIn }) => {
         </div>
     );
 };
-
 export default CmaDataPreparation;
+
+

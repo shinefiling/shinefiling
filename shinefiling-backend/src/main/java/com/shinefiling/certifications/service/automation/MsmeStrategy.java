@@ -9,8 +9,6 @@ import java.util.*;
 @Component
 public class MsmeStrategy implements ICertificationStrategy {
 
-    private static final Logger logger = LoggerFactory.getLogger(MsmeStrategy.class);
-
     @Override
     public String getServiceType() {
         return "MSME_UDYAM_REGISTRATION";

@@ -44,8 +44,8 @@ public class CompanyNameChangeController {
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
             // Set Amount/Plan
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(5999.0); // Premium Service
+            createdRequest.setPlan(requestDTO.getPlan() != null ? requestDTO.getPlan() : "standard");
+            createdRequest.setAmount(requestDTO.getAmountPaid() != null ? requestDTO.getAmountPaid() : 5999.0);
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 

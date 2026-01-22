@@ -9,8 +9,6 @@ import java.util.*;
 @Component
 public class NidhiStrategy implements IBusinessRegistrationStrategy {
 
-    private static final Logger logger = LoggerFactory.getLogger(NidhiStrategy.class);
-
     @Override
     public String getRegistrationType() {
         return "NIDHI_COMPANY_REGISTRATION";

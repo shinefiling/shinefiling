@@ -9,6 +9,8 @@ public class PatentRequest {
     private String userEmail;
     private String inventionTitle;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private PatentFormData formData;
     private List<UploadedDocumentDTO> documents;
@@ -36,4 +38,3 @@ public class PatentRequest {
         private String description;
     }
 }
-

@@ -9,6 +9,8 @@ public class TrademarkObjectionRequest {
     private String userEmail;
     private String applicationNumber;
     private String objectionType; // SECTION_9 (Absolute), SECTION_11 (Relative/Conflict), FORMALITIES
+    private String plan;
+    private Double amountPaid;
     private String status;
 
     private ObjectionFormData formData;
@@ -37,4 +39,3 @@ public class TrademarkObjectionRequest {
         private String description;
     }
 }
-

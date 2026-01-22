@@ -42,6 +42,24 @@ public class ServiceRequest {
 
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    // CRM Fields
+    private Double boundAmount; // Amount fixed by Super Admin
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "assigned_ca_id")
+    private User assignedCa;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "assigned_employee_id")
+    private User assignedEmployee;
+
+    private String caApprovalStatus; // PENDING_APPROVAL, ACCEPTED, REJECTED, QUERY_RAISED
+
+    @Column(columnDefinition = "TEXT")
+    private String adminComments; // Instructions from Super Admin to CA
+
+    private String biddingStatus; // OPEN, CLOSED
+
     @PreUpdate
     public void onUpdate() {
         this.updatedAt = LocalDateTime.now();

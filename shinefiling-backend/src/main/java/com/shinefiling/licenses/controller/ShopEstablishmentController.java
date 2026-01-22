@@ -44,8 +44,8 @@ public class ShopEstablishmentController {
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
             // Set Amount/Plan
-            createdRequest.setPlan("standard");
-            createdRequest.setAmount(1999.0); // Standard Professional Fee
+            createdRequest.setPlan(requestDTO.getPlan());
+            createdRequest.setAmount(requestDTO.getAmountPaid());
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("INITIATED");
 

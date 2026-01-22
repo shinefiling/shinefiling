@@ -50,9 +50,8 @@ public class ESIFilingController {
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
-            createdRequest.setPlan("monthly");
-            createdRequest.setAmount(999.0); // Monthly Fee
-            createdRequest.setPaymentStatus("PAID");
+            createdRequest.setPlan(requestDTO.getPlan() != null ? requestDTO.getPlan() : "monthly");
+            createdRequest.setAmount(requestDTO.getAmountPaid() != null ? requestDTO.getAmountPaid() : 999.0);
             createdRequest.setStatus("INITIATED");
 
             serviceRequestRepository.save(createdRequest);
@@ -72,6 +71,3 @@ public class ESIFilingController {
         return t;
     }
 }
-
-
-

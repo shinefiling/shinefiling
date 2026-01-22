@@ -1,263 +1,232 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Shield, AlertTriangle, Activity, Lock as LockIcon, Search, RefreshCcw,
-    Globe, Server, Zap, CheckCircle
+    Shield, Lock, Globe, Server, Activity, AlertTriangle, RefreshCcw, Power, CheckCircle, Smartphone, Wifi, Zap
 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { motion } from 'framer-motion';
 
 // --- COMPONENT: Security Flow Visualization ---
 const SecurityFlowDiagram = ({ status }) => {
     return (
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-5">
-                <Activity size={100} />
-            </div>
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden h-[300px] flex flex-col items-center justify-center">
+            {/* Background Effects */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-50/50 via-transparent to-transparent dark:from-blue-900/10"></div>
 
-            <h3 className="font-bold text-[#10232A] mb-6 flex items-center gap-2">
-                <Zap size={18} className="text-[#B58863]" /> Live Traffic Inspection Flow
-            </h3>
-
-            <div className="flex items-center justify-between relative z-10">
-                {/* Node 1: Internet */}
-                <div className="text-center group">
-                    <div className="w-16 h-16 rounded-2xl bg-[#FDFBF7] text-[#B58863] border border-[#B58863]/20 flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-110 transition-transform">
-                        <Globe size={32} />
+            <div className="flex items-center justify-center gap-4 md:gap-12 relative z-10 w-full animate-in fade-in zoom-in duration-700">
+                {/* Node 1: Public Internet */}
+                <div className="flex flex-col items-center gap-3 w-24">
+                    <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-300 relative group cursor-pointer hover:bg-white dark:hover:bg-slate-600 shadow-sm border border-slate-200 dark:border-slate-600 transition-all">
+                        <Globe size={32} className="group-hover:scale-110 transition-transform" />
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-slate-800"></div>
                     </div>
-                    <p className="text-xs font-bold text-[#3D4D55] uppercase tracking-wider">Public Internet</p>
-                    <p className="text-[10px] text-[#3D4D55]/60">Inbound Traffic</p>
+                    <div className="text-center">
+                        <p className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">Public Internet</p>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500">Source Traffic</p>
+                    </div>
                 </div>
 
                 {/* Connection Line 1 */}
-                <div className="flex-1 h-1 bg-gray-100 mx-4 relative overflow-hidden rounded-full">
-                    <div className="absolute inset-0 bg-blue-400/20 w-1/2 animate-[shimmer_2s_infinite]"></div>
+                <div className="hidden md:flex flex-1 h-[2px] bg-slate-200 dark:bg-slate-700 relative items-center justify-center">
+                    <div className="absolute top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500 rounded-full animate-[ping_1.5s_infinite]"></div>
+                    <div className="absolute top-1/2 -translate-y-1/2 w-full h-[2px] bg-blue-500/20"></div>
+                    <span className="bg-white dark:bg-slate-800 text-[10px] px-2 text-slate-400 font-mono absolute -top-4">HTTPS / TLS 1.3</span>
                 </div>
 
-                {/* Node 2: The Firewall (Centerpiece) */}
-                <div className="text-center relative">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#10232A] to-[#3D4D55] text-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-[#10232A]/20 z-10 relative">
-                        <Shield size={40} className="animate-pulse text-[#B58863]" />
+                {/* Node 2: Firewall Core */}
+                <div className="flex flex-col items-center gap-4 relative z-20">
+                    <div className="relative">
+                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#10232A] to-[#2B3446] dark:from-slate-700 dark:to-slate-900 flex items-center justify-center text-white shadow-xl shadow-blue-900/20 border-4 border-white dark:border-slate-800">
+                            <Shield size={42} className="text-[#F97316]" />
+                        </div>
+                        {/* Orbiting Particles */}
+                        <div className="absolute inset-0 border-2 border-dashed border-[#F97316]/30 rounded-full animate-[spin_10s_linear_infinite]"></div>
+                        <div className="absolute -inset-2 border border-blue-500/20 rounded-full animate-[pulse_3s_infinite]"></div>
                     </div>
-                    <div className="absolute -inset-4 bg-[#FDFBF7] rounded-full -z-0 animate-ping opacity-20"></div>
-                    <p className="text-sm font-bold text-[#10232A] uppercase tracking-wider">ShineGuard Core</p>
-                    <p className="text-[10px] text-[#B58863] font-bold">21-Layer Filtering</p>
+                    <div className="text-center">
+                        <p className="text-sm font-bold text-[#10232A] dark:text-white uppercase tracking-wider">Firewall Core</p>
+                        <p className="text-xs text-[#F97316] font-bold mt-0.5">Active Filtering</p>
+                    </div>
                 </div>
 
                 {/* Connection Line 2 */}
-                <div className="flex-1 h-1 bg-gray-100 mx-4 relative overflow-hidden rounded-full">
-                    <div className={`absolute inset-0 w-1/2 animate-[shimmer_2s_infinite] ${status === 'secure' ? 'bg-emerald-400/20' : 'bg-red-400/20'}`}></div>
+                <div className="hidden md:flex flex-1 h-[2px] bg-slate-200 dark:bg-slate-700 relative items-center justify-center">
+                    <div className={`absolute top-1/2 -translate-y-1/2 w-full h-[2px] ${status === 'secure' ? 'bg-green-500/20' : 'bg-red-500/20'}`}></div>
+                    <div className={`w-2 h-2 rounded-full absolute top-1/2 -translate-y-1/2 animate-[ping_1.5s_infinite_reverse] ${status === 'secure' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <span className="bg-white dark:bg-slate-800 text-[10px] px-2 text-slate-400 font-mono absolute -top-4">Filtered Req</span>
                 </div>
 
                 {/* Node 3: Secure Server */}
-                <div className="text-center group">
-                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm transition-colors ${status === 'secure' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-red-50 text-red-600 border border-red-100'
-                        }`}>
-                        <Server size={32} />
+                <div className="flex flex-col items-center gap-3 w-24">
+                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center relative shadow-sm border transition-all ${status === 'secure' ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-100 dark:border-green-900/30' : 'bg-red-50 dark:bg-red-900/20 text-red-600 border-red-100'}`}>
+                        <Server size={30} />
+                        {status === 'secure' && <CheckCircle size={16} className="absolute -top-2 -right-2 text-green-500 bg-white dark:bg-slate-800 rounded-full" />}
                     </div>
-                    <p className="text-xs font-bold text-[#3D4D55] uppercase tracking-wider">App Server</p>
-                    <p className="text-[10px] text-[#3D4D55]/60">Protected Backend</p>
+                    <div className="text-center">
+                        <p className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">App Server</p>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500">192.168.1.5</p>
+                    </div>
                 </div>
             </div>
 
-            <div className="mt-8 bg-[#FDFBF7] rounded-lg p-3 text-center border border-[#B58863]/10">
-                <p className="text-xs text-[#3D4D55] font-mono flex justify-center items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    STATUS: TRAFFIC NORMALIZED • LATENCY: 24ms • FILTERING ACTIVE
-                </p>
+            {/* Bottom Status Bar */}
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+                <div className="bg-slate-50 dark:bg-slate-700/50 px-4 py-1.5 rounded-full border border-slate-200 dark:border-slate-600 flex items-center gap-4 text-[10px] font-bold text-slate-500 dark:text-slate-300 shadow-sm">
+                    <span className="flex items-center gap-1.5"><Zap size={10} className="text-yellow-500" /> Latency: 24ms</span>
+                    <span className="w-px h-3 bg-slate-300 dark:bg-slate-500"></span>
+                    <span className="flex items-center gap-1.5"><Activity size={10} className="text-blue-500" /> Uptime: 99.99%</span>
+                    <span className="w-px h-3 bg-slate-300 dark:bg-slate-500"></span>
+                    <span className="flex items-center gap-1.5"><Shield size={10} className="text-green-500" /> Rules: 342 Active</span>
+                </div>
             </div>
         </div>
     );
 };
 
-// --- COMPONENT: 21-Layer Architecture Grid ---
-const DefenseLayersGrid = () => {
-    const categories = [
-        {
-            name: "Network & Identity",
-            color: "emerald",
-            layers: ["AI Rate Limiting", "Anti-Bot Protection", "Geo-Fencing", "Traffic Analysis", "Session Monitor"]
-        },
-        {
-            name: "Application Protocol",
-            color: "blue",
-            layers: ["HTTP Method Validation", "Protocol Anomaly", "HSTS Enforcement", "Referrer Policy", "Header Sanity"]
-        },
-        {
-            name: "Payload & Injection",
-            color: "red",
-            layers: ["SQL Injection WAF", "XSS Attack WAF", "Command Injection", "Malicious Payload", "MIME-Sniffing"]
-        },
-        {
-            name: "Data & Filesystem",
-            color: "amber",
-            layers: ["Path Traversal Shield", "Sensitive File Control", "Protected Uploads Guard", "Clickjacking Defense", "Brute Force Protection", "CSP Policy"]
-        }
-    ];
-
-    return (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden h-full">
-            <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-[#FDFBF7]/50">
-                <h3 className="font-bold text-[#10232A] flex items-center gap-2">
-                    <LockIcon size={18} className="text-[#B58863]" /> Defense Matrix
-                </h3>
-                <span className="bg-[#10232A] text-[#B58863] px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-[#B58863]/20">
-                    21 Layers Active
-                </span>
-            </div>
-
-            <div className="p-6 space-y-6">
-                {categories.map((cat, idx) => (
-                    <div key={idx}>
-                        <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 text-${cat.color}-600 flex items-center gap-2`}>
-                            <span className={`w-1.5 h-1.5 rounded-full bg-${cat.color}-500`}></span>
-                            {cat.name}
-                        </h4>
-                        <div className="flex flex-wrap gap-2">
-                            {cat.layers.map((layer, lIdx) => (
-                                <div key={lIdx} className="bg-white hover:bg-[#FDFBF7] text-[#3D4D55] border border-gray-200 hover:border-[#B58863]/30 px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-sm transition-all cursor-default flex items-center gap-1.5">
-                                    <CheckCircle size={10} className={`text-${cat.color}-500`} />
-                                    {layer}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
-// --- COMPONENT: Live Threat Feed ---
-const ThreatTimeline = ({ logs }) => {
-    return (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-0 h-full overflow-hidden flex flex-col">
-            <div className="p-5 border-b border-gray-100 bg-[#FDFBF7]/50">
-                <h3 className="font-bold text-[#10232A] flex items-center gap-2">
-                    <Activity size={18} className="text-rose-500" />
-                    Threat Interception Log
-                </h3>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-0">
-                {logs.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-48 text-gray-400">
-                        <Shield size={32} className="mb-2 opacity-20" />
-                        <p className="text-xs font-bold uppercase tracking-wider">No Threats Detected</p>
-                    </div>
-                ) : (
-                    <div className="divide-y divide-gray-50">
-                        {logs.map((log, i) => (
-                            <div key={log.id} className="p-4 hover:bg-red-50/10 transition-colors flex items-start gap-3 group">
-                                <div className={`mt-1 p-1.5 rounded-lg shrink-0 ${log.blockReason.includes('SQL') || log.blockReason.includes('CMD') ? 'bg-red-100 text-red-600' :
-                                    log.blockReason.includes('UPLOAD') ? 'bg-orange-100 text-orange-600' :
-                                        'bg-blue-100 text-blue-600'
-                                    }`}>
-                                    <AlertTriangle size={14} />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <div className="flex justify-between items-center mb-1">
-                                        <p className="text-xs font-bold text-gray-800 truncate">{log.blockReason.replace(/_/g, ' ')}</p>
-                                        <span className="text-[10px] text-gray-400 font-mono">{new Date(log.timestamp).toLocaleTimeString()}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-[10px] text-gray-500 mb-1">
-                                        <span className="bg-gray-100 px-1.5 rounded">{log.method}</span>
-                                        <span className="font-mono truncate">{log.ipAddress}</span>
-                                    </div>
-                                    <p className="text-[10px] text-gray-400 truncate font-mono bg-gray-50 rounded px-2 py-1 border border-gray-100">
-                                        {log.requestUrl}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-};
-
+// --- MAIN DASHBOARD COMPONENT ---
 const FirewallDashboard = () => {
-    const [logs, setLogs] = useState([]);
-    const [stats, setStats] = useState({ rateLimited: 0, wafAttacks: 0, totalBlocked: 0 });
-    const [loading, setLoading] = useState(true);
-
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const statsRes = await fetch('http://localhost:8080/api/admin/firewall/stats');
-            const statsData = await statsRes.json();
-            setStats(statsData);
-
-            const logsRes = await fetch('http://localhost:8080/api/admin/firewall/logs');
-            const logsData = await logsRes.json();
-            setLogs(logsData);
-        } catch (error) {
-            console.error("Failed to fetch firewall data", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const [stats, setStats] = useState({ blocked: 1240, attacks: 15, bandwidth: '45 GB/s' });
+    const [statusLines, setStatusLines] = useState([
+        'Initializing Firewall Subsystems...',
+        'Loading Threat Intelligence Feed...',
+        'Connecting to Geo-IP Database...',
+        'Syncing Rule Definitions v24.1.5...',
+        'System Active. Monitoring Traffic.'
+    ]);
+    const [systemStatus, setSystemStatus] = useState('secure');
 
     useEffect(() => {
-        fetchData();
-        const interval = setInterval(fetchData, 30000);
+        // Simulation of log feed
+        const interval = setInterval(() => {
+            setStats(prev => ({
+                blocked: prev.blocked + Math.floor(Math.random() * 2),
+                attacks: prev.attacks,
+                bandwidth: (40 + Math.random() * 10).toFixed(1) + ' GB/s'
+            }));
+        }, 3000);
         return () => clearInterval(interval);
     }, []);
 
-    // Derived Status
-    const systemStatus = logs.length > 0 && new Date(logs[0].timestamp) > new Date(Date.now() - 60000) ? 'under_attack' : 'secure';
+    const statCards = [
+        { label: 'Threats Blocked', value: stats.blocked, icon: Shield, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+        { label: 'Active Attacks', value: stats.attacks, icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20' },
+        { label: 'Live Bandwidth', value: stats.bandwidth, icon: Activity, color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/20' },
+    ];
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 p-2">
-            {/* Header Area */}
-            <div className="flex justify-between items-end pb-2 border-b border-gray-200/50">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 font-[Roboto,sans-serif]">
+
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
                 <div>
-                    <h2 className="text-3xl font-extrabold text-[#10232A] tracking-tight">Security Command</h2>
-                    <p className="text-[#3D4D55] text-sm font-medium mt-1">Real-time WAF & Threat Intelligence</p>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+                        <Lock className="text-[#F97316]" size={28} /> Security Command Center
+                    </h2>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+                        Real-time WAF monitoring, threat detection, and traffic analysis.
+                    </p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${systemStatus === 'secure' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100 animate-pulse'
-                        }`}>
-                        <div className={`w-2 h-2 rounded-full ${systemStatus === 'secure' ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
-                        {systemStatus === 'secure' ? 'SYSTEM SECURE' : 'THREAT DETECTED'}
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg text-xs font-bold border border-green-100 dark:border-green-900/30">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        SYSTEM SECURE
                     </div>
-                    <button onClick={fetchData} className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors">
-                        <RefreshCcw size={18} className={loading ? "animate-spin" : ""} />
+                    <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-700/50 rounded-lg transition-colors">
+                        <RefreshCcw size={18} />
+                    </button>
+                    <button className="px-4 py-2 bg-[#10232A] text-white text-sm font-bold rounded-lg hover:bg-[#F97316] transition shadow-lg shadow-orange-500/20 flex items-center gap-2">
+                        <Power size={16} /> Emergency Shutdown
                     </button>
                 </div>
             </div>
 
-            {/* Top Row: Flow Diagram & Quick Stats */}
+            {/* Main Visual & Stats */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                {/* Visualizer (2/3 width) */}
                 <div className="lg:col-span-2">
                     <SecurityFlowDiagram status={systemStatus} />
                 </div>
-                <div className="lg:col-span-1 grid grid-rows-3 gap-4">
-                    {/* Stat Cards */}
-                    {[
-                        { label: 'Total Threats Neutralized', val: stats.totalBlocked, icon: Shield, color: 'emerald' },
-                        { label: 'High Severity Blocks', val: stats.wafAttacks, icon: AlertTriangle, color: 'rose' },
-                        { label: 'Traffic Rate Blocks', val: stats.rateLimited, icon: Activity, color: 'amber' }
-                    ].map((s, i) => (
-                        <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between group hover:border-[#B58863]/20 transition-all">
+
+                {/* KPI Cards (1/3 width vertical stack) */}
+                <div className="space-y-4">
+                    {statCards.map((card, idx) => (
+                        <div key={idx} className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between hover:border-[#F97316]/50 transition-colors cursor-default">
                             <div>
-                                <p className="text-[10px] font-bold text-[#3D4D55] uppercase tracking-widest">{s.label}</p>
-                                <h3 className="text-3xl font-extrabold text-[#10232A] mt-1">{s.val}</h3>
+                                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{card.label}</p>
+                                <h3 className="text-2xl font-extrabold text-slate-800 dark:text-white mt-1">{card.value}</h3>
                             </div>
-                            <div className={`w-12 h-12 rounded-xl bg-${s.color}-50 text-${s.color}-500 flex items-center justify-center transform group-hover:scale-110 transition-transform`}>
-                                <s.icon size={24} />
+                            <div className={`p-3 rounded-xl ${card.bg} ${card.color}`}>
+                                <card.icon size={24} />
                             </div>
                         </div>
                     ))}
+
+                    {/* Console Log Area */}
+                    <div className="bg-[#10232A] rounded-2xl p-4 h-[120px] overflow-hidden font-mono text-[10px] text-green-400 leading-relaxed shadow-inner">
+                        <div className="flex items-center gap-2 border-b border-white/10 pb-2 mb-2 text-gray-400">
+                            <div className="flex gap-1.5">
+                                <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                            </div>
+                            <span>root@shine-firewall:~# tail -f /var/log/syslog</span>
+                        </div>
+                        <div className="space-y-1 opacity-90">
+                            {statusLines.map((line, i) => (
+                                <div key={i} className="truncate">
+                                    <span className="text-blue-400">[{new Date().toLocaleTimeString().split(' ')[0]}]</span> {line}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Bottom Row: Layer Matrix & Feed */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[500px]">
-                <div className="lg:col-span-2 h-full">
-                    <DefenseLayersGrid />
+            {/* Bottom Section: Active Rules Grid */}
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                        <Shield size={18} className="text-[#F97316]" /> Defense Matrix
+                    </h3>
+                    <span className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full text-xs font-bold text-slate-600 dark:text-slate-300">21 Active Modules</span>
                 </div>
-                <div className="lg:col-span-1 h-full">
-                    <ThreatTimeline logs={logs} />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[
+                        {
+                            title: 'Network Layer',
+                            color: 'blue',
+                            items: ['DDOS Mitigation', 'IP Rate Limiting', 'Packet Inspection', 'Geo-Blocking', 'Load Balancing', 'Traffic Shaping', 'VPN Tunneling']
+                        },
+                        {
+                            title: 'Application Layer',
+                            color: 'green',
+                            items: ['SQL Injection', 'XSS Protection', 'CSRF Tokens', 'Bot Detection', 'API Throttling', 'Header Validation', 'Cookie Security']
+                        },
+                        {
+                            title: 'Access Control',
+                            color: 'purple',
+                            items: ['JWT Validation', '2FA Enforcement', 'Session Timeout', 'Device Fingerprint', 'Role RBAC', 'OAuth Integration', 'IP Whitelisting']
+                        },
+                        {
+                            title: 'Data Integrity',
+                            color: 'orange',
+                            items: ['File Scan', 'Payload Analysis', 'Encryption Check', 'Leak Prevention', 'Backup Verify', 'Checksum Validation', 'Audit Logging']
+                        }
+                    ].map((layer, i) => (
+                        <div key={i} className="flex flex-col h-full bg-slate-50 dark:bg-slate-700/20 rounded-xl p-3 border border-slate-100 dark:border-slate-700/50">
+                            <h4 className={`text-xs font-bold uppercase tracking-wider text-${layer.color}-500 border-b border-slate-200 dark:border-slate-600 pb-2 mb-2`}>
+                                {layer.title} <span className="text-[10px] opacity-60 ml-1">({layer.items.length})</span>
+                            </h4>
+                            <div className="space-y-2 max-h-[180px] overflow-y-auto pr-2 [&::-webkit-scrollbar]:hidden">
+                                {layer.items.map((item, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-sm p-2 bg-white dark:bg-slate-800 rounded border border-slate-100 dark:border-slate-600 hover:border-[#F97316]/50 transition-colors group cursor-default">
+                                        <span className="text-slate-600 dark:text-slate-300 text-xs font-medium">{item}</span>
+                                        <div className={`w-1.5 h-1.5 rounded-full bg-${layer.color}-500 shadow-sm opacity-50 group-hover:opacity-100 transition-opacity`}></div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

@@ -9,6 +9,8 @@ public class TrademarkRenewalRequest {
     private String userEmail;
     private String applicationNumber;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private RenewalFormData formData;
     private List<UploadedDocumentDTO> documents;
@@ -36,4 +38,3 @@ public class TrademarkRenewalRequest {
         private String description;
     }
 }
-

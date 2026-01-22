@@ -1,44 +1,26 @@
 import React, { useState } from 'react';
-import { HelpCircle, MessageSquare, Phone, ChevronDown, ChevronUp, Send, FileQuestion, X, User } from 'lucide-react';
-import { submitSupportTicket } from '../../api';
-import { getBotResponse } from '../../utils/chatbotLogic';
+import { MessageCircle, Phone, FileText, ChevronRight, Send, X, Smile, Paperclip, HelpCircle, Search, Mail } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { submitSupportTicket, getBotResponse } from '../../api';
 
-const FAQS = [
-    { q: "How long does GST registration take?", a: "Typically 3-5 working days after document submission, subject to government processing times." },
-    { q: "Is Digital Signature (DSC) included?", a: "Yes, for Company Registration packages, 2 Class-3 DSCs are included securely." },
-    { q: "Can I cancel my order?", a: "Cancellation is possible before the application is filed with the government. A cancellation fee may apply." },
-    { q: "What documents are required for Trademark?", a: "ID proof, address proof, and a logo image (if applicable). Our team will guide you." }
-];
-
-const ClientSupport = () => {
-    const [activeFaq, setActiveFaq] = useState(null);
-    const [ticket, setTicket] = useState({ subject: '', type: '', description: '' });
-    const [loading, setLoading] = useState(false);
-    const [status, setStatus] = useState(null);
-
-    // Chat State
-    const [showChat, setShowChat] = useState(false);
+const ClientSupport = ({ setActiveTab }) => {
+    // State
+    const [isChatOpen, setIsChatOpen] = useState(false);
     const [chatMessages, setChatMessages] = useState([
-        { id: 1, text: "Hello! Need help with your application?", sender: 'system' }
+        { id: 1, text: "Hello! How can I help you today?", sender: 'system' }
     ]);
     const [newMessage, setNewMessage] = useState("");
+    const [ticket, setTicket] = useState({ subject: '', message: '' });
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setStatus(null);
-        try {
-            await submitSupportTicket(ticket);
-            setStatus('success');
-            setTicket({ subject: '', type: '', description: '' });
-        } catch (error) {
-            setStatus('error');
-        } finally {
-            setLoading(false);
-        }
-    };
+    // FAQ Data
+    const faqs = [
+        { q: "How do I download my GST certificate?", a: "Go to the 'Documents' tab, filter by 'Registration', and click the download icon next to your GST certificate." },
+        { q: "What is the status of my Trademark application?", a: "You can track real-time status in the 'My Applications' tab. Click on your trademark order ID for detailed timeline." },
+        { q: "How can I change my registered email?", a: "Navigate to 'Profile & KYC' > 'Account Settings' to update your contact information." },
+    ];
 
+    // Chat Handler
     const handleSendMessage = () => {
         if (!newMessage.trim()) return;
 
@@ -47,161 +29,198 @@ const ClientSupport = () => {
         const userMsg = newMessage;
         setNewMessage("");
 
+        // Instant response simulation
         setTimeout(() => {
             const botReplyText = getBotResponse(userMsg, 'CLIENT');
             const reply = { id: Date.now() + 1, text: botReplyText, sender: 'system' };
             setChatMessages(prev => [...prev, reply]);
-        }, 800);
+        }, 600);
+    };
+
+    // Ticket Handler
+    const handleSubmitTicket = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            await submitSupportTicket(ticket);
+            alert("Ticket Raised Successfully! Reference ID: #TKT-" + Math.floor(Math.random() * 10000));
+            setTicket({ subject: '', message: '' });
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 relative">
-            {/* Quick Contact Options */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div onClick={() => setShowChat(true)} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between group hover:border-indigo-600 hover:shadow-md transition cursor-pointer relative overflow-hidden">
-                    <div className="absolute right-0 top-0 w-24 h-24 bg-green-50 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="relative z-10">
-                        <h4 className="font-bold text-slate-800 text-base mb-0.5">Live Chat</h4>
-                        <p className="text-xs text-slate-500">Wait time: ~2 mins</p>
-                    </div>
-                    <div className="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition relative z-10">
-                        <MessageSquare size={20} />
-                    </div>
-                </div>
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between group hover:border-indigo-600 hover:shadow-md transition cursor-pointer relative overflow-hidden">
-                    <div className="absolute right-0 top-0 w-24 h-24 bg-blue-50 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="relative z-10">
-                        <h4 className="font-bold text-slate-800 text-base mb-0.5">Call Support</h4>
-                        <p className="text-xs text-slate-500">Mon-Sat, 9AM - 7PM</p>
-                    </div>
-                    <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition relative z-10">
-                        <Phone size={20} />
-                    </div>
+        <div className="space-y-8 animate-in fade-in duration-500 pb-10">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h2 className="text-3xl font-bold text-[#10232A] dark:text-white">Help & Support</h2>
+                    <p className="text-slate-500 dark:text-slate-400 mt-1">We are here to help you 24/7.</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Ticket Form */}
-                <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-                        <div className="p-1.5 bg-slate-100 rounded-lg text-slate-500"><FileQuestion size={18} /></div>
+            {/* Quick Actions Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Live Chat Card */}
+                <div onClick={() => setIsChatOpen(true)} className="bg-[#10232A] rounded-3xl p-8 text-white relative overflow-hidden group cursor-pointer shadow-xl hover:scale-[1.02] transition-transform">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#B58863]/20 rounded-full blur-[40px] translate-x-1/2 -translate-y-1/3"></div>
+                    <div className="relative z-10 flex flex-col h-full justify-between min-h-[160px]">
+                        <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md mb-4 border border-white/10">
+                            <MessageCircle size={24} className="text-[#B58863]" />
+                        </div>
                         <div>
-                            <h3 className="font-bold text-base text-slate-800">Raise a Ticket</h3>
-                            <p className="text-slate-500 text-xs">We usually respond within 4 hours.</p>
+                            <h3 className="text-xl font-bold mb-1">Live Chat</h3>
+                            <p className="text-white/60 text-xs mb-4">Connect with our support team instantly.</p>
+                            <span className="inline-flex items-center gap-2 text-[#B58863] text-sm font-bold group-hover:gap-3 transition-all">Start Chat <ChevronRight size={16} /></span>
                         </div>
                     </div>
-
-                    {status === 'success' && (
-                        <div className="mb-4 p-3 bg-green-50 text-green-700 rounded-xl font-bold text-xs">
-                            Ticket submitted successfully! We'll get back to you soon.
-                        </div>
-                    )}
-                    {status === 'error' && (
-                        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-xl font-bold text-xs">
-                            Failed to submit ticket. Please try again.
-                        </div>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Subject</label>
-                                <input
-                                    required
-                                    value={ticket.subject}
-                                    onChange={(e) => setTicket({ ...ticket, subject: e.target.value })}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 outline-none transition font-medium text-slate-700 text-sm"
-                                    placeholder="e.g., Delay in GST Application"
-                                />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Issue Type</label>
-                                <select
-                                    required
-                                    value={ticket.type}
-                                    onChange={(e) => setTicket({ ...ticket, type: e.target.value })}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 outline-none transition font-medium text-slate-700 text-sm appearance-none cursor-pointer"
-                                >
-                                    <option value="">Select Issue Type</option>
-                                    <option value="Order Delay">Order Delay</option>
-                                    <option value="Payment Issue">Payment Issue</option>
-                                    <option value="Document Query">Document Query</option>
-                                    <option value="Technical Issue">Technical Issue</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Description</label>
-                            <textarea
-                                required
-                                value={ticket.description}
-                                onChange={(e) => setTicket({ ...ticket, description: e.target.value })}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 h-32 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 outline-none transition font-medium text-slate-700 resize-none text-sm"
-                                placeholder="Please describe your issue in detail..."
-                            ></textarea>
-                        </div>
-                        <div className="flex justify-end pt-2">
-                            <button disabled={loading} className="px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-black transition shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2 disabled:opacity-50 text-sm">
-                                <Send size={16} /> {loading ? 'Submitting...' : 'Submit Ticket'}
-                            </button>
-                        </div>
-                    </form>
                 </div>
 
+                {/* Call Support */}
+                <div className="bg-white dark:bg-[#10232A] border border-slate-100 dark:border-[#1C3540] rounded-3xl p-8 shadow-sm group hover:border-[#B58863] transition-colors cursor-pointer">
+                    <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-6">
+                        <Phone size={24} />
+                    </div>
+                    <h3 className="text-xl font-bold text-[#10232A] dark:text-white mb-1">Call Support</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">Speak directly with your relationship manager.</p>
+                    <p className="text-lg font-mono font-bold text-slate-800 dark:text-white">+91 98765 43210</p>
+                </div>
+
+                {/* Email / Ticket */}
+                <div className="bg-white dark:bg-[#10232A] border border-slate-100 dark:border-[#1C3540] rounded-3xl p-8 shadow-sm group hover:border-[#B58863] transition-colors cursor-pointer">
+                    <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-6">
+                        <Mail size={24} />
+                    </div>
+                    <h3 className="text-xl font-bold text-[#10232A] dark:text-white mb-1">Email Us</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">Get a response within 24 hours.</p>
+                    <p className="text-sm font-bold text-slate-800 dark:text-white">support@shinefiling.com</p>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* FAQs */}
-                <div className="space-y-4">
-                    <h3 className="font-bold text-base text-slate-800 flex items-center gap-2">
-                        <HelpCircle size={18} className="text-indigo-600" /> Common Questions
-                    </h3>
-                    <div className="space-y-2">
-                        {FAQS.map((faq, i) => (
-                            <div key={i} className={`bg-white border rounded-xl overflow-hidden transition-all ${activeFaq === i ? 'border-indigo-600 shadow-md' : 'border-slate-200 shadow-sm'}`}>
-                                <button
-                                    onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-                                    className="w-full flex justify-between items-center p-3 text-left font-bold text-slate-700 hover:bg-slate-50 text-xs"
-                                >
+                <div className="space-y-6">
+                    <h3 className="font-bold text-xl text-[#10232A] dark:text-white">Frequently Asked Questions</h3>
+                    <div className="space-y-4">
+                        {faqs.map((faq, i) => (
+                            <div key={i} className="bg-white dark:bg-[#10232A] border border-slate-100 dark:border-[#1C3540] p-6 rounded-2xl shadow-sm hover:shadow-md transition">
+                                <h4 className="font-bold text-slate-800 dark:text-white text-sm mb-2 flex items-start gap-3">
+                                    <HelpCircle size={18} className="text-[#B58863] shrink-0 mt-0.5" />
                                     {faq.q}
-                                    {activeFaq === i ? <ChevronUp size={14} className="text-indigo-600" /> : <ChevronDown size={14} className="text-slate-400" />}
-                                </button>
-                                {activeFaq === i && (
-                                    <div className="p-3 pt-0 text-xs text-slate-500 bg-slate-50/30 leading-relaxed border-t border-slate-100">
-                                        {faq.a}
-                                    </div>
-                                )}
+                                </h4>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm pl-8 leading-relaxed">{faq.a}</p>
                             </div>
                         ))}
                     </div>
                 </div>
+
+                {/* Ticket Form */}
+                <div className="bg-white dark:bg-[#10232A] border border-slate-100 dark:border-[#1C3540] p-8 rounded-3xl shadow-sm">
+                    <h3 className="font-bold text-xl text-[#10232A] dark:text-white mb-6">Raise a Ticket</h3>
+                    <form onSubmit={handleSubmitTicket} className="space-y-4">
+                        <div>
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1 mb-1 block">Subject</label>
+                            <input
+                                required
+                                value={ticket.subject}
+                                onChange={(e) => setTicket({ ...ticket, subject: e.target.value })}
+                                className="w-full bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B58863]"
+                                placeholder="E.g. Issue with payment"
+                            />
+                        </div>
+                        <div>
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1 mb-1 block">Description</label>
+                            <textarea
+                                required
+                                rows={4}
+                                value={ticket.message}
+                                onChange={(e) => setTicket({ ...ticket, message: e.target.value })}
+                                className="w-full bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#B58863]"
+                                placeholder="Describe your issue in detail..."
+                            />
+                        </div>
+                        <button disabled={loading} className="w-full py-3.5 bg-[#10232A] dark:bg-[#B58863] text-white font-bold rounded-xl shadow-lg hover:bg-black dark:hover:bg-[#A57753] transition disabled:opacity-50">
+                            {loading ? 'Submitting...' : 'Submit Ticket'}
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            {/* Client Chat Modal */}
+            {/* Chat Modal */}
             <AnimatePresence>
-                {showChat && (
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="fixed bottom-6 right-6 z-50 w-80 md:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden h-[450px]">
-                        <div className="bg-slate-900 p-4 flex justify-between items-center text-white shrink-0">
-                            <h3 className="font-bold flex items-center gap-2"><MessageSquare size={18} /> Support Assistant</h3>
-                            <button onClick={() => setShowChat(false)}><X size={18} className="text-slate-400 hover:text-white" /></button>
-                        </div>
-                        <div className="flex-1 bg-slate-50 p-4 overflow-y-auto space-y-3 custom-scrollbar">
-                            {chatMessages.map(msg => (
-                                <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`p-3 rounded-xl text-xs max-w-[80%] shadow-sm ${msg.sender === 'user' ? 'bg-[#B58863] text-white rounded-tr-none' : 'bg-white border border-gray-200 text-slate-600 rounded-tl-none'}`}>
-                                        {msg.text}
+                {isChatOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4"
+                        onClick={() => setIsChatOpen(false)}
+                    >
+                        <motion.div
+                            initial={{ y: "100%" }}
+                            animate={{ y: 0 }}
+                            exit={{ y: "100%" }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white dark:bg-[#10232A] w-full sm:max-w-md h-[80vh] sm:h-[600px] sm:rounded-3xl rounded-t-3xl shadow-2xl flex flex-col overflow-hidden"
+                        >
+                            {/* Chat Header */}
+                            <div className="p-4 bg-[#10232A] text-white flex justify-between items-center shrink-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="relative">
+                                        <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md">
+                                            <MessageCircle size={20} />
+                                        </div>
+                                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#10232A] rounded-full"></div>
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold">Support Assistant</h3>
+                                        <p className="text-xs text-white/50">Online • Replies instantly</p>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                        <div className="p-3 border-t bg-white flex gap-2 shrink-0">
-                            <input
-                                type="text"
-                                value={newMessage}
-                                onChange={e => setNewMessage(e.target.value)}
-                                onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-                                placeholder="Ask about status, pricing..."
-                                className="flex-1 text-sm p-2 outline-none"
-                            />
-                            <button onClick={handleSendMessage} className="p-2 bg-[#B58863] text-white rounded-lg hover:bg-[#a07654]"><Send size={16} /></button>
-                        </div>
+                                <button onClick={() => setIsChatOpen(false)} className="p-2 hover:bg-white/10 rounded-full transition">
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            {/* Chat Area */}
+                            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 dark:bg-[#0D1C22]">
+                                {chatMessages.map((msg) => (
+                                    <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.sender === 'user'
+                                                ? 'bg-[#B58863] text-white rounded-tr-none'
+                                                : 'bg-white dark:bg-[#1C3540] text-slate-700 dark:text-slate-200 rounded-tl-none'
+                                            }`}>
+                                            {msg.text}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Input Area */}
+                            <div className="p-4 bg-white dark:bg-[#10232A] border-t border-slate-100 dark:border-[#1C3540] flex items-center gap-3 shrink-0">
+                                <button className="p-2 text-slate-400 hover:text-[#10232A] dark:hover:text-white transition"><Paperclip size={20} /></button>
+                                <div className="flex-1 relative">
+                                    <input
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                                        placeholder="Type your message..."
+                                        className="w-full bg-slate-100 dark:bg-[#1C3540] border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#B58863]/20 focus:outline-none dark:text-white"
+                                    />
+                                    <button className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#B58863] transition"><Smile size={18} /></button>
+                                </div>
+                                <button
+                                    onClick={handleSendMessage}
+                                    disabled={!newMessage.trim()}
+                                    className="p-3 bg-[#10232A] dark:bg-[#B58863] text-white rounded-xl shadow-lg hover:scale-105 transition disabled:opacity-50 disabled:scale-100"
+                                >
+                                    <Send size={18} />
+                                </button>
+                            </div>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>

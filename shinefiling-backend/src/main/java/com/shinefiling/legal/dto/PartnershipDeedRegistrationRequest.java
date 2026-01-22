@@ -1,0 +1,32 @@
+package com.shinefiling.legal.dto;
+
+import lombok.Data;
+import java.util.List;
+
+@Data
+public class PartnershipDeedRegistrationRequest {
+    private String submissionId;
+    private String userEmail;
+    private String plan;
+    private Double amountPaid;
+    private String status;
+    private PartnershipDeedDTO formData;
+    private List<UploadedDocumentDTO> documents;
+    private List<AutomationTaskDTO> automationQueue;
+
+    @Data
+    public static class UploadedDocumentDTO {
+        private String id;
+        private String filename;
+        private String fileUrl;
+        private String type;
+    }
+
+    @Data
+    public static class AutomationTaskDTO {
+        private String task;
+        private String description;
+        private String priority;
+        private String status;
+    }
+}

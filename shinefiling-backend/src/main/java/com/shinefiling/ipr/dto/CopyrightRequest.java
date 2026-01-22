@@ -9,6 +9,8 @@ public class CopyrightRequest {
     private String userEmail;
     private String workTitle;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private CopyrightFormData formData;
     private List<UploadedDocumentDTO> documents;
@@ -37,4 +39,3 @@ public class CopyrightRequest {
         private String description;
     }
 }
-

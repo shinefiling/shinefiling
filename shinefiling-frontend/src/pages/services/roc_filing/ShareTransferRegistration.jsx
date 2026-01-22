@@ -280,6 +280,7 @@ const ShareTransferRegistration = ({ isLoggedIn }) => {
             const finalPayload = {
                 submissionId: `ROCSHARE-${Date.now()}`,
                 userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                plan: planType,
                 formData: formData,
                 documents: docsList,
                 status: "PAYMENT_SUCCESSFUL",

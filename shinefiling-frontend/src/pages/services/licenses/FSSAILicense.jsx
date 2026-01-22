@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, CheckCircle, FileText, Rocket, Utensils, Award, Shield, MapPin, Truck, ChevronRight, HelpCircle, Users, BookOpen, Scale, Globe, Briefcase, Zap, Star, ArrowRight, Building } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -135,7 +135,7 @@ const FSSAILicensePage = ({ isLoggedIn }) => {
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {["Turnover < ₹12 Lakhs", "FSSAI Registration (Form A)", "Petty Food Retailers", "Home Bakers / Stalls", "Application Filing"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
@@ -144,11 +144,9 @@ const FSSAILicensePage = ({ isLoggedIn }) => {
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('basic')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >
-                                    Get Basic License <ArrowRight size={18} />
-                                </button>
+                                >View Plans <ArrowRight size={18} /></button>
                             </div>
                         </motion.div>
 
@@ -162,73 +160,158 @@ const FSSAILicensePage = ({ isLoggedIn }) => {
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
                 <div className="lg:col-span-8 space-y-20">
 
-                    {/* Introduction */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> Food Safety Standard of India
-                        </h2>
-                        <div className="prose prose-lg text-gray-600">
-                            <p className="lead text-xl text-gray-800 font-medium">
-                                FSSAI License is a 14-digit registration number that is mandatory for anyone involved in the food business—be it manufacturing, processing, storage, distribution, or sale.
-                            </p>
-                            <p>
-                                It ensures that the food products undergo certain quality checks, thereby reducing food adulteration and substandard products. It essentially acts as a seal of approval and safety for customers.
-                            </p>
+                    {/* DETAILED SEO CONTENT SECTION - COMPREHENSIVE GUIDE */}
+                    <section className="mt-10 space-y-12 mb-20">
+                        <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl border border-gray-100">
+                            <h2 className="text-3xl font-bold text-navy mb-8 border-b pb-4">Comprehensive Guide to FSSAI Licensing</h2>
+
+                            <div className="prose prose-slate max-w-none space-y-8 text-gray-700 leading-relaxed">
+                                {/* Introduction */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-navy mb-4 flex items-center gap-2">
+                                        <BookOpen className="text-bronze" /> What is FSSAI License?
+                                    </h3>
+                                    <p className="lead text-xl text-gray-800 font-medium">
+                                        The Food Safety and Standards Authority of India (FSSAI) is the governing body that regulates the food business in India. An FSSAI license (14-digit number) is mandatory for any business involved in food manufacturing, processing, storage, distribution, or sale.
+                                    </p>
+                                    <p>
+                                        It ensures that the food products undergo certain quality checks, thereby reducing instances of food adulteration and substandard products. It essentially acts as a seal of approval and safety for customers.
+                                    </p>
+                                </div>
+
+                                {/* License Types Guide */}
+                                <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                    <h3 className="text-xl font-bold text-navy mb-4">Types of FSSAI Registrations</h3>
+                                    <div className="grid md:grid-cols-1 gap-6">
+                                        {[
+                                            { title: "Basic Registration (Form A)", criteria: "Turnover < ₹12 Lakhs / Year", desc: "For petty food business operators, hawkers, home bakers, and small stalls.", icon: Utensils },
+                                            { title: "State License (Form B)", criteria: "Turnover ₹12 Lakhs - ₹20 Crore / Year", desc: "For mid-sized manufacturers, distributors, hotels, and restaurants operating in a single state.", icon: Building },
+                                            { title: "Central License (Form B)", criteria: "Turnover > ₹20 Crore / Year", desc: "For large manufacturers, importers, exporters, and businesses supplying to government offices or operating in multiple states.", icon: Globe },
+                                        ].map((item, i) => (
+                                            <div key={i} className="flex gap-4 p-4 border rounded-xl bg-white">
+                                                <div className="mt-1"><item.icon size={24} className="text-bronze" /></div>
+                                                <div>
+                                                    <h4 className="font-bold text-navy text-lg">{item.title} <span className="text-sm font-normal text-gray-500 ml-2">({item.criteria})</span></h4>
+                                                    <p className="text-sm text-gray-600 mt-1">{item.desc}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Comparison Table */}
+                                <div className="overflow-x-auto rounded-xl border border-gray-200">
+                                    <table className="w-full text-sm text-left">
+                                        <thead className="bg-[#2B3446] text-white">
+                                            <tr>
+                                                <th className="px-6 py-4">Feature</th>
+                                                <th className="px-6 py-4 bg-white/10">Basic</th>
+                                                <th className="px-6 py-4">State</th>
+                                                <th className="px-6 py-4">Central</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-100">
+                                            <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-navy">Annual Turnover</td><td className="px-6 py-4 text-gray-600">Up to ₹12 Lakhs</td><td className="px-6 py-4 text-gray-600">₹12 Lakhs - ₹20 Cr</td><td className="px-6 py-4 text-gray-600">Above ₹20 Cr</td></tr>
+                                            <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-navy">Form Type</td><td className="px-6 py-4 text-gray-600">Form A</td><td className="px-6 py-4 text-gray-600">Form B</td><td className="px-6 py-4 text-gray-600">Form B</td></tr>
+                                            <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-navy">Govt Fee (Approx)</td><td className="px-6 py-4 text-gray-600">₹100 / Year</td><td className="px-6 py-4 text-gray-600">₹2000 - ₹5000 / Year</td><td className="px-6 py-4 text-gray-600">₹7500 / Year</td></tr>
+                                            <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-navy">Inspection</td><td className="px-6 py-4 text-gray-600">Rare</td><td className="px-6 py-4 text-gray-600">Likely</td><td className="px-6 py-4 text-gray-600">Mandatory</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                {/* Renewal & Penalties */}
+                                <div className="bg-orange-50 border border-orange-100 rounded-3xl p-8">
+                                    <h3 className="text-2xl font-bold text-navy mb-2 flex items-center gap-2"><Shield size={24} className="text-orange-500" /> Compliance & Renewal</h3>
+                                    <p className="text-gray-700 leading-relaxed max-w-2xl mb-4">
+                                        FSSAI license is issued for a specific period (1 to 5 years). It must be renewed <strong>30 days before expiry</strong>.
+                                    </p>
+                                    <ul className="space-y-2">
+                                        <li className="flex items-center gap-2 text-orange-800 font-bold">
+                                            <ChevronRight size={16} /> Late Renewal Penalty: ₹100 per day
+                                        </li>
+                                        <li className="flex items-center gap-2 text-orange-800 font-bold">
+                                            <ChevronRight size={16} /> Operating without License: Fine up to ₹5 Lakhs & Imprisonment (Section 63)
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
-                    {/* LICENSE TYPES GRID */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Which License Do You Need?</h2>
-                        <div className="grid md:grid-cols-1 gap-6">
-                            {[
-                                { title: "Basic Registration", subtitle: "Turnover < ₹12 Lakhs", desc: "For petty food business operators, hawkers, home bakers, and small stalls.", icon: Utensils },
-                                { title: "State License", subtitle: "Turnover ₹12 Lakhs - ₹20 Crore", desc: "For mid-sized manufacturers, distributors, hotels, and restaurants operating in a single state.", icon: Building },
-                                { title: "Central License", subtitle: "Turnover > ₹20 Crore", desc: "For large manufacturers, importers, exporters, and businesses supplying to government offices.", icon: Globe },
-                            ].map((item, i) => (
-                                <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-bronze transition group">
-                                    <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
-                                        <item.icon size={28} />
+                    {/* MANDATORY DELIVERABLES */}
+                    <section className="mb-20">
+                        <h2 className="text-3xl font-bold text-navy mb-8">What You Will Receive</h2>
+                        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+                            <div className="p-6 bg-navy text-white">
+                                <p className="text-sm opacity-80">Official documents you get after approval.</p>
+                            </div>
+                            <div className="divide-y divide-gray-100">
+                                {[
+                                    { name: "FSSAI Registration Certificate", type: "Digital Copy", due: "Approval" },
+                                    { name: "14-Digit License Number", type: "Unique ID", due: "Immediate" },
+                                    { name: "QR Code Food Safety Display Board", type: "Compliance", due: "Mandatory" },
+                                    { name: "Application Receipt", type: "Proof", due: "Day 1" },
+                                    { name: "Guidance on Annual Returns", type: "Support", due: "Lifetime" }
+                                ].map((row, i) => (
+                                    <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-6 hover:bg-gray-50 transition">
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-navy text-lg">{row.name}</h4>
+                                        </div>
+                                        <div className="md:w-1/3 mt-2 md:mt-0">
+                                            <span className="text-sm text-slate-500 font-medium uppercase tracking-wider">Format</span>
+                                            <p className="text-bronze-dark font-semibold">{row.due}</p>
+                                        </div>
+                                        <div className="md:w-1/6 mt-2 md:mt-0 text-right">
+                                            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-navy">
+                                                {row.type}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4 className="font-bold text-navy mb-1 text-lg">{item.title}</h4>
-                                        <p className="text-xs font-bold text-bronze uppercase tracking-wider mb-2">{item.subtitle}</p>
-                                        <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
-                                    </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     </section>
 
                     {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
+                    <section id="pricing-plans" className="bg-white relative overflow-hidden rounded-3xl p-8 border border-gray-100 shadow-sm mb-20">
+                        <div className="text-center mb-16">
+                            <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Plan</span>
+                            <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Simple Pricing</h2>
+                            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                        </div>
+
                         <div className="grid md:grid-cols-3 gap-6">
                             {/* Basic */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Startups</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Basic</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹1,499</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Form A Filing</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Registration Cert</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Basic Support</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Basic</button>
-                            </div>
-
-                            {/* State */}
                             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">State License</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹4,999</div>
+                                <h3 className="text-xl font-bold text-navy mb-2">Basic Registration</h3>
+                                <div className="text-4xl font-black text-navy mb-1">₹1,499</div>
                                 <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
                                 <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Form B Filing</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Expert Consultation</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Document Review</li>
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Turnover {'<'} ₹12L</li>
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Form A Filing</li>
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> 1 Year Validity</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('state')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select State</button>
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Basic</button>
+                            </div>
+
+                            {/* State - Highlighted */}
+                            <div className="bg-[#10232A] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 flex flex-col">
+                                {/* Top Gold Line */}
+                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+
+                                <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                    Most Common
+                                </div>
+
+                                <h3 className="text-xl font-bold text-white mb-2 mt-4">State License</h3>
+                                <div className="text-4xl font-black text-white mb-1">₹4,999</div>
+                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees</p>
+                                <ul className="space-y-3 mb-8 flex-1">
+                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Turnover ₹12L - ₹20Cr</li>
+                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Form B Filing</li>
+                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Manufacture / Hotel / Retail</li>
+                                </ul>
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">Select State</button>
                             </div>
 
                             {/* Central */}
@@ -237,11 +320,49 @@ const FSSAILicensePage = ({ isLoggedIn }) => {
                                 <div className="text-4xl font-black text-navy mb-1">₹7,499</div>
                                 <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
                                 <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Central Form B</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Multi-State Support</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Priority Filing</li>
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Turnover {'>'} ₹20Cr</li>
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Form B (Central)</li>
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Import / Export / Railway</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('central')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Central</button>
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Central</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* EXISTING LICENSE SERVICES (Renewal & Correction) */}
+                    <section className="bg-white relative overflow-hidden rounded-3xl p-8 border border-gray-100 shadow-sm mb-20">
+                        <div className="text-center mb-10">
+                            <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Maintain Your License</span>
+                            <h2 className="text-3xl font-bold text-navy mb-4">Renewal & Corrections</h2>
+                            <p className="text-gray-500 max-w-2xl mx-auto">Already have an FSSAI license? We handle renewals and modifications to keep you compliant.</p>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                            {/* Renewal */}
+                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                                <div className="absolute top-0 right-0 bg-green-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Time Critical</div>
+                                <h3 className="text-xl font-bold text-navy mb-2">License Renewal</h3>
+                                <div className="text-4xl font-black text-navy mb-1">₹999</div>
+                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees (As per years)</p>
+                                <ul className="space-y-3 mb-8 flex-1">
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> File 30 days before expiry</li>
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Avoid ₹100/day Penalty</li>
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Validity Extension (1-5 Yrs)</li>
+                                </ul>
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Apply for Renewal</button>
+                            </div>
+
+                            {/* Modification */}
+                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
+                                <h3 className="text-xl font-bold text-navy mb-2">Modification / Correction</h3>
+                                <div className="text-4xl font-black text-navy mb-1">₹1,499</div>
+                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
+                                <ul className="space-y-3 mb-8 flex-1">
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Change Address / Partners</li>
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Add/Remove Food Products</li>
+                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Update Business Name</li>
+                                </ul>
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Apply for Modification</button>
                             </div>
                         </div>
                     </section>
@@ -299,9 +420,7 @@ const FSSAILicensePage = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Need Help?</h4>
                             <p className="text-gray-300 text-sm mb-4">Confused about State vs Central License category?</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
-                                Talk to Expert
-                            </button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
@@ -312,3 +431,5 @@ const FSSAILicensePage = ({ isLoggedIn }) => {
 };
 
 export default FSSAILicensePage;
+
+

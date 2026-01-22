@@ -9,6 +9,8 @@ public class TrademarkAssignmentRequest {
     private String userEmail;
     private String applicationNumber;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private AssignmentFormData formData;
     private List<UploadedDocumentDTO> documents;
@@ -38,4 +40,3 @@ public class TrademarkAssignmentRequest {
         private String description;
     }
 }
-

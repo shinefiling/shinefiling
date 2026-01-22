@@ -11,6 +11,8 @@ public class FireNocRequest {
     private String state;
     private String requestType; // PROVISIONAL, FINAL, RENEWAL
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private FireFormData formData;
     private List<UploadedDocumentDTO> documents;

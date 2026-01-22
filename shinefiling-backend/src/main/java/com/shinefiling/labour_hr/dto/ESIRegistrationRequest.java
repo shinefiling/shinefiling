@@ -9,6 +9,8 @@ public class ESIRegistrationRequest {
     private String userEmail;
     private String businessName;
     private String status;
+    private String plan;
+    private Double amountPaid;
 
     private ESIRegFormData formData;
     private List<UploadedDocumentDTO> documents;
@@ -37,5 +39,3 @@ public class ESIRegistrationRequest {
         private String description;
     }
 }
-
-

@@ -5,7 +5,8 @@ import {
     BookOpen, Target, Heart, Briefcase, ArrowRight, Zap, Star
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import prabhuImg from '../assets/Prabhu.png';
+import expertVenkatesanImg from '../assets/expert_venkatesan.png';
+import expertPrabhuImg from '../assets/expert_prabhu.png';
 import drivenTeamImg from '../assets/driven_by_purpose_team_v2.png';
 
 const AboutUsPage = () => {
@@ -221,25 +222,29 @@ const AboutUsPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
                         {[
-                            { name: 'Venkatesan', role: 'CEO & Founder', desc: 'Visionary leader with 15+ years in LegalTech.', img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400' },
-                            { name: 'Prabhu', role: 'Head of Legal Compliance', desc: 'Expert in Corporate Law & Compliance.', img: prabhuImg },
+                            { name: 'Venkatesan', role: 'CEO & Founder', desc: 'Visionary leader with 15+ years in LegalTech.', img: expertVenkatesanImg },
+                            { name: 'Prabhu', role: 'Head of Legal Compliance', desc: 'Expert in Corporate Law & Compliance.', img: expertPrabhuImg },
                         ].map((member, i) => (
                             <motion.div
                                 key={i}
                                 whileHover={{ y: -5 }}
-                                className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-6 group hover:shadow-xl transition-all"
+                                className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-8 group hover:shadow-xl transition-all max-w-2xl mx-auto"
                             >
-                                <div className="relative w-36 h-36 rounded-2xl overflow-hidden shrink-0 border-2 border-slate-50 shadow-sm">
+                                <div className="relative w-48 h-64 rounded-2xl overflow-hidden shrink-0 border-2 border-slate-50 shadow-sm bg-gray-50">
                                     <img
                                         src={member.img}
                                         alt={member.name}
-                                        className="w-full h-full object-cover object-top scale-110 group-hover:scale-125 transition-transform duration-500"
+                                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                                     />
+                                    {/* Overlay for premium feel */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-navy/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </div>
-                                <div className="text-center sm:text-left">
-                                    <h3 className="text-2xl font-bold text-navy mb-1">{member.name}</h3>
-                                    <p className="text-sm font-bold text-bronze uppercase tracking-wider mb-3">{member.role}</p>
-                                    <p className="text-slate-600 leading-relaxed italic">"{member.desc}"</p>
+                                <div className="text-center md:text-left flex-1">
+                                    <h3 className="text-3xl font-bold text-navy mb-1">{member.name}</h3>
+                                    <p className="text-xs font-bold text-bronze uppercase tracking-widest mb-4 bg-bronze/10 inline-block px-3 py-1 rounded-full">{member.role}</p>
+                                    <p className="text-slate-600 leading-relaxed italic text-lg">"{member.desc}"</p>
+
+                                    <div className="w-12 h-1 bg-gradient-to-r from-bronze to-transparent mt-4 opacity-50 mx-auto md:mx-0"></div>
                                 </div>
                             </motion.div>
                         ))}

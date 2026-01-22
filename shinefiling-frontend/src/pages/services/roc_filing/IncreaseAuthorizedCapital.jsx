@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, CheckCircle, FileText, TrendingUp, Star, Users, Briefcase, BookOpen, Rocket, HelpCircle, ChevronRight, BarChart, Calculator, AlertTriangle, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, FileText, TrendingUp, Star, Users, Briefcase, BookOpen, Rocket, HelpCircle, ChevronRight, BarChart, Calculator, AlertTriangle, ArrowRight, Shield, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const IncreaseAuthorizedCapitalPage = ({ isLoggedIn }) => {
@@ -74,7 +74,7 @@ const IncreaseAuthorizedCapitalPage = ({ isLoggedIn }) => {
                                     Increase Authorized <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Capital</span>
                                 </h1>
-                                <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
+                                <p className="text-gray-300 text-xl max-w-xl font-light leading-relaxed">
                                     Scaling up? Increase your company's capacity to issue shares. We handle MOA alterations, Stamp Duty calculations, and SH-7 filing.
                                 </p>
                             </motion.div>
@@ -120,8 +120,12 @@ const IncreaseAuthorizedCapitalPage = ({ isLoggedIn }) => {
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Standard</div>
-                                <div className="text-center mb-6">
+                                {/* Top Gold Line */}
+                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+
+                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
+
+                                <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">SH-7 Filing</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
                                         <h3 className="text-5xl font-black text-navy tracking-tight">₹2,999</h3>
@@ -129,7 +133,7 @@ const IncreaseAuthorizedCapitalPage = ({ isLoggedIn }) => {
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Professional Fee</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
+                                <div className="space-y-4 mb-8 flex-1">
                                     {["Drafting EGM Notice", "Drafting Resolutions", "Altered MOA Preparation", "Form SH-7 Filing", "Stamp Duty Calculation"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
@@ -149,43 +153,177 @@ const IncreaseAuthorizedCapitalPage = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+            {/* --- PRICING SECTION (2 PLANS) --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Plan</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Simple Pricing</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-center">
+                        {/* Standard */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                        >
+                            {/* Top Gold Line */}
+                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                Fastest
+                            </div>
+
+                            <h3 className="text-xl font-bold text-white mb-2 mt-4">SH-7 Filing</h3>
+                            <div className="text-5xl font-black text-white mb-2">₹2,999</div>
+                            <p className="text-xs text-gray-400 mb-6 font-bold uppercase tracking-wide">+ Govt Fees</p>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> SH-7 Filing</li>
+                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> MOA Alteration</li>
+                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Resolutions</li>
+                            </ul>
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                Select Standard
+                            </button>
+                        </motion.div>
+
+                        {/* Premium */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                        >
+                            <h3 className="text-xl font-bold text-navy mb-2">Fund Raising Kit</h3>
+                            <div className="text-4xl font-black text-navy mb-2">₹5,999</div>
+                            <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-widest">+ Govt Fees</p>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Capital Increase (SH-7)</li>
+                                <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Share Allotment (PAS-3)</li>
+                                <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Share Certification</li>
+                            </ul>
+                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Select Premium
+                            </button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
                 <div className="lg:col-span-8 space-y-20">
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
-                            <BookOpen className="text-bronze" /> Authorized Capital Explained
-                        </h2>
-                        <div className="prose prose-lg text-gray-600">
-                            <p className="lead text-xl text-gray-800 font-medium">
-                                Authorized Capital is the "License to Issue Shares". It is the maximum value of shares a company can issue to its shareholders. It is mentioned in the Memorandum of Association (MOA).
-                            </p>
-                            <p>
-                                If you want to bring in new investors exceeding your current limit, you must first increase this Authorized Capital by paying a fee to the Ministry of Corporate Affairs (MCA) and Stamp Duty to the State Government.
-                            </p>
+                    {/* DETAILED SEO CONTENT SECTION - COMPREHENSIVE GUIDE */}
+                    <section className="mt-10 space-y-12 mb-20">
+                        <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl border border-gray-100">
+                            <h2 className="text-3xl font-bold text-navy mb-8 border-b pb-4">Comprehensive Guide to Authorized Capital</h2>
+
+                            <div className="prose prose-slate max-w-none space-y-8 text-gray-700 leading-relaxed">
+
+                                {/* Introduction */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-navy mb-4 flex items-center gap-2">
+                                        <BookOpen className="text-bronze" /> Authorized Capital Explained
+                                    </h3>
+                                    <p className="lead text-xl text-gray-800 font-medium">
+                                        Authorized Capital is the "License to Issue Shares". It is the maximum value of shares a company can issue to its shareholders. It is mentioned in the Memorandum of Association (MOA).
+                                    </p>
+                                    <p>
+                                        If you want to bring in new investors exceeding your current limit, you must first increase this Authorized Capital by paying a fee to the Ministry of Corporate Affairs (MCA) and Stamp Duty to the State Government.
+                                    </p>
+                                </div>
+
+                                {/* Process Flow */}
+                                <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                    <h3 className="text-xl font-bold text-navy mb-4">The Process</h3>
+                                    <ul className="space-y-4">
+                                        {[
+                                            { title: "Board Meeting", desc: "Board approves the proposal to increase capital and calls for an EGM." },
+                                            { title: "Shareholders Meeting (EGM)", desc: "Shareholders pass a Resolution approving the increase." },
+                                            { title: "File Form SH-7", desc: "File Form SH-7 with ROC within 30 days along with the resolution and altered MOA." },
+                                            { title: "Form MGT-14", desc: "File Form MGT-14 for registration of the resolution (if applicable)." },
+                                            { title: "Approval", desc: "ROC approves the form and the Authorized Capital is updated on the MCA portal." }
+                                        ].map((step, i) => (
+                                            <li key={i} className="flex gap-4">
+                                                <div className="w-8 h-8 rounded-full bg-navy text-white flex items-center justify-center font-bold text-sm shrink-0">
+                                                    {i + 1}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-navy">{step.title}</h4>
+                                                    <p className="text-sm text-gray-600">{step.desc}</p>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                {/* Stamp Duty Warning */}
+                                <div className="bg-yellow-50 border border-yellow-100 rounded-2xl p-6">
+                                    <h3 className="text-xl font-bold text-navy mb-2 flex items-center gap-2">
+                                        <AlertTriangle className="text-yellow-600" /> Government Fee Structure
+                                    </h3>
+                                    <p className="text-gray-700 mb-4">
+                                        The cost involves two components: <strong>ROC Fee</strong> (Central Govt) and <strong>Stamp Duty</strong> (State Govt). This depends entirely on the amount of capital increase.
+                                    </p>
+                                    <div className="overflow-x-auto bg-white rounded-xl border border-yellow-100">
+                                        <table className="w-full text-sm text-left">
+                                            <thead className="text-xs text-gray-500 uppercase bg-yellow-100/50">
+                                                <tr>
+                                                    <th className="px-6 py-3">Component</th>
+                                                    <th className="px-6 py-3">Details</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-100">
+                                                <tr>
+                                                    <td className="px-6 py-4 font-bold text-navy">ROC Fee</td>
+                                                    <td className="px-6 py-4 text-gray-600">Calculated on incremental capital. Approx ₹4,000 for every ₹1 Lakh increase (slabs apply).</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="px-6 py-4 font-bold text-navy">Stamp Duty</td>
+                                                    <td className="px-6 py-4 text-gray-600">Varies by state (e.g., Maharashtra: 0.5%, Delhi: 0.15%). Max caps apply in some states.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
-                    {/* PROCESS FLOW */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">The Process</h2>
-                        <div className="relative">
-                            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200 hidden md:block"></div>
-                            <div className="space-y-8">
+                    {/* MANDATORY DELIVERABLES */}
+                    <section className="mb-20">
+                        <h2 className="text-3xl font-bold text-navy mb-8">What You Will Receive</h2>
+                        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+                            <div className="p-6 bg-navy text-white">
+                                <p className="text-sm opacity-80">Official confirmation of your increased capacity.</p>
+                            </div>
+                            <div className="divide-y divide-gray-100">
                                 {[
-                                    { title: "Board Meeting", desc: "Board approves the proposal to increase capital and calls for an EGM." },
-                                    { title: "Shareholders Meeting (EGM)", desc: "Shareholders pass a Resolution approving the increase." },
-                                    { title: "File Form SH-7", desc: "File Form SH-7 with ROC within 30 days along with the resolution and altered MOA." },
-                                    { title: "File Form MGT-14", desc: "File Form MGT-14 for registration of the resolution (if applicable)." },
-                                    { title: "Approval", desc: "ROC approves the form and the Authorized Capital is updated on the MCA portal." }
-                                ].map((step, i) => (
-                                    <div key={i} className="flex gap-6 relative">
-                                        <div className="w-16 h-16 rounded-full bg-white border-4 border-bronze text-bronze font-bold text-xl flex items-center justify-center shrink-0 z-10 shadow-sm">
-                                            {i + 1}
+                                    { name: "SH-7 Filing Receipt", type: "Challan", due: "Immediate" },
+                                    { name: "Altered MOA", type: "Updated Clause V", due: "Day 2-3" },
+                                    { name: "Board Resolution", type: "Draft", due: "Day 1" },
+                                    { name: "EGM Notice & Resolution", type: "Draft", due: "Day 1" },
+                                    { name: "Stamp Duty Calculation", type: "Tax Advice", due: "Pre-Filing" }
+                                ].map((row, i) => (
+                                    <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-6 hover:bg-gray-50 transition">
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-navy text-lg">{row.name}</h4>
                                         </div>
-                                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex-1 hover:shadow-md transition">
-                                            <h4 className="text-lg font-bold text-navy mb-2">{step.title}</h4>
-                                            <p className="text-gray-600 text-sm">{step.desc}</p>
+                                        <div className="md:w-1/3 mt-2 md:mt-0">
+                                            <span className="text-sm text-slate-500 font-medium uppercase tracking-wider">Format</span>
+                                            <p className="text-bronze-dark font-semibold">{row.due}</p>
+                                        </div>
+                                        <div className="md:w-1/6 mt-2 md:mt-0 text-right">
+                                            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-navy">
+                                                {row.type}
+                                            </span>
                                         </div>
                                     </div>
                                 ))}
@@ -193,69 +331,52 @@ const IncreaseAuthorizedCapitalPage = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* STAMP DUTY WARNING */}
-                    <section>
-                        <div className="bg-yellow-50 border border-yellow-100 rounded-3xl p-8">
-                            <h3 className="text-2xl font-bold text-navy mb-4 flex items-center gap-2">
-                                <AlertTriangle className="text-yellow-600" /> Government Fee Structure
-                            </h3>
-                            <p className="text-gray-700 mb-6">
-                                The cost involves two components: <strong>ROC Fee</strong> (Central Govt) and <strong>Stamp Duty</strong> (State Govt). This depends entirely on the amount of capital increase.
-                            </p>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left">
-                                    <thead className="text-xs text-gray-500 uppercase bg-yellow-100/50">
-                                        <tr>
-                                            <th className="px-6 py-3 rounded-l-lg">Component</th>
-                                            <th className="px-6 py-3 rounded-r-lg">Details</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-yellow-100">
-                                        <tr className="bg-white">
-                                            <td className="px-6 py-4 font-bold text-navy">ROC Fee</td>
-                                            <td className="px-6 py-4 text-gray-600">Calculated on incremental capital. Approx ₹4,000 for every ₹1 Lakh increase (slabs apply).</td>
-                                        </tr>
-                                        <tr className="bg-white">
-                                            <td className="px-6 py-4 font-bold text-navy">Stamp Duty</td>
-                                            <td className="px-6 py-4 text-gray-600">Varies by state (e.g., Maharashtra: 0.5%, Delhi: 0.15%, Karnataka: 0.5%). Max caps apply in some states.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className="mt-4 text-center">
-                                <button className="text-sm font-bold text-navy underline hover:text-bronze transition">Contact us for exact calculation</button>
-                            </div>
-                        </div>
-                    </section>
+                    {/* WHY CHOOSE SHINEFILING - SEO SECTION */}
+                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-20">
+                        {/* Background Deco */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
 
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Fastest</div>
-                                <h3 className="text-xl font-bold text-white mb-2">SH-7 Filing</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹2,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-4 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> SH-7 Filing</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> MOA Alteration</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Resolutions</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
+                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling for Capital Increase?</h2>
+                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Shield size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Accurate Duty Config</h4>
+                                        <p className="text-gray-300 text-sm">Stamp duty laws vary by state. Our experts calculate exact liabilities to avoid penalties.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Zap size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Express Filing</h4>
+                                        <p className="text-gray-300 text-sm">We file SH-7 under STP (Straight Through Processing) mode for instant approvals where possible.</p>
+                                    </div>
+                                </div>
                             </div>
-
-                            {/* Premium */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Fund Raising Kit</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹5,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-4 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Capital Increase (SH-7)</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Share Allotment (PAS-3)</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Share Certification</li>
-                                </ul>
-                                <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Premium</button>
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Briefcase size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Drafting Expertise</h4>
+                                        <p className="text-gray-300 text-sm">We carefully redraft your MOA Capital Clause to be future-proof for rounds of investment.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
+                                        <Users size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg">Complete Advisory</h4>
+                                        <p className="text-gray-300 text-sm">From board resolutions to final ROC approval, we handle the entire secretarial compliance.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
