@@ -4,9 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'order_details_page.dart';
 import '../services/api_service.dart';
 import '../widgets/shine_loader.dart';
+import '../widgets/loader_3d.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final List<Map<String, dynamic>>? initialOrders;
+  final Map<String, dynamic>? initialStats;
+
+  const DashboardPage({super.key, this.initialOrders, this.initialStats});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -31,7 +35,19 @@ class _DashboardPageState extends State<DashboardPage> with RouteAware {
   @override
   void initState() {
     super.initState();
-    _fetchDashboardData();
+    
+    if (widget.initialOrders != null) {
+      _orders = widget.initialOrders!;
+      _isLoading = false;
+    }
+    if (widget.initialStats != null) {
+      _stats = widget.initialStats!;
+    }
+
+    if (_isLoading) {
+       _fetchDashboardData();
+    }
+
     // Auto-refresh every 15 seconds to simulate real-time updates
     _pollingTimer = Timer.periodic(const Duration(seconds: 15), (timer) {
       if (mounted) _fetchDashboardData(silent: true);
@@ -105,7 +121,10 @@ class _DashboardPageState extends State<DashboardPage> with RouteAware {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const ShineLoader(text: 'Accessing Terminal...');
+      return const Scaffold(
+        backgroundColor: Color(0xFFF2F1EF),
+        body: Center(child: Loader3D(size: 40, text: 'Updating Dashboard...')),
+      );
     }
 
     return Scaffold(

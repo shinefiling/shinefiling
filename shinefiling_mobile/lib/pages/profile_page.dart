@@ -19,7 +19,8 @@ import 'edit_profile_page.dart';
 import '../widgets/loader_3d.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final Map<String, dynamic>? initialProfile;
+  const ProfilePage({super.key, this.initialProfile});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -43,7 +44,16 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
+    if (widget.initialProfile != null) {
+      final p = widget.initialProfile!;
+      _userName = p['fullName'] ?? 'User';
+      _userEmail = p['email'] ?? 'user@example.com';
+      _isKycVerified = p['isKycVerified'] ?? false;
+      _profileImage = p['profileImage'] ?? '';
+      _isLoading = false;
+    } else {
+      _loadUserData();
+    }
     _loadBiometricStatus();
   }
 
@@ -224,9 +234,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 32),
                   _buildProfileCard(),
                   const SizedBox(height: 32),
-                  _buildDigiLockerCard(),
-                  const SizedBox(height: 32),
                   _buildMenuSection('Account Settings', [
+                    _buildMenuTile(Icons.folder_copy_rounded, 'Document Wallet', 'Manage your files', () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SmartVaultPage()));
+                    }),
                     _buildMenuTile(Icons.person_outline_rounded, 'Personal Information', 'Name, Contact, Address', () async {
                       final result = await Navigator.push(
                         context, 
@@ -365,69 +376,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildDigiLockerCard() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue.shade700, Colors.blue.shade900],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(color: Colors.blue.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 10))
-        ],
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -20,
-            bottom: -20,
-            child: Icon(Icons.cloud_sync_rounded, size: 120, color: Colors.white.withValues(alpha: 0.05)),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-                    child: const Icon(Icons.storage_rounded, color: Colors.white, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'DigiLocker Integration',
-                    style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Connect to fetch PAN, Aadhaar & KYC documents automatically.',
-                style: GoogleFonts.plusJakartaSans(color: Colors.white.withValues(alpha: 0.7), fontSize: 12, height: 1.5),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SmartVaultPage()));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.blue.shade800,
-                  minimumSize: const Size(double.infinity, 44),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 0,
-                ),
-                child: const Text('Connect Gov Account', style: TextStyle(fontWeight: FontWeight.w800)),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildMenuSection(String title, List<Widget> items) {
     return Column(

@@ -55,17 +55,19 @@ class _SmartVaultPageState extends State<SmartVaultPage> {
               delegate: SliverChildListDelegate([
                 _buildStorageUsage(),
                 const SizedBox(height: 32),
-                _buildSectionTitle('Active Repositories'),
+                _buildSectionTitle('Digital Document Wallet'),
                 const SizedBox(height: 16),
-                _buildCategoryGrid(),
+                _buildDigiLockerGrid(),
                 const SizedBox(height: 32),
+                
+                // Keep file list but maybe rename title if needed
                 if (_files.isNotEmpty) ...[
-                   _buildSectionTitle('Recent Files'),
+                   _buildSectionTitle('Uploaded Files'),
                    const SizedBox(height: 16),
                    ..._files.take(5).map((f) => _buildExpiringItem(f['name'] ?? 'File', 'Uploaded: ${_formatDate(f['createdAt'])}', Colors.blue)),
                 ]
                 else if (!_isLoading) 
-                   const Text('No files uploaded yet', style: TextStyle(color: Colors.grey)),
+                   const Text('No documents uploaded yet. Tap the cards above to add.', style: TextStyle(color: Colors.grey)),
                 
                 const SizedBox(height: 100),
               ]),
@@ -188,67 +190,128 @@ class _SmartVaultPageState extends State<SmartVaultPage> {
     );
   }
 
-  Widget _buildCategoryGrid() {
-    // Simply counting total files for now, distributed nicely or based on extension
-    int total = _files.length;
-    int docs = _files.where((f) => f['name'].toString().endsWith('.pdf')).length;
-    int img = _files.where((f) => f['name'].toString().endsWith('.jpg') || f['name'].toString().endsWith('.png')).length;
-    
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-      childAspectRatio: 1.1,
+  Widget _buildDigiLockerGrid() {
+    return Column(
       children: [
-        _buildFolderCard('Registration', Icons.business_rounded, docs, Colors.blue),
-        _buildFolderCard('Tax', Icons.receipt_long_rounded, 0, Colors.green),
-        _buildFolderCard('Identity', Icons.how_to_reg_rounded, img, Colors.purple),
-        _buildFolderCard('Legal', Icons.gavel_rounded, total - docs - img, Colors.orange),
+        _buildIdentityCard(
+          title: 'Aadhaar Card', 
+          subtitle: 'Unique Identification Authority Of India',
+          icon: Icons.fingerprint_rounded, 
+          color: const Color(0xFFF44336), // Red for Aadhaar brand vibe
+          bgColor: const Color(0xFFFFEBEE),
+          docType: 'aadhaar'
+        ),
+        const SizedBox(height: 12),
+        _buildIdentityCard(
+          title: 'PAN Card', 
+          subtitle: 'Income Tax Department',
+          icon: Icons.badge_rounded, 
+          color: const Color(0xFF1E88E5), // Blue for PAN/Income Tax
+          bgColor: const Color(0xFFE3F2FD),
+          docType: 'pan'
+        ),
+        const SizedBox(height: 12),
+        _buildIdentityCard(
+          title: 'Driving License', 
+          subtitle: 'Ministry of Road Transport & Highways',
+          icon: Icons.directions_car_rounded, 
+          color: const Color(0xFF43A047), // Green/Grey
+          bgColor: const Color(0xFFE8F5E9),
+          docType: 'dl'
+        ),
+        const SizedBox(height: 12),
+        _buildIdentityCard(
+          title: 'Voter ID', 
+          subtitle: 'Election Commission of India',
+          icon: Icons.how_to_vote_rounded, 
+          color: const Color(0xFFFB8C00), 
+          bgColor: const Color(0xFFFFF3E0),
+          docType: 'voter'
+        ),
       ],
     );
   }
 
-  Widget _buildFolderCard(String title, IconData icon, int count, Color color) {
+  Widget _buildIdentityCard({
+    required String title, 
+    required String subtitle, 
+    required IconData icon, 
+    required Color color, 
+    required Color bgColor,
+    required String docType,
+  }) {
+    // Check if we have files for this type
+    bool isLinked = _files.any((f) => f['name'].toString().toLowerCase().contains(docType));
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: brandNavy.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: color.withValues(alpha: 0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
+        border: Border.all(color: color.withValues(alpha: 0.1)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Row(
         children: [
-          Icon(icon, color: color, size: 32),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: brandNavy,
-                ),
-              ),
-              Text(
-                '$count Files',
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-              ),
-            ],
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 28),
           ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: brandNavy,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Colors.grey,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: isLinked ? const Color(0xFFE8F5E9) : const Color(0xFFF5F5F5),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isLinked ? Colors.green.withValues(alpha: 0.3) : Colors.grey.withValues(alpha: 0.2)
+              )
+            ),
+            child: Text(
+              isLinked ? 'VIEW' : 'ADD',
+              style: GoogleFonts.plusJakartaSans(
+                color: isLinked ? Colors.green[700] : Colors.grey[600],
+                fontWeight: FontWeight.w900,
+                fontSize: 11,
+              ),
+            ),
+          )
         ],
       ),
     );

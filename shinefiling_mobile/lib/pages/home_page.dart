@@ -36,6 +36,8 @@ class _HomePageState extends State<HomePage> {
 
   Map<String, dynamic> _serviceData = {};
   List<Map<String, dynamic>> _recentFiles = [];
+  Map<String, dynamic> _userStats = {};
+  Map<String, dynamic> _userProfileData = {};
 
   final Map<String, IconData> _categoryIcons = {
     'Registration': Icons.business_rounded,
@@ -92,6 +94,7 @@ class _HomePageState extends State<HomePage> {
         ApiService().getOrders(),
         ApiService().getUserProfile(),
         ApiService().getNotifications(),
+        ApiService().getUserStats(),
         // Add a small delay to prevent flickering if response is too fast
         Future.delayed(const Duration(milliseconds: 800))
       ]);
@@ -100,6 +103,7 @@ class _HomePageState extends State<HomePage> {
       final orders = results[1] as List<Map<String, dynamic>>;
       final userProfile = results[2] as Map<String, dynamic>;
       final notifications = results[3] as List<Map<String, dynamic>>;
+      final stats = results[4] as Map<String, dynamic>;
 
       // CRITICAL: If profile is empty, the API request likely failed.
       // We must throw an error to trigger the "Connection Failed" popup.
@@ -116,6 +120,8 @@ class _HomePageState extends State<HomePage> {
           _serviceData = services;
           _recentFiles = orders;
           _notificationCount = actionRequired + unreadNotifs;
+          _userStats = stats;
+          _userProfileData = userProfile;
           
           for (var o in orders) {
              _lastOrderStatuses[o['id'].toString()] = o['status'].toString();
@@ -327,9 +333,11 @@ class _HomePageState extends State<HomePage> {
     }
     
     if (_isLoading) {
-      return Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA),
-        body: _buildLoadingSkeleton(),
+      return const Scaffold(
+        backgroundColor: Color(0xFFF8F9FA),
+        body: Center(
+          child: Loader3D(size: 60, text: 'Getting things ready...'),
+        ),
       );
     }
 
@@ -341,9 +349,9 @@ class _HomePageState extends State<HomePage> {
         children: [
           _buildHomeContent(),
           const ServicesPage(),
-          const DashboardPage(),
+          DashboardPage(initialOrders: _recentFiles, initialStats: _userStats),
           NotificationsPage(onBack: () => setState(() => _selectedIndex = 0)), 
-          const ProfilePage(),
+          ProfilePage(initialProfile: _userProfileData),
         ],
       ),
       floatingActionButton: Container(

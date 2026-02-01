@@ -17,7 +17,7 @@ class ApiService {
   // Base URL Configuration
   // ---------------------------------------------------------------------------
   // IP Option 1: Mobile/Home Network (Active)
-  static const String _ip1 = "192.168.31.7"; 
+  static const String _ip1 = "192.168.1.8"; 
   static const String _ip3 = "10.252.180.100"; 
   // IP Option 2: Office/Alternate Network
   static const String _ip2 = "172.19.25.100";
@@ -302,7 +302,7 @@ class ApiService {
   Future<bool> markChatAsRead(String ticketId) async {
     try {
       final response = await http.put(
-        Uri.parse('$baseUrl/chat/read/$ticketId'),
+        Uri.parse('$baseUrl/chat/read/$ticketId?role=USER'),
         headers: await _getHeaders(),
       );
       return response.statusCode == 200;

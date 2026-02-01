@@ -89,12 +89,13 @@ class _ChatPageState extends State<ChatPage> {
 
           final String content = e['message'] ?? e['content'] ?? e['text'] ?? '';
           final String timeStr = e['timestamp'] ?? e['createdAt'] ?? e['date'] ?? '';
+          final bool isRead = e['isRead'] == true || e['read'] == true;
 
           return <String, dynamic>{
             'isUser': isMe,
             'message': content,
             'time': _formatTime(timeStr),
-            'status': 'read',
+            'status': isRead ? 'read' : 'sent',
           };
         }));
       });
@@ -121,7 +122,7 @@ class _ChatPageState extends State<ChatPage> {
       'isUser': true,
       'message': text,
       'time': _formatTime(DateTime.now().toIso8601String()),
-      'status': 'sending',
+      'status': 'sent',
     };
 
     // Optimistic UI Update
@@ -188,7 +189,7 @@ class _ChatPageState extends State<ChatPage> {
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final msg = _messages[index];
-                return _buildMessageBubble(msg['message'], msg['time'], msg['isUser'], index);
+                return _buildMessageBubble(msg['message'], msg['time'], msg['isUser'], msg['status'] ?? 'sent');
               },
             ),
           ),
@@ -302,7 +303,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
 
-  Widget _buildMessageBubble(String message, String time, bool isUser, int index) {
+  Widget _buildMessageBubble(String message, String time, bool isUser, String status) {
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -349,7 +350,11 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 if (isUser) ...[
                   const SizedBox(width: 4),
-                  const Icon(Icons.done_all, size: 14, color: brandBronze),
+                  Icon(
+                    Icons.done_all, 
+                    size: 14, 
+                    color: status == 'read' ? Colors.blueAccent : Colors.grey
+                  ),
                 ]
               ],
             ),
