@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
     LayoutDashboard, Users, FileText, CheckCircle, CreditCard, Settings, LogOut,
     Search, Bell, ChevronDown, Filter, Eye, DollarSign, AlertTriangle, TrendingUp, Menu, X,
@@ -330,14 +330,14 @@ const AdminDashboardPage = ({ onLogout, user }) => {
                         transition={{ duration: 0.3, ease: 'easeOut' }}
                         className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-slate-800 dark:border-slate-700 text-slate-800 dark:text-slate-200 z-50 flex flex-col shadow-xl md:shadow-md border-r border-slate-100 ${isSidebarOpen ? 'block' : 'hidden md:flex'}`}
                     >
-                        <div className="h-16 flex items-center px-6 border-b border-slate-50 dark:border-slate-700">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full border-2 border-[#F97316] flex items-center justify-center">
-                                    <div className="w-4 h-4 bg-[#F97316] rounded-full"></div>
-                                </div>
-                                <span className="text-xl font-bold tracking-tight text-slate-800 dark:text-white">Shinefiling</span>
+                        <div className="h-40 flex items-center px-4 border-b border-slate-50 dark:border-slate-700 justify-center relative">
+                            <div
+                                className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
+                                onClick={() => window.location.href = '/'}
+                            >
+                                <img src="/logo.png" alt="ShineFiling" className="h-32 w-auto object-contain" />
                             </div>
-                            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden ml-auto text-slate-400"><X size={20} /></button>
+                            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden absolute right-4 text-slate-400"><X size={20} /></button>
                         </div>
 
                         <div className="flex-1 overflow-y-auto py-4 space-y-6 no-scrollbar">

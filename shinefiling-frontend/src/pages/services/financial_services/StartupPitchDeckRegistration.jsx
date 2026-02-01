@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -43,7 +43,7 @@ const StartupPitchDeckRegistration = ({ isModal, onClose, initialData = {} }) =>
             title: 'Investor Ready',
             features: ["Everything in Structure", "Premium Visual Design", "Infographics & Charts", "Unlimited Revisions"],
             recommended: true,
-            color: 'bg-[#10232A] text-white border-gray-700'
+            color: 'bg-[#043E52] text-white border-gray-700'
         },
         bundle: {
             price: 19999,

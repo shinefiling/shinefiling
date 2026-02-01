@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Scale, Coins, AlertCircle, HelpCircle, FileText, BadgeIndianRupee, Calendar, BookOpen, ChevronRight, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -129,7 +129,7 @@ const MinimumWages = ({ isLoggedIn }) => {
 
             {/* CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Zones Section */}
                     <section>
@@ -150,15 +150,15 @@ const MinimumWages = ({ isLoggedIn }) => {
                                 </ul>
                             </div>
                             <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-lg relative overflow-hidden">
-                                <div className="absolute left-0 top-0 bottom-0 w-2 bg-[#10232A] rounded-l-2xl"></div>
+                                <div className="absolute left-0 top-0 bottom-0 w-2 bg-[#043E52] rounded-l-2xl"></div>
                                 <h3 className="text-xl font-bold text-navy mb-4">Skill Categories</h3>
                                 <p className="text-gray-600 leading-relaxed mb-4">
                                     Rates vary based on skill level required for the job.
                                 </p>
                                 <ul className="space-y-2 text-sm text-gray-600">
-                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#10232A] mt-2"></div> Unskilled (Peon/Helper)</li>
-                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#10232A] mt-2"></div> Semi-Skilled (Assistant)</li>
-                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#10232A] mt-2"></div> Skilled (Clerk/Electrician)</li>
+                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#043E52] mt-2"></div> Unskilled (Peon/Helper)</li>
+                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#043E52] mt-2"></div> Semi-Skilled (Assistant)</li>
+                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#043E52] mt-2"></div> Skilled (Clerk/Electrician)</li>
                                 </ul>
                             </div>
                         </div>
@@ -178,11 +178,11 @@ const MinimumWages = ({ isLoggedIn }) => {
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Representation</li>
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Defense Strategy</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('notice')} className="w-full py-3 rounded-xl border-2 border-[#10232A] text-navy font-bold hover:bg-navy hover:text-white transition">Get Help</button>
+                                <button onClick={() => handlePlanSelect('notice')} className="w-full py-3 rounded-xl border-2 border-[#043E52] text-navy font-bold hover:bg-navy hover:text-white transition">Get Help</button>
                             </div>
 
                             {/* Subscription */}
-                            <div className="bg-[#10232A] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 flex flex-col">
+                            <div className="bg-[#043E52] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 flex flex-col">
                                 <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Annual</div>
                                 <h3 className="text-xl font-bold text-white mb-2">Subscription</h3>
                                 <div className="text-4xl font-black text-white mb-1">₹4,999</div>
@@ -192,7 +192,7 @@ const MinimumWages = ({ isLoggedIn }) => {
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Quarterly Audits</li>
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Priority Support</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('subscription')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Subscribe</button>
+                                <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Subscribe</button>
                             </div>
 
                             {/* Audit */}
@@ -205,7 +205,7 @@ const MinimumWages = ({ isLoggedIn }) => {
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Gap Analysis</li>
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Compliance Report</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('audit')} className="w-full py-3 rounded-xl border-2 border-[#10232A] text-navy font-bold hover:bg-navy hover:text-white transition">Select Audit</button>
+                                <button onClick={() => handlePlanSelect('audit')} className="w-full py-3 rounded-xl border-2 border-[#043E52] text-navy font-bold hover:bg-navy hover:text-white transition">Select Audit</button>
                             </div>
                         </div>
                     </section>
@@ -246,7 +246,7 @@ const MinimumWages = ({ isLoggedIn }) => {
                             </ul>
                         </div>
 
-                        <div className="bg-[#10232A] text-white p-6 rounded-3xl shadow-lg">
+                        <div className="bg-[#043E52] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Check Rates?</h4>
                             <p className="text-gray-300 text-sm mb-4">Get latest notification for your state.</p>
                             <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">

@@ -112,7 +112,7 @@ const TradeLicensePage = ({ isLoggedIn }) => {
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Apply Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <BookOpen size={18} /> Learn More
                                 </button>
                             </div>
@@ -130,7 +130,7 @@ const TradeLicensePage = ({ isLoggedIn }) => {
                                 <div className="text-center mb-6">
                                     <h3 className="text-navy font-bold text-xl mb-2">New Trade License</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹2,999</h3>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">?2,999</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ Onwards</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
@@ -158,7 +158,7 @@ const TradeLicensePage = ({ isLoggedIn }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* DETAILED SEO CONTENT SECTION - COMPREHENSIVE GUIDE */}
                     <section className="mt-10 space-y-12 mb-20">
@@ -280,12 +280,12 @@ const TradeLicensePage = ({ isLoggedIn }) => {
                         </div>
                         <div className="grid md:grid-cols-2 gap-6">
                             {/* Standard */}
-                            <div className="bg-[#10232A] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 flex flex-col">
+                            <div className="bg-[#043E52] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 flex flex-col">
                                 {/* Top Gold Line */}
                                 <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
-                                <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                                <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
                                 <h3 className="text-xl font-bold text-white mb-2 mt-4">New License</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹2,999</div>
+                                <div className="text-4xl font-black text-white mb-1">?2,999</div>
                                 <p className="text-xs text-gray-400 mb-6">+ Govt Fees (Actuals)</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Application Filing</li>
@@ -298,7 +298,7 @@ const TradeLicensePage = ({ isLoggedIn }) => {
                             {/* Renewal */}
                             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
                                 <h3 className="text-xl font-bold text-navy mb-2">Renewal</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹1,999</div>
+                                <div className="text-4xl font-black text-navy mb-1">?1,999</div>
                                 <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Annual Renewal Filing</li>
@@ -311,7 +311,7 @@ const TradeLicensePage = ({ isLoggedIn }) => {
                     </section>
 
                     {/* WHY CHOOSE SHINEFILING - SEO SECTION */}
-                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-20">
+                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-20">
                         {/* Background Deco */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
 

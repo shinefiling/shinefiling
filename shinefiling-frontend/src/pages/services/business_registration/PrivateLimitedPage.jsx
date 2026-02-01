@@ -11,12 +11,19 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
+    const scrollToPlans = () => {
+        const section = document.getElementById('pricing-section');
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     const faqs = [
         { q: "How many directors are required?", a: "Minimum 2 directors are mandatory for a Private Limited Company." },
-        { q: "Can a single person open a Pvt Ltd company?", a: "No — but you can open an OPC (One Person Company) if you are the only owner." },
+        { q: "Can a single person open a Pvt Ltd company?", a: "No ï¿½ but you can open an OPC (One Person Company) if you are the only owner." },
         { q: "Can I register my home as an office?", a: "Yes, totally allowed. You can use your residential address as the registered office by providing an electricity bill and NOC." },
         { q: "Is physical presence required?", a: "No, the entire process is 100% online. You do not need to visit any government office." },
-        { q: "What is the minimum capital required?", a: "There is no minimum capital requirement. You can start with as little as ₹1 (but practically typically ₹10,000 to ₹1 Lakh authorized capital)." },
+        { q: "What is the minimum capital required?", a: "There is no minimum capital requirement. You can start with as little as ?1 (but practically typically ?10,000 to ?1 Lakh authorized capital)." },
         { q: "Can salaried employees be directors?", a: "Yes, provided their employment agreement allows it. It is best to check with your employer." },
         { q: "How long is the registration valid?", a: "The company has perpetual existence. It continues until you formally close it." }
     ];
@@ -142,10 +149,10 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                                 transition={{ delay: 0.6 }}
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={scrollToPlans} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Get Started Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn More
                                 </button>
                             </motion.div>
@@ -221,7 +228,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    onClick={scrollToPlans}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
@@ -258,8 +265,8 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Startup</h3>
                             <p className="text-slate-500 text-sm mb-6">Essential registration for new founders.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹6,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹12,000</span>
+                                <span className="text-4xl font-black text-navy">?6,999</span>
+                                <span className="text-slate-400 line-through text-sm">?12,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -282,8 +289,8 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                                     <X size={16} className="shrink-0" /> 1st Year Compliance
                                 </li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
-                                Choose Basic
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Choose Startup
                             </button>
                         </motion.div>
 
@@ -294,32 +301,32 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Popular
                             </div>
 
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Private Limited</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹6,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹12k</span>
+                                <span className="text-5xl font-black text-white">?6,999</span>
+                                <span className="text-gray-500 line-through text-sm">?12k</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
                                 {["Everything in Startup",
-                                        "GST Registration",
-                                        "Udyam (MSME) Registration"].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
-                                    </li>
-                                ))}
+                                    "GST Registration",
+                                    "Udyam (MSME) Registration"].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                        </li>
+                                    ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -335,8 +342,8 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Enterprise</h3>
                             <p className="text-slate-500 text-sm mb-6">Full legal protection and compliance.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹24,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹40,000</span>
+                                <span className="text-4xl font-black text-navy">?24,999</span>
+                                <span className="text-slate-400 line-through text-sm">?40,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -353,7 +360,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('enterprise')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Enterprise
                             </button>
                         </motion.div>
@@ -363,7 +370,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Introduction - Expanded for SEO */}
                     <section>
@@ -378,7 +385,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                                 As a separate legal entity, a Private Limited Company is responsible for its own debts and liabilities, meaning the personal assets of the directors and shareholders are safe. It is also the most credible structure for raising external funding from Venture Capitalists (VCs), Angel Investors, and banks.
                             </p>
                             <p>
-                                With ShineFiling, you can register your Private Limited Company online in just 7-10 days. Our expert team of Chartered Accountants (CAs) and Company Secretaries (CS) handles the entire process—from Name Approval and DSC to Incorporation Certificate and Bank Account opening—ensuring a 100% compliant and hassle-free experience.
+                                With ShineFiling, you can register your Private Limited Company online in just 7-10 days. Our expert team of Chartered Accountants (CAs) and Company Secretaries (CS) handles the entire processï¿½from Name Approval and DSC to Incorporation Certificate and Bank Account openingï¿½ensuring a 100% compliant and hassle-free experience.
                             </p>
                         </div>
                     </section>
@@ -526,7 +533,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
 
 
                     {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
-                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
                         {/* Background Deco */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
 
@@ -655,7 +662,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
 
                             <div className="mt-8 bg-beige/10 p-4 rounded-xl border border-blue-100">
                                 <p className="text-xs text-blue-800 font-medium leading-relaxed flex gap-2">
-                                    <span className="text-lg">💡</span>
+                                    <span className="text-lg">??</span>
                                     <span><strong>Pro Tip:</strong> Ensure that the address on your Electricity Bill matches exactly with the address you want to register.</span>
                                 </p>
                             </div>

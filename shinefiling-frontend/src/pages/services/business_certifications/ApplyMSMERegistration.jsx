@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, AlertCircle, FileText, ChevronRight, Save, Building, Users, CreditCard, Lock, RefreshCw, Smartphone } from 'lucide-react';
 import { submitMSMERegistration } from '../../../api';
@@ -467,7 +467,7 @@ const ApplyMSMERegistration = () => {
                                             {formData.nicCodes.map(code => (
                                                 <div key={code.code} className="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-800 rounded-lg text-xs font-bold">
                                                     <span>{code.code} - {code.desc}</span>
-                                                    <button onClick={() => removeNicCode(code.code)} className="hover:text-red-600">×</button>
+                                                    <button onClick={() => removeNicCode(code.code)} className="hover:text-red-600">Ã—</button>
                                                 </div>
                                             ))}
                                             {formData.nicCodes.length === 0 && <span className="text-sm text-slate-400 italic">No activities selected</span>}

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Rocket, Star, Clock, Bell } from 'lucide-react';
 
 const ComingSoon = () => {

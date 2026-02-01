@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -43,7 +43,7 @@ const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) 
             title: 'Comprehensive',
             features: ["Loans upto ₹5 Crores", "5 Years Projections", "Detailed Ratio Analysis", "Working Capital Assess."],
             recommended: true,
-            color: 'bg-[#10232A] text-white border-gray-700'
+            color: 'bg-[#043E52] text-white border-gray-700'
         },
         corporate: {
             price: 9999,

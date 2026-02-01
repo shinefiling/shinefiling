@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, FileText, Bell, Plus,
@@ -41,6 +41,8 @@ const DashboardPage = ({ onLogout }) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [serviceCategories, setServiceCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [showNotifications, setShowNotifications] = useState(false); // Added State
+    const notificationRef = React.useRef(null); // Added Ref
 
     const location = useLocation();
 
@@ -90,6 +92,17 @@ const DashboardPage = ({ onLogout }) => {
 
         return () => clearInterval(interval);
     }, [location]);
+
+    // Close notifications on click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+                setShowNotifications(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     // Fetch Services for Sidebar (Dynamic Logic Preserved)
     useEffect(() => {
@@ -164,27 +177,25 @@ const DashboardPage = ({ onLogout }) => {
         }
     };
 
-    // Refined Sidebar Item to match Admin Dashboard Style
+    // Refined Sidebar Item - Ecomus Style
     const SidebarItem = ({ icon: Icon, label, id, hot }) => {
         const isActive = activeTab === id;
         return (
-            <div className="mb-0.5">
-                <button
-                    onClick={() => { setActiveTab(id); if (window.innerWidth < 768) setIsSidebarOpen(false); }}
-                    className={`
-                        w-full flex items-center justify-between px-6 py-2.5 transition-all duration-200 group text-left relative
-                        ${isActive
-                            ? 'text-white font-bold bg-[#B58863]/10 border-r-4 border-[#B58863]'
-                            : 'text-slate-400 hover:text-white hover:bg-white/5'}
-                    `}
-                >
-                    <div className="flex items-center gap-3">
-                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isActive ? 'bg-[#B58863] scale-125' : 'bg-transparent'}`}></div>
-                        <Icon size={18} className={isActive ? 'text-[#B58863]' : 'text-slate-400 group-hover:text-white'} />
-                        <span className="text-sm">{label}</span>
-                    </div>
-                </button>
-            </div>
+            <button
+                onClick={() => { setActiveTab(id); if (window.innerWidth < 768) setIsSidebarOpen(false); }}
+                className={`
+                    w-full flex items-center justify-between px-6 py-3.5 transition-all duration-200 group text-left relative
+                    ${isActive
+                        ? 'text-[#015A62] dark:text-[#ED6E3F] bg-[#015A62]/5 dark:bg-[#ED6E3F]/10 border-l-4 border-[#015A62] dark:border-[#ED6E3F]'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 border-l-4 border-transparent'}
+                `}
+            >
+                <div className="flex items-center gap-3.5">
+                    <Icon size={20} className={isActive ? 'text-[#015A62] dark:text-[#ED6E3F]' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-white'} />
+                    <span className={`text-sm ${isActive ? 'font-bold' : 'font-medium'}`}>{label}</span>
+                </div>
+                <ChevronDown size={14} className={`transition-transform duration-300 ${isActive ? 'text-[#015A62] dark:text-[#ED6E3F] -rotate-90' : 'text-slate-300 -rotate-90 opacity-0 group-hover:opacity-100'}`} />
+            </button>
         );
     };
 
@@ -200,31 +211,30 @@ const DashboardPage = ({ onLogout }) => {
             <AnimatePresence>
                 {(isSidebarOpen || window.innerWidth >= 768) && (
                     <motion.div
-                        initial={{ x: -300 }}
+                        initial={{ x: -280 }}
                         animate={{ x: 0 }}
-                        exit={{ x: -300 }}
+                        exit={{ x: -280 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className={`fixed inset-y-0 left-0 w-64 bg-[#10232A] text-white z-50 flex flex-col shadow-xl md:shadow-md border-r border-white/5 ${isSidebarOpen ? 'block' : 'hidden md:flex'}`}
+                        className={`fixed inset-y-0 left-0 w-[280px] bg-white dark:bg-[#043E52] z-50 flex flex-col shadow-xl md:shadow-md border-r border-slate-200 dark:border-white/5 ${isSidebarOpen ? 'block' : 'hidden md:flex'}`}
                     >
-                        <div className="h-16 flex items-center px-6 border-b border-white/5">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full border-2 border-[#B58863] flex items-center justify-center">
-                                    <div className="w-4 h-4 bg-[#B58863] rounded-full"></div>
-                                </div>
-                                <span className="text-xl font-bold tracking-tight text-white">Shine<span className="text-[#B58863]">Filing</span></span>
+                        <div className="h-20 flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5">
+                            <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.href = '/'}>
+                                <img src="/logo.png" alt="ShineFiling" className="h-8 w-auto object-contain" />
+                                <span className="text-xl font-bold tracking-tight text-[#043E52] dark:text-white">Shine<span className="text-[#ED6E3F]">Filing</span></span>
                             </div>
-                            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden ml-auto text-slate-400"><X size={20} /></button>
+                            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-[#ED6E3F]"><X size={20} /></button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto py-4 space-y-6 no-scrollbar">
+                        <div className="flex-1 overflow-y-auto py-6 space-y-1 no-scrollbar">
+
                             {/* CTA Button */}
                             {!isEmployee && (
-                                <div className="px-6 mb-2">
+                                <div className="px-6 mb-6">
                                     <button
                                         onClick={() => { setActiveTab('new-filing'); setIsSidebarOpen(false); }}
-                                        className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-[#B58863]/20 group ${activeTab === 'new-filing'
-                                            ? 'bg-[#B58863] text-white'
-                                            : 'bg-gradient-to-r from-[#B58863] to-[#C19A78] text-white hover:brightness-110'
+                                        className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-[#ED6E3F]/20 group ${activeTab === 'new-filing'
+                                            ? 'bg-[#ED6E3F] text-white scale-[1.02]'
+                                            : 'bg-gradient-to-r from-[#ED6E3F] to-[#f28b65] text-white hover:brightness-110'
                                             }`}
                                     >
                                         <Plus size={18} /> New Filing
@@ -233,12 +243,15 @@ const DashboardPage = ({ onLogout }) => {
                             )}
 
                             <div>
-                                <div className="px-6 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Main Menu</div>
+                                <div className="px-6 mb-3 flex items-center gap-2 text-[#015A62] dark:text-[#ED6E3F] font-bold text-sm">
+                                    <LayoutDashboard size={16} />
+                                    <span>Menu</span>
+                                </div>
                                 <SidebarItem icon={LayoutDashboard} label="Dashboard" id="overview" />
                                 {!isEmployee && (
                                     <>
                                         <SidebarItem icon={Package} label="My Applications" id="orders" />
-                                        <SidebarItem icon={Folder} label="My Documents" id="documents" />
+                                        <SidebarItem icon={Folder} label="Document Wallet" id="documents" />
                                         <SidebarItem icon={Calendar} label="Compliance Calendar" id="compliance" />
                                         <SidebarItem icon={CreditCard} label="Billing & Invoices" id="payments" />
                                     </>
@@ -246,12 +259,16 @@ const DashboardPage = ({ onLogout }) => {
                             </div>
 
                             {!isEmployee && (
-                                <div>
-                                    <div className="px-6 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Account</div>
+                                <div className="mt-6">
+                                    <div className="px-6 mb-3 flex items-center gap-2 text-[#015A62] dark:text-[#ED6E3F] font-bold text-sm">
+                                        <User size={16} />
+                                        <span>Account</span>
+                                    </div>
                                     <SidebarItem icon={User} label="Profile & KYC" id="profile" />
                                     <SidebarItem icon={HelpCircle} label="Help & Support" id="support" />
                                 </div>
                             )}
+
 
 
                         </div>
@@ -262,12 +279,12 @@ const DashboardPage = ({ onLogout }) => {
             {/* Mobile Overlay */}
             {isSidebarOpen && <div className="fixed inset-0 bg-black/20 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />}
             {/* Main Content Area */}
-            <div className="flex-1 md:ml-64 flex flex-col h-screen overflow-hidden">
+            <div className="flex-1 md:ml-[280px] flex flex-col h-screen overflow-hidden">
                 {/* Header */}
-                <div className="h-16 bg-white dark:bg-[#10232A] border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-6 z-30 sticky top-0 transition-colors duration-200">
+                <div className="h-16 bg-white dark:bg-[#043E52] border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-6 z-30 sticky top-0 transition-colors duration-200">
                     <div className="flex items-center gap-4">
                         <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden text-slate-500"><Menu size={24} /></button>
-                        <h1 className="text-lg font-bold text-slate-800 dark:text-white tracking-tight hidden md:block">
+                        <h1 className="text-lg font-bold text-[#015A62] dark:text-white tracking-tight hidden md:block">
                             {activeTab === 'overview' ? 'Overview' :
                                 activeTab === 'new-filing' ? 'New Service' :
                                     activeTab === 'orders' ? 'My Applications' :
@@ -281,10 +298,76 @@ const DashboardPage = ({ onLogout }) => {
                     <div className="flex items-center gap-4">
                         <button onClick={toggleDarkMode} className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition-colors">{isDarkMode ? <Sun size={20} /> : <Moon size={20} />}</button>
 
-                        <button onClick={() => setActiveTab('notifications')} className="relative p-2 rounded-full transition-colors text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700">
-                            <Bell size={20} />
-                            {unreadCount > 0 && <span className="absolute top-1.5 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></span>}
-                        </button>
+                        <div className="relative" ref={notificationRef}>
+                            <button
+                                onClick={() => setShowNotifications(!showNotifications)}
+                                className="relative p-2 rounded-full transition-colors text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700"
+                            >
+                                <Bell size={20} />
+                                {notifications.some(n => !n.isRead && !n.read) && <span className="absolute top-1.5 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></span>}
+                            </button>
+
+                            <AnimatePresence>
+                                {showNotifications && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5 dark:ring-white/10"
+                                    >
+                                        {/* Header */}
+                                        <div className="bg-[#015A62] px-4 py-3 flex items-center justify-between">
+                                            <h4 className="text-white font-bold text-sm">Notifications</h4>
+                                            <button className="text-white/80 hover:text-white transition-colors">
+                                                <Settings size={16} />
+                                            </button>
+                                        </div>
+
+                                        {/* Notification List */}
+                                        <div className="max-h-[350px] overflow-y-auto bg-white dark:bg-slate-800">
+                                            {notifications.length > 0 ? (
+                                                notifications.slice(0, 5).map((notif, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        onClick={() => { setActiveTab('notifications'); setShowNotifications(false); }}
+                                                        className="p-4 border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors flex gap-3 group cursor-pointer relative"
+                                                    >
+                                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex-shrink-0 flex items-center justify-center text-[#043E52] dark:text-white font-bold text-xs">
+                                                            {notif.sender ? notif.sender.charAt(0) : 'S'}
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <p className="text-xs text-slate-800 dark:text-slate-200 leading-snug">
+                                                                <span className="font-bold">{notif.title || 'System'}</span> {notif.message}
+                                                            </p>
+                                                            <span className="text-[10px] text-slate-400 font-medium mt-1 block">
+                                                                {notif.timestamp ? new Date(notif.timestamp).toLocaleDateString() : 'Just now'}
+                                                            </span>
+                                                        </div>
+                                                        {(!notif.isRead && !notif.read) && (
+                                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#015A62] dark:bg-[#ED6E3F]"></div>
+                                                        )}
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="p-8 text-center text-slate-400 flex flex-col items-center">
+                                                    <Bell size={24} className="mb-2 opacity-50" />
+                                                    <span className="text-xs font-medium">No new notifications</span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Footer */}
+                                        <div
+                                            onClick={() => { setShowNotifications(false); setActiveTab('notifications'); }}
+                                            className="bg-slate-50 dark:bg-slate-900 px-4 py-3 text-center border-t border-slate-100 dark:border-slate-700 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                        >
+                                            <span className="text-xs font-bold text-[#015A62] dark:text-[#ED6E3F]">See all recent activity</span>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
 
                         <button onClick={onLogout} className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition-colors" title="Sign Out">
                             <LogOut size={20} />
@@ -295,11 +378,11 @@ const DashboardPage = ({ onLogout }) => {
                                 <p className="text-sm font-bold text-slate-800 dark:text-white leading-none">{user.fullName || 'User'}</p>
                                 <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1">{isEmployee ? 'Employee' : 'Client'}</p>
                             </div>
-                            <button className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden ring-2 ring-transparent hover:ring-[#B58863] transition-all relative group">
+                            <button className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden ring-2 ring-transparent hover:ring-[#015A62] transition-all relative group">
                                 {user.profileImage ? (
                                     <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-[#B58863] to-[#A67C52] flex items-center justify-center text-white font-bold text-sm">
+                                    <div className="w-full h-full bg-gradient-to-br from-[#015A62] to-[#043E52] flex items-center justify-center text-white font-bold text-sm">
                                         {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
                                     </div>
                                 )}
@@ -327,25 +410,25 @@ const DashboardPage = ({ onLogout }) => {
             </div>
 
             {/* Mobile Bottom Nav for quick access (Optional, keeping consistent with old design but updating style) */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#10232A] border-t border-slate-200 dark:border-white/10 h-[70px] z-[100] flex justify-between items-center px-6 shadow-lg pb-safe-bottom">
-                <button onClick={() => setActiveTab('overview')} className={`flex flex-col items-center gap-1 ${activeTab === 'overview' ? 'text-[#B58863]' : 'text-slate-400'}`}>
+            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#043E52] border-t border-slate-200 dark:border-white/10 h-[70px] z-[100] flex justify-between items-center px-6 shadow-lg pb-safe-bottom">
+                <button onClick={() => setActiveTab('overview')} className={`flex flex-col items-center gap-1 ${activeTab === 'overview' ? 'text-[#ED6E3F]' : 'text-slate-400'}`}>
                     <LayoutDashboard size={20} />
                     <span className="text-[10px] font-bold">Home</span>
                 </button>
-                <button onClick={() => setActiveTab('orders')} className={`flex flex-col items-center gap-1 ${activeTab === 'orders' ? 'text-[#B58863]' : 'text-slate-400'}`}>
+                <button onClick={() => setActiveTab('orders')} className={`flex flex-col items-center gap-1 ${activeTab === 'orders' ? 'text-[#ED6E3F]' : 'text-slate-400'}`}>
                     <Package size={20} />
                     <span className="text-[10px] font-bold">Apps</span>
                 </button>
                 <div className="relative -top-6">
-                    <button onClick={() => setActiveTab('new-filing')} className="w-14 h-14 rounded-full bg-[#10232A] dark:bg-[#B58863] text-white flex items-center justify-center shadow-lg ring-4 ring-[#F3F4F6] dark:ring-[#0D1C22]">
+                    <button onClick={() => setActiveTab('new-filing')} className="w-14 h-14 rounded-full bg-[#043E52] dark:bg-[#ED6E3F] text-white flex items-center justify-center shadow-lg ring-4 ring-[#F3F4F6] dark:ring-[#0D1C22]">
                         <Plus size={28} />
                     </button>
                 </div>
-                <button onClick={() => setActiveTab('notifications')} className={`flex flex-col items-center gap-1 ${activeTab === 'notifications' ? 'text-[#B58863]' : 'text-slate-400'}`}>
+                <button onClick={() => setActiveTab('notifications')} className={`flex flex-col items-center gap-1 ${activeTab === 'notifications' ? 'text-[#ED6E3F]' : 'text-slate-400'}`}>
                     <Bell size={20} />
                     <span className="text-[10px] font-bold">Alerts</span>
                 </button>
-                <button onClick={() => setActiveTab('profile')} className={`flex flex-col items-center gap-1 ${activeTab === 'profile' ? 'text-[#B58863]' : 'text-slate-400'}`}>
+                <button onClick={() => setActiveTab('profile')} className={`flex flex-col items-center gap-1 ${activeTab === 'profile' ? 'text-[#ED6E3F]' : 'text-slate-400'}`}>
                     <User size={20} />
                     <span className="text-[10px] font-bold">Profile</span>
                 </button>

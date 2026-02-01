@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import axios from 'axios';
 import {
     FileText, CheckCircle, XCircle, Play, Download, Upload,
@@ -84,8 +84,8 @@ const FssaiWorkflowPanel = ({ orderId, submissionId, docs = [], genDocs = [], on
 
             {/* STEP 1: DOC VERIFICATION */}
             <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-                <h3 className="font-bold text-[#10232A] text-sm mb-4 flex items-center gap-2">
-                    <div className="p-1.5 bg-[#FDFBF7] text-[#B58863] rounded-lg border border-[#B58863]/20"><FileText size={14} /></div>
+                <h3 className="font-bold text-[#043E52] text-sm mb-4 flex items-center gap-2">
+                    <div className="p-1.5 bg-[#FDFBF7] text-[#ED6E3F] rounded-lg border border-[#ED6E3F]/20"><FileText size={14} /></div>
                     Document Verification
                 </h3>
                 <div className="space-y-3">
@@ -115,7 +115,7 @@ const FssaiWorkflowPanel = ({ orderId, submissionId, docs = [], genDocs = [], on
                                         </div>
                                     ) : (
                                         <>
-                                            <button onClick={() => handleVerify(doc.id, true)} disabled={actionLoading} className="px-2 py-1 bg-[#10232A] hover:bg-[#B58863] text-white rounded text-[10px] font-bold">Approve</button>
+                                            <button onClick={() => handleVerify(doc.id, true)} disabled={actionLoading} className="px-2 py-1 bg-[#043E52] hover:bg-[#ED6E3F] text-white rounded text-[10px] font-bold">Approve</button>
                                             <button onClick={() => setRejectingDocId(doc.id)} disabled={actionLoading} className="px-2 py-1 bg-red-50 text-red-500 border border-red-100 rounded text-[10px] font-bold">Reject</button>
                                         </>
                                     )
@@ -130,15 +130,15 @@ const FssaiWorkflowPanel = ({ orderId, submissionId, docs = [], genDocs = [], on
             {allVerified && (
                 <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-bold text-[#10232A] text-sm flex items-center gap-2">
-                            <div className="p-1.5 bg-[#FDFBF7] text-[#B58863] rounded-lg border border-[#B58863]/20"><Play size={14} /></div>
+                        <h3 className="font-bold text-[#043E52] text-sm flex items-center gap-2">
+                            <div className="p-1.5 bg-[#FDFBF7] text-[#ED6E3F] rounded-lg border border-[#ED6E3F]/20"><Play size={14} /></div>
                             Automation & Generation
                         </h3>
                         {!hasGenDocs && (
                             <button
                                 onClick={handleStartAutomation}
                                 disabled={actionLoading}
-                                className="px-3 py-1.5 bg-[#10232A] text-white text-xs font-bold rounded-lg shadow hover:bg-[#B58863] transition flex items-center gap-1"
+                                className="px-3 py-1.5 bg-[#043E52] text-white text-xs font-bold rounded-lg shadow hover:bg-[#ED6E3F] transition flex items-center gap-1"
                             >
                                 {actionLoading ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} fill="currentColor" />} Run Auto-Gen
                             </button>
@@ -162,23 +162,23 @@ const FssaiWorkflowPanel = ({ orderId, submissionId, docs = [], genDocs = [], on
             {/* STEP 3: GOVT */}
             {hasGenDocs && (
                 <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-                    <h3 className="font-bold text-[#10232A] text-sm mb-4 flex items-center gap-2">
-                        <div className="p-1.5 bg-[#FDFBF7] text-[#B58863] rounded-lg border border-[#B58863]/20"><Shield size={14} /></div>
+                    <h3 className="font-bold text-[#043E52] text-sm mb-4 flex items-center gap-2">
+                        <div className="p-1.5 bg-[#FDFBF7] text-[#ED6E3F] rounded-lg border border-[#ED6E3F]/20"><Shield size={14} /></div>
                         Govt Portal Update
                     </h3>
                     <div className="grid grid-cols-2 gap-3 mb-3">
                         <input className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs" placeholder="ARN Number" value={govDetails.arn} onChange={e => setGovDetails({ ...govDetails, arn: e.target.value })} />
                         <input type="date" className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs" value={govDetails.date} onChange={e => setGovDetails({ ...govDetails, date: e.target.value })} />
                     </div>
-                    <button onClick={handleSubmitGovt} disabled={actionLoading} className="w-full py-1.5 bg-[#10232A] text-white text-xs font-bold rounded hover:bg-[#B58863] transition">Mark Submitted</button>
+                    <button onClick={handleSubmitGovt} disabled={actionLoading} className="w-full py-1.5 bg-[#043E52] text-white text-xs font-bold rounded hover:bg-[#ED6E3F] transition">Mark Submitted</button>
                 </div>
             )}
 
             {/* STEP 4: CERTIFICATE */}
             {hasGenDocs && (
                 <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-                    <h3 className="font-bold text-[#10232A] text-sm mb-4 flex items-center gap-2">
-                        <div className="p-1.5 bg-[#FDFBF7] text-[#B58863] rounded-lg border border-[#B58863]/20"><CheckCircle size={14} /></div>
+                    <h3 className="font-bold text-[#043E52] text-sm mb-4 flex items-center gap-2">
+                        <div className="p-1.5 bg-[#FDFBF7] text-[#ED6E3F] rounded-lg border border-[#ED6E3F]/20"><CheckCircle size={14} /></div>
                         Final Certificate
                     </h3>
                     <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">

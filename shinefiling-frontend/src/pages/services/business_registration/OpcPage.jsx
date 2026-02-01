@@ -7,15 +7,22 @@ import OnePersonCompanyRegistration from './OnePersonCompanyRegistration';
 
 const OpcPage = ({ isLoggedIn, onLogout }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState('basic');
+    const [selectedPlan, setSelectedPlan] = useState('startup');
     const navigate = useNavigate();
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
+    const scrollToPlans = () => {
+        const section = document.getElementById('pricing-section');
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     const faqs = [
         { q: "What is difference between OPC and Sole Proprietorship?", a: "The main difference is Liability. In Proprietorship, liability is unlimited (personal assets risk). In OPC, liability is LIMITED to company assets. Also, OPC is a separate legal entity." },
         { q: "Who can be a Nominee?", a: "Nominee must be an Indian Citizen, Resident in India, and not a minor. A person can be a nominee in only one OPC at a time." },
-        { q: "Can I convert OPC to Pvt Ltd later?", a: "Yes! Can convert voluntarily after 2 years. Mandatory if paid-up capital > ₹50 Lakhs OR turnover > ₹2 Crores." },
+        { q: "Can I convert OPC to Pvt Ltd later?", a: "Yes! Can convert voluntarily after 2 years. Mandatory if paid-up capital > ?50 Lakhs OR turnover > ?2 Crores." },
         { q: "Is Audit mandatory?", a: "Yes. Like Pvt Ltd, an OPC must get accounts audited by a CA every year and file AOC-4 and MGT-7." },
         { q: "Can I raise VC funding?", a: "VCs prefer Pvt Ltd with multiple shareholders. However, you can convert OPC to Pvt Ltd to accept funding." },
         { q: "What if the Director dies?", a: "The Nominee automatically becomes the sole member and appoints a new nominee within 15 days, ensuring perpetual succession." }
@@ -122,10 +129,10 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                                 transition={{ delay: 0.6 }}
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={scrollToPlans} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Register OPC Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn More
                                 </button>
                             </motion.div>
@@ -138,7 +145,7 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
                                 {/* Top Gold Line (Matching other pages) */}
                                 <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
@@ -201,12 +208,12 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    onClick={scrollToPlans}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
                                 </button>
-                                
+
                                 <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
                                     Compare all plans below
                                 </p>
@@ -238,8 +245,8 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Startup</h3>
                             <p className="text-slate-500 text-sm mb-6">Foundational setup for solo founders.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹4,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
+                                <span className="text-4xl font-black text-navy">?4,999</span>
+                                <span className="text-slate-400 line-through text-sm">?8,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -262,8 +269,8 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                                     <X size={16} className="shrink-0" /> MSME Registration
                                 </li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
-                                Choose Basic
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Choose Startup
                             </button>
                         </motion.div>
 
@@ -274,32 +281,32 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Popular
                             </div>
 
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Opc</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹6,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹12k</span>
+                                <span className="text-5xl font-black text-white">?6,999</span>
+                                <span className="text-gray-500 line-through text-sm">?12k</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
                                 {["Everything in Startup",
-                                        "Nominee Consent Filing",
-                                        "Digital Share Certificate"].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
-                                    </li>
-                                ))}
+                                    "Nominee Consent Filing",
+                                    "Digital Share Certificate"].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                        </li>
+                                    ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -315,8 +322,8 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Elite</h3>
                             <p className="text-slate-500 text-sm mb-6">Full business readiness & compliance.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹12,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹20,000</span>
+                                <span className="text-4xl font-black text-navy">?12,999</span>
+                                <span className="text-slate-400 line-through text-sm">?20,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -333,8 +340,8 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
-                                Choose Elite
+                            <button onClick={() => handlePlanSelect('enterprise')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Choose Enterprise
                             </button>
                         </motion.div>
                     </div>
@@ -343,7 +350,7 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Introduction - Expanded for SEO */}
                     <section>
@@ -468,7 +475,7 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
 
 
                     {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
-                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
                         {/* Background Deco */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
 

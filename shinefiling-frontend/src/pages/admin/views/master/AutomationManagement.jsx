@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
     Activity, Settings, Zap, CheckCircle,
@@ -13,7 +13,7 @@ const StatCard = ({ label, value, subtext, icon: Icon, color }) => (
     <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between group hover:shadow-md transition-all">
         <div>
             <p className="text-[10px] font-bold text-[#3D4D55] uppercase tracking-widest">{label}</p>
-            <h3 className="text-2xl font-extrabold text-[#10232A] mt-1">{value}</h3>
+            <h3 className="text-2xl font-extrabold text-[#043E52] mt-1">{value}</h3>
             {subtext && <p className={`text-[10px] font-bold mt-1 ${color?.text || 'text-[#3D4D55]'}`}>{subtext}</p>}
         </div>
         <div className={`p-3 rounded-xl ${color?.bg} ${color?.text} group-hover:scale-110 transition-transform`}>
@@ -76,11 +76,11 @@ const AutomationManagement = () => {
             {/* Header & Controls */}
             <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
                 <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-[#B58863] to-[#D4B08C] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#B58863]/30">
+                    <div className="w-14 h-14 bg-gradient-to-br from-[#ED6E3F] to-[#D4B08C] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#ED6E3F]/30">
                         <Cpu size={28} />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold text-[#10232A]">Automation Management</h2>
+                        <h2 className="text-2xl font-bold text-[#043E52]">Automation Management</h2>
                         <div className="flex items-center gap-2 mt-1">
                             <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-bold uppercase border border-green-200">
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse"></span>
@@ -101,8 +101,8 @@ const AutomationManagement = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === tab.id
-                                ? 'bg-[#10232A] text-white shadow-md'
-                                : 'text-[#3D4D55] hover:bg-gray-50 hover:text-[#10232A]'
+                                ? 'bg-[#043E52] text-white shadow-md'
+                                : 'text-[#3D4D55] hover:bg-gray-50 hover:text-[#043E52]'
                                 }`}
                         >
                             <tab.icon size={14} /> {tab.label}
@@ -142,7 +142,7 @@ const AutomationManagement = () => {
                             value="3m 12s"
                             subtext="-45s optimization"
                             icon={Clock}
-                            color={{ bg: 'bg-[#FDFBF7]', text: 'text-[#B58863]' }}
+                            color={{ bg: 'bg-[#FDFBF7]', text: 'text-[#ED6E3F]' }}
                         />
                     </div>
 
@@ -160,7 +160,7 @@ const AutomationManagement = () => {
                                             <Cpu size={24} />
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-[#10232A] text-lg">{wf.name}</h3>
+                                            <h3 className="font-bold text-[#043E52] text-lg">{wf.name}</h3>
                                             <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase mt-1 ${wf.status === 'Active' ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'}`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full ${wf.status === 'Active' ? 'bg-green-500' : 'bg-yellow-500'}`} />
                                                 {wf.status}
@@ -202,7 +202,7 @@ const AutomationManagement = () => {
                                         </div>
                                         <div className="flex gap-2">
                                             <button className="px-3 py-1.5 rounded-lg bg-gray-100 text-[#3D4D55] text-xs font-bold hover:bg-gray-200 transition">Logs</button>
-                                            <button className="px-3 py-1.5 rounded-lg bg-[#FDFBF7] text-[#B58863] border border-[#B58863]/20 text-xs font-bold hover:bg-white transition flex items-center gap-1 shadow-sm">
+                                            <button className="px-3 py-1.5 rounded-lg bg-[#FDFBF7] text-[#ED6E3F] border border-[#ED6E3F]/20 text-xs font-bold hover:bg-white transition flex items-center gap-1 shadow-sm">
                                                 <Play size={12} /> Run Test
                                             </button>
                                         </div>
@@ -212,8 +212,8 @@ const AutomationManagement = () => {
                         ))}
 
                         {/* New Workflow Card */}
-                        <button onClick={() => { }} className="bg-white/50 rounded-2xl border border-dashed border-gray-300 p-6 flex flex-col items-center justify-center gap-3 text-[#3D4D55] hover:text-[#B58863] hover:border-[#B58863] hover:bg-white transition-all min-h-[300px] group">
-                            <div className="w-16 h-16 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center group-hover:scale-110 transition-transform text-[#B58863]">
+                        <button onClick={() => { }} className="bg-white/50 rounded-2xl border border-dashed border-gray-300 p-6 flex flex-col items-center justify-center gap-3 text-[#3D4D55] hover:text-[#ED6E3F] hover:border-[#ED6E3F] hover:bg-white transition-all min-h-[300px] group">
+                            <div className="w-16 h-16 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center group-hover:scale-110 transition-transform text-[#ED6E3F]">
                                 <Plus size={32} />
                             </div>
                             <span className="font-bold text-sm">Create New Workflow</span>
@@ -227,7 +227,7 @@ const AutomationManagement = () => {
                 <div className="bg-[#1E1E1E] rounded-2xl shadow-xl border border-gray-800 overflow-hidden flex flex-col h-[600px]">
                     <div className="p-4 bg-[#252526] border-b border-black/20 flex justify-between items-center">
                         <div className="flex items-center gap-3">
-                            <Terminal size={18} className="text-[#B58863]" />
+                            <Terminal size={18} className="text-[#ED6E3F]" />
                             <h3 className="text-gray-200 font-mono text-sm font-bold">system_output.log</h3>
                         </div>
                         <div className="flex items-center gap-4">
@@ -261,28 +261,28 @@ const AutomationManagement = () => {
             {activeTab === 'settings' && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 max-w-2xl mx-auto">
                     <div className="flex items-center gap-4 mb-8">
-                        <div className="p-3 bg-[#FDFBF7] text-[#B58863] rounded-xl border border-[#B58863]/20">
+                        <div className="p-3 bg-[#FDFBF7] text-[#ED6E3F] rounded-xl border border-[#ED6E3F]/20">
                             <Settings size={24} />
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold text-[#10232A]">Engine Configuration</h3>
+                            <h3 className="text-xl font-bold text-[#043E52]">Engine Configuration</h3>
                             <p className="text-sm text-[#3D4D55]">Global settings for all automation workers.</p>
                         </div>
                     </div>
 
                     <div className="space-y-6">
-                        <div className="flex items-center justify-between p-4 bg-[#FDFBF7] rounded-xl border border-[#B58863]/10">
+                        <div className="flex items-center justify-between p-4 bg-[#FDFBF7] rounded-xl border border-[#ED6E3F]/10">
                             <div>
-                                <h4 className="font-bold text-[#10232A] text-sm">Master Switch</h4>
+                                <h4 className="font-bold text-[#043E52] text-sm">Master Switch</h4>
                                 <p className="text-xs text-[#3D4D55] mt-1">Kill switch for all running automations.</p>
                             </div>
                             <button className="w-12 h-6 bg-green-500 rounded-full p-1 relative">
                                 <span className="absolute right-1 w-4 h-4 bg-white rounded-full shadow-sm"></span>
                             </button>
                         </div>
-                        <div className="flex items-center justify-between p-4 bg-[#FDFBF7] rounded-xl border border-[#B58863]/10">
+                        <div className="flex items-center justify-between p-4 bg-[#FDFBF7] rounded-xl border border-[#ED6E3F]/10">
                             <div>
-                                <h4 className="font-bold text-[#10232A] text-sm">Debug Mode</h4>
+                                <h4 className="font-bold text-[#043E52] text-sm">Debug Mode</h4>
                                 <p className="text-xs text-[#3D4D55] mt-1">Log detailed stack traces for errors.</p>
                             </div>
                             <button className="w-12 h-6 bg-gray-300 rounded-full p-1 relative">
@@ -302,9 +302,9 @@ const AutomationManagement = () => {
                             <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="relative bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
                                 <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-[#FDFBF7] text-[#B58863] rounded-lg border border-[#B58863]/20"><Sliders size={20} /></div>
+                                        <div className="p-2 bg-[#FDFBF7] text-[#ED6E3F] rounded-lg border border-[#ED6E3F]/20"><Sliders size={20} /></div>
                                         <div>
-                                            <h3 className="font-bold text-[#10232A] text-lg">Configure Pipeline</h3>
+                                            <h3 className="font-bold text-[#043E52] text-lg">Configure Pipeline</h3>
                                             <p className="text-xs text-[#3D4D55]">{selectedWorkflow.name}</p>
                                         </div>
                                     </div>
@@ -314,7 +314,7 @@ const AutomationManagement = () => {
                                     <div className="space-y-6">
                                         <div>
                                             <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Trigger Event</label>
-                                            <select className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#B58863] text-sm font-medium">
+                                            <select className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#ED6E3F] text-sm font-medium">
                                                 <option>{selectedWorkflow.trigger}</option>
                                                 <option>Manual Trigger Only</option>
                                                 <option>Scheduled (Cron Job)</option>
@@ -322,7 +322,7 @@ const AutomationManagement = () => {
                                         </div>
                                         <div>
                                             <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Retry Policy</label>
-                                            <select className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#B58863] text-sm font-medium">
+                                            <select className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#ED6E3F] text-sm font-medium">
                                                 <option>3 Retries (Exponential Backoff)</option>
                                                 <option>No Retry</option>
                                                 <option>Immediate Retry (1x)</option>
@@ -339,7 +339,7 @@ const AutomationManagement = () => {
                                 </div>
                                 <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
                                     <button onClick={() => setIsConfigOpen(false)} className="px-5 py-2.5 text-[#3D4D55] font-bold hover:bg-gray-100 rounded-xl transition text-sm">Cancel</button>
-                                    <button className="px-6 py-2.5 bg-[#10232A] text-white font-bold rounded-xl hover:bg-[#B58863] shadow-lg transition text-sm flex items-center gap-2">
+                                    <button className="px-6 py-2.5 bg-[#043E52] text-white font-bold rounded-xl hover:bg-[#ED6E3F] shadow-lg transition text-sm flex items-center gap-2">
                                         <Save size={16} /> Save Changes
                                     </button>
                                 </div>

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+﻿import React, { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
     FileText, Plus, Edit2, CheckCircle, X, Search, Filter, FolderOpen,
@@ -226,7 +226,7 @@ const ServicesManagement = () => {
                             </div>
                         </div>
                     ))}
-                    <button onClick={handleCreateNew} className="bg-[#10232A] hover:bg-[#F97316] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-orange-500/20 transition flex items-center gap-2 shrink-0 self-center h-12">
+                    <button onClick={handleCreateNew} className="bg-[#043E52] hover:bg-[#F97316] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-orange-500/20 transition flex items-center gap-2 shrink-0 self-center h-12">
                         <Plus size={18} /> New Service
                     </button>
                 </div>
@@ -501,7 +501,7 @@ const ServicesManagement = () => {
                                         <button
                                             type="submit"
                                             disabled={isSaving}
-                                            className="px-6 py-2.5 bg-[#10232A] text-white font-bold rounded-xl hover:bg-[#F97316] shadow-lg shadow-orange-500/20 transition text-sm flex items-center gap-2"
+                                            className="px-6 py-2.5 bg-[#043E52] text-white font-bold rounded-xl hover:bg-[#F97316] shadow-lg shadow-orange-500/20 transition text-sm flex items-center gap-2"
                                         >
                                             {isSaving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <CheckCircle size={16} />}
                                             {isSaving ? 'Saving...' : selectedService ? 'Update Product' : 'Create Product'}

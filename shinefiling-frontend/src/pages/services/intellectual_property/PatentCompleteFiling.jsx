@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Search, Shield, CheckCircle, BookOpen, Zap, HelpCircle, ChevronRight, Star, ArrowRight, UserCheck, Scale, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -148,7 +148,7 @@ const PatentCompleteFilingPage = ({ isLoggedIn }) => {
                         </div>
 
                         {/* Standard */}
-                        <div className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
+                        <div className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Direct Complete</h3>
                             <p className="text-gray-400 text-sm mb-6">Full non-provisional filing.</p>
@@ -159,7 +159,7 @@ const PatentCompleteFilingPage = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Formal Drawings</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Govt Fees Extra</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('complete_standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg">File Complete</button>
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg">File Complete</button>
                         </div>
 
                         {/* Premier */}
@@ -180,7 +180,7 @@ const PatentCompleteFilingPage = ({ isLoggedIn }) => {
 
             {/* INFO SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
                             <BookOpen className="text-bronze" /> Importance of Complete Spec
@@ -195,7 +195,7 @@ const PatentCompleteFilingPage = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    <section className="bg-[#10232A] rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                    <section className="bg-[#043E52] rounded-3xl p-8 md:p-12 relative overflow-hidden">
                         <div className="relative z-10">
                             <h2 className="text-3xl font-bold text-white mb-6">Requirements</h2>
                             <div className="grid md:grid-cols-2 gap-8">

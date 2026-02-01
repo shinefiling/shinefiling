@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     Award, Users, Shield, Globe, CheckCircle, TrendingUp,
@@ -222,8 +222,8 @@ const AboutUsPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
                         {[
-                            { name: 'Venkatesan', role: 'CEO & Founder', desc: 'Visionary leader with 15+ years in LegalTech.', img: expertVenkatesanImg },
-                            { name: 'Prabhu', role: 'Head of Legal Compliance', desc: 'Expert in Corporate Law & Compliance.', img: expertPrabhuImg },
+                            { name: 'Venkatesan', role: 'Founder', desc: 'Focused on strategic planning and business development.', img: expertVenkatesanImg },
+                            { name: 'Prabhu', role: 'CEO & Managing Director', desc: 'Driving operational excellence and organizational growth.', img: expertPrabhuImg },
                         ].map((member, i) => (
                             <motion.div
                                 key={i}

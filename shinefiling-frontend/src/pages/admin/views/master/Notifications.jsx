@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
     MessageSquare, Mail, Bell, Send, Clock, CheckCircle,
     AlertTriangle, Info, X, Trash2, Filter, Search, Inbox,
@@ -254,7 +254,7 @@ const Notifications = () => {
                         <Send size={48} className="mb-4 text-[#F97316] opacity-50" />
                         <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">System Broadcast</h3>
                         <p className="max-w-md text-center mb-6">Send urgent announcements to all users, specific groups, or agents directly via Email, WhatsApp, or In-App notifications.</p>
-                        <button className="px-6 py-3 bg-[#10232A] text-white font-bold rounded-xl shadow-lg hover:bg-[#F97316] transition">Create Broadcast</button>
+                        <button className="px-6 py-3 bg-[#043E52] text-white font-bold rounded-xl shadow-lg hover:bg-[#F97316] transition">Create Broadcast</button>
                     </div>
                 )}
 
@@ -264,7 +264,7 @@ const Notifications = () => {
                         <FileText size={48} className="mb-4 text-[#F97316] opacity-50" />
                         <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Communication Templates</h3>
                         <p className="max-w-md text-center mb-6">Manage standardized email and WhatsApp templates for consistent communication.</p>
-                        <button className="px-6 py-3 bg-[#10232A] text-white font-bold rounded-xl shadow-lg hover:bg-[#F97316] transition">Manage Templates</button>
+                        <button className="px-6 py-3 bg-[#043E52] text-white font-bold rounded-xl shadow-lg hover:bg-[#F97316] transition">Manage Templates</button>
                     </div>
                 )}
 

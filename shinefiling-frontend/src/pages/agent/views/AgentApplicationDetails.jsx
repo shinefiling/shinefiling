@@ -1,4 +1,4 @@
-
+﻿
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Clock, FileText, CheckCircle, User, MessageCircle, Link } from 'lucide-react';
@@ -18,14 +18,14 @@ const AgentApplicationDetails = ({ application, onBack }) => {
 
     return (
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-            <button onClick={onBack} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 font-bold hover:text-[#10232A] dark:hover:text-white transition-colors">
+            <button onClick={onBack} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 font-bold hover:text-[#043E52] dark:hover:text-white transition-colors">
                 <ArrowLeft size={18} /> Back to Applications
             </button>
 
             <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
-                        <h2 className="text-2xl font-bold text-[#10232A] dark:text-white">{application.serviceName}</h2>
+                        <h2 className="text-2xl font-bold text-[#043E52] dark:text-white">{application.serviceName}</h2>
                         <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${statusStyle}`}>
                             {application.status.replace('_', ' ')}
                         </span>
@@ -37,7 +37,7 @@ const AgentApplicationDetails = ({ application, onBack }) => {
                     <button className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1C3540] flex items-center gap-2">
                         <MessageCircle size={16} /> Contact Support
                     </button>
-                    <button className="px-4 py-2 bg-[#10232A] dark:bg-[#B58863] text-white rounded-xl font-bold flex items-center gap-2 shadow-lg">
+                    <button className="px-4 py-2 bg-[#043E52] dark:bg-[#ED6E3F] text-white rounded-xl font-bold flex items-center gap-2 shadow-lg">
                         <FileText size={16} /> View Invoice
                     </button>
                 </div>
@@ -46,9 +46,9 @@ const AgentApplicationDetails = ({ application, onBack }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Main Details */}
                 <div className="md:col-span-2 space-y-6">
-                    <div className="bg-white dark:bg-[#10232A] rounded-3xl border border-slate-100 dark:border-[#1C3540] p-6 shadow-sm">
-                        <h3 className="font-bold text-[#10232A] dark:text-white mb-4 flex items-center gap-2">
-                            <User className="text-[#B58863]" size={20} /> Client Information
+                    <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] p-6 shadow-sm">
+                        <h3 className="font-bold text-[#043E52] dark:text-white mb-4 flex items-center gap-2">
+                            <User className="text-[#ED6E3F]" size={20} /> Client Information
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
@@ -70,21 +70,21 @@ const AgentApplicationDetails = ({ application, onBack }) => {
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-[#10232A] rounded-3xl border border-slate-100 dark:border-[#1C3540] p-6 shadow-sm">
-                        <h3 className="font-bold text-[#10232A] dark:text-white mb-4 flex items-center gap-2">
-                            <Clock className="text-[#B58863]" size={20} /> Timeline
+                    <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] p-6 shadow-sm">
+                        <h3 className="font-bold text-[#043E52] dark:text-white mb-4 flex items-center gap-2">
+                            <Clock className="text-[#ED6E3F]" size={20} /> Timeline
                         </h3>
                         <div className="relative pl-4 space-y-6 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100 dark:before:bg-[#1C3540]">
                             {/* Mock Timeline - In reality, fetch activity logs */}
                             <div className="relative pl-6">
-                                <div className="absolute left-[-5px] top-1.5 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white dark:ring-[#10232A]"></div>
-                                <p className="text-sm font-bold text-[#10232A] dark:text-white">Application Submitted</p>
+                                <div className="absolute left-[-5px] top-1.5 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white dark:ring-[#043E52]"></div>
+                                <p className="text-sm font-bold text-[#043E52] dark:text-white">Application Submitted</p>
                                 <p className="text-xs text-slate-400">{new Date(application.createdAt).toLocaleString()}</p>
                             </div>
                             {application.status === 'COMPLETED' && (
                                 <div className="relative pl-6">
-                                    <div className="absolute left-[-5px] top-1.5 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-white dark:ring-[#10232A]"></div>
-                                    <p className="text-sm font-bold text-[#10232A] dark:text-white">Processing Complete</p>
+                                    <div className="absolute left-[-5px] top-1.5 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-white dark:ring-[#043E52]"></div>
+                                    <p className="text-sm font-bold text-[#043E52] dark:text-white">Processing Complete</p>
                                     <p className="text-xs text-slate-400">Documents delivered to client</p>
                                 </div>
                             )}
@@ -94,9 +94,9 @@ const AgentApplicationDetails = ({ application, onBack }) => {
 
                 {/* Sidebar Stats */}
                 <div className="space-y-6">
-                    <div className="bg-[#B58863]/10 rounded-3xl p-6 border border-[#B58863]/20">
-                        <h4 className="text-xs font-bold text-[#B58863] uppercase mb-1">Your Commission</h4>
-                        <p className="text-3xl font-bold text-[#10232A] dark:text-white">₹{application.status === 'COMPLETED' ? '500' : '0'}</p>
+                    <div className="bg-[#ED6E3F]/10 rounded-3xl p-6 border border-[#ED6E3F]/20">
+                        <h4 className="text-xs font-bold text-[#ED6E3F] uppercase mb-1">Your Commission</h4>
+                        <p className="text-3xl font-bold text-[#043E52] dark:text-white">₹{application.status === 'COMPLETED' ? '500' : '0'}</p>
                         <p className="text-xs text-slate-500 mt-2">
                             {application.status === 'COMPLETED'
                                 ? 'Commission credited to wallet.'
@@ -104,17 +104,17 @@ const AgentApplicationDetails = ({ application, onBack }) => {
                         </p>
                     </div>
 
-                    <div className="bg-white dark:bg-[#10232A] rounded-3xl border border-slate-100 dark:border-[#1C3540] p-6 shadow-sm">
-                        <h4 className="font-bold text-[#10232A] dark:text-white mb-4 flex items-center gap-2">Documents</h4>
+                    <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] p-6 shadow-sm">
+                        <h4 className="font-bold text-[#043E52] dark:text-white mb-4 flex items-center gap-2">Documents</h4>
                         <div className="space-y-3">
                             {/* Mock Doc Links */}
                             <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-[#1C3540]/50 hover:bg-slate-100 transition-colors cursor-pointer group">
                                 <div className="p-2 bg-white dark:bg-[#1C3540] rounded-lg text-slate-400"><FileText size={16} /></div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold text-[#10232A] dark:text-white truncate">Application Form.pdf</p>
+                                    <p className="text-xs font-bold text-[#043E52] dark:text-white truncate">Application Form.pdf</p>
                                     <p className="text-[10px] text-slate-400">1.2 MB</p>
                                 </div>
-                                <Link size={14} className="text-slate-400 group-hover:text-[#B58863]" />
+                                <Link size={14} className="text-slate-400 group-hover:text-[#ED6E3F]" />
                             </div>
                         </div>
                     </div>

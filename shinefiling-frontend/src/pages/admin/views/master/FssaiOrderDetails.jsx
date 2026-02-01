@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -163,8 +163,8 @@ const FssaiOrderDetails = () => {
                     </button>
                     <div>
                         <div className="flex items-center gap-3">
-                            <h1 className="text-xl font-bold text-[#10232A]">Order #{orderId}</h1>
-                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#FDFBF7] text-[#B58863] border border-[#B58863]/20 uppercase tracking-wide">
+                            <h1 className="text-xl font-bold text-[#043E52]">Order #{orderId}</h1>
+                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#FDFBF7] text-[#ED6E3F] border border-[#ED6E3F]/20 uppercase tracking-wide">
                                 {order.status.replace(/_/g, ' ')}
                             </span>
                         </div>
@@ -177,7 +177,7 @@ const FssaiOrderDetails = () => {
                     <button className="px-4 py-2 bg-white border border-slate-200 text-[#3D4D55] font-bold rounded-lg text-sm hover:bg-slate-50 transition flex items-center gap-2">
                         <Mail size={16} /> Email Client
                     </button>
-                    <button className="px-4 py-2 bg-[#10232A] text-white font-bold rounded-lg text-sm hover:bg-[#B58863] transition shadow-lg shadow-[#10232A]/20 flex items-center gap-2">
+                    <button className="px-4 py-2 bg-[#043E52] text-white font-bold rounded-lg text-sm hover:bg-[#ED6E3F] transition shadow-lg shadow-[#043E52]/20 flex items-center gap-2">
                         <Phone size={16} /> Call Client
                     </button>
                 </div>
@@ -201,12 +201,12 @@ const FssaiOrderDetails = () => {
                                 <div key={step.id} className="flex items-center flex-1 last:flex-none">
                                     <div className="flex flex-col items-center relative z-10">
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${step.status === 'completed' ? 'bg-green-500 text-white shadow-lg shadow-green-200' :
-                                            step.status === 'active' ? 'bg-[#10232A] text-white ring-4 ring-[#B58863]/20' :
+                                            step.status === 'active' ? 'bg-[#043E52] text-white ring-4 ring-[#ED6E3F]/20' :
                                                 'bg-slate-100 text-slate-400'
                                             }`}>
                                             {step.status === 'completed' ? <CheckCircle size={14} /> : step.id}
                                         </div>
-                                        <span className={`text-xs font-bold mt-2 ${step.status === 'active' ? 'text-[#B58863]' :
+                                        <span className={`text-xs font-bold mt-2 ${step.status === 'active' ? 'text-[#ED6E3F]' :
                                             step.status === 'completed' ? 'text-green-600' : 'text-[#3D4D55]'
                                             }`}>
                                             {step.label}
@@ -228,8 +228,8 @@ const FssaiOrderDetails = () => {
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`px-6 py-3 text-sm font-bold uppercase tracking-wide border-b-2 transition-colors ${activeTab === tab
-                                    ? 'border-[#B58863] text-[#B58863] bg-[#FDFBF7]'
-                                    : 'border-transparent text-[#3D4D55] hover:text-[#10232A] hover:bg-slate-50'
+                                    ? 'border-[#ED6E3F] text-[#ED6E3F] bg-[#FDFBF7]'
+                                    : 'border-transparent text-[#3D4D55] hover:text-[#043E52] hover:bg-slate-50'
                                     }`}
                             >
                                 {tab.replace('_', ' ')}
@@ -245,24 +245,24 @@ const FssaiOrderDetails = () => {
                                 <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                                     <div>
                                         <p className="text-[#3D4D55] text-xs font-bold uppercase">Plan Type</p>
-                                        <p className="text-lg font-black text-[#10232A]">{order.plan}</p>
+                                        <p className="text-lg font-black text-[#043E52]">{order.plan}</p>
                                     </div>
-                                    <div className="w-10 h-10 rounded-full bg-[#FDFBF7] text-[#B58863] flex items-center justify-center border border-[#B58863]/20"><Shield size={20} /></div>
+                                    <div className="w-10 h-10 rounded-full bg-[#FDFBF7] text-[#ED6E3F] flex items-center justify-center border border-[#ED6E3F]/20"><Shield size={20} /></div>
                                 </div>
                                 <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                                     <div>
                                         <p className="text-[#3D4D55] text-xs font-bold uppercase">Documents</p>
-                                        <p className="text-lg font-black text-[#10232A]">{docs.filter(d => d.status === 'VERIFIED').length} / {docs.length} Verified</p>
+                                        <p className="text-lg font-black text-[#043E52]">{docs.filter(d => d.status === 'VERIFIED').length} / {docs.length} Verified</p>
                                     </div>
                                     <div className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center"><FileCheck size={20} /></div>
                                 </div>
                             </div>
 
                             {/* Automation Section */}
-                            <div className={`bg-white p-6 rounded-2xl border ${!allVerified ? 'border-dashed border-slate-300' : 'border-[#B58863]/20 bg-[#FDFBF7]'}`}>
+                            <div className={`bg-white p-6 rounded-2xl border ${!allVerified ? 'border-dashed border-slate-300' : 'border-[#ED6E3F]/20 bg-[#FDFBF7]'}`}>
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="font-bold text-[#10232A] flex items-center gap-2">
-                                        <Play className={isReadyForAutomation ? "text-[#B58863]" : "text-slate-300"} size={20} />
+                                    <h3 className="font-bold text-[#043E52] flex items-center gap-2">
+                                        <Play className={isReadyForAutomation ? "text-[#ED6E3F]" : "text-slate-300"} size={20} />
                                         Automation & Filing
                                     </h3>
                                     {!allVerified && <span className="text-xs text-orange-500 font-bold bg-orange-50 px-2 py-1 rounded">Verify all docs first</span>}
@@ -285,7 +285,7 @@ const FssaiOrderDetails = () => {
                                         <button
                                             disabled={!allVerified || actionLoading}
                                             onClick={handleStartAutomation}
-                                            className="px-6 py-2.5 bg-[#10232A] text-white font-bold rounded-xl shadow-lg shadow-[#10232A]/20 hover:bg-[#B58863] transition disabled:opacity-50 disabled:shadow-none"
+                                            className="px-6 py-2.5 bg-[#043E52] text-white font-bold rounded-xl shadow-lg shadow-[#043E52]/20 hover:bg-[#ED6E3F] transition disabled:opacity-50 disabled:shadow-none"
                                         >
                                             {actionLoading ? <Loader2 className="animate-spin" /> : "Start Automation Engine"}
                                         </button>
@@ -299,8 +299,8 @@ const FssaiOrderDetails = () => {
                     {activeTab === 'documents' && (
                         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                             <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                                <h3 className="font-bold text-[#10232A]">Uploaded Documents</h3>
-                                <button className="text-[#B58863] text-xs font-bold hover:underline">Download All</button>
+                                <h3 className="font-bold text-[#043E52]">Uploaded Documents</h3>
+                                <button className="text-[#ED6E3F] text-xs font-bold hover:underline">Download All</button>
                             </div>
                             <div className="divide-y divide-slate-100">
                                 {docs.map(doc => (
@@ -428,11 +428,11 @@ const FssaiOrderDetails = () => {
                     {/* CLIENT CARD */}
                     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
                         <div className="flex items-center gap-4 mb-6">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#10232A] to-[#B58863] flex items-center justify-center text-white font-bold text-lg">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#043E52] to-[#ED6E3F] flex items-center justify-center text-white font-bold text-lg">
                                 {order.client.charAt(0)}
                             </div>
                             <div>
-                                <h3 className="font-bold text-[#10232A]">{order.client}</h3>
+                                <h3 className="font-bold text-[#043E52]">{order.client}</h3>
                                 <p className="text-xs text-[#3D4D55]/60">Client ID: #CLI-8821</p>
                             </div>
                         </div>
@@ -452,8 +452,8 @@ const FssaiOrderDetails = () => {
 
                     {/* BUSINESS INFO CARD */}
                     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                        <h3 className="font-bold text-[#10232A] mb-4 flex items-center gap-2">
-                            <Building2 size={18} className="text-[#B58863]" /> Business Details
+                        <h3 className="font-bold text-[#043E52] mb-4 flex items-center gap-2">
+                            <Building2 size={18} className="text-[#ED6E3F]" /> Business Details
                         </h3>
                         <div className="space-y-4 divide-y divide-slate-50">
                             <div>
@@ -476,7 +476,7 @@ const FssaiOrderDetails = () => {
                             </div>
                             <div className="pt-3">
                                 <p className="text-xs text-[#3D4D55] font-bold uppercase mb-1">Validity</p>
-                                <p className="text-sm font-bold text-[#B58863]">{order.validity}</p>
+                                <p className="text-sm font-bold text-[#ED6E3F]">{order.validity}</p>
                             </div>
                         </div>
                     </div>

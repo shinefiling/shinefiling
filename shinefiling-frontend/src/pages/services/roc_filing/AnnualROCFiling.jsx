@@ -11,7 +11,7 @@ const AnnualROCFilingPage = ({ isLoggedIn }) => {
     const faqs = [
         { q: "What is Annual Filing?", a: "Every company must file annual accounts and annual returns with the ROC every year within 30 days/60 days of the AGM." },
         { q: "What forms are filed?", a: "Form AOC-4 (Financial Statements) and Form MGT-7/7A (Annual Return) are the primary forms." },
-        { q: "What is the penalty for delay?", a: "The penalty is ₹100 per day per form. This applies to both the company and directors." },
+        { q: "What is the penalty for delay?", a: "The penalty is ?100 per day per form. This applies to both the company and directors." },
         { q: "Is it mandatory for inactive companies?", a: "Yes, even if there is no business, annual compliances are mandatory unless the company has filed for dormancy." },
         { q: "What is the AGM due date?", a: "The AGM must be held within 6 months from the end of the financial year (i.e., by 30th September)." },
     ];
@@ -116,7 +116,7 @@ const AnnualROCFilingPage = ({ isLoggedIn }) => {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Penalty</p>
-                                        <p className="font-bold text-sm text-white">₹100 / Day</p>
+                                        <p className="font-bold text-sm text-white">?100 / Day</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -130,7 +130,7 @@ const AnnualROCFilingPage = ({ isLoggedIn }) => {
                                 <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     File Annual Return
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn More
                                 </button>
                             </motion.div>
@@ -147,13 +147,13 @@ const AnnualROCFilingPage = ({ isLoggedIn }) => {
                                 {/* Top Gold Line */}
                                 <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
-                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
+                                <div className="absolute top-3 right-0 bg-[#043E52] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
 
                                 <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">Standard Plan</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹6,999</h3>
-                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">₹12,000</span>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">?6,999</h3>
+                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">?12,000</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
                                 </div>
@@ -217,7 +217,7 @@ const AnnualROCFilingPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
                             <p className="text-slate-500 text-sm mb-6">Essential filing.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹3,999</span>
+                                <span className="text-4xl font-black text-navy">?3,999</span>
                             </div>
                             <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-widest">+ Govt Fees</p>
 
@@ -243,20 +243,20 @@ const AnnualROCFilingPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Popular
                             </div>
 
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
                             <p className="text-gray-400 text-sm mb-6">Complete peace of mind.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹6,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹12,000</span>
+                                <span className="text-5xl font-black text-white">?6,999</span>
+                                <span className="text-gray-500 line-through text-sm">?12,000</span>
                             </div>
                             <p className="text-xs text-gray-400 mb-6 font-bold uppercase tracking-widest">+ Govt Fees</p>
 
@@ -288,7 +288,7 @@ const AnnualROCFilingPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Premium</h3>
                             <p className="text-slate-500 text-sm mb-6">Full year compliance.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹11,999</span>
+                                <span className="text-4xl font-black text-navy">?11,999</span>
                             </div>
                             <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-widest">+ Govt Fees</p>
 
@@ -330,7 +330,7 @@ const AnnualROCFilingPage = ({ isLoggedIn }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* DETAILED SEO CONTENT SECTION - COMPREHENSIVE GUIDE */}
                     <section className="mt-10 space-y-12 mb-20">
@@ -412,7 +412,7 @@ const AnnualROCFilingPage = ({ isLoggedIn }) => {
                                     </p>
                                     <ul className="space-y-2">
                                         <li className="flex items-center gap-2 text-red-700 font-bold">
-                                            <X size={16} /> ₹100 Per Day Per Form (No Upper Limit)
+                                            <X size={16} /> ?100 Per Day Per Form (No Upper Limit)
                                         </li>
                                         <li className="flex items-center gap-2 text-gray-600 text-sm">
                                             <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div> Accumulates separately for AOC-4 and MGT-7

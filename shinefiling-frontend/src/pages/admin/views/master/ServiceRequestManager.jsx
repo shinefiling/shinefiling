@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, DollarSign, UserCheck, CheckCircle, X, Search, Filter, AlertCircle } from 'lucide-react';
 import { getSuperAdminRequests, bindRequestAmount, getAllCas, assignRequestToCa } from '../../../../api';
@@ -70,9 +70,9 @@ const ServiceRequestManager = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 min-h-[600px] flex flex-col">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <FileText className="text-[#B58863]" /> Service Requests & Binding
+                    <FileText className="text-[#ED6E3F]" /> Service Requests & Binding
                 </h2>
-                <button onClick={fetchData} className="text-sm text-[#B58863] font-bold hover:underline">Refresh</button>
+                <button onClick={fetchData} className="text-sm text-[#ED6E3F] font-bold hover:underline">Refresh</button>
             </div>
 
             <div className="flex-1 overflow-x-auto p-4">
@@ -125,7 +125,7 @@ const ServiceRequestManager = () => {
                                     <td className="p-4">
                                         <button
                                             onClick={() => handleBindClick(req)}
-                                            className="px-3 py-1.5 bg-[#10232A] text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition shadow-sm"
+                                            className="px-3 py-1.5 bg-[#043E52] text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition shadow-sm"
                                         >
                                             Manage
                                         </button>
@@ -145,7 +145,7 @@ const ServiceRequestManager = () => {
                             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
                             className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
                         >
-                            <div className="bg-[#10232A] p-4 text-white flex justify-between items-center">
+                            <div className="bg-[#043E52] p-4 text-white flex justify-between items-center">
                                 <h3 className="font-bold">Manage Request #{selectedRequest.id}</h3>
                                 <button onClick={() => setShowBindModal(false)}><X size={20} /></button>
                             </div>
@@ -158,7 +158,7 @@ const ServiceRequestManager = () => {
                                         <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                                         <input
                                             type="number"
-                                            className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B58863] focus:border-transparent outline-none"
+                                            className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ED6E3F] focus:border-transparent outline-none"
                                             placeholder="Enter amount to fix..."
                                             value={bindAmount}
                                             onChange={e => setBindAmount(e.target.value)}
@@ -173,7 +173,7 @@ const ServiceRequestManager = () => {
                                     <div className="relative">
                                         <UserCheck size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                                         <select
-                                            className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B58863] focus:border-transparent outline-none appearance-none bg-white"
+                                            className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ED6E3F] focus:border-transparent outline-none appearance-none bg-white"
                                             value={selectedCaId}
                                             onChange={e => setSelectedCaId(e.target.value)}
                                         >
@@ -189,7 +189,7 @@ const ServiceRequestManager = () => {
                                 <div>
                                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Instructions / Work Details</label>
                                     <textarea
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B58863] outline-none text-sm h-24"
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ED6E3F] outline-none text-sm h-24"
                                         placeholder="Enter work details for CA..."
                                         value={adminComments}
                                         onChange={e => setAdminComments(e.target.value)}
@@ -199,7 +199,7 @@ const ServiceRequestManager = () => {
 
                             <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
                                 <button onClick={() => setShowBindModal(false)} className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-200 rounded-lg">Cancel</button>
-                                <button onClick={handleSave} className="px-6 py-2 bg-[#B58863] text-white font-bold rounded-lg hover:bg-[#a07452] shadow-lg shadow-[#B58863]/20">Save & Update</button>
+                                <button onClick={handleSave} className="px-6 py-2 bg-[#ED6E3F] text-white font-bold rounded-lg hover:bg-[#a07452] shadow-lg shadow-[#ED6E3F]/20">Save & Update</button>
                             </div>
                         </motion.div>
                     </div>

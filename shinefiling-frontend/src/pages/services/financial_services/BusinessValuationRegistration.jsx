@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -43,7 +43,7 @@ const BusinessValuationRegistration = ({ isModal, onClose, initialData = {} }) =
             title: 'CA Certified',
             features: ["CA Certification (Rule 11UA)", "DCF / NAV Method", "Angel Tax Compliance", "Investor Ready Report"],
             recommended: true,
-            color: 'bg-[#10232A] text-white border-gray-700'
+            color: 'bg-[#043E52] text-white border-gray-700'
         },
         merchant: {
             price: 39999,

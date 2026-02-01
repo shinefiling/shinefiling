@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+﻿import React, { useCallback } from 'react';
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 
@@ -46,10 +46,10 @@ const ProfessionalBackground = () => {
                     },
                     particles: {
                         color: {
-                            value: ["#10232A", "#B58863"], // Navy and Bronze Mix
+                            value: ["#043E52", "#ED6E3F"], // Navy and Bronze Mix
                         },
                         links: {
-                            color: "#B58863", // Bronze Connections
+                            color: "#ED6E3F", // Bronze Connections
                             distance: 150,
                             enable: true,
                             opacity: 0.25,

@@ -1,4 +1,4 @@
-import GstAnnualReturnRegistration from './GstAnnualReturnRegistration';
+﻿import GstAnnualReturnRegistration from './GstAnnualReturnRegistration';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Truck } from 'lucide-react';
@@ -136,7 +136,7 @@ const GSTAnnualReturnPage = ({ isLoggedIn }) => {
 
             {/* CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
                             <Scale className="text-bronze" /> Why GSTR-9 is Critical?
@@ -198,7 +198,7 @@ const GSTAnnualReturnPage = ({ isLoggedIn }) => {
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Detailed Reco</li>
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> ITC Mismatch Report</li>
                                 </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
+                                <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Standard</button>
                             </div>
 
                             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">

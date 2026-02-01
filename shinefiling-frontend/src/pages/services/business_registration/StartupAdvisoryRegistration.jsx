@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     CheckCircle, Upload, Rocket, Lightbulb, Target, ArrowLeft, ArrowRight, Shield, AlertCircle, Zap, Users, Plus, Trash2, X

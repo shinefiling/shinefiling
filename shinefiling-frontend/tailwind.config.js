@@ -8,38 +8,42 @@ export default {
     theme: {
         extend: {
             colors: {
-                // NEW PALETTE: From User Image
+                // NEW BRAND PALETTE: Teal & Orange
+                primary: {
+                    DEFAULT: '#043E52', // Main Teal
+                    light: '#055570',
+                    dark: '#032c3a',
+                },
+                secondary: {
+                    DEFAULT: '#ED6E3F', // Brand Orange
+                    light: '#f28b65',
+                    dark: '#d15a2e',
+                },
+                teal: {
+                    50: '#f0f9fa',
+                    100: '#d9f0f2',
+                    500: '#016A6D', // Original teal accent
+                    600: '#043E52', // Direct branding
+                },
+                orange: {
+                    50: '#fff7f5',
+                    500: '#ED6E3F',
+                    600: '#d15a2e',
+                },
+                // Mappings for existing usage
                 navy: {
-                    DEFAULT: '#10232A', // Palette Color 1
-                    light: '#1c3039',
+                    DEFAULT: '#043E52',
+                    light: '#10232A',
                 },
-                slate: {
-                    DEFAULT: '#3D4D55', // Palette Color 2
-                    light: '#53656e',
-                },
-                grey: {
-                    DEFAULT: '#A79E9C', // Palette Color 3
-                    light: '#bdbcba',
-                },
-                beige: {
-                    DEFAULT: '#D3C3B9', // Palette Color 4
-                    light: '#e9e1db',
-                    dark: '#b0a095',
+                brand: {
+                    DEFAULT: '#ED6E3F',
+                    teal: '#043E52',
+                    orange: '#ED6E3F',
                 },
                 bronze: {
-                    DEFAULT: '#B58863', // Palette Color 5
-                    light: '#c7a385',
-                    dark: '#967052',
-                },
-                black: {
-                    DEFAULT: '#161616', // Palette Color 6
-                    light: '#2a2a2a',
-                },
-                // Mappings for existing consistent usage
-                brand: {
-                    DEFAULT: '#B58863',
-                    gold: '#B58863',
-                    blue: '#10232A',
+                    DEFAULT: '#ED6E3F',
+                    light: '#f28b65',
+                    dark: '#d15a2e',
                 }
             },
             fontFamily: {

@@ -1,21 +1,21 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Calculator, Percent, Shield, Landmark, IndianRupee, PieChart } from 'lucide-react';
 
 const FloatingIconsAnimation = () => {
     // Configuration for floating icons
     const icons = [
-        { Icon: FileText, color: "#B58863", size: 40, x: "10%", delay: 0 },
-        { Icon: Calculator, color: "#10232A", size: 30, x: "25%", delay: 2 },
-        { Icon: Percent, color: "#B58863", size: 35, x: "40%", delay: 1 },
-        { Icon: Shield, color: "#10232A", size: 45, x: "60%", delay: 3 },
-        { Icon: Landmark, color: "#B58863", size: 30, x: "75%", delay: 0.5 },
-        { Icon: IndianRupee, color: "#10232A", size: 35, x: "85%", delay: 2.5 },
-        { Icon: PieChart, color: "#B58863", size: 40, x: "95%", delay: 1.5 },
+        { Icon: FileText, color: "#ED6E3F", size: 40, x: "10%", delay: 0 },
+        { Icon: Calculator, color: "#043E52", size: 30, x: "25%", delay: 2 },
+        { Icon: Percent, color: "#ED6E3F", size: 35, x: "40%", delay: 1 },
+        { Icon: Shield, color: "#043E52", size: 45, x: "60%", delay: 3 },
+        { Icon: Landmark, color: "#ED6E3F", size: 30, x: "75%", delay: 0.5 },
+        { Icon: IndianRupee, color: "#043E52", size: 35, x: "85%", delay: 2.5 },
+        { Icon: PieChart, color: "#ED6E3F", size: 40, x: "95%", delay: 1.5 },
 
-        { Icon: FileText, color: "#10232A", size: 25, x: "15%", delay: 4 },
-        { Icon: IndianRupee, color: "#B58863", size: 30, x: "50%", delay: 3.5 },
-        { Icon: Calculator, color: "#10232A", size: 35, x: "80%", delay: 4.5 },
+        { Icon: FileText, color: "#043E52", size: 25, x: "15%", delay: 4 },
+        { Icon: IndianRupee, color: "#ED6E3F", size: 30, x: "50%", delay: 3.5 },
+        { Icon: Calculator, color: "#043E52", size: 35, x: "80%", delay: 4.5 },
     ];
 
     return (

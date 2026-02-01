@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard, CheckCircle, Clock, FileText, Bell, LogOut, Menu,
@@ -71,7 +71,7 @@ const EmployeeDashboardPage = ({ onLogout }) => {
                 {!isCompleted ? (
                     <button
                         onClick={() => handleUpdateStatus(task, 'COMPLETED')}
-                        className="flex items-center gap-2 bg-[#10232A] text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-green-600 transition"
+                        className="flex items-center gap-2 bg-[#043E52] text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-green-600 transition"
                     >
                         Mark Done <ArrowRight size={12} />
                     </button>
@@ -88,23 +88,26 @@ const EmployeeDashboardPage = ({ onLogout }) => {
         <div className="min-h-screen bg-[#FDFBF7] font-sans flex flex-col md:flex-row">
 
             {/* Sidebar */}
-            <div className={`fixed inset-y-0 left-0 w-64 bg-[#10232A] text-white z-50 flex flex-col transition-transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-                <div className="p-6 flex items-center justify-center border-b border-white/5">
-                    <h1 className="text-xl font-bold tracking-tight">Shine<span className="text-[#B58863]">Staff</span></h1>
+            <div className={`fixed inset-y-0 left-0 w-64 bg-[#043E52] text-white z-50 flex flex-col transition-transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+                <div className="h-48 flex items-center px-4 border-b border-white/5 justify-center relative">
+                    <div className="flex flex-col items-center gap-1">
+                        <img src="/logo.png" alt="ShineFiling" className="h-32 w-auto object-contain brightness-0 invert" />
+                        <span className="text-sm font-bold tracking-tight text-white mt-1">Staff<span className="text-[#ED6E3F]">Portal</span></span>
+                    </div>
                 </div>
 
                 <div className="p-4 space-y-2 flex-1">
-                    <button onClick={() => { setActiveTab('tasks'); setIsSidebarOpen(false) }} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'tasks' ? 'bg-[#B58863] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    <button onClick={() => { setActiveTab('tasks'); setIsSidebarOpen(false) }} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'tasks' ? 'bg-[#ED6E3F] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
                         <FileText size={18} /> My Tasks
                     </button>
-                    <button onClick={() => { setActiveTab('completed'); setIsSidebarOpen(false) }} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'completed' ? 'bg-[#B58863] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    <button onClick={() => { setActiveTab('completed'); setIsSidebarOpen(false) }} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'completed' ? 'bg-[#ED6E3F] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
                         <CheckCircle size={18} /> Completed History
                     </button>
                 </div>
 
                 <div className="p-6 bg-black/20">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-[#B58863] flex items-center justify-center font-bold text-white shadow-lg">{user.fullName?.charAt(0)}</div>
+                        <div className="w-10 h-10 rounded-full bg-[#ED6E3F] flex items-center justify-center font-bold text-white shadow-lg">{user.fullName?.charAt(0)}</div>
                         <div>
                             <p className="font-bold text-sm text-white">{user.fullName}</p>
                             <p className="text-[10px] text-gray-400 font-mono">EMPLOYEE ID: {user.id}</p>

@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { motion } from "framer-motion";
 
 const Marquee = ({ children, speed = 20 }) => {
@@ -13,7 +13,7 @@ const Marquee = ({ children, speed = 20 }) => {
                     ease: "linear",
                     repeatType: "loop"
                 }}
-                className="flex gap-10 min-w-max items-center"
+                className="flex gap-10 min-w-max items-center will-change-transform"
             >
                 {children}
                 {children}

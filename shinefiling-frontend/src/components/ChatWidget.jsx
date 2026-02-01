@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getBotResponse } from '../utils/chatbotLogic';
@@ -47,7 +47,7 @@ const ChatWidget = ({ role = 'CLIENT', userName = 'Guest' }) => {
                         className="bg-white w-[350px] max-w-[calc(100vw-40px)] h-[500px] max-h-[80vh] rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
                     >
                         {/* Header */}
-                        <div className="bg-[#10232A] p-4 flex justify-between items-center text-white shrink-0">
+                        <div className="bg-[#043E52] p-4 flex justify-between items-center text-white shrink-0">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
                                     <Bot size={18} className="text-white" />
@@ -75,7 +75,7 @@ const ChatWidget = ({ role = 'CLIENT', userName = 'Guest' }) => {
                                     <div className={`
                                         max-w-[80%] p-3 text-sm shadow-sm whitespace-pre-wrap
                                         ${msg.sender === 'user'
-                                            ? 'bg-[#10232A] text-white rounded-2xl rounded-tr-sm'
+                                            ? 'bg-[#043E52] text-white rounded-2xl rounded-tr-sm'
                                             : 'bg-white border border-gray-100 text-gray-700 rounded-2xl rounded-tl-sm'
                                         }
                                     `}>
@@ -92,7 +92,7 @@ const ChatWidget = ({ role = 'CLIENT', userName = 'Guest' }) => {
                                 <button
                                     key={chip}
                                     onClick={() => handleSendMessage(chip)}
-                                    className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600 hover:bg-[#10232A] hover:text-white hover:border-[#10232A] transition-colors whitespace-nowrap shrink-0 shadow-sm"
+                                    className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600 hover:bg-[#043E52] hover:text-white hover:border-[#043E52] transition-colors whitespace-nowrap shrink-0 shadow-sm"
                                 >
                                     {chip}
                                 </button>
@@ -107,12 +107,12 @@ const ChatWidget = ({ role = 'CLIENT', userName = 'Guest' }) => {
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage(input)}
                                 placeholder="Type your message..."
-                                className="flex-1 bg-gray-100 text-sm p-3 rounded-xl outline-none focus:ring-2 focus:ring-[#10232A]/10 transition"
+                                className="flex-1 bg-gray-100 text-sm p-3 rounded-xl outline-none focus:ring-2 focus:ring-[#043E52]/10 transition"
                             />
                             <button
                                 onClick={() => handleSendMessage(input)}
                                 disabled={!input.trim()}
-                                className="p-3 bg-[#10232A] text-white rounded-xl hover:bg-[#1a3642] disabled:opacity-50 disabled:cursor-not-allowed transition shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                                className="p-3 bg-[#043E52] text-white rounded-xl hover:bg-[#1a3642] disabled:opacity-50 disabled:cursor-not-allowed transition shadow-md hover:shadow-lg hover:-translate-y-0.5"
                             >
                                 <Send size={18} />
                             </button>
@@ -128,7 +128,7 @@ const ChatWidget = ({ role = 'CLIENT', userName = 'Guest' }) => {
                 whileTap={{ scale: 0.95 }}
                 className={`
                     w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300
-                    ${isOpen ? 'bg-gray-200 text-gray-600 rotate-90' : 'bg-[#10232A] text-white hover:bg-[#1a3642] border-2 border-white/20'}
+                    ${isOpen ? 'bg-gray-200 text-gray-600 rotate-90' : 'bg-[#043E52] text-white hover:bg-[#1a3642] border-2 border-white/20'}
                 `}
             >
                 {isOpen ? <X size={24} /> : <MessageCircle size={28} />}

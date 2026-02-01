@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, HeartHandshake, FileText, Calendar, Shield, CheckCircle, BookOpen, Users, HelpCircle, ChevronRight, AlertTriangle, ArrowRight, Building } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -150,7 +150,7 @@ const LabourWelfareFundPage = ({ isLoggedIn }) => {
                         </div>
 
                         {/* Standard */}
-                        <div className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
+                        <div className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Annual</h3>
                             <p className="text-gray-400 text-sm mb-6">Both Period Filings.</p>
@@ -161,7 +161,7 @@ const LabourWelfareFundPage = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Compliance Certificate</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Free Consultation</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('annual')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg">Subscribe Annual</button>
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg">Subscribe Annual</button>
                         </div>
 
                         {/* Premier */}
@@ -183,7 +183,7 @@ const LabourWelfareFundPage = ({ isLoggedIn }) => {
 
             {/* INFO SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
                             <BookOpen className="text-bronze" /> About Labour Welfare Fund
@@ -229,7 +229,7 @@ const LabourWelfareFundPage = ({ isLoggedIn }) => {
                         <p className="text-slate-500 mb-6">LWF rules vary drastically by state. Here is a quick look at major hubs:</p>
                         <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200">
                             <table className="w-full text-left border-collapse">
-                                <thead className="bg-[#10232A] text-white">
+                                <thead className="bg-[#043E52] text-white">
                                     <tr>
                                         <th className="py-4 px-6 font-bold uppercase text-xs tracking-wider">State</th>
                                         <th className="py-4 px-6 font-bold uppercase text-xs tracking-wider">Frequency</th>
@@ -334,7 +334,7 @@ const LabourWelfareFundPage = ({ isLoggedIn }) => {
                             </p>
                         </div>
 
-                        <div className="bg-[#10232A] p-8 rounded-3xl shadow-lg text-white">
+                        <div className="bg-[#043E52] p-8 rounded-3xl shadow-lg text-white">
                             <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
                                 <AlertTriangle className="text-yellow-400" /> Caution
                             </h3>

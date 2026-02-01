@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, Landmark, FileText, Map, Shield, CheckCircle, BookOpen, Scale, HelpCircle, ChevronRight, AlertTriangle, ArrowRight, Building, UserCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -150,7 +150,7 @@ const ProfessionalTaxRegistrationPage = ({ isLoggedIn }) => {
                         </div>
 
                         {/* Standard */}
-                        <div className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
+                        <div className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">PTRC Only</h3>
                             <p className="text-gray-400 text-sm mb-6">For Employers (Staff).</p>
@@ -161,7 +161,7 @@ const ProfessionalTaxRegistrationPage = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Mandatory for Salary Deduction</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Guide on tax slabs</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('ptrc')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg">Select PTRC</button>
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg">Select PTRC</button>
                         </div>
 
                         {/* Premier */}
@@ -182,7 +182,7 @@ const ProfessionalTaxRegistrationPage = ({ isLoggedIn }) => {
 
             {/* INFO SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
                             <BookOpen className="text-bronze" /> What is Professional Tax?
@@ -232,7 +232,7 @@ const ProfessionalTaxRegistrationPage = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    <section className="bg-[#10232A] rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                    <section className="bg-[#043E52] rounded-3xl p-8 md:p-12 relative overflow-hidden">
                         <div className="relative z-10">
                             <h2 className="text-3xl font-bold text-white mb-6">Documents Required</h2>
                             <div className="grid md:grid-cols-2 gap-8">
@@ -375,7 +375,7 @@ const ProfessionalTaxRegistrationPage = ({ isLoggedIn }) => {
                             </ul>
                         </div>
 
-                        <div className="bg-[#10232A] p-8 rounded-3xl shadow-lg text-white">
+                        <div className="bg-[#043E52] p-8 rounded-3xl shadow-lg text-white">
                             <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
                                 <Scale className="text-bronze" /> Tax Slabs
                             </h3>

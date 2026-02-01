@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import {
     Users, Briefcase, Calendar, CheckSquare, DollarSign,
     TrendingUp, UserPlus, Clock, MoreVertical, Plus,
@@ -114,10 +114,10 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
                     </div>
                 </div>
                 <div className="flex gap-3">
-                    <button onClick={() => onNavigate && onNavigate('order_mgmt')} className="px-4 py-2.5 bg-[#10232A] text-white text-sm font-bold rounded-lg hover:bg-[#1c3842] transition shadow-lg shadow-[#10232A]/20 flex items-center gap-2">
+                    <button onClick={() => onNavigate && onNavigate('order_mgmt')} className="px-4 py-2.5 bg-[#043E52] text-white text-sm font-bold rounded-lg hover:bg-[#1c3842] transition shadow-lg shadow-[#043E52]/20 flex items-center gap-2">
                         <Plus size={18} /> Add Project
                     </button>
-                    <button onClick={() => onNavigate && onNavigate('service_mgmt')} className="px-4 py-2.5 bg-[#B58863] text-white text-sm font-bold rounded-lg hover:bg-[#a37651] transition shadow-lg shadow-[#B58863]/20 flex items-center gap-2">
+                    <button onClick={() => onNavigate && onNavigate('service_mgmt')} className="px-4 py-2.5 bg-[#ED6E3F] text-white text-sm font-bold rounded-lg hover:bg-[#a37651] transition shadow-lg shadow-[#ED6E3F]/20 flex items-center gap-2">
                         <Plus size={18} /> Add Request
                     </button>
                 </div>

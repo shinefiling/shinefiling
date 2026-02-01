@@ -112,7 +112,7 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Book Attorney
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <BookOpen size={18} /> Process Guide
                                 </button>
                             </div>
@@ -130,7 +130,7 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                                 <div className="text-center mb-6">
                                     <h3 className="text-navy font-bold text-xl mb-2">Virtual Hearing</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹4,999</h3>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">?4,999</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ Session</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Standard Fee</p>
@@ -174,8 +174,8 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Case Analysis</h3>
                             <p className="text-slate-500 text-sm mb-6">Hearing Notice Review.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹1,499</span>
-                                <span className="text-slate-400 line-through text-sm">₹3,000</span>
+                                <span className="text-4xl font-black text-navy">?1,499</span>
+                                <span className="text-slate-400 line-through text-sm">?3,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -204,18 +204,18 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Common
                             </div>
 
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Virtual Hearing</h3>
                             <p className="text-gray-400 text-sm mb-6">Complete Representation via VC.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹4,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹8,000</span>
+                                <span className="text-5xl font-black text-white">?4,999</span>
+                                <span className="text-gray-500 line-through text-sm">?8,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -248,8 +248,8 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Physical Hearing</h3>
                             <p className="text-slate-500 text-sm mb-6">In-Person Representation.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹9,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹15,000</span>
+                                <span className="text-4xl font-black text-navy">?9,999</span>
+                                <span className="text-slate-400 line-through text-sm">?15,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -278,7 +278,7 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Introduction */}
                     <section>
@@ -353,7 +353,7 @@ const TrademarkHearingPage = ({ isLoggedIn }) => {
                     </section>
 
                     {/* WHY CHOOSE US */}
-                    <section className="bg-[#10232A] rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                    <section className="bg-[#043E52] rounded-3xl p-8 md:p-12 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-[80px] -mr-16 -mt-16"></div>
                         <div className="relative z-10">
                             <h2 className="text-3xl font-bold text-white mb-6">Expert Representation</h2>

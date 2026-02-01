@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -52,7 +52,7 @@ const ApplyCmaDataPreparation = ({ isModal, onClose, initialData = {} }) => {
                 "Loans up to ₹2 Cr", "24-Hour Delivery", "Priority Support", "Unlimited Revisions", "Bank Format Compliant"
             ],
             recommended: true,
-            color: 'bg-[#10232A] text-white border-gray-700'
+            color: 'bg-[#043E52] text-white border-gray-700'
         },
         premium: {
             price: 9999,

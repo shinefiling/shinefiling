@@ -15,7 +15,7 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
     };
 
     const faqs = [
-        { q: "What is FSSAI Central License?", a: "It is for large food businesses with > ₹20 Crore turnover, importers, exporters, and those operating in central govt premises." },
+        { q: "What is FSSAI Central License?", a: "It is for large food businesses with > ?20 Crore turnover, importers, exporters, and those operating in central govt premises." },
         { q: "Who needs a Central License?", a: "Importers/Exporters, large manufacturers, businesses supplying to Railways/Airports/Seaports/Defense, and Head Offices with branches in >1 state." },
         { q: "What is the validity?", a: "It can be issued for 1 to 5 years. It must be renewed before expiry to avoid penalties." },
         { q: "Is inspection mandatory?", a: "Yes, for Central License, a strict inspection by a Central Food Safety Officer (FSO) is mandatory before the license is granted." },
@@ -77,7 +77,7 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Central License</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Mandatory for Importers, Exporters, Large Manufacturers (Turnover {'>'} ₹20 Cr), and Multi-State Businesses. Operate globally with full compliance.
+                                    Mandatory for Importers, Exporters, Large Manufacturers (Turnover {'>'} ?20 Cr), and Multi-State Businesses. Operate globally with full compliance.
                                 </p>
                             </motion.div>
 
@@ -111,7 +111,7 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Apply Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Shield size={18} /> Learn More
                                 </button>
                             </div>
@@ -129,13 +129,13 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
                                 <div className="text-center mb-6">
                                     <h3 className="text-navy font-bold text-xl mb-2">Central License</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹7,499</h3>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">?7,499</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ Year</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
                                 </div>
                                 <div className="space-y-4 mb-8 flex-1">
-                                    {["Turnover > ₹20 Crores", "Importers / Exporters", "Suppliers to Govt Depts", "Multi-State Head Office", "Form B Application"].map((item, i) => (
+                                    {["Turnover > ?20 Crores", "Importers / Exporters", "Suppliers to Govt Depts", "Multi-State Head Office", "Form B Application"].map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                                             <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
                                             <span className="leading-snug">{item}</span>
@@ -157,7 +157,7 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* DETAILED SEO CONTENT SECTION */}
                     <section className="mt-10 space-y-12 mb-20">
@@ -178,7 +178,7 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
                                     <h3 className="text-xl font-bold text-navy mb-4">Who Mandatory Needs This?</h3>
                                     <ul className="grid md:grid-cols-2 gap-3 list-none pl-0">
                                         {[
-                                            "Manufacturers with > ₹20 Cr Turnover",
+                                            "Manufacturers with > ?20 Cr Turnover",
                                             "Importers & Exporters (IEC Holders)",
                                             "Dairy Units > 50,000 LPD",
                                             "Slaughtering Houses (Large Scale)",
@@ -238,13 +238,13 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
 
                         <div className="max-w-md mx-auto">
                             {/* Central - Highlighted */}
-                            <div className="bg-[#10232A] rounded-3xl p-6 shadow-2xl relative overflow-hidden flex flex-col">
+                            <div className="bg-[#043E52] rounded-3xl p-6 shadow-2xl relative overflow-hidden flex flex-col">
                                 <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
                                 <h3 className="text-xl font-bold text-white mb-2 mt-4">Central License Package</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹7,499</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees (₹7500/Year approx)</p>
+                                <div className="text-4xl font-black text-white mb-1">?7,499</div>
+                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees (?7500/Year approx)</p>
                                 <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Turnover {'>'} ₹20 Crores</li>
+                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Turnover {'>'} ?20 Crores</li>
                                     <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Import / Export Code Linkage</li>
                                     <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Priority Inspection Support</li>
                                 </ul>

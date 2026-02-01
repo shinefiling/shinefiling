@@ -7,15 +7,22 @@ import LlpRegistration from './LlpRegistration';
 
 const LlpPage = ({ isLoggedIn, onLogout }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState('basic');
+    const [selectedPlan, setSelectedPlan] = useState('startup');
     const navigate = useNavigate();
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
+    const scrollToPlans = () => {
+        const section = document.getElementById('pricing-section');
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     const faqs = [
         { q: "What is an LLP and how is it different from a company?", a: "An LLP is a hybrid structure combining partnership flexibility with corporate limited liability. Unlike a company, it has fewer compliance requirements and no dividend distribution tax." },
         { q: "How many partners are needed?", a: "Minimum 2 partners are required. There is no upper limit on the number of partners in an LLP." },
-        { q: "Is an audit mandatory for LLP?", a: "No, audit is only mandatory if turnover exceeds ₹40 Lakhs or total contribution exceeds ₹25 Lakhs in a financial year." },
+        { q: "Is an audit mandatory for LLP?", a: "No, audit is only mandatory if turnover exceeds ?40 Lakhs or total contribution exceeds ?25 Lakhs in a financial year." },
         { q: "Can a body corporate become a partner?", a: "Yes, another company or LLP can be a partner in an LLP, provided they nominate an individual as a Designated Partner." },
         { q: "What is the DPIN?", a: "DPIN (Designated Partner Identification Number) is a unique ID required by any individual who wants to be a designated partner in an LLP." },
         { q: "How long does it take to register?", a: "Typically, it takes 10-15 business days depending on name approval and government processing times." }
@@ -122,10 +129,10 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                                 transition={{ delay: 0.6 }}
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={scrollToPlans} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Register LLP Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn More
                                 </button>
                             </motion.div>
@@ -201,7 +208,7 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    onClick={scrollToPlans}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
@@ -238,8 +245,8 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Startup</h3>
                             <p className="text-slate-500 text-sm mb-6">Basic incorporation for partners.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹4,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
+                                <span className="text-4xl font-black text-navy">?4,999</span>
+                                <span className="text-slate-400 line-through text-sm">?8,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -261,8 +268,8 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                                     <X size={16} className="shrink-0" /> GST Registration
                                 </li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
-                                Choose Basic
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Choose Startup
                             </button>
                         </motion.div>
 
@@ -273,32 +280,32 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Popular
                             </div>
 
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Llp</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹6,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹12k</span>
+                                <span className="text-5xl font-black text-white">?6,999</span>
+                                <span className="text-gray-500 line-through text-sm">?12k</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
                                 {["Everything in Startup",
-                                        "LLP Agreement (Form 3)",
-                                        "Stamp Paper Assistance"].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
-                                    </li>
-                                ))}
+                                    "LLP Agreement (Form 3)",
+                                    "Stamp Paper Assistance"].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                        </li>
+                                    ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -314,8 +321,8 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Elite</h3>
                             <p className="text-slate-500 text-sm mb-6">Complete legal & tax setup.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹12,499</span>
-                                <span className="text-slate-400 line-through text-sm">₹24,000</span>
+                                <span className="text-4xl font-black text-navy">?12,499</span>
+                                <span className="text-slate-400 line-through text-sm">?24,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -332,8 +339,8 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
-                                Choose Elite
+                            <button onClick={() => handlePlanSelect('enterprise')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                                Choose Enterprise
                             </button>
                         </motion.div>
                     </div>
@@ -342,7 +349,7 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Introduction - Expanded for SEO */}
                     <section>
@@ -369,7 +376,7 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                             {[
                                 { title: "Limited Liability", desc: "Partners are not personally liable for the firm's debts. Your personal savings are safe.", icon: Shield },
                                 { title: "No Dividend Tax", desc: "Profits can be distributed to partners without paying any Dividend Distribution Tax (DDT).", icon: TrendingUp },
-                                { title: "Low Compliance", desc: "Audit is not required unless turnover exceeds ₹40 Lakhs or contribution exceeds ₹25 Lakhs.", icon: Zap },
+                                { title: "Low Compliance", desc: "Audit is not required unless turnover exceeds ?40 Lakhs or contribution exceeds ?25 Lakhs.", icon: Zap },
                                 { title: "Separate Legal Entity", desc: "The LLP can own assets, sue and be sued in its own name. It has a distinct identity from partners.", icon: Briefcase },
                                 { title: "Operational Flexibility", desc: "Management is defined by the LLP Agreement. Partners have freedom to run business their way.", icon: Handshake },
                                 { title: "Perpetual Succession", desc: "The LLP continues to exist even if partners leave or join. It has indefinite life.", icon: Clock },
@@ -467,7 +474,7 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
 
 
                     {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
-                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
                         {/* Background Deco */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
 

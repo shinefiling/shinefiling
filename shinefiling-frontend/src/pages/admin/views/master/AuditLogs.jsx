@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
     Shield, Lock, AlertTriangle, FileText, Filter, Search,
     Calendar, Download, ChevronLeft, ChevronRight, Eye,
@@ -87,11 +87,11 @@ const AuditLogs = () => {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                     <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 bg-gradient-to-br from-[#10232A] to-[#3D4D55] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#10232A]/30">
+                        <div className="w-14 h-14 bg-gradient-to-br from-[#043E52] to-[#3D4D55] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#043E52]/30">
                             <Shield size={28} />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-[#10232A]">System Audit Trails</h2>
+                            <h2 className="text-2xl font-bold text-[#043E52]">System Audit Trails</h2>
                             <div className="flex items-center gap-2 mt-1">
                                 <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 text-[#3D4D55] text-[10px] font-bold uppercase border border-slate-200">
                                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
@@ -106,7 +106,7 @@ const AuditLogs = () => {
                         <button onClick={fetchLogs} className="p-2.5 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition shadow-sm bg-white">
                             <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
                         </button>
-                        <button className="px-5 py-2.5 bg-[#10232A] text-white rounded-xl text-xs font-bold shadow-lg hover:bg-[#B58863] flex items-center gap-2 transition">
+                        <button className="px-5 py-2.5 bg-[#043E52] text-white rounded-xl text-xs font-bold shadow-lg hover:bg-[#ED6E3F] flex items-center gap-2 transition">
                             <Download size={16} /> Export CSV
                         </button>
                     </div>
@@ -120,8 +120,8 @@ const AuditLogs = () => {
                                 key={f}
                                 onClick={() => { setFilter(f); setPage(1); }}
                                 className={`px-4 py-2 rounded-md text-[10px] font-bold uppercase transition-all whitespace-nowrap ${filter === f
-                                    ? 'bg-[#FDFBF7] text-[#B58863] shadow-sm border border-[#B58863]/20'
-                                    : 'text-[#3D4D55] hover:text-[#10232A]'
+                                    ? 'bg-[#FDFBF7] text-[#ED6E3F] shadow-sm border border-[#ED6E3F]/20'
+                                    : 'text-[#3D4D55] hover:text-[#043E52]'
                                     }`}
                             >
                                 {f.replace('_', ' ')}
@@ -135,7 +135,7 @@ const AuditLogs = () => {
                             placeholder="Search by User, IP, ID..."
                             value={search}
                             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                            className="w-full pl-9 pr-4 py-2 bg-transparent text-xs font-bold outline-none focus:text-[#B58863] placeholder-[#3D4D55]/70 transition"
+                            className="w-full pl-9 pr-4 py-2 bg-transparent text-xs font-bold outline-none focus:text-[#ED6E3F] placeholder-[#3D4D55]/70 transition"
                         />
                     </div>
                 </div>
@@ -164,7 +164,7 @@ const AuditLogs = () => {
                                     <tr
                                         key={log.id}
                                         onClick={() => setSelectedLog(log)}
-                                        className={`group cursor-pointer transition-colors border-l-2 ${selectedLog?.id === log.id ? 'bg-slate-50 border-l-[#B58863]' : 'hover:bg-slate-50/50 border-l-transparent'}`}
+                                        className={`group cursor-pointer transition-colors border-l-2 ${selectedLog?.id === log.id ? 'bg-slate-50 border-l-[#ED6E3F]' : 'hover:bg-slate-50/50 border-l-transparent'}`}
                                     >
                                         <td className="px-6 py-4">
                                             <p className="font-mono text-[10px] font-bold text-gray-500">{new Date(log.time).toLocaleTimeString()}</p>
@@ -180,7 +180,7 @@ const AuditLogs = () => {
                                                 <div className={`p-2 rounded-lg bg-gray-100 text-gray-500 ${selectedLog?.id === log.id ? 'bg-slate-200 text-slate-700' : ''}`}>
                                                     {getIcon(log.type)}
                                                 </div>
-                                                <span className="font-bold text-[#10232A] text-xs">{log.action}</span>
+                                                <span className="font-bold text-[#043E52] text-xs">{log.action}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
@@ -250,7 +250,7 @@ const AuditLogs = () => {
                     >
                         <div className="p-6 border-b border-gray-100 flex justify-between items-start bg-slate-50/50">
                             <div>
-                                <h3 className="font-bold text-[#10232A] text-lg">Event Forensics</h3>
+                                <h3 className="font-bold text-[#043E52] text-lg">Event Forensics</h3>
                                 <p className="text-[10px] text-[#3D4D55] font-mono mt-1 uppercase tracking-widest">{selectedLog.id} • {selectedLog.type}</p>
                             </div>
                             <button onClick={() => setSelectedLog(null)} className="p-1 hover:bg-slate-200 rounded-full text-slate-400 hover:text-slate-600 transition"><X size={20} /></button>
@@ -271,13 +271,13 @@ const AuditLogs = () => {
                                 <div className="relative">
                                     <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-slate-300 border-2 border-white"></div>
                                     <label className="text-[10px] font-bold text-[#3D4D55] uppercase block mb-1">Timestamp</label>
-                                    <p className="font-mono text-sm font-bold text-[#10232A]">{new Date(selectedLog.time).toLocaleString()}</p>
+                                    <p className="font-mono text-sm font-bold text-[#043E52]">{new Date(selectedLog.time).toLocaleString()}</p>
                                     <p className="text-xs text-[#3D4D55]">{new Date(selectedLog.time).toUTCString()}</p>
                                 </div>
                                 <div className="relative">
                                     <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-blue-400 border-2 border-white shadow-sm shadow-blue-200"></div>
                                     <label className="text-[10px] font-bold text-[#3D4D55] uppercase block mb-1">Action Initiated</label>
-                                    <p className="font-bold text-[#10232A]">{selectedLog.action}</p>
+                                    <p className="font-bold text-[#043E52]">{selectedLog.action}</p>
                                 </div>
                                 <div className="relative">
                                     <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-slate-300 border-2 border-white"></div>

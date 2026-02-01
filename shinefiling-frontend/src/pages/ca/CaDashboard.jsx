@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -28,6 +28,17 @@ const CaDashboard = ({ onLogout }) => {
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const location = useLocation();
+
+    // Handle URL Query Params
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const tab = params.get('tab');
+        if (tab) {
+            setActiveTab(tab);
+        }
+    }, [location]);
+
     // Handle Window Resize
     useEffect(() => {
         const handleResize = () => {
@@ -44,8 +55,9 @@ const CaDashboard = ({ onLogout }) => {
             section: 'MAIN MENU',
             items: [
                 { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
-                { id: 'opportunities', label: 'Marketplace', icon: Zap }, // New Item
+                { id: 'opportunities', label: 'Marketplace', icon: Zap },
                 { id: 'works', label: 'My Works', icon: Briefcase },
+                { id: 'notifications', label: 'Notifications', icon: Bell }, // Added Notifications to menu for consistency
             ]
         },
         {
@@ -123,16 +135,11 @@ const CaDashboard = ({ onLogout }) => {
     const SidebarContent = () => (
         <>
             <div className="p-8 pb-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[#B58863] to-[#9A7252] rounded-xl flex items-center justify-center shadow-lg shadow-[#B58863]/20 text-white">
-                        <span className="font-bold text-lg">SF</span>
-                    </div>
-                    <div>
-                        <h1 className="font-bold text-xl leading-none text-[#10232A] dark:text-white">ShineFiling</h1>
-                        <p className="text-[10px] text-slate-400 dark:text-gray-400 uppercase tracking-widest mt-1">Partner Portal</p>
-                    </div>
+                <div className="flex flex-col items-center gap-2">
+                    <img src="/logo.png" alt="ShineFiling" className="h-32 w-auto object-contain dark:brightness-0 dark:invert" />
+                    <h1 className="font-bold text-lg leading-none text-[#043E52] dark:text-white mt-1">Partner<span className="text-[#ED6E3F]">Portal</span></h1>
                 </div>
-                <button onClick={() => setIsSidebarOpen(false)} className="md:hidden p-2 text-slate-400 hover:text-[#B58863]"><X size={20} /></button>
+                <button onClick={() => setIsSidebarOpen(false)} className="md:hidden p-2 text-slate-400 hover:text-[#ED6E3F]"><X size={20} /></button>
             </div>
 
             <div className="flex-1 overflow-y-auto py-6 px-4 space-y-8 hidden-scrollbar">
@@ -145,11 +152,11 @@ const CaDashboard = ({ onLogout }) => {
                                     key={item.id}
                                     onClick={() => { setActiveTab(item.id); setIsSidebarOpen(false); }}
                                     className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all group relative overflow-hidden ${activeTab === item.id
-                                        ? 'bg-gradient-to-r from-[#B58863] to-[#A07050] text-white shadow-lg shadow-[#B58863]/20'
-                                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-[#B58863] dark:hover:text-white'
+                                        ? 'bg-gradient-to-r from-[#ED6E3F] to-[#A07050] text-white shadow-lg shadow-[#ED6E3F]/20'
+                                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-[#ED6E3F] dark:hover:text-white'
                                         }`}
                                 >
-                                    <item.icon size={18} className={`${activeTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-[#B58863] dark:group-hover:text-white transition-colors'}`} />
+                                    <item.icon size={18} className={`${activeTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-[#ED6E3F] dark:group-hover:text-white transition-colors'}`} />
                                     <span className="relative z-10">{item.label}</span>
                                     {activeTab === item.id && <ChevronRight size={16} className="ml-auto opacity-80" />}
                                 </button>
@@ -167,7 +174,7 @@ const CaDashboard = ({ onLogout }) => {
         <div className={`flex h-screen bg-[#FDFBF7] dark:bg-[#0D1C22] font-sans text-slate-900 dark:text-slate-100 transition-colors duration-300`}>
             {/* Desktop Sidebar (Static) */}
             {!isMobile && (
-                <div className="w-[280px] bg-white dark:bg-[#10232A] border-r border-slate-200 dark:border-[#1C3540] flex flex-col z-40 shadow-sm transition-colors duration-300">
+                <div className="w-[280px] bg-white dark:bg-[#043E52] border-r border-slate-200 dark:border-[#1C3540] flex flex-col z-40 shadow-sm transition-colors duration-300">
                     <SidebarContent />
                 </div>
             )}
@@ -188,7 +195,7 @@ const CaDashboard = ({ onLogout }) => {
                             animate={{ x: 0 }}
                             exit={{ x: -280 }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed inset-y-0 left-0 w-[280px] bg-white dark:bg-[#10232A] z-50 flex flex-col shadow-2xl transition-colors duration-300"
+                            className="fixed inset-y-0 left-0 w-[280px] bg-white dark:bg-[#043E52] z-50 flex flex-col shadow-2xl transition-colors duration-300"
                         >
                             <SidebarContent />
                         </motion.div>
@@ -199,12 +206,12 @@ const CaDashboard = ({ onLogout }) => {
             {/* Main Content */}
             <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
                 {/* Header */}
-                <header className="h-20 bg-white/80 dark:bg-[#10232A]/90 backdrop-blur-xl border-b border-slate-200 dark:border-[#1C3540] flex items-center justify-between px-6 z-20 sticky top-0 transition-colors duration-300">
+                <header className="h-20 bg-white/80 dark:bg-[#043E52]/90 backdrop-blur-xl border-b border-slate-200 dark:border-[#1C3540] flex items-center justify-between px-6 z-20 sticky top-0 transition-colors duration-300">
                     <div className="flex items-center gap-4">
                         <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1C3540] rounded-lg">
                             <Menu size={24} />
                         </button>
-                        <h2 className="text-xl font-bold text-[#10232A] dark:text-white hidden sm:block">
+                        <h2 className="text-xl font-bold text-[#043E52] dark:text-white hidden sm:block">
                             {sidebarConfig.flatMap(g => g.items).find(i => i.id === activeTab)?.label || 'Dashboard'}
                         </h2>
                     </div>
@@ -221,7 +228,7 @@ const CaDashboard = ({ onLogout }) => {
                             <button className="p-2.5 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1C3540] transition-all relative">
                                 <Bell size={20} />
                                 {requests.filter(r => r.caApprovalStatus === 'PENDING_APPROVAL').length > 0 && (
-                                    <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white dark:border-[#10232A]"></span>
+                                    <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white dark:border-[#043E52]"></span>
                                 )}
                             </button>
                         </div>
@@ -229,18 +236,18 @@ const CaDashboard = ({ onLogout }) => {
                         {/* Profile Dropdown */}
                         <div className="flex items-center gap-3 pl-2 md:pl-4 md:border-l border-slate-200 dark:border-slate-700 ml-2">
                             <div className="text-right hidden md:block">
-                                <p className="text-sm font-bold text-[#10232A] dark:text-white leading-none">{user.fullName || 'Partner'}</p>
+                                <p className="text-sm font-bold text-[#043E52] dark:text-white leading-none">{user.fullName || 'Partner'}</p>
                                 <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Authorized CA</p>
                             </div>
                             <div className="relative group">
-                                <button className="w-10 h-10 rounded-full bg-gradient-to-br from-[#B58863] to-[#8F6B4E] text-white flex items-center justify-center font-bold shadow-lg shadow-[#B58863]/20 transition-transform active:scale-95">
+                                <button className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ED6E3F] to-[#8F6B4E] text-white flex items-center justify-center font-bold shadow-lg shadow-[#ED6E3F]/20 transition-transform active:scale-95">
                                     {user.fullName?.charAt(0) || 'C'}
                                 </button>
                                 {/* Dropdown Menu (Existing) */}
-                                <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#10232A] rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform origin-top-right z-50">
+                                <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#043E52] rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform origin-top-right z-50">
                                     <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-700 mb-1">
                                         <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Signed in as</p>
-                                        <p className="text-sm font-bold text-[#10232A] dark:text-white truncate">{user.email}</p>
+                                        <p className="text-sm font-bold text-[#043E52] dark:text-white truncate">{user.email}</p>
                                     </div>
                                     <button onClick={() => setActiveTab('profile')} className="w-full flex items-center gap-2 px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg text-sm font-medium transition-colors">
                                         <Settings size={16} /> Account Settings
@@ -262,7 +269,7 @@ const CaDashboard = ({ onLogout }) => {
                 {/* Content Body */}
                 <main className="flex-1 overflow-y-auto p-4 md:p-8 relative custom-scrollbar">
                     {/* Background decoration */}
-                    <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-[#B58863]/5 to-transparent -z-10 pointer-events-none"></div>
+                    <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-[#ED6E3F]/5 to-transparent -z-10 pointer-events-none"></div>
 
                     <AnimatePresence mode="wait">
                         <motion.div
@@ -273,6 +280,16 @@ const CaDashboard = ({ onLogout }) => {
                             transition={{ duration: 0.2 }}
                             className="max-w-7xl mx-auto"
                         >
+                            {activeTab === 'notifications' && (
+                                <div className="bg-white dark:bg-[#043E52] rounded-xl shadow-sm p-6">
+                                    <h2 className="text-xl font-bold mb-4">Notifications</h2>
+                                    <div className="text-center py-12 text-slate-500 dark:text-slate-400">
+                                        <Bell size={48} className="mx-auto mb-4 opacity-50" />
+                                        <p>No notifications functionality implemented for CA yet.</p>
+                                    </div>
+                                </div>
+                            )}
+
                             {activeTab === 'overview' && (
                                 <CaOverview
                                     requests={requests}

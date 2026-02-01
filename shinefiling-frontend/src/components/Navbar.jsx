@@ -1,23 +1,45 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDown, Menu, X, Search, User, Bell, LogOut, ArrowRight, FileText } from 'lucide-react';
+﻿import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { ChevronDown, Menu, X, Search, User, Bell, LogOut, ArrowRight, FileText, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SERVICE_DATA } from '../data/services';
 import { getNotifications, getServiceCatalog } from '../api';
 import { getInactiveServices } from '../utils/serviceManager';
+import AuthModal from './auth/AuthModal';
 
-const Navbar = ({ isLoggedIn, onLogout, user }) => {
+const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
     const [hoveredMenu, setHoveredMenu] = useState(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [expandedMobileCat, setExpandedMobileCat] = useState(null);
+    const [showUserMenu, setShowUserMenu] = useState(false);
+    const userMenuRef = useRef(null);
+    const notificationRef = useRef(null); // Added Ref
+    const [showNotifications, setShowNotifications] = useState(false); // Added State
     const [scrolled, setScrolled] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
+    const [activeCategory, setActiveCategory] = useState('BUSINESS & TAX');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
     const navigate = useNavigate();
 
     // Notifications State
     const [notifications, setNotifications] = useState([]);
     const [notificationCount, setNotificationCount] = useState(0);
+
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    useEffect(() => {
+        if (searchParams.get('login') === 'true') {
+            setShowAuthModal(true);
+            setAuthMode('login');
+
+            // Clean URL
+            const newParams = new URLSearchParams(searchParams);
+            newParams.delete('login');
+            setSearchParams(newParams, { replace: true });
+        }
+    }, [searchParams, setSearchParams]);
 
     useEffect(() => {
         if (!isLoggedIn || !user) return;
@@ -66,6 +88,15 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
         if (inactiveList.includes(serviceName)) return false;
         return true;
     };
+
+    const navGroups = [
+        { label: 'BUSINESS & TAX', keys: ['business_reg', 'tax_compliance'] },
+        { label: 'ROC & LICENSES', keys: ['roc_compliance', 'licenses'] },
+        { label: 'TRADEMARK & HR', keys: ['ipr', 'labour_hr'] },
+        { label: 'CERTS & DRAFTING', keys: ['certifications', 'legal'] },
+        { label: 'NOTICES & FINANCE', keys: ['legal_notices', 'financial'] },
+        { label: 'CORRECTIONS & CLOSURE', keys: ['corrections', 'closure'] }
+    ];
 
     const categories = [
         'business_reg', 'tax_compliance', 'roc_compliance', 'licenses',
@@ -233,20 +264,19 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
     const [isVisible, setIsVisible] = useState(true);
     const lastScrollY = useRef(0);
 
-    // Dynamic "More" Categories Count
-    const [visibleCount, setVisibleCount] = useState(12);
+
 
     useEffect(() => {
-        const handleResize = () => {
-            const w = window.innerWidth;
-            if (w >= 1440) setVisibleCount(12);
-            else if (w >= 1200) setVisibleCount(10);
-            else if (w >= 1024) setVisibleCount(8);
-            else setVisibleCount(0);
+        const handleClickOutside = (event) => {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+                setShowUserMenu(false);
+            }
+            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+                setShowNotifications(false);
+            }
         };
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     useEffect(() => {
@@ -262,6 +292,7 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
             }
 
             lastScrollY.current = currentScrollY;
+            setScrolled(currentScrollY > 20);
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
@@ -270,308 +301,298 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
 
     return (
         <>
-            <div className={`fixed w-full z-50 top-0 left-0 transition-transform duration-300 ease-in-out font-sans shadow-premium ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-                {/* ROW 1: Logo & Auth (White Background) */}
-                <div className="w-full bg-white h-20 border-b border-slate-100">
-                    <div className="max-w-[1600px] mx-auto px-4 lg:px-8 h-full flex justify-between items-center">
+            <div className={`fixed w-full z-50 top-0 left-0 transition-all duration-500 ease-in-out font-sans ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${scrolled ? 'bg-white/90 backdrop-blur-md shadow-lg py-1' : 'bg-transparent py-4'}`}>
+                {/* SINGLE ROW NAVBAR */}
+                <div className="w-full relative z-50">
+                    <div className="max-w-[1600px] mx-auto px-4 lg:px-8 h-20 flex items-center justify-between">
 
-                        {/* LOGO */}
-                        <Link to="/" className="flex items-center gap-0 group relative z-10 text-2xl font-black tracking-tighter text-navy leading-none shrink-0">
-                            <img
-                                src="/logo.png"
-                                alt="ShineFiling"
-                                className="h-10 md:h-12 w-auto object-contain hover:opacity-90 transition-opacity -mr-1.5"
-                            />
-                            <span className="pt-2">
-                                hine<span className="text-bronze">Filing</span>
-                            </span>
-                        </Link>
+                        {/* LEFT: LOGO */}
+                        <div className="w-auto xl:w-[300px] shrink-0 flex items-center">
+                            <Link to="/" className="flex items-center">
+                                <img
+                                    src="/logo.png"
+                                    alt="ShineFiling"
+                                    className="h-20 md:h-32 w-auto object-contain hover:opacity-90 transition-all"
+                                />
+                            </Link>
+                        </div>
 
-                        {/* SEARCH BAR (Fills the empty space) */}
-                        <div className="hidden lg:flex flex-1 max-w-2xl mx-12 relative group z-50">
-                            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                                <Search size={16} className="text-slate-400 group-focus-within:text-bronze transition-colors" />
-                            </div>
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setSearchQuery(val);
-                                    if (val.trim()) {
-                                        const query = val.toLowerCase();
-                                        const results = [];
-                                        for (const catKey of Object.keys(SERVICE_DATA)) {
-                                            const cat = SERVICE_DATA[catKey];
-                                            cat.items.forEach(item => {
-                                                if (item.toLowerCase().includes(query) && isServiceActive(item)) {
-                                                    results.push({ name: item, category: cat.label });
-                                                }
-                                            });
-                                        }
-                                        setSearchResults(results.slice(0, 8)); // Limit to 8 results
-                                    } else {
-                                        setSearchResults([]);
-                                    }
-                                }}
-                                onFocus={() => {
-                                    if (searchQuery.trim() && searchResults.length === 0) {
-                                        // Trigger search if focusing back on populated field
-                                        const val = searchQuery;
-                                        const query = val.toLowerCase();
-                                        const results = [];
-                                        for (const catKey of Object.keys(SERVICE_DATA)) {
-                                            const cat = SERVICE_DATA[catKey];
-                                            cat.items.forEach(item => {
-                                                if (item.toLowerCase().includes(query) && isServiceActive(item)) {
-                                                    results.push({ name: item, category: cat.label });
-                                                }
-                                            });
-                                        }
-                                        setSearchResults(results.slice(0, 8));
-                                    }
-                                }}
-                                onBlur={() => setTimeout(() => setSearchResults([]), 200)} // Delay to allow click
-                                placeholder="Search for services (e.g. GST, Company Registration)..."
-                                className="w-full h-11 pl-11 pr-4 rounded-full bg-slate-50 border border-slate-200/80 text-sm font-medium text-navy placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-bronze focus:ring-4 focus:ring-bronze/10 transition-all shadow-inner hover:bg-white hover:shadow-md"
-                            />
-                            {/* SEARCH DROPDOWN */}
-                            <AnimatePresence>
-                                {searchResults.length > 0 && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 10 }}
-                                        className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden py-2"
-                                    >
-                                        {searchResults.map((res, idx) => {
-                                            const slug = getServiceSlug(res.name);
-                                            const url = slug ? `/services/${slug}` : `/services/apply?name=${encodeURIComponent(res.name)}`;
-                                            return (
-                                                <Link
-                                                    key={idx}
-                                                    to={url}
-                                                    onClick={() => {
-                                                        setSearchQuery('');
-                                                        setSearchResults([]);
-                                                    }}
-                                                    className="flex items-center justify-between px-6 py-3 hover:bg-slate-50 transition-colors group/result"
-                                                >
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-navy group-hover/result:text-bronze transition-colors">{res.name}</span>
-                                                        <span className="text-[10px] uppercase font-bold text-slate-400">{res.category}</span>
+                        {/* CENTER: NAVIGATION GROUPS (Desktop Only) */}
+                        <div className="hidden xl:flex items-center justify-center flex-1 h-full px-2 gap-8">
+                            {/* STATIC LINKS */}
+                            {['ABOUT', 'CAREERS', 'CONTACT'].map((item, idx) => (
+                                <Link
+                                    key={idx}
+                                    to={`/${item.toLowerCase()}`}
+                                    className={`text-[12px] font-bold uppercase tracking-wide transition-colors ${scrolled ? 'text-[#043E52] hover:text-[#ED6E3F]' : 'text-white/90 hover:text-[#ED6E3F]'}`}
+                                >
+                                    {item}
+                                </Link>
+                            ))}
+
+                            {/* SERVICES MEGA MENU TRIGGER */}
+                            <div
+                                className="h-full flex items-center"
+                                onMouseEnter={() => setHoveredMenu('SERVICES')}
+                                onMouseLeave={() => setHoveredMenu(null)}
+                            >
+                                <button className={`flex items-center gap-1 text-[12px] font-bold uppercase tracking-wide transition-all px-3 py-2 rounded-lg ${hoveredMenu === 'SERVICES' ? 'text-[#ED6E3F]' : (scrolled ? 'text-[#043E52] hover:bg-slate-50' : 'text-white/90 hover:bg-white/10')}`}>
+                                    SERVICES
+                                    <ChevronDown size={12} className={`transform transition-transform duration-300 opacity-50 ${hoveredMenu === 'SERVICES' ? 'rotate-180 text-[#ED6E3F] opacity-100' : ''}`} />
+                                </button>
+
+                                {/* SIDE-BY-SIDE MEGA MENU */}
+                                <AnimatePresence>
+                                    {hoveredMenu === 'SERVICES' && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            transition={{ duration: 0.15 }}
+                                            className="absolute top-full left-0 w-full flex justify-center pt-1 z-[100]"
+                                        >
+                                            <div className="w-[95%] max-w-[1000px] bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden flex">
+                                                {/* Left Sidebar: Categories */}
+                                                <div className="w-[260px] shrink-0 bg-slate-50/80 backdrop-blur-sm border-r border-slate-100 py-4 flex flex-col gap-1">
+                                                    <div className="px-5 mb-3">
+                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Categories</span>
                                                     </div>
-                                                    <ArrowRight size={14} className="text-slate-300 group-hover/result:text-bronze -translate-x-2 group-hover/result:translate-x-0 transition-all" />
-                                                </Link>
-                                            );
-                                        })}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
+                                                    {navGroups.map((group, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            onMouseEnter={() => setActiveCategory(group.label)}
+                                                            className={`w-full text-left px-5 py-3 text-[11px] font-bold uppercase tracking-wide flex items-center justify-between transition-all duration-200 relative ${activeCategory === group.label
+                                                                ? 'bg-white text-[#ED6E3F] border-l-4 border-[#ED6E3F] shadow-sm'
+                                                                : 'text-slate-500 hover:text-[#043E52] hover:bg-white/50 border-l-4 border-transparent'
+                                                                }`}
+                                                        >
+                                                            {group.label}
+                                                            {activeCategory === group.label && <ChevronDown className="-rotate-90 text-[#ED6E3F]" size={14} />}
+                                                        </button>
+                                                    ))}
+                                                </div>
 
-                        {/* TOP LINKS */}
-                        <div className="hidden lg:flex items-center gap-8">
-                            <Link to="/about-us" className="text-xs font-bold text-navy hover:text-bronze tracking-wider uppercase transition-colors">ABOUT US</Link>
-                            <Link to="/contact-us" className="text-xs font-bold text-navy hover:text-bronze tracking-wider uppercase transition-colors">CONTACT US</Link>
-                            <Link to="/careers" className="text-xs font-bold text-navy hover:text-bronze tracking-wider uppercase transition-colors">CAREERS</Link>
+                                                {/* Right Content: Services Grid */}
+                                                <div className="flex-1 p-6 bg-white min-h-[350px] flex flex-col">
+                                                    <AnimatePresence mode="wait">
+                                                        {(() => {
+                                                            const activeGroup = navGroups.find(g => g.label === activeCategory) || navGroups[0];
+                                                            return (
+                                                                <motion.div
+                                                                    key={activeCategory}
+                                                                    initial={{ opacity: 0, x: 8 }}
+                                                                    animate={{ opacity: 1, x: 0 }}
+                                                                    exit={{ opacity: 0, x: -8 }}
+                                                                    transition={{ duration: 0.15, ease: "easeOut" }}
+                                                                    className="flex-1 flex flex-col"
+                                                                >
+                                                                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-50">
+                                                                        <h3 className="text-lg font-black text-[#043E52] tracking-tight flex items-center gap-2">
+                                                                            <div className="w-6 h-10 rounded-md bg-[#ED6E3F]/10 flex items-center justify-center text-[#ED6E3F] text-sm">
+                                                                                {activeGroup.label.charAt(0)}
+                                                                            </div>
+                                                                            {activeGroup.label}
+                                                                        </h3>
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                setHoveredMenu(null);
+                                                                                if (isLoggedIn) navigate('/dashboard/new-filings');
+                                                                                else {
+                                                                                    setAuthMode('login');
+                                                                                    setShowAuthModal(true);
+                                                                                }
+                                                                            }}
+                                                                            className="text-[11px] font-bold text-[#ED6E3F] hover:text-[#043E52] flex items-center gap-1 group/view transition-colors"
+                                                                        >
+                                                                            VIEW ALL <ArrowRight size={12} className="transition-transform group-hover/view:translate-x-1" />
+                                                                        </button>
+                                                                    </div>
 
-                            <div className="h-5 w-px bg-slate-200"></div>
-
-                            {!isLoggedIn ? (
-                                <>
-                                    <Link to="/login" className="text-xs font-bold text-navy hover:text-bronze tracking-wider uppercase transition-colors">LOGIN</Link>
-                                    <Link to="/signup" className="px-8 py-2.5 rounded-full bg-bronze hover:bg-bronze-dark text-white text-xs font-bold tracking-wider shadow-lg shadow-bronze/20 transition-all hover:-translate-y-0.5">
-                                        SIGN UP
-                                    </Link>
-                                </>
-                            ) : (
-                                <div className="flex items-center gap-6">
-                                    {/* NOTIFICATIONS */}
-                                    <button className="relative text-navy hover:text-bronze transition p-1">
-                                        <Bell size={20} />
-                                        {notificationCount > 0 && <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>}
-                                    </button>
-
-                                    {/* USER PROFILE */}
-                                    <div className="flex items-center gap-3 cursor-pointer group relative">
-                                        <div className="text-right hidden xl:block">
-                                            <p className="text-xs font-bold text-navy">{user?.fullName}</p>
-                                            <p className="text-[10px] text-slate-500 font-medium">My Account</p>
-                                        </div>
-                                        <div className="w-10 h-10 rounded-full bg-navy flex items-center justify-center text-white font-bold text-sm ring-2 ring-slate-100 group-hover:ring-bronze transition-all overflow-hidden relative">
-                                            {user?.profileImage ? (
-                                                <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
-                                            ) : (
-                                                user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'
-                                            )}
-                                        </div>
-
-                                        {/* DROPDOWN */}
-                                        <div className="absolute top-full right-0 mt-4 w-56 bg-white border border-slate-100 rounded-xl shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform origin-top-right z-50">
-                                            <div className="px-4 py-3 border-b border-slate-50 bg-slate-50/50">
-                                                <p className="text-xs font-bold text-navy">{user?.email}</p>
+                                                                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-2 content-start flex-1 overflow-y-auto max-h-[350px] pr-2 custom-scrollbar">
+                                                                        {activeGroup.keys.map(catKey => {
+                                                                            const category = SERVICE_DATA[catKey];
+                                                                            if (!category) return null;
+                                                                            return category.items.map((item, i) => {
+                                                                                if (!isServiceActive(item)) return null;
+                                                                                const slug = getServiceSlug(item);
+                                                                                return (
+                                                                                    <Link
+                                                                                        key={`${catKey}-${i}`}
+                                                                                        to={slug ? `/services/${slug}` : `/services/apply?name=${encodeURIComponent(item)}`}
+                                                                                        onClick={() => setHoveredMenu(null)}
+                                                                                        className="flex items-start gap-2 p-1.5 rounded-lg hover:bg-slate-50 transition-all group/link"
+                                                                                    >
+                                                                                        <div className="mt-1.5 w-1 h-1 rounded-full bg-slate-300 group-hover/link:bg-[#ED6E3F] transition-colors shrink-0"></div>
+                                                                                        <span className="text-[12px] font-medium text-slate-600 group-hover/link:text-[#043E52] leading-snug">
+                                                                                            {item}
+                                                                                        </span>
+                                                                                    </Link>
+                                                                                );
+                                                                            });
+                                                                        })}
+                                                                    </div>
+                                                                </motion.div>
+                                                            );
+                                                        })()}
+                                                    </AnimatePresence>
+                                                </div>
                                             </div>
-                                            <Link
-                                                to={(user?.role?.includes('ADMIN')) ? "/admin-dashboard" : (user?.role === 'AGENT' ? "/agent-dashboard" : "/dashboard")}
-                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-navy transition-colors"
-                                            >
-                                                <User size={16} /> Dashboard
-                                            </Link>
-                                            <button onClick={onLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors text-left border-t border-slate-50 mt-1">
-                                                <LogOut size={16} /> Logout
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         </div>
 
-                        {/* Mobile Toggle */}
-                        <button className="lg:hidden text-navy p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
-                    </div>
-                </div>
-
-                {/* ROW 2: Primary Navigation Categories (Deep Navy Background) */}
-                <div className="hidden lg:block w-full bg-navy h-12 shadow-md relative z-40">
-                    {/* Gold Separation Line */}
-                    <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-bronze via-yellow-400 to-bronze z-50"></div>
-                    <div className="max-w-[1600px] mx-auto px-6 h-full">
-                        <div className="flex w-full justify-between items-center h-full">
-                            {categories.slice(0, visibleCount).map((catKey, idx) => {
-                                const category = SERVICE_DATA[catKey];
-                                if (!category) return null;
-
-                                const isWide = category.items.length > 5;
-                                // Smarter positioning logic
-                                let dropdownPosClass = "left-1/2 -translate-x-1/2 origin-top";
-                                if (idx < 3) dropdownPosClass = "left-0 origin-top-left";
-                                if (idx > 5) dropdownPosClass = "right-0 origin-top-right";
-
-                                return (
-                                    <div
-                                        key={catKey}
-                                        className="relative group h-full flex items-center"
-                                        onMouseEnter={() => setHoveredMenu(catKey)}
-                                        onMouseLeave={() => setHoveredMenu(null)}
+                        {/* RIGHT: AUTH & MOBILE TOGGLE */}
+                        <div className="w-auto xl:w-[280px] shrink-0 flex items-center justify-end gap-6">
+                            {!isLoggedIn ? (
+                                <div className="hidden xl:flex items-center gap-4">
+                                    <button
+                                        onClick={() => { setAuthMode('login'); setShowAuthModal(true); }}
+                                        className={`text-xs font-bold hover:text-[#F9A65E] tracking-wider uppercase transition-colors cursor-pointer ${scrolled ? 'text-[#043E52]' : 'text-white'}`}
                                     >
-                                        <button className={`flex items-center gap-0.5 lg:gap-1 xl:gap-1.5 text-[8.5px] lg:text-[9.5px] xl:text-xs font-bold uppercase tracking-wide lg:tracking-wider transition-colors h-full px-0.5 lg:px-1.5 ${hoveredMenu === catKey ? 'text-bronze' : 'text-white/90 hover:text-white'}`}>
-                                            <span className="whitespace-nowrap">{navLabels[catKey]}</span>
-                                            <ChevronDown size={10} className={`transform transition-transform duration-300 opacity-50 ${hoveredMenu === catKey ? 'rotate-180 text-bronze opacity-100' : ''}`} />
+                                        LOGIN
+                                    </button>
+                                    <button
+                                        onClick={() => { setAuthMode('signup'); setShowAuthModal(true); }}
+                                        className="px-6 py-2.5 rounded-full bg-[#ED6E3F] text-white hover:bg-[#F9A65E] text-xs font-bold tracking-wider shadow-lg shadow-[#ED6E3F]/30 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+                                    >
+                                        SIGN UP
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="hidden xl:flex items-center gap-6">
+                                    <div className="relative" ref={notificationRef}>
+                                        <button
+                                            onClick={() => setShowNotifications(!showNotifications)}
+                                            className={`relative transition p-1 ${scrolled ? 'text-slate-600 hover:text-[#043E52]' : 'text-white hover:text-[#F9A65E]'}`}
+                                        >
+                                            <Bell size={20} />
+                                            {notificationCount > 0 && <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-pulse border border-white"></span>}
                                         </button>
 
-                                        {/* MEGA MENU DROPDOWN */}
                                         <AnimatePresence>
-                                            {hoveredMenu === catKey && (
+                                            {showNotifications && (
                                                 <motion.div
-                                                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                                                    transition={{ duration: 0.15 }}
-                                                    className={`absolute top-[100%] ${dropdownPosClass} bg-white rounded-b-xl border border-slate-200/60 shadow-2xl p-6 z-50 ${isWide ? 'w-[500px] xl:w-[600px]' : 'w-64 xl:w-72'}`}
+                                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                    transition={{ duration: 0.2 }}
+                                                    className="absolute top-full right-0 mt-4 w-80 bg-white rounded-xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5"
                                                 >
-                                                    <div className="relative z-10">
-                                                        <h4 className="flex items-center gap-2 text-navy font-bold text-xs uppercase tracking-wider mb-4 pb-3 border-b border-slate-100">
-                                                            <category.icon size={16} className="text-bronze" />
-                                                            {category.label}
-                                                        </h4>
-                                                        <div className={`grid gap-x-8 gap-y-3 ${isWide ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                                                            {category.items.map((item, idy) => {
-                                                                if (!isServiceActive(item)) return null;
-                                                                const slug = getServiceSlug(item);
-                                                                return (
-                                                                    <Link
-                                                                        key={idy}
-                                                                        to={slug ? `/services/${slug}` : `/services/apply?name=${encodeURIComponent(item)}`}
-                                                                        className="text-xs text-slate-600 hover:text-bronze hover:translate-x-1 transition-all flex items-center justify-between group/item py-1"
-                                                                    >
-                                                                        <span className="truncate max-w-[90%]">{item}</span>
-                                                                        <ArrowRight size={10} className="text-bronze opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all" />
-                                                                    </Link>
-                                                                )
-                                                            })}
-                                                        </div>
+                                                    {/* Header */}
+                                                    <div className="bg-[#ED6E3F] px-4 py-3 flex items-center justify-between">
+                                                        <h4 className="text-white font-bold text-sm">Notifications</h4>
+                                                        <button className="text-white/80 hover:text-white transition-colors">
+                                                            <Settings size={16} />
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Notification List */}
+                                                    <div className="max-h-[350px] overflow-y-auto bg-white">
+                                                        {notifications.length > 0 ? (
+                                                            notifications.slice(0, 5).map((notif, idx) => (
+                                                                <div key={idx} className="p-4 border-b border-slate-50 hover:bg-slate-50 transition-colors flex gap-3 group cursor-pointer relative">
+                                                                    <div className="w-10 h-10 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center text-[#043E52] font-bold text-sm">
+                                                                        {notif.sender ? notif.sender.charAt(0) : 'S'}
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-xs text-slate-800 leading-snug">
+                                                                            <span className="font-bold">{notif.title || 'System'}</span> {notif.message}
+                                                                        </p>
+                                                                        <span className="text-[10px] text-slate-400 font-medium mt-1 block">
+                                                                            {notif.timestamp ? new Date(notif.timestamp).toLocaleDateString() : 'Just now'}
+                                                                        </span>
+                                                                    </div>
+                                                                    {(!notif.isRead && !notif.read) && (
+                                                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#ED6E3F]"></div>
+                                                                    )}
+                                                                </div>
+                                                            ))
+                                                        ) : (
+                                                            <div className="p-8 text-center text-slate-400 flex flex-col items-center">
+                                                                <Bell size={24} className="mb-2 opacity-50" />
+                                                                <span className="text-xs font-medium">No new notifications</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Footer */}
+                                                    <div
+                                                        onClick={() => {
+                                                            setShowNotifications(false);
+                                                            let dashboardPath = "/dashboard";
+                                                            if (user?.role?.includes('ADMIN')) dashboardPath = "/admin-dashboard";
+                                                            else if (user?.role === 'AGENT') dashboardPath = "/agent-dashboard";
+                                                            else if (user?.role === 'CA') dashboardPath = "/ca-dashboard";
+
+                                                            navigate(`${dashboardPath}?tab=notifications`);
+                                                        }}
+                                                        className="bg-slate-50 px-4 py-3 text-center border-t border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors"
+                                                    >
+                                                        <span className="text-xs font-bold text-[#043E52]">See all recent activity</span>
                                                     </div>
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
                                     </div>
-                                );
-                            })}
 
-                            {/* MORE DROPDOWN */}
-                            {categories.length > visibleCount && (
-                                <div
-                                    className="relative group h-full flex items-center"
-                                    onMouseEnter={() => setHoveredMenu('more')}
-                                    onMouseLeave={() => setHoveredMenu(null)}
-                                >
-                                    <button className={`flex items-center gap-1 xl:gap-1.5 text-[9.5px] lg:text-[10px] xl:text-xs font-bold uppercase tracking-wider transition-colors h-full px-1 lg:px-2 ${hoveredMenu === 'more' ? 'text-bronze' : 'text-white/90 hover:text-white'}`}>
-                                        MORE
-                                        <ChevronDown size={10} className={`transform transition-transform duration-300 opacity-50 ${hoveredMenu === 'more' ? 'rotate-180 text-bronze opacity-100' : ''}`} />
-                                    </button>
+                                    <div className="flex items-center gap-3 cursor-pointer relative" ref={userMenuRef}>
+                                        <div className="flex items-center gap-3" onClick={() => setShowUserMenu(!showUserMenu)}>
+                                            <div className="text-right hidden xl:block">
+                                                <p className={`text-xs font-bold ${scrolled ? 'text-[#043E52]' : 'text-white'}`}>{user?.fullName}</p>
+                                            </div>
+                                            <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm ring-2 transition-all overflow-hidden relative ${scrolled ? 'bg-slate-100 text-[#043E52] ring-slate-200' : 'bg-white/20 text-white ring-white/30'}`}>
+                                                {user?.profileImage ? (
+                                                    <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'
+                                                )}
+                                            </div>
+                                        </div>
 
-                                    <AnimatePresence>
-                                        {hoveredMenu === 'more' && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                                                transition={{ duration: 0.15 }}
-                                                className="absolute top-[100%] right-0 bg-white rounded-b-xl border border-slate-200/60 shadow-2xl p-4 min-w-[220px] z-50"
-                                            >
-                                                <div className="space-y-1">
-                                                    {categories.slice(visibleCount).map((catKey) => {
-                                                        const category = SERVICE_DATA[catKey];
-                                                        return (
-                                                            <div key={catKey} className="group/sub relative">
-                                                                <div className="flex items-center justify-between gap-4 px-4 py-2.5 rounded-lg text-slate-700 hover:bg-slate-50 hover:text-bronze transition-all cursor-pointer">
-                                                                    <div className="flex items-center gap-3">
-                                                                        <category.icon size={14} className="text-slate-400 group-hover/sub:text-bronze" />
-                                                                        <span className="text-xs font-bold uppercase tracking-wide">{navLabels[catKey]}</span>
-                                                                    </div>
-                                                                    <ArrowRight size={12} className="text-slate-300 group-hover/sub:text-bronze opacity-0 -translate-x-2 group-hover/sub:opacity-100 group-hover/sub:translate-x-0 transition-all" />
-                                                                </div>
-
-                                                                {/* SECONDARY MEGA MENU ON HOVER */}
-                                                                <div className="absolute top-0 right-[100%] pr-2 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all">
-                                                                    <div className="bg-white border border-slate-100 rounded-xl shadow-2xl p-5 min-w-[280px]">
-                                                                        <h5 className="flex items-center gap-2 text-navy font-bold text-[10px] uppercase tracking-wider mb-3 pb-2 border-b border-slate-50">
-                                                                            <category.icon size={12} className="text-bronze" />
-                                                                            {category.label}
-                                                                        </h5>
-                                                                        <div className="space-y-2">
-                                                                            {category.items.map((item, idy) => {
-                                                                                if (!isServiceActive(item)) return null;
-                                                                                const slug = getServiceSlug(item);
-                                                                                return (
-                                                                                    <Link
-                                                                                        key={idy}
-                                                                                        to={slug ? `/services/${slug}` : `/services/apply?name=${encodeURIComponent(item)}`}
-                                                                                        className="block text-xs text-slate-500 hover:text-bronze transition-colors py-1"
-                                                                                    >
-                                                                                        {item}
-                                                                                    </Link>
-                                                                                )
-                                                                            })}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+                                        <AnimatePresence>
+                                            {showUserMenu && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                    transition={{ duration: 0.2 }}
+                                                    className="absolute top-full right-0 mt-4 w-56 bg-white border border-slate-100 rounded-xl shadow-xl py-2 z-50 overflow-hidden"
+                                                >
+                                                    <div className="px-4 py-3 border-b border-slate-50 bg-slate-50/50">
+                                                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Signed in as</p>
+                                                        <p className="text-xs font-bold text-[#043E52] truncate">{user?.email}</p>
+                                                    </div>
+                                                    <Link
+                                                        to={(user?.role?.includes('ADMIN')) ? "/admin-dashboard" : (user?.role === 'AGENT' ? "/agent-dashboard" : "/dashboard")}
+                                                        onClick={() => setShowUserMenu(false)}
+                                                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#043E52] transition-colors"
+                                                    >
+                                                        <User size={16} /> Dashboard
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowUserMenu(false);
+                                                            onLogout();
+                                                        }}
+                                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors text-left border-t border-slate-50 mt-1"
+                                                    >
+                                                        <LogOut size={16} /> Logout
+                                                    </button>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
                                 </div>
                             )}
+
+                            <button className={`xl:hidden p-2 rounded-lg transition-colors ${scrolled ? 'text-[#043E52] hover:bg-slate-100' : 'text-white hover:bg-white/10'}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                            </button>
                         </div>
                     </div>
                 </div>
-
             </div>
             {/* Mobile Menu (Enhanced) */}
             <AnimatePresence>
@@ -581,14 +602,14 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: '100%' }}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="fixed inset-0 z-[60] bg-white flex flex-col lg:hidden"
+                        className="fixed inset-0 z-[60] bg-white flex flex-col xl:hidden"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between p-5 border-b border-slate-100">
-                            <span className="text-xl font-black text-navy tracking-tight">Menu</span>
+                            <span className="text-xl font-black text-[#043E52] tracking-tight">Menu</span>
                             <button
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="p-2 -mr-2 text-slate-400 hover:text-navy hover:bg-slate-50 rounded-full transition-colors"
+                                className="p-2 -mr-2 text-slate-400 hover:text-[#043E52] hover:bg-slate-50 rounded-full transition-colors"
                             >
                                 <X size={24} />
                             </button>
@@ -624,7 +645,7 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
                                                 }
                                             }}
                                             placeholder="Find a service..."
-                                            className="w-full h-12 pl-11 pr-4 rounded-xl bg-white border border-slate-200 text-sm font-medium focus:border-bronze focus:ring-4 focus:ring-bronze/10 outline-none transition-all shadow-sm"
+                                            className="w-full h-12 pl-11 pr-4 rounded-xl bg-white border border-slate-200 text-sm font-medium focus:border-[#ED6E3F] focus:ring-4 focus:ring-[#ED6E3F]/10 outline-none transition-all shadow-sm"
                                         />
                                         {/* Mobile Search Results */}
                                         {searchResults.length > 0 && searchQuery && (
@@ -644,7 +665,7 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
                                                             className="flex items-center justify-between px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50"
                                                         >
                                                             <div className="flex flex-col">
-                                                                <span className="text-sm font-medium text-navy">{res.name}</span>
+                                                                <span className="text-sm font-medium text-[#043E52]">{res.name}</span>
                                                                 <span className="text-[10px] uppercase text-slate-400 font-bold">{res.category}</span>
                                                             </div>
                                                         </Link>
@@ -658,29 +679,27 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
                                 {/* Auth Buttons */}
                                 {!isLoggedIn ? (
                                     <div className="grid grid-cols-2 gap-3 pt-2">
-                                        <Link
-                                            to="/login"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                            className="flex items-center justify-center h-12 rounded-xl bg-white border border-slate-200 text-navy font-bold text-sm shadow-sm hover:border-bronze transition-all"
+                                        <button
+                                            onClick={() => { setAuthMode('login'); setShowAuthModal(true); setMobileMenuOpen(false); }}
+                                            className="flex items-center justify-center h-12 rounded-xl bg-white border border-slate-200 text-[#043E52] font-bold text-sm shadow-sm hover:border-[#ED6E3F] transition-all cursor-pointer"
                                         >
                                             LOGIN
-                                        </Link>
-                                        <Link
-                                            to="/signup"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                            className="flex items-center justify-center h-12 rounded-xl bg-gradient-to-r from-bronze to-yellow-600 text-white font-bold text-sm shadow-lg shadow-bronze/20 transition-all hover:shadow-bronze/30 hover:-translate-y-0.5"
+                                        </button>
+                                        <button
+                                            onClick={() => { setAuthMode('signup'); setShowAuthModal(true); setMobileMenuOpen(false); }}
+                                            className="flex items-center justify-center h-12 rounded-xl bg-gradient-to-r from-[#ED6E3F] to-[#F9A65E] text-white font-bold text-sm shadow-lg shadow-[#ED6E3F]/20 transition-all hover:shadow-[#ED6E3F]/30 hover:-translate-y-0.5 cursor-pointer"
                                         >
                                             SIGN UP
-                                        </Link>
+                                        </button>
                                     </div>
                                 ) : (
                                     <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
                                         <div className="flex items-center gap-3 mb-4">
-                                            <div className="w-12 h-12 rounded-full bg-navy text-white flex items-center justify-center font-bold text-lg">
+                                            <div className="w-12 h-12 rounded-full bg-[#043E52] text-white flex items-center justify-center font-bold text-lg">
                                                 {user?.fullName?.charAt(0) || 'U'}
                                             </div>
                                             <div>
-                                                <p className="font-bold text-navy">{user?.fullName}</p>
+                                                <p className="font-bold text-[#043E52]">{user?.fullName}</p>
                                                 <p className="text-xs text-slate-500 font-medium">{user?.email}</p>
                                             </div>
                                         </div>
@@ -688,7 +707,7 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
                                             <Link
                                                 to={user?.role?.includes('ADMIN') ? "/admin-dashboard" : (user?.role === 'AGENT' ? "/agent-dashboard" : "/dashboard")}
                                                 onClick={() => setMobileMenuOpen(false)}
-                                                className="flex items-center justify-center h-10 rounded-lg bg-slate-50 border border-slate-100 text-xs font-bold text-navy hover:bg-slate-100 transition-colors"
+                                                className="flex items-center justify-center h-10 rounded-lg bg-slate-50 border border-slate-100 text-xs font-bold text-[#043E52] hover:bg-slate-100 transition-colors"
                                             >
                                                 DASHBOARD
                                             </Link>
@@ -712,18 +731,18 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
                                             const isOpen = expandedMobileCat === catKey;
 
                                             return (
-                                                <div key={catKey} className={`rounded-xl border transition-all duration-200 ${isOpen ? 'bg-white border-bronze/30 shadow-md' : 'bg-white border-slate-200 shadow-sm'}`}>
+                                                <div key={catKey} className={`rounded-xl border transition-all duration-200 ${isOpen ? 'bg-white border-[#ED6E3F]/30 shadow-md' : 'bg-white border-slate-200 shadow-sm'}`}>
                                                     <button
                                                         onClick={() => setExpandedMobileCat(isOpen ? null : catKey)}
                                                         className="w-full flex items-center justify-between p-4"
                                                     >
                                                         <div className="flex items-center gap-3">
-                                                            <div className={`p-2 rounded-lg ${isOpen ? 'bg-bronze/10 text-bronze' : 'bg-slate-50 text-slate-400'}`}>
+                                                            <div className={`p-2 rounded-lg ${isOpen ? 'bg-[#ED6E3F]/10 text-[#ED6E3F]' : 'bg-slate-50 text-slate-400'}`}>
                                                                 <category.icon size={18} />
                                                             </div>
-                                                            <span className={`text-sm font-bold uppercase tracking-wide ${isOpen ? 'text-navy' : 'text-slate-600'}`}>{navLabels[catKey]}</span>
+                                                            <span className={`text-sm font-bold uppercase tracking-wide ${isOpen ? 'text-[#043E52]' : 'text-slate-600'}`}>{navLabels[catKey]}</span>
                                                         </div>
-                                                        <ChevronDown size={16} className={`text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-bronze' : ''}`} />
+                                                        <ChevronDown size={16} className={`text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#ED6E3F]' : ''}`} />
                                                     </button>
                                                     <AnimatePresence>
                                                         {isOpen && (
@@ -743,9 +762,9 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
                                                                                 key={idy}
                                                                                 to={slug ? `/services/${slug}` : `/services/apply?name=${encodeURIComponent(item)}`}
                                                                                 onClick={() => setMobileMenuOpen(false)}
-                                                                                className="block py-2 text-sm text-slate-500 hover:text-bronze font-medium pl-11 relative"
+                                                                                className="block py-2 text-sm text-[#043E52] hover:text-[#ED6E3F] font-medium pl-11 relative"
                                                                             >
-                                                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+                                                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#043E52]/30"></span>
                                                                                 {item}
                                                                             </Link>
                                                                         );
@@ -761,17 +780,22 @@ const Navbar = ({ isLoggedIn, onLogout, user }) => {
                                 </div>
 
                                 {/* Bottom Links */}
-                                <div className="space-y-1 pt-4 pb-8 border-t border-slate-100">
-                                    <Link to="/about-us" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-sm font-bold text-navy hover:bg-slate-50 rounded-lg">ABOUT SHINEFILING</Link>
-                                    <Link to="/contact-us" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-sm font-bold text-navy hover:bg-slate-50 rounded-lg">CONTACT US</Link>
-                                    <Link to="/careers" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-sm font-bold text-navy hover:bg-slate-50 rounded-lg">CAREERS</Link>
-                                </div>
+
 
                             </div>
                         </div>
                     </motion.div>
-                )}
-            </AnimatePresence>
+                )
+                }
+            </AnimatePresence >
+
+            {/* Auth Modal Popup */}
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={onLogin}
+            />
         </>
     );
 };

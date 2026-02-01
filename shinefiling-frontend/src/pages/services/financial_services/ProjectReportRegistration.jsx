@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -43,7 +43,7 @@ const ProjectReportRegistration = ({ isModal, onClose, initialData = {} }) => {
             title: 'DPR Standard',
             features: ["Loans 20L - 2Cr", "DSCR & BEP Analysis", "Market & SWOT Analysis", "Promoter Profile"],
             recommended: true,
-            color: 'bg-[#10232A] text-white border-gray-700'
+            color: 'bg-[#043E52] text-white border-gray-700'
         },
         comprehensive: {
             price: 14999,

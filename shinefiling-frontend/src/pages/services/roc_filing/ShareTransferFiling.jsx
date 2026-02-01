@@ -112,7 +112,7 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Start Transfer
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn More
                                 </button>
                             </div>
@@ -129,12 +129,12 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                                 {/* Top Gold Line */}
                                 <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
-                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
+                                <div className="absolute top-3 right-0 bg-[#043E52] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
 
                                 <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">Standard Plan</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹2,499</h3>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">?2,499</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ Transfer</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Stamp Duty</p>
@@ -187,7 +187,7 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                             className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col"
                         >
                             <h3 className="text-xl font-bold text-navy mb-2">Consultation</h3>
-                            <div className="text-4xl font-black text-navy mb-2">₹999</div>
+                            <div className="text-4xl font-black text-navy mb-2">?999</div>
                             <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-wide">Expert Advice</p>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -206,17 +206,17 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Popular
                             </div>
 
                             <h3 className="text-xl font-bold text-white mb-2 mt-4">Standard</h3>
-                            <div className="text-4xl font-black text-white mb-2">₹2,499</div>
+                            <div className="text-4xl font-black text-white mb-2">?2,499</div>
                             <p className="text-xs text-gray-400 mb-6 font-bold uppercase tracking-wide">+ Stamp Duty</p>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -238,7 +238,7 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                             className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col"
                         >
                             <h3 className="text-xl font-bold text-navy mb-2">Bulk Transfer</h3>
-                            <div className="text-4xl font-black text-navy mb-2">₹4,999</div>
+                            <div className="text-4xl font-black text-navy mb-2">?4,999</div>
                             <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-wide">+ Stamp Duty</p>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -258,7 +258,7 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     <section className="mb-20">
                         <h2 className="text-3xl font-bold text-navy mb-8">What You Will Receive</h2>
@@ -294,7 +294,7 @@ const ShareTransferFilingPage = ({ isLoggedIn }) => {
                     </section>
 
                     {/* WHY CHOOSE SHINEFILING - SEO SECTION */}
-                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-20">
+                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-20">
                         {/* Background Deco */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
 

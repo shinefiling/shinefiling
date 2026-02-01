@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Calendar, AlertTriangle, CheckCircle, Clock, BookOpen, Calculator, DollarSign, HelpCircle, ChevronRight, UserCheck, BarChart, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -150,7 +150,7 @@ const PFFilingPage = ({ isLoggedIn }) => {
                         </div>
 
                         {/* Standard */}
-                        <div className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
+                        <div className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
                             <p className="text-gray-400 text-sm mb-6">Up to 20 employees.</p>
@@ -161,7 +161,7 @@ const PFFilingPage = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Add/Exit Employees</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> KYC Verification Help</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg">Start Filing</button>
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg">Start Filing</button>
                         </div>
 
                         {/* Premier */}
@@ -183,7 +183,7 @@ const PFFilingPage = ({ isLoggedIn }) => {
 
             {/* INFO SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
                             <BookOpen className="text-bronze" /> The Filing Process
@@ -345,7 +345,7 @@ const PFFilingPage = ({ isLoggedIn }) => {
                             </p>
                         </div>
 
-                        <div className="bg-[#10232A] p-8 rounded-3xl shadow-lg text-white">
+                        <div className="bg-[#043E52] p-8 rounded-3xl shadow-lg text-white">
                             <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
                                 <FileText className="text-bronze" /> Support
                             </h3>

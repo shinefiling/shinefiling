@@ -1,4 +1,4 @@
-
+﻿
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, Briefcase, User, CheckCircle, RefreshCw, FileText } from 'lucide-react';
@@ -17,7 +17,7 @@ const CaWorks = ({ requests, employees, handleAssignEmployee, respondToBoundAmou
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-[#10232A] dark:text-white">Assigned Services</h2>
+                    <h2 className="text-2xl font-bold text-[#043E52] dark:text-white">Assigned Services</h2>
                     <p className="text-slate-500 dark:text-slate-400 text-sm">Manage and track progress of your ongoing projects.</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -27,7 +27,7 @@ const CaWorks = ({ requests, employees, handleAssignEmployee, respondToBoundAmou
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-[#10232A] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm overflow-hidden min-h-[500px]">
+            <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm overflow-hidden min-h-[500px]">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead className="bg-slate-50 dark:bg-[#1C3540] text-slate-500 dark:text-slate-400 font-bold uppercase text-xs">
@@ -53,7 +53,7 @@ const CaWorks = ({ requests, employees, handleAssignEmployee, respondToBoundAmou
                             ) : myWorks.map(r => (
                                 <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-[#1C3540]/50 transition-colors group">
                                     <td className="px-6 py-4">
-                                        <div className="font-bold text-[#10232A] dark:text-white mb-0.5">{r.serviceName}</div>
+                                        <div className="font-bold text-[#043E52] dark:text-white mb-0.5">{r.serviceName}</div>
                                         <div className="text-xs text-slate-400 font-mono">#{r.id.slice(-8)}</div>
                                     </td>
                                     <td className="px-6 py-4">
@@ -72,7 +72,7 @@ const CaWorks = ({ requests, employees, handleAssignEmployee, respondToBoundAmou
                                     <td className="px-6 py-4">
                                         <div className="relative group/select">
                                             <select
-                                                className="w-full bg-slate-50 dark:bg-[#10232A] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-lg px-2 py-1.5 outline-none focus:ring-2 focus:ring-[#B58863] appearance-none cursor-pointer font-medium"
+                                                className="w-full bg-slate-50 dark:bg-[#043E52] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-lg px-2 py-1.5 outline-none focus:ring-2 focus:ring-[#ED6E3F] appearance-none cursor-pointer font-medium"
                                                 value={r.assignedEmployee?.id || ''}
                                                 onChange={(e) => handleAssignEmployee(r.id, e.target.value)}
                                             >
@@ -100,7 +100,7 @@ const CaWorks = ({ requests, employees, handleAssignEmployee, respondToBoundAmou
                                                 <CheckCircle size={14} /> Approve & Complete
                                             </button>
                                         ) : (
-                                            <button className="text-[#B58863] font-bold text-xs hover:text-[#A67C52] transition-colors flex items-center gap-1 ml-auto">
+                                            <button className="text-[#ED6E3F] font-bold text-xs hover:text-[#A67C52] transition-colors flex items-center gap-1 ml-auto">
                                                 View Details <FileText size={14} />
                                             </button>
                                         )}

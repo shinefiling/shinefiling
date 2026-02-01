@@ -14,7 +14,7 @@ const GstPage = ({ isLoggedIn }) => {
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const faqs = [
-        { q: "Who needs to register for GST?", a: "Businesses with turnover exceeding ₹40 Lakhs (₹20 Lakhs for services, and ₹10 Lakhs for North Eastern states) must register. E-commerce sellers and interstate traders need it regardless of turnover." },
+        { q: "Who needs to register for GST?", a: "Businesses with turnover exceeding ?40 Lakhs (?20 Lakhs for services, and ?10 Lakhs for North Eastern states) must register. E-commerce sellers and interstate traders need it regardless of turnover." },
         { q: "What is the processing time?", a: "Typically, it takes 3-7 working days to get a GSTIN after successful submission and document verification." },
         { q: "Is a physical office required?", a: "Yes, you need a registered office address. However, it can be a residential property or a co-working space as well." },
         { q: "What happens if I don't register?", a: "Non-registration when mandatory can lead to heavy penalties (up to 100% of tax evaded) and you cannot claim Input Tax Credit (ITC)." },
@@ -123,10 +123,10 @@ const GstPage = ({ isLoggedIn }) => {
                                 transition={{ delay: 0.6 }}
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Get Started Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Filing Guide
                                 </button>
                             </motion.div>
@@ -202,7 +202,7 @@ const GstPage = ({ isLoggedIn }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    onClick={() => handlePlanSelect('startup')}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
@@ -233,8 +233,8 @@ const GstPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Economy</h3>
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Essential Filing Only</p>
                             <div className="flex items-baseline gap-2 mb-8">
-                                <span className="text-4xl font-black text-navy">₹999</span>
-                                <span className="text-slate-300 line-through text-lg">₹1.5k</span>
+                                <span className="text-4xl font-black text-navy">?999</span>
+                                <span className="text-slate-300 line-through text-lg">?1.5k</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1 text-sm text-slate-600">
                                 {["GST Application Prep", "ARN Generation", "Identity Verification", "Basic Call Support"].map((f, i) => (
@@ -242,11 +242,11 @@ const GstPage = ({ isLoggedIn }) => {
                                 ))}
                                 <li className="flex gap-3 text-slate-300"><X size={18} /> Clarification Reply</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-50 text-navy font-bold rounded-xl hover:bg-navy hover:text-white transition-colors border border-slate-200">Choose Economy</button>
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-50 text-navy font-bold rounded-xl hover:bg-navy hover:text-white transition-colors border border-slate-200">Choose Economy</button>
                         </div>
 
                         {/* STANDARD */}
-                        <div className="bg-[#10232A] text-white rounded-3xl p-10 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col">
+                        <div className="bg-[#043E52] text-white rounded-3xl p-10 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col">
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-bronze via-yellow-400 to-bronze rounded-t-3xl"></div>
 
@@ -255,15 +255,15 @@ const GstPage = ({ isLoggedIn }) => {
                             <h3 className="text-2xl font-bold mb-2 text-white mt-4">Professional</h3>
                             <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-8">Full Query Resolution</p>
                             <div className="flex items-baseline gap-2 mb-8">
-                                <span className="text-5xl font-black text-white">₹1,499</span>
-                                <span className="text-white/20 line-through text-xl">₹2.5k</span>
+                                <span className="text-5xl font-black text-white">?1,499</span>
+                                <span className="text-white/20 line-through text-xl">?2.5k</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1 text-sm text-gray-300">
                                 {["Everything in Economy", "Detailed Document Review", "Department Query Handling", "Certificate Retrieval", "Priority Support"].map((f, i) => (
                                     <li key={i} className="flex gap-3"><CheckCircle size={18} className="text-bronze" /> {f}</li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-bronze/20 transition-all hover:scale-105">Launch Professional</button>
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-bronze/20 transition-all hover:scale-105">Launch Professional</button>
                         </div>
 
                         {/* PREMIUM */}
@@ -271,22 +271,22 @@ const GstPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Elite</h3>
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Full Compliance</p>
                             <div className="flex items-baseline gap-2 mb-8">
-                                <span className="text-4xl font-black text-navy">₹2,999</span>
-                                <span className="text-slate-300 line-through text-lg">₹5k</span>
+                                <span className="text-4xl font-black text-navy">?2,999</span>
+                                <span className="text-slate-300 line-through text-lg">?5k</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1 text-sm text-slate-600">
                                 {["Everything in Professional", "GST Nil Return (3 Months)", "Lut/Registration (Export)", "Free Billing Software", "Dedicated CA Advisor"].map((f, i) => (
                                     <li key={i} className="flex gap-3"><CheckCircle size={18} className="text-bronze" /> {f}</li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-50 text-navy font-bold rounded-xl hover:bg-navy hover:text-white transition-colors border border-slate-200">Choose Elite</button>
+                            <button onClick={() => handlePlanSelect('enterprise')} className="w-full py-3 bg-slate-50 text-navy font-bold rounded-xl hover:bg-navy hover:text-white transition-colors border border-slate-200">Choose Enterprise</button>
                         </div>
                     </div>
                 </div>
             </section>
 
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16 text-slate-600 leading-relaxed">
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
                     {/* GST REGISTRATION WORKFLOW */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-8">GST Registration Workflow</h2>
@@ -387,9 +387,9 @@ const GstPage = ({ isLoggedIn }) => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100 font-medium text-slate-700">
-                                    <tr className="hover:bg-gray-50"><td className="px-8 py-4">Goods Supplier</td><td className="px-8 py-4 text-navy font-bold">₹40 Lakhs</td><td className="px-8 py-4">Normal States</td></tr>
-                                    <tr className="hover:bg-gray-50"><td className="px-8 py-4">Service Provider</td><td className="px-8 py-4 text-navy font-bold">₹20 Lakhs</td><td className="px-8 py-4">PAN-India Average</td></tr>
-                                    <tr className="hover:bg-gray-50"><td className="px-8 py-4">Special Category</td><td className="px-8 py-4 text-bronze font-bold">₹10 Lakhs</td><td className="px-8 py-4">Northeast/Hills</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-8 py-4">Goods Supplier</td><td className="px-8 py-4 text-navy font-bold">?40 Lakhs</td><td className="px-8 py-4">Normal States</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-8 py-4">Service Provider</td><td className="px-8 py-4 text-navy font-bold">?20 Lakhs</td><td className="px-8 py-4">PAN-India Average</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-8 py-4">Special Category</td><td className="px-8 py-4 text-bronze font-bold">?10 Lakhs</td><td className="px-8 py-4">Northeast/Hills</td></tr>
                                     <tr className="hover:bg-gray-50"><td className="px-8 py-4 text-red-500">E-Commerce</td><td className="px-8 py-4 text-red-500 font-bold">Zero Threshold</td><td className="px-8 py-4 text-red-500">Mandatory</td></tr>
                                 </tbody>
                             </table>

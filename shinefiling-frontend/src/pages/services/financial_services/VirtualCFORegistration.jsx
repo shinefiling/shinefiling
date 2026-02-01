@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -42,7 +42,7 @@ const VirtualCFORegistration = ({ isModal, onClose, initialData = {} }) => {
             title: 'Growth',
             features: ["Everything in Essential", "Monthly Strategy Call", "Detailed Monthly MIS", "Cash Flow Forecasting"],
             recommended: true,
-            color: 'bg-[#10232A] text-white border-gray-700'
+            color: 'bg-[#043E52] text-white border-gray-700'
         },
         controller: {
             price: 49999,

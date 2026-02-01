@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -50,7 +50,7 @@ const ApplyVirtualCFO = ({ isModal, onClose, initialData = {} }) => {
                 "Monthly Strategy Call", "Monthly MIS", "Cash Forecasting", "Vendor Mgmt"
             ],
             recommended: true,
-            color: 'bg-[#10232A] text-white border-gray-700'
+            color: 'bg-[#043E52] text-white border-gray-700'
         },
         controller: {
             price: 49999,

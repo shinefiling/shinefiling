@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,8 +7,8 @@
 @layer base {
   body {
     /* Base: User Requested Soft Gray/Concrete (#F2F1EF) */
-    @apply bg-[#F2F1EF] text-[#2B3446] antialiased selection:bg-[#EDB96F] selection:text-white;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    @apply bg-[#F2F1EF] text-[#0f172a] antialiased selection:bg-[#2563eb] selection:text-white;
+    font-family: 'Inter', sans-serif;
   }
 
   h1,
@@ -41,12 +41,15 @@
 
 /* Hidden Scrollbar - Scroll works but bar is invisible */
 .hidden-scrollbar {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
 }
 
 .hidden-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 /* Glassmorphism */
@@ -65,11 +68,11 @@
 
 /* Utils */
 .text-navy {
-  @apply text-[#10232A];
+  @apply text-[#043E52];
 }
 
 .bg-navy {
-  @apply bg-[#10232A];
+  @apply bg-[#043E52];
 }
 
 .text-navy-light {
@@ -77,9 +80,9 @@
   /* Lighter navy/slate for body text */
 }
 
-/* Button with Gold Gradient */
+/* Button with Category Primary Style */
 .btn-primary {
-  @apply bg-[#EDB96F] text-[#2B3446] font-bold hover:bg-[#D9A55B] transition-colors shadow-sm;
+  @apply bg-[#ED6E3F] text-white font-bold hover:bg-[#d15a2e] transition-colors shadow-sm;
 }
 
 @keyframes marquee {

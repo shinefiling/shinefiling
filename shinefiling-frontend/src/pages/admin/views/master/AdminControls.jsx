@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
     Users, Briefcase, UserCheck, Shield, ChevronRight, Search, Filter,
     MoreVertical, UserPlus, Lock, Key, Ban, CheckCircle, Wallet, Edit2, Mail
@@ -86,7 +86,7 @@ const AccessManagement = ({ defaultTab = 'users' }) => {
                     <button className="px-4 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-600 dark:text-slate-300 text-sm font-bold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700">
                         <Filter size={16} /> Filter Status
                     </button>
-                    <button className="px-4 py-2 bg-[#10232A] text-white rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-[#F97316] transition shadow-lg shadow-orange-500/20">
+                    <button className="px-4 py-2 bg-[#043E52] text-white rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-[#F97316] transition shadow-lg shadow-orange-500/20">
                         <UserPlus size={16} /> Invite New {activeTab === 'users' ? 'User' : activeTab === 'cas' ? 'CA' : 'Agent'}
                     </button>
                 </div>

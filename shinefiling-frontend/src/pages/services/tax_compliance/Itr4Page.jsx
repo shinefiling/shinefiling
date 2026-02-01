@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, ArrowRight, X, Globe, Banknote, Handshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -120,10 +120,10 @@ const Itr4Page = ({ isLoggedIn, onLogout }) => {
                             </motion.div>
 
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     File ITR-4 Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Sugam Guide
                                 </button>
                             </motion.div>
@@ -135,7 +135,7 @@ const Itr4Page = ({ isLoggedIn, onLogout }) => {
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
                                 {/* Top Gold Line (Matching other pages) */}
                                 <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
@@ -198,12 +198,12 @@ const Itr4Page = ({ isLoggedIn, onLogout }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    onClick={() => handlePlanSelect('startup')}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
                                 </button>
-                                
+
                                 <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
                                     Compare all plans below
                                 </p>
@@ -261,7 +261,7 @@ const Itr4Page = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-bronze via-yellow-400 to-bronze rounded-t-3xl"></div>
                             <div className="absolute top-6 right-6 bg-gradient-to-r from-bronze to-yellow-600 text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
@@ -288,7 +288,7 @@ const Itr4Page = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('profession')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Select 44ADA
                             </button>
                         </motion.div>
@@ -333,7 +333,7 @@ const Itr4Page = ({ isLoggedIn, onLogout }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Introduction */}
                     <section>
@@ -441,7 +441,7 @@ const Itr4Page = ({ isLoggedIn, onLogout }) => {
                         <h2 className="text-3xl font-bold text-navy mb-6">Presumptive Profit Rates</h2>
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                             <table className="w-full text-left">
-                                <thead className="bg-[#10232A] text-white">
+                                <thead className="bg-[#043E52] text-white">
                                     <tr>
                                         <th className="p-4 font-semibold text-sm uppercase tracking-wider">Section</th>
                                         <th className="p-4 font-semibold text-sm uppercase tracking-wider">Eligible Business</th>
@@ -473,7 +473,7 @@ const Itr4Page = ({ isLoggedIn, onLogout }) => {
                     </section>
 
                     {/* WHY CHOOSE SHINEFILING */}
-                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
                         <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling?</h2>
                         <div className="grid md:grid-cols-2 gap-8 relative z-10">

@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet, TrendingUp, Download, ArrowUpRight, IndianRupee, Clock } from 'lucide-react';
@@ -25,11 +25,11 @@ const AgentEarnings = ({ stats, user }) => {
 
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            <h2 className="text-2xl font-bold text-[#10232A] dark:text-white">Finance & Earnings</h2>
+            <h2 className="text-2xl font-bold text-[#043E52] dark:text-white">Finance & Earnings</h2>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Wallet Card */}
-                <div className="lg:col-span-2 bg-gradient-to-br from-[#10232A] to-[#1C3540] dark:from-[#B58863] dark:to-[#8C6B4A] rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+                <div className="lg:col-span-2 bg-gradient-to-br from-[#043E52] to-[#1C3540] dark:from-[#ED6E3F] dark:to-[#8C6B4A] rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
                     <div className="relative z-10 flex flex-col justify-between h-full">
                         <div className="flex justify-between items-start mb-12">
@@ -56,8 +56,8 @@ const AgentEarnings = ({ stats, user }) => {
                 </div>
 
                 {/* Withdrawal Form */}
-                <div className="bg-white dark:bg-[#10232A] p-6 rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm">
-                    <h3 className="font-bold text-lg text-[#10232A] dark:text-white mb-4">Request Withdrawal</h3>
+                <div className="bg-white dark:bg-[#043E52] p-6 rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm">
+                    <h3 className="font-bold text-lg text-[#043E52] dark:text-white mb-4">Request Withdrawal</h3>
                     <form onSubmit={handleWithdraw} className="space-y-4">
                         <div>
                             <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Amount (₹)</label>
@@ -68,7 +68,7 @@ const AgentEarnings = ({ stats, user }) => {
                                     min="500"
                                     value={withdrawAmount}
                                     onChange={e => setWithdrawAmount(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1C3540] border-none rounded-xl focus:ring-2 focus:ring-[#B58863] dark:text-white font-bold"
+                                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1C3540] border-none rounded-xl focus:ring-2 focus:ring-[#ED6E3F] dark:text-white font-bold"
                                     placeholder="Enter amount"
                                 />
                             </div>
@@ -79,7 +79,7 @@ const AgentEarnings = ({ stats, user }) => {
                             disabled={isWithdrawing || !withdrawAmount}
                             className={`w-full py-3 rounded-xl font-bold text-sm transition-all shadow-lg ${isWithdrawing || !withdrawAmount
                                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                : 'bg-[#10232A] dark:bg-[#B58863] text-white hover:shadow-xl hover:scale-[1.02]'
+                                : 'bg-[#043E52] dark:bg-[#ED6E3F] text-white hover:shadow-xl hover:scale-[1.02]'
                                 }`}
                         >
                             {isWithdrawing ? 'Processing...' : 'Request Payout'}
@@ -89,9 +89,9 @@ const AgentEarnings = ({ stats, user }) => {
             </div>
 
             {/* Transaction History */}
-            <div className="bg-white dark:bg-[#10232A] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm p-6">
+            <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm p-6">
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-bold text-lg text-[#10232A] dark:text-white">Recent Transactions</h3>
+                    <h3 className="font-bold text-lg text-[#043E52] dark:text-white">Recent Transactions</h3>
                     <button className="p-2 hover:bg-slate-50 dark:hover:bg-[#1C3540] rounded-lg text-slate-400 transition-colors"><Download size={20} /></button>
                 </div>
 
@@ -104,7 +104,7 @@ const AgentEarnings = ({ stats, user }) => {
                                     <ArrowUpRight size={20} />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-[#10232A] dark:text-white text-sm">Commission Payout</h4>
+                                    <h4 className="font-bold text-[#043E52] dark:text-white text-sm">Commission Payout</h4>
                                     <p className="text-xs text-slate-500">Service ID #WX92{i}</p>
                                 </div>
                             </div>
@@ -120,7 +120,7 @@ const AgentEarnings = ({ stats, user }) => {
                                 <Download size={20} />
                             </div>
                             <div>
-                                <h4 className="font-bold text-[#10232A] dark:text-white text-sm">Withdrawal to Bank</h4>
+                                <h4 className="font-bold text-[#043E52] dark:text-white text-sm">Withdrawal to Bank</h4>
                                 <p className="text-xs text-slate-500">HDFC **** 8892</p>
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -251,7 +251,7 @@ const AnnualROCRegistration = ({ isLoggedIn, isModal, onClose, initialPlan }) =>
                                     { id: 'audit_report', label: 'Auditor Report', icon: Shield, mandatory: true },
                                     { id: 'notes_accounts', label: 'Notes to Accounts', icon: FileText, mandatory: true },
                                     { id: 'cash_flow', label: 'Cash Flow Statement', icon: Layers, mandatory: false },
-                                    { id: 'director_report', label: 'Director’s Report', icon: ClipboardList, mandatory: false },
+                                    { id: 'director_report', label: "Director's Report", icon: ClipboardList, mandatory: false },
                                     { id: 'agm_minutes', label: 'AGM Notice & Minutes', icon: Clock, mandatory: false },
                                 ].map((doc) => (
                                     <div key={doc.id} className="group relative">

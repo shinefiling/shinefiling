@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Clock, CheckCircle, AlertTriangle, Calendar as CalendarIcon, ArrowRight, Loader2 } from 'lucide-react';
 import { getUserApplications } from '../../api';
 
@@ -109,14 +109,14 @@ const ClientCompliance = () => {
                 <button
                     onClick={() => handleDateClick(day)}
                     className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-medium transition-all relative
-                        ${isSelected ? 'bg-[#B58863] text-white shadow-lg shadow-[#B58863]/30 scale-110' :
-                            isToday ? 'bg-[#1C3540] text-[#B58863] border border-[#B58863]/30' :
+                        ${isSelected ? 'bg-[#ED6E3F] text-white shadow-lg shadow-[#ED6E3F]/30 scale-110' :
+                            isToday ? 'bg-[#1C3540] text-[#ED6E3F] border border-[#ED6E3F]/30' :
                                 'text-slate-300 hover:bg-[#1C3540] hover:text-white'}
                     `}
                 >
                     {day}
                     {hasEvent && !isSelected && (
-                        <div className="absolute bottom-1 w-1 h-1 rounded-full bg-[#B58863]"></div>
+                        <div className="absolute bottom-1 w-1 h-1 rounded-full bg-[#ED6E3F]"></div>
                     )}
                 </button>
             </div>
@@ -132,13 +132,13 @@ const ClientCompliance = () => {
 
     return (
         <div className="animate-in fade-in duration-500 pb-10">
-            <h2 className="text-3xl font-bold text-[#10232A] dark:text-white mb-6">Compliance Calendar</h2>
+            <h2 className="text-3xl font-bold text-[#043E52] dark:text-white mb-6">Compliance Calendar</h2>
 
             <div className="flex flex-col lg:flex-row gap-6 h-auto lg:h-[600px]">
                 {/* Left: Main Calendar */}
-                <div className="flex-1 bg-[#10232A] rounded-3xl p-8 lg:p-10 shadow-2xl relative overflow-hidden flex flex-col">
+                <div className="flex-1 bg-[#043E52] rounded-3xl p-8 lg:p-10 shadow-2xl relative overflow-hidden flex flex-col">
                     {/* Background Accents similar to image design */}
-                    <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#B58863]/10 rounded-full blur-[80px]"></div>
+                    <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#ED6E3F]/10 rounded-full blur-[80px]"></div>
                     <div className="absolute bottom-0 right-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-[60px]"></div>
 
                     {/* Month Header */}
@@ -166,29 +166,29 @@ const ClientCompliance = () => {
                 {/* Right: Schedule Panel */}
                 <div className="w-full lg:w-[400px] bg-white dark:bg-[#1C3540] rounded-3xl p-8 shadow-xl flex flex-col border border-slate-100 dark:border-[#2A4550]">
                     <div className="mb-8">
-                        <h4 className="text-[#B58863] font-bold text-lg uppercase tracking-wider mb-1">{months[selectedDate.getMonth()]}</h4>
+                        <h4 className="text-[#ED6E3F] font-bold text-lg uppercase tracking-wider mb-1">{months[selectedDate.getMonth()]}</h4>
                         <div className="flex items-baseline gap-2">
-                            <span className="text-6xl font-bold text-[#10232A] dark:text-white tracking-tighter">{selectedDate.getDate()}</span>
+                            <span className="text-6xl font-bold text-[#043E52] dark:text-white tracking-tighter">{selectedDate.getDate()}</span>
                             <span className="text-xl text-slate-400 font-medium">{daysOfWeek[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay() - 1]}</span>
                         </div>
                     </div>
 
                     <div className="flex-1 overflow-y-auto no-scrollbar space-y-4">
                         {loading ? (
-                            <div className="flex justify-center py-10"><Loader2 className="animate-spin text-[#B58863]" /></div>
+                            <div className="flex justify-center py-10"><Loader2 className="animate-spin text-[#ED6E3F]" /></div>
                         ) : selectedEvents.length > 0 ? (
                             selectedEvents.map((evt, i) => (
-                                <div key={i} className="group bg-[#FDFBF7] dark:bg-[#10232A] p-4 rounded-2xl border border-transparent hover:border-[#B58863]/20 hover:shadow-lg transition-all cursor-pointer flex items-center justify-between">
+                                <div key={i} className="group bg-[#FDFBF7] dark:bg-[#043E52] p-4 rounded-2xl border border-transparent hover:border-[#ED6E3F]/20 hover:shadow-lg transition-all cursor-pointer flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <div className={`w-2 h-12 rounded-full ${evt.status === 'Completed' ? 'bg-emerald-500' : evt.status === 'Overdue' ? 'bg-red-500' : 'bg-[#B58863]'}`}></div>
+                                        <div className={`w-2 h-12 rounded-full ${evt.status === 'Completed' ? 'bg-emerald-500' : evt.status === 'Overdue' ? 'bg-red-500' : 'bg-[#ED6E3F]'}`}></div>
                                         <div>
-                                            <h5 className="font-bold text-[#10232A] dark:text-white text-sm mb-1">{evt.title}</h5>
+                                            <h5 className="font-bold text-[#043E52] dark:text-white text-sm mb-1">{evt.title}</h5>
                                             <p className="text-xs text-slate-500 flex items-center gap-1">
                                                 <Clock size={10} /> {evt.time}
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="w-8 h-8 rounded-full bg-white dark:bg-[#1C3540] flex items-center justify-center text-slate-300 group-hover:text-[#B58863] group-hover:translate-x-1 transition-all">
+                                    <div className="w-8 h-8 rounded-full bg-white dark:bg-[#1C3540] flex items-center justify-center text-slate-300 group-hover:text-[#ED6E3F] group-hover:translate-x-1 transition-all">
                                         <ArrowRight size={14} />
                                     </div>
                                 </div>
@@ -197,7 +197,7 @@ const ClientCompliance = () => {
                             <div className="flex flex-col items-center justify-center h-full text-slate-400 opacity-60">
                                 <CalendarIcon size={48} className="mb-4 text-slate-200 dark:text-slate-600" />
                                 <p className="text-sm font-medium">No events for this day</p>
-                                <button className="mt-4 text-[#B58863] text-xs font-bold hover:underline">+ Add Reminder</button>
+                                <button className="mt-4 text-[#ED6E3F] text-xs font-bold hover:underline">+ Add Reminder</button>
                             </div>
                         )}
                     </div>

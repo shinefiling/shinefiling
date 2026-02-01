@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle, Upload, AlertTriangle, FileText, ArrowRight, CreditCard, Award, AlertCircle, Plus, Trash2, Calculator } from 'lucide-react';
@@ -60,7 +60,7 @@ const ApplyBonusAct = ({ isLoggedIn }) => {
         if (formData.employeeCount) {
             const count = parseInt(formData.employeeCount);
             if (count < 20) {
-                setEligibilityWarning('⚠️ Bonus Act applies to establishments with 20+ employees. Your application may not be applicable.');
+                setEligibilityWarning('⚠️ Bonus Act applies to establishments with 20+ employees. Your application may not be applicable.');
             } else {
                 setEligibilityWarning('');
             }

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+﻿import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { FileText, CheckCircle, Activity, ChevronRight, X, User, Search, RefreshCcw, Shield, Zap, Terminal, Play, Eye, Archive, MessageCircle, ShieldCheck, MoreVertical, Paperclip, Smile, Minimize2, Loader2, Send, Mail, Phone, ExternalLink, Trash2, Database, FileCheck, Download } from 'lucide-react';
@@ -640,7 +640,7 @@ const OrdersManagement = ({ orders = [] }) => {
         <div className="space-y-6">
             <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-[#10232A]">Global Order Management ({localOrders.length})</h2>
+                    <h2 className="text-2xl font-bold text-[#043E52]">Global Order Management ({localOrders.length})</h2>
                     <p className="text-[#3D4D55] text-sm">Track and manage client applications.</p>
                 </div>
                 <div>
@@ -656,7 +656,7 @@ const OrdersManagement = ({ orders = [] }) => {
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between">
                     <div>
                         <p className="text-[10px] font-bold text-[#3D4D55] uppercase tracking-wide">Total Revenue</p>
-                        <h3 className="text-2xl font-extrabold text-[#10232A] mt-1">₹{analytics.revenue.toLocaleString()}</h3>
+                        <h3 className="text-2xl font-extrabold text-[#043E52] mt-1">₹{analytics.revenue.toLocaleString()}</h3>
                     </div>
                     <div className="mt-4">
                         <AreaChart data={analytics.trend} color="#10B981" height={40} />
@@ -667,10 +667,10 @@ const OrdersManagement = ({ orders = [] }) => {
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
                         <p className="text-[10px] font-bold text-[#3D4D55] uppercase">Total Orders</p>
-                        <h3 className="text-2xl font-extrabold text-[#10232A]">{analytics.total}</h3>
+                        <h3 className="text-2xl font-extrabold text-[#043E52]">{analytics.total}</h3>
                         <p className="text-[10px] text-green-500 font-bold mt-1">+12% vs last week</p>
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-blue-50/50 flex items-center justify-center text-[#B58863]">
+                    <div className="w-12 h-12 rounded-full bg-blue-50/50 flex items-center justify-center text-[#ED6E3F]">
                         <FileText size={20} />
                     </div>
                 </div>
@@ -692,10 +692,10 @@ const OrdersManagement = ({ orders = [] }) => {
                 </div>
 
                 {/* 4. Action Card */}
-                <div className="bg-gradient-to-br from-[#10232A] to-[#1e2430] p-4 rounded-xl shadow-sm text-white flex flex-col justify-center items-center text-center">
+                <div className="bg-gradient-to-br from-[#043E52] to-[#1e2430] p-4 rounded-xl shadow-sm text-white flex flex-col justify-center items-center text-center">
                     <p className="text-xs font-bold text-white/60 uppercase">Pending Actions</p>
-                    <h3 className="text-3xl font-extrabold mt-1 text-[#B58863]">{analytics.pending}</h3>
-                    <button className="mt-3 px-3 py-1 bg-[#B58863] hover:bg-[#A57753] rounded-lg text-[10px] font-bold transition">Process Now</button>
+                    <h3 className="text-3xl font-extrabold mt-1 text-[#ED6E3F]">{analytics.pending}</h3>
+                    <button className="mt-3 px-3 py-1 bg-[#ED6E3F] hover:bg-[#A57753] rounded-lg text-[10px] font-bold transition">Process Now</button>
                 </div>
             </div>
 
@@ -707,7 +707,7 @@ const OrdersManagement = ({ orders = [] }) => {
                         placeholder="Search orders..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B58863]/20 focus:border-[#B58863] w-full text-sm"
+                        className="pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#ED6E3F]/20 focus:border-[#ED6E3F] w-full text-sm"
                     />
                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3D4D55]" />
                 </div>
@@ -718,7 +718,7 @@ const OrdersManagement = ({ orders = [] }) => {
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
-                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${filter === f ? 'bg-[#FDFBF7] text-[#B58863] border border-[#B58863]/20 shadow-sm' : 'text-[#3D4D55] hover:text-[#10232A]'}`}
+                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${filter === f ? 'bg-[#FDFBF7] text-[#ED6E3F] border border-[#ED6E3F]/20 shadow-sm' : 'text-[#3D4D55] hover:text-[#043E52]'}`}
                         >
                             {f === 'CHAT_PENDING' ? 'PENDING REPLY' : f.replace('_', ' ')}
                         </button>
@@ -745,7 +745,7 @@ const OrdersManagement = ({ orders = [] }) => {
                                 <tr key={i} className="hover:bg-blue-50/50 transition duration-200 cursor-pointer group" onClick={() => setSelectedOrder(o)}>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <span className="font-mono font-bold text-[#B58863] text-xs">{o.submissionId}</span>
+                                            <span className="font-mono font-bold text-[#ED6E3F] text-xs">{o.submissionId}</span>
                                             <span className="text-[10px] text-[#3D4D55] font-medium mt-0.5 flex items-center gap-1">
                                                 <Activity size={10} /> {new Date(o.createdAt || o.date || Date.now()).toLocaleDateString()}
                                             </span>
@@ -753,7 +753,7 @@ const OrdersManagement = ({ orders = [] }) => {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-[#FDFBF7] text-[#B58863] rounded-lg border border-[#B58863]/20">
+                                            <div className="p-1.5 bg-[#FDFBF7] text-[#ED6E3F] rounded-lg border border-[#ED6E3F]/20">
                                                 <FileText size={14} />
                                             </div>
                                             <div className="max-w-[180px]">
@@ -825,7 +825,7 @@ const OrdersManagement = ({ orders = [] }) => {
                                                         setSelectedOrder(o);
                                                     }
                                                 }}
-                                                className="px-3 py-1.5 bg-[#10232A] text-white text-[10px] font-bold rounded-lg hover:bg-[#B58863] transition-colors shadow-sm flex items-center gap-1"
+                                                className="px-3 py-1.5 bg-[#043E52] text-white text-[10px] font-bold rounded-lg hover:bg-[#ED6E3F] transition-colors shadow-sm flex items-center gap-1"
                                             >
                                                 Details <ChevronRight size={12} />
                                             </button>

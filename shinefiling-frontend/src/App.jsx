@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './pages/HomePage';
-import SignupPage from './pages/SignupPage';
-import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/DashboardPage';
 import ServicesPage from './pages/ServicesPage';
 import AboutUsPage from './pages/AboutUsPage';
@@ -374,23 +372,21 @@ const App = () => {
       {initialLoading && <Loader text="Loading ShineFiling..." fullScreen={true} />}
       {!initialLoading && (
         <div className="flex flex-col min-h-screen">
-          {!shouldHideNavAndFooter && <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} user={user} />}
+          {!shouldHideNavAndFooter && <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} onLogin={handleLogin} user={user} />}
           <div className="flex-grow">
             <Routes>
               <Route path="/" element={<Home isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
               <Route path="/about-us" element={<AboutUsPage />} />
               <Route path="/contact-us" element={<ContactUsPage />} />
               <Route path="/careers" element={<CareersPage />} />
 
               {/* Protected Dashboard */}
-              <Route path="/dashboard" element={isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" />} />
-              <Route path="/admin-dashboard" element={isLoggedIn ? <AdminDashboardPage onLogout={handleLogout} user={user} /> : <Navigate to="/login" />} />
-              <Route path="/agent-dashboard" element={isLoggedIn ? <AgentDashboardPage onLogout={handleLogout} /> : <Navigate to="/login" />} />
-              <Route path="/ca-dashboard" element={isLoggedIn ? <CaDashboardPage onLogout={handleLogout} /> : <Navigate to="/login" />} />
-              <Route path="/employee-dashboard" element={isLoggedIn ? <EmployeeDashboardPage onLogout={handleLogout} /> : <Navigate to="/login" />} />
-              <Route path="/admin/fssai/:orderId" element={isLoggedIn ? <FssaiOrderDetails /> : <Navigate to="/login" />} />
+              <Route path="/dashboard" element={isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/?login=true" replace />} />
+              <Route path="/admin-dashboard" element={isLoggedIn ? <AdminDashboardPage onLogout={handleLogout} user={user} /> : <Navigate to="/?login=true" replace />} />
+              <Route path="/agent-dashboard" element={isLoggedIn ? <AgentDashboardPage onLogout={handleLogout} /> : <Navigate to="/?login=true" replace />} />
+              <Route path="/ca-dashboard" element={isLoggedIn ? <CaDashboardPage onLogout={handleLogout} /> : <Navigate to="/?login=true" replace />} />
+              <Route path="/employee-dashboard" element={isLoggedIn ? <EmployeeDashboardPage onLogout={handleLogout} /> : <Navigate to="/?login=true" replace />} />
+              <Route path="/admin/fssai/:orderId" element={isLoggedIn ? <FssaiOrderDetails /> : <Navigate to="/?login=true" replace />} />
 
               {/* Registration Routes */}
               <Route path="/services/private-limited-company/register" element={<PrivateLimitedRegistration isLoggedIn={isLoggedIn} />} />

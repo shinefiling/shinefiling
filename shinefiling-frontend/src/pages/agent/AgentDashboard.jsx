@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -127,7 +127,7 @@ const AgentDashboard = ({ onLogout }) => {
                     className={`
                         w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 group text-left relative
                         ${isActive
-                            ? 'bg-[#B58863] text-white shadow-lg shadow-[#B58863]/20'
+                            ? 'bg-[#ED6E3F] text-white shadow-lg shadow-[#ED6E3F]/20'
                             : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'}
                     `}
                 >
@@ -154,16 +154,14 @@ const AgentDashboard = ({ onLogout }) => {
                 {(isSidebarOpen || window.innerWidth >= 768) && (
                     <motion.div
                         initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }} transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-[#10232A] z-50 flex flex-col shadow-xl md:shadow-md border-r border-slate-100 dark:border-[#1C3540] ${isSidebarOpen ? 'block' : 'hidden md:flex'}`}
+                        className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-[#043E52] z-50 flex flex-col shadow-xl md:shadow-md border-r border-slate-100 dark:border-[#1C3540] ${isSidebarOpen ? 'block' : 'hidden md:flex'}`}
                     >
-                        <div className="h-16 flex items-center px-6 border-b border-slate-100 dark:border-[#1C3540]">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full border-2 border-[#B58863] flex items-center justify-center">
-                                    <Crown size={14} className="text-[#B58863] fill-[#B58863]" />
-                                </div>
-                                <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Agent<span className="text-[#B58863]">Portal</span></span>
+                        <div className="h-48 flex items-center px-4 border-b border-slate-100 dark:border-[#1C3540] justify-center relative">
+                            <div className="flex flex-col items-center gap-1">
+                                <img src="/logo.png" alt="ShineFiling" className="h-32 w-auto object-contain" />
+                                <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white mt-1">Agent<span className="text-[#ED6E3F]">Portal</span></span>
                             </div>
-                            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden ml-auto text-slate-400"><X size={20} /></button>
+                            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden absolute right-4 text-slate-400 top-4"><X size={20} /></button>
                         </div>
 
                         <div className="flex-1 py-6 overflow-y-auto section-wrapper no-scrollbar">
@@ -177,7 +175,7 @@ const AgentDashboard = ({ onLogout }) => {
 
                         <div className="p-4 border-t border-slate-100 dark:border-[#1C3540]">
                             <div className="bg-slate-50 dark:bg-[#1C3540] rounded-xl p-4 flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-[#B58863]/10 flex items-center justify-center text-[#B58863]">
+                                <div className="w-10 h-10 rounded-full bg-[#ED6E3F]/10 flex items-center justify-center text-[#ED6E3F]">
                                     <Briefcase size={18} />
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -199,7 +197,7 @@ const AgentDashboard = ({ onLogout }) => {
             {/* Main Content */}
             <div className="flex-1 md:ml-64 flex flex-col h-screen overflow-hidden">
                 {/* Header */}
-                <div className="h-16 bg-white dark:bg-[#10232A] border-b border-slate-200 dark:border-[#1C3540] flex items-center justify-between px-6 z-30 sticky top-0 transition-colors duration-200">
+                <div className="h-16 bg-white dark:bg-[#043E52] border-b border-slate-200 dark:border-[#1C3540] flex items-center justify-between px-6 z-30 sticky top-0 transition-colors duration-200">
                     <div className="flex items-center gap-4">
                         <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden text-slate-500 dark:text-slate-400"><Menu size={24} /></button>
                         <h1 className="text-lg font-bold text-slate-800 dark:text-white hidden md:block capitalize">
@@ -210,7 +208,7 @@ const AgentDashboard = ({ onLogout }) => {
                         <button onClick={toggleDarkMode} className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1C3540] rounded-full transition-colors">{isDarkMode ? <Sun size={20} /> : <Moon size={20} />}</button>
                         <button className="relative p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1C3540] rounded-full transition-colors">
                             <Bell size={20} />
-                            <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-[#10232A]"></span>
+                            <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-[#043E52]"></span>
                         </button>
 
                         <div className="h-8 w-[1px] bg-slate-200 dark:bg-slate-700 mx-1"></div>
@@ -243,15 +241,15 @@ const AgentDashboard = ({ onLogout }) => {
             <AnimatePresence>
                 {showKycModal && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                        <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="bg-white dark:bg-[#10232A] w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-[#1C3540]">
+                        <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="bg-white dark:bg-[#043E52] w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-[#1C3540]">
                             <div className="p-6 border-b border-slate-100 dark:border-[#1C3540] flex justify-between items-center">
-                                <h2 className="text-2xl font-bold text-[#10232A] dark:text-white flex items-center gap-2"><CheckCircle className="text-[#B58863]" /> Agent Verification</h2>
+                                <h2 className="text-2xl font-bold text-[#043E52] dark:text-white flex items-center gap-2"><CheckCircle className="text-[#ED6E3F]" /> Agent Verification</h2>
                                 {!['PENDING'].includes(user?.kycStatus) && <button onClick={() => setShowKycModal(false)}><X className="text-slate-400 hover:text-rose-500" /></button>}
                             </div>
                             <form onSubmit={handleKycSubmit} className="p-8 space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">PAN Number</label><input value={kycData.panNumber} onChange={e => setKycData({ ...kycData, panNumber: e.target.value.toUpperCase() })} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#1C3540] border-none focus:ring-2 focus:ring-[#B58863] dark:text-white outline-none" required placeholder="ABCDE1234F" /></div>
-                                    <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Aadhaar Number</label><input value={kycData.aadhaarNumber} onChange={e => setKycData({ ...kycData, aadhaarNumber: e.target.value })} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#1C3540] border-none focus:ring-2 focus:ring-[#B58863] dark:text-white outline-none" required placeholder="1234 5678 9012" /></div>
+                                    <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">PAN Number</label><input value={kycData.panNumber} onChange={e => setKycData({ ...kycData, panNumber: e.target.value.toUpperCase() })} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#1C3540] border-none focus:ring-2 focus:ring-[#ED6E3F] dark:text-white outline-none" required placeholder="ABCDE1234F" /></div>
+                                    <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Aadhaar Number</label><input value={kycData.aadhaarNumber} onChange={e => setKycData({ ...kycData, aadhaarNumber: e.target.value })} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#1C3540] border-none focus:ring-2 focus:ring-[#ED6E3F] dark:text-white outline-none" required placeholder="1234 5678 9012" /></div>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {['pan', 'aadhaar'].map(type => (
@@ -262,7 +260,7 @@ const AgentDashboard = ({ onLogout }) => {
                                         </div>
                                     ))}
                                 </div>
-                                <button type="submit" disabled={isKycSubmitting} className="w-full py-3.5 bg-[#10232A] dark:bg-[#B58863] text-white rounded-xl font-bold hover:shadow-lg transition text-sm uppercase tracking-wide">{isKycSubmitting ? 'Submitting...' : 'Submit Verification'}</button>
+                                <button type="submit" disabled={isKycSubmitting} className="w-full py-3.5 bg-[#043E52] dark:bg-[#ED6E3F] text-white rounded-xl font-bold hover:shadow-lg transition text-sm uppercase tracking-wide">{isKycSubmitting ? 'Submitting...' : 'Submit Verification'}</button>
                             </form>
                         </motion.div>
                     </motion.div>

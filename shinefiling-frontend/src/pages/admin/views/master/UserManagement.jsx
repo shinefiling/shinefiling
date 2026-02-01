@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit2, Trash2, Search, Filter, X, CheckCircle, AlertTriangle } from 'lucide-react';
@@ -93,7 +93,7 @@ const UserManagement = () => {
         <div className="space-y-6">
             <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-[#10232A]">User Administration</h2>
+                    <h2 className="text-2xl font-bold text-[#043E52]">User Administration</h2>
                     <p className="text-[#3D4D55] text-sm">Manage user access, roles, and profiles.</p>
                 </div>
                 <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto items-center">
@@ -104,10 +104,10 @@ const UserManagement = () => {
                             placeholder="Search users..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#B58863]/20 focus:border-[#B58863] w-full"
+                            className="pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#ED6E3F]/20 focus:border-[#ED6E3F] w-full"
                         />
                     </div>
-                    <button onClick={() => setCreateModalOpen(true)} className="px-5 py-2.5 bg-[#10232A] text-white font-bold rounded-xl text-sm shadow-lg hover:bg-[#B58863] transition flex items-center gap-2 whitespace-nowrap w-full md:w-auto justify-center">
+                    <button onClick={() => setCreateModalOpen(true)} className="px-5 py-2.5 bg-[#043E52] text-white font-bold rounded-xl text-sm shadow-lg hover:bg-[#ED6E3F] transition flex items-center gap-2 whitespace-nowrap w-full md:w-auto justify-center">
                         <Plus size={18} /> Create User
                     </button>
                 </div>
@@ -119,7 +119,7 @@ const UserManagement = () => {
                     <button
                         key={role}
                         onClick={() => setFilter(role)}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${filter === role ? 'bg-[#FDFBF7] text-[#B58863] border border-[#B58863]/20 shadow-sm' : 'text-[#3D4D55] hover:text-[#10232A]'}`}
+                        className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${filter === role ? 'bg-[#FDFBF7] text-[#ED6E3F] border border-[#ED6E3F]/20 shadow-sm' : 'text-[#3D4D55] hover:text-[#043E52]'}`}
                     >
                         {role === 'USER' ? 'CLIENTS' : role.replace('_', ' ')}
                     </button>
@@ -150,7 +150,7 @@ const UserManagement = () => {
                                                     {(u.fullName || 'U').charAt(0).toUpperCase()}
                                                 </div>
                                                 <div>
-                                                    <div className="font-bold text-[#10232A] text-sm">{u.fullName}</div>
+                                                    <div className="font-bold text-[#043E52] text-sm">{u.fullName}</div>
                                                     <div className="text-[11px] text-[#3D4D55] font-medium">{u.email}</div>
                                                 </div>
                                             </div>
@@ -213,7 +213,7 @@ const UserManagement = () => {
                                 className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
                             >
                                 <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                                    <h3 className="text-xl font-bold text-[#10232A]">Create New User</h3>
+                                    <h3 className="text-xl font-bold text-[#043E52]">Create New User</h3>
                                     <button onClick={() => setCreateModalOpen(false)} className="p-2 hover:bg-gray-200 rounded-full transition"><X size={20} className="text-gray-500" /></button>
                                 </div>
 
@@ -277,7 +277,7 @@ const UserManagement = () => {
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="w-full py-3 bg-[#10232A] text-white font-bold rounded-xl mt-4 hover:bg-[#B58863] transition disabled:opacity-50 flex justify-center items-center gap-2"
+                                        className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl mt-4 hover:bg-[#ED6E3F] transition disabled:opacity-50 flex justify-center items-center gap-2"
                                     >
                                         {isSubmitting ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Plus size={18} />}
                                         {isSubmitting ? 'Creating...' : 'Create Account'}

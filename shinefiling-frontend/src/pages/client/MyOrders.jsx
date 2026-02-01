@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+﻿import React, { useEffect, useState, useRef } from 'react';
 import { Package, Search, ExternalLink, Download, MessageCircle, Clock, ChevronRight, FileCheck, Receipt, Loader2, Send, X, User, ShieldCheck, MoreVertical, Paperclip, Smile, Minimize2, Archive, CheckCircle, Terminal, Star, Briefcase, FileText, Filter, Activity, TrendingUp } from 'lucide-react';
 import { getUserApplications, BASE_URL, getChatHistory, sendChatMessage, getUserUnreadChatCounts, markChatAsRead, setTypingStatus, getTypingStatus, editChatMessage, deleteChatMessage, clearChatHistory } from '../../api';
 import FeedbackModal from '../../components/FeedbackModal';
@@ -236,7 +236,7 @@ const MyOrders = () => {
             {/* Header & Filter */}
             <div className="flex flex-col md:flex-row justify-between items-end gap-6">
                 <div>
-                    <h2 className="text-3xl font-bold text-[#10232A] dark:text-white">My Applications</h2>
+                    <h2 className="text-3xl font-bold text-[#015A62] dark:text-white">My Applications</h2>
                     <p className="text-slate-500 dark:text-slate-400 mt-1">Track and manage your ongoing business services.</p>
                 </div>
 
@@ -247,17 +247,17 @@ const MyOrders = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search applications..."
-                            className="bg-white dark:bg-[#10232A] border border-slate-200 dark:border-[#1C3540] rounded-xl pl-9 pr-4 py-2.5 text-sm font-bold text-slate-700 dark:text-white focus:outline-none focus:border-[#B58863]"
+                            className="bg-white dark:bg-[#043E52] border border-slate-200 dark:border-[#1C3540] rounded-xl pl-9 pr-4 py-2.5 text-sm font-bold text-slate-700 dark:text-white focus:outline-none focus:border-[#ED6E3F]"
                         />
                     </div>
-                    <div className="flex bg-[#FDFBF7] dark:bg-[#10232A] p-1 rounded-xl overflow-x-auto no-scrollbar gap-1 border border-slate-200 dark:border-[#1C3540]">
+                    <div className="flex bg-[#FDFBF7] dark:bg-[#043E52] p-1 rounded-xl overflow-x-auto no-scrollbar gap-1 border border-slate-200 dark:border-[#1C3540]">
                         {['All', 'In Progress', 'Completed', 'Action Required'].map(f => (
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${filter === f
-                                    ? 'bg-[#B58863] text-white shadow-md'
-                                    : 'text-[#3D4D55] dark:text-slate-400 hover:text-[#10232A] dark:hover:text-white hover:bg-white dark:hover:bg-[#1C3540]'
+                                    ? 'bg-[#ED6E3F] text-white shadow-md'
+                                    : 'text-[#3D4D55] dark:text-slate-400 hover:text-[#015A62] dark:hover:text-white hover:bg-white dark:hover:bg-[#1C3540]'
                                     }`}
                             >
                                 {f}
@@ -270,12 +270,12 @@ const MyOrders = () => {
             {/* Orders List */}
             <div className="space-y-4">
                 {loading ? (
-                    <div className="p-12 text-center bg-white dark:bg-[#10232A] rounded-2xl border border-slate-100 dark:border-[#1C3540]">
-                        <Loader2 className="w-8 h-8 animate-spin text-[#B58863] mx-auto mb-3" />
+                    <div className="p-12 text-center bg-white dark:bg-[#043E52] rounded-2xl border border-slate-100 dark:border-[#1C3540]">
+                        <Loader2 className="w-8 h-8 animate-spin text-[#ED6E3F] mx-auto mb-3" />
                         <p className="text-slate-400 font-bold text-xs">Fetching applications...</p>
                     </div>
                 ) : filteredOrders.length === 0 ? (
-                    <div className="bg-white dark:bg-[#10232A] rounded-2xl border border-dashed border-slate-300 dark:border-[#1C3540] p-12 text-center">
+                    <div className="bg-white dark:bg-[#043E52] rounded-2xl border border-dashed border-slate-300 dark:border-[#1C3540] p-12 text-center">
                         <div className="w-16 h-16 bg-slate-50 dark:bg-[#1C3540] rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
                             <Package size={24} />
                         </div>
@@ -284,14 +284,14 @@ const MyOrders = () => {
                     </div>
                 ) : (
                     filteredOrders.map((order, i) => (
-                        <div key={i} className="bg-white dark:bg-[#10232A] rounded-2xl border border-slate-100 dark:border-[#1C3540] p-5 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
+                        <div key={i} className="bg-white dark:bg-[#043E52] rounded-2xl border border-slate-100 dark:border-[#1C3540] p-5 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
                             <div className={`absolute left-0 top-0 bottom-0 w-1 ${order.status === 'Completed' ? 'bg-emerald-500' :
                                 order.status === 'Action Required' ? 'bg-rose-500' : 'bg-blue-500'
                                 }`}></div>
 
                             <div className="flex flex-col md:flex-row gap-5 items-start md:items-center justify-between pl-3">
                                 <div className="flex items-start gap-4">
-                                    <div className="w-12 h-12 bg-[#FDFBF7] dark:bg-[#1C3540] border border-[#B58863]/10 dark:border-[#B58863]/20 rounded-xl flex items-center justify-center text-[#B58863] shadow-sm shrink-0">
+                                    <div className="w-12 h-12 bg-[#FDFBF7] dark:bg-[#1C3540] border border-[#ED6E3F]/10 dark:border-[#ED6E3F]/20 rounded-xl flex items-center justify-center text-[#ED6E3F] shadow-sm shrink-0">
                                         {(() => {
                                             const name = order.serviceName?.toLowerCase() || '';
                                             if (name.includes('gst') || name.includes('tax')) return <Receipt size={22} />;
@@ -302,7 +302,7 @@ const MyOrders = () => {
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <h4 className="font-bold text-[#10232A] dark:text-white text-base group-hover:text-[#B58863] transition-colors">{order.serviceName}</h4>
+                                            <h4 className="font-bold text-[#015A62] dark:text-white text-base group-hover:text-[#ED6E3F] transition-colors">{order.serviceName}</h4>
                                             <span className="bg-slate-100 dark:bg-[#1C3540] text-slate-500 dark:text-slate-400 text-[10px] px-2 py-0.5 rounded font-mono border border-slate-200 dark:border-slate-700 font-bold">#{order.id.toString().replace('ORD-', '').substring(0, 8)}</span>
                                         </div>
                                         <div className="flex flex-wrap gap-4 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
@@ -329,14 +329,14 @@ const MyOrders = () => {
                                         {order.status === 'Completed' && (
                                             <button
                                                 onClick={() => setFeedbackOrder(order)}
-                                                className="flex-1 md:flex-none py-2 px-4 rounded-xl border border-[#B58863] text-[#B58863] font-bold text-[10px] hover:bg-[#B58863] hover:text-white transition flex items-center justify-center gap-2"
+                                                className="flex-1 md:flex-none py-2 px-4 rounded-xl border border-[#ED6E3F] text-[#ED6E3F] font-bold text-[10px] hover:bg-[#ED6E3F] hover:text-white transition flex items-center justify-center gap-2"
                                             >
                                                 <Star size={14} /> Feedback
                                             </button>
                                         )}
                                         <button
                                             onClick={() => openChat(order)}
-                                            className="flex-1 md:flex-none py-2 px-4 rounded-xl border border-slate-200 dark:border-[#2A4550] text-slate-600 dark:text-slate-300 font-bold text-[10px] hover:bg-slate-50 dark:hover:bg-[#1C3540] hover:text-[#10232A] dark:hover:text-white transition flex items-center justify-center gap-2 relative bg-white dark:bg-[#10232A]"
+                                            className="flex-1 md:flex-none py-2 px-4 rounded-xl border border-slate-200 dark:border-[#2A4550] text-slate-600 dark:text-slate-300 font-bold text-[10px] hover:bg-slate-50 dark:hover:bg-[#1C3540] hover:text-[#015A62] dark:hover:text-white transition flex items-center justify-center gap-2 relative bg-white dark:bg-[#043E52]"
                                         >
                                             <MessageCircle size={14} /> Chat
                                             {(unreadCounts[order.submissionId] > 0 || unreadCounts[order.id] > 0) && (
@@ -348,7 +348,7 @@ const MyOrders = () => {
                                         </button>
                                         <button
                                             onClick={() => openDetails(order)}
-                                            className="flex-1 md:flex-none py-2 px-4 rounded-xl bg-[#10232A] dark:bg-[#B58863] text-white font-bold text-[10px] hover:bg-black dark:hover:bg-[#A57753] transition flex items-center justify-center gap-2 shadow-sm"
+                                            className="flex-1 md:flex-none py-2 px-4 rounded-xl bg-[#015A62] dark:bg-[#ED6E3F] text-white font-bold text-[10px] hover:bg-black dark:hover:bg-[#A57753] transition flex items-center justify-center gap-2 shadow-sm"
                                         >
                                             Details <ChevronRight size={14} />
                                         </button>
@@ -363,16 +363,16 @@ const MyOrders = () => {
             {/* DETAILS MODAL - PREMIUM REDESIGN */}
             {selectedOrder && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-white dark:bg-[#10232A] w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-[#1C3540]">
+                    <div className="bg-white dark:bg-[#043E52] w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-[#1C3540]">
 
                         {/* Header */}
-                        <div className="px-8 py-6 border-b border-slate-100 dark:border-[#1C3540] bg-white dark:bg-[#10232A] flex justify-between items-start shrink-0">
+                        <div className="px-8 py-6 border-b border-slate-100 dark:border-[#1C3540] bg-white dark:bg-[#043E52] flex justify-between items-start shrink-0">
                             <div className="flex items-center gap-5">
-                                <div className="w-16 h-16 bg-[#FDFBF7] dark:bg-[#1C3540] border border-[#B58863]/20 rounded-2xl flex items-center justify-center text-[#B58863] shadow-sm">
+                                <div className="w-16 h-16 bg-[#FDFBF7] dark:bg-[#1C3540] border border-[#ED6E3F]/20 rounded-2xl flex items-center justify-center text-[#ED6E3F] shadow-sm">
                                     <FileText size={32} />
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-bold text-[#10232A] dark:text-white leading-tight">{selectedOrder.serviceName}</h3>
+                                    <h3 className="text-2xl font-bold text-[#015A62] dark:text-white leading-tight">{selectedOrder.serviceName}</h3>
                                     <div className="flex items-center gap-3 mt-1.5 text-sm">
                                         <span className="font-mono font-bold text-slate-500 bg-slate-100 dark:bg-[#1C3540] px-2 py-0.5 rounded">#{selectedOrder.id.toString().replace('ORD-', '')}</span>
                                         <span className="text-slate-400">•</span>
@@ -433,12 +433,12 @@ const MyOrders = () => {
                                 return (
                                     <div className="space-y-8">
                                         {/* 1. Status Stepper */}
-                                        <div className="bg-white dark:bg-[#10232A] p-8 rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm relative overflow-hidden">
+                                        <div className="bg-white dark:bg-[#043E52] p-8 rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm relative overflow-hidden">
                                             <div className="absolute top-0 right-0 p-4 opacity-10">
                                                 <Activity size={100} />
                                             </div>
-                                            <h4 className="font-bold text-[#10232A] dark:text-white text-sm uppercase tracking-widest mb-8 flex items-center gap-2">
-                                                <TrendingUp size={16} className="text-[#B58863]" /> Tracking Timeline
+                                            <h4 className="font-bold text-[#015A62] dark:text-white text-sm uppercase tracking-widest mb-8 flex items-center gap-2">
+                                                <TrendingUp size={16} className="text-[#ED6E3F]" /> Tracking Timeline
                                             </h4>
                                             <div className="relative px-4">
                                                 {/* Connecting Line */}
@@ -451,10 +451,10 @@ const MyOrders = () => {
 
                                                         return (
                                                             <div key={s} className="flex flex-col items-center gap-4">
-                                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all border-4 ${isCompleted ? 'bg-[#B58863] text-white border-white dark:border-[#10232A] shadow-xl scale-110' : 'bg-slate-100 dark:bg-[#1C3540] text-slate-400 border-white dark:border-[#10232A]'}`}>
+                                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all border-4 ${isCompleted ? 'bg-[#ED6E3F] text-white border-white dark:border-[#043E52] shadow-xl scale-110' : 'bg-slate-100 dark:bg-[#1C3540] text-slate-400 border-white dark:border-[#043E52]'}`}>
                                                                     {isCompleted ? <CheckCircle size={20} /> : idx + 1}
                                                                 </div>
-                                                                <span className={`text-xs font-bold uppercase tracking-wider ${isCompleted ? 'text-[#10232A] dark:text-white' : 'text-slate-400'}`}>{s}</span>
+                                                                <span className={`text-xs font-bold uppercase tracking-wider ${isCompleted ? 'text-[#015A62] dark:text-white' : 'text-slate-400'}`}>{s}</span>
                                                             </div>
                                                         )
                                                     })}
@@ -465,10 +465,10 @@ const MyOrders = () => {
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                             {/* 2. Left Column: Business Info */}
                                             <div className="lg:col-span-2 space-y-8">
-                                                <div className="bg-white dark:bg-[#10232A] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm overflow-hidden">
+                                                <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm overflow-hidden">
                                                     <div className="p-6 border-b border-slate-100 dark:border-[#1C3540] bg-slate-50/50 dark:bg-[#1C3540]/30 flex justify-between items-center">
-                                                        <h4 className="font-bold text-[#10232A] dark:text-white flex items-center gap-2">
-                                                            <Briefcase size={18} className="text-[#B58863]" /> Application Details
+                                                        <h4 className="font-bold text-[#015A62] dark:text-white flex items-center gap-2">
+                                                            <Briefcase size={18} className="text-[#ED6E3F]" /> Application Details
                                                         </h4>
                                                     </div>
                                                     <div className="p-6">
@@ -497,7 +497,7 @@ const MyOrders = () => {
                                                                 <div className="md:col-span-2">
                                                                     <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Registered Address</label>
                                                                     <div className="flex items-start gap-2 bg-slate-50 dark:bg-[#1C3540] p-3 rounded-xl border border-slate-100 dark:border-[#2A4550]">
-                                                                        <User size={16} className="text-[#B58863] shrink-0 mt-0.5" />
+                                                                        <User size={16} className="text-[#ED6E3F] shrink-0 mt-0.5" />
                                                                         <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{normalized.registeredAddress || 'No address provided'}</p>
                                                                     </div>
                                                                 </div>
@@ -506,11 +506,11 @@ const MyOrders = () => {
                                                             <div className="space-y-4">
                                                                 <div className="flex justify-between items-center py-2 border-b border-dashed border-slate-200 dark:border-[#2A4550]">
                                                                     <span className="text-slate-500 text-sm font-medium">Business Name / Applicant</span>
-                                                                    <span className="font-bold text-[#10232A] dark:text-white">{normalized.businessName || selectedOrder.applicantName || 'N/A'}</span>
+                                                                    <span className="font-bold text-[#015A62] dark:text-white">{normalized.businessName || selectedOrder.applicantName || 'N/A'}</span>
                                                                 </div>
                                                                 <div className="flex justify-between items-center py-2 border-b border-dashed border-slate-200 dark:border-[#2A4550]">
                                                                     <span className="text-slate-500 text-sm font-medium">Entity Type</span>
-                                                                    <span className="font-bold text-[#10232A] dark:text-white">{selectedOrder.businessType || 'N/A'}</span>
+                                                                    <span className="font-bold text-[#015A62] dark:text-white">{selectedOrder.businessType || 'N/A'}</span>
                                                                 </div>
                                                             </div>
                                                         )}
@@ -521,9 +521,9 @@ const MyOrders = () => {
                                             {/* 3. Right Column: Payment & Docs */}
                                             <div className="space-y-6">
                                                 {/* Payment Card */}
-                                                <div className="bg-white dark:bg-[#10232A] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm p-6">
-                                                    <h4 className="font-bold text-[#10232A] dark:text-white mb-4 flex items-center gap-2">
-                                                        <Receipt size={18} className="text-[#B58863]" /> Payment Summary
+                                                <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm p-6">
+                                                    <h4 className="font-bold text-[#015A62] dark:text-white mb-4 flex items-center gap-2">
+                                                        <Receipt size={18} className="text-[#ED6E3F]" /> Payment Summary
                                                     </h4>
                                                     <div className="space-y-3">
                                                         <div className="flex justify-between text-sm">
@@ -535,7 +535,7 @@ const MyOrders = () => {
                                                             <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Paid via Online</span>
                                                         </div>
                                                         <div className="pt-3 border-t border-slate-100 dark:border-[#1C3540] mt-1">
-                                                            <button className="w-full py-2.5 bg-[#10232A] dark:bg-white text-white dark:text-[#10232A] font-bold rounded-xl text-xs hover:opacity-90 transition flex items-center justify-center gap-2">
+                                                            <button className="w-full py-2.5 bg-[#015A62] dark:bg-white text-white dark:text-[#015A62] font-bold rounded-xl text-xs hover:opacity-90 transition flex items-center justify-center gap-2">
                                                                 <Download size={14} /> Download Invoice
                                                             </button>
                                                         </div>
@@ -543,16 +543,16 @@ const MyOrders = () => {
                                                 </div>
 
                                                 {/* Files Card */}
-                                                <div className="bg-white dark:bg-[#10232A] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm p-6 flex-1">
-                                                    <h4 className="font-bold text-[#10232A] dark:text-white mb-4 flex items-center gap-2">
-                                                        <Paperclip size={18} className="text-[#B58863]" /> Attachments
+                                                <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm p-6 flex-1">
+                                                    <h4 className="font-bold text-[#015A62] dark:text-white mb-4 flex items-center gap-2">
+                                                        <Paperclip size={18} className="text-[#ED6E3F]" /> Attachments
                                                     </h4>
 
                                                     <div className="space-y-2 max-h-[200px] overflow-y-auto no-scrollbar">
                                                         {normalized.uploadedDocuments && Object.keys(normalized.uploadedDocuments).length > 0 ? (
                                                             Object.entries(normalized.uploadedDocuments).map(([key, val]) => (
                                                                 <a href={val} target="_blank" rel="noreferrer" key={key} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[#1C3540] rounded-xl hover:bg-slate-100 dark:hover:bg-[#2A4550] transition group">
-                                                                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#0D1C22] flex items-center justify-center text-slate-400 group-hover:text-[#B58863]">
+                                                                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#0D1C22] flex items-center justify-center text-slate-400 group-hover:text-[#ED6E3F]">
                                                                         <FileText size={16} />
                                                                     </div>
                                                                     <div className="min-w-0">
@@ -589,8 +589,8 @@ const MyOrders = () => {
 
             {/* FLOATING CHAT - Compact */}
             {activeChatOrder && (
-                <div className={`fixed bottom-4 right-4 z-[100] w-[320px] shadow-2xl rounded-2xl overflow-hidden bg-white dark:bg-[#10232A] border border-gray-100 dark:border-[#1C3540] flex flex-col transition-all duration-300 ${isChatMinimized ? 'h-12' : 'h-[450px]'}`}>
-                    <div className="p-3 bg-[#10232A] text-white flex justify-between items-center cursor-pointer shrink-0 z-10 relative" onClick={() => setIsChatMinimized(!isChatMinimized)}>
+                <div className={`fixed bottom-4 right-4 z-[100] w-[320px] shadow-2xl rounded-2xl overflow-hidden bg-white dark:bg-[#043E52] border border-gray-100 dark:border-[#1C3540] flex flex-col transition-all duration-300 ${isChatMinimized ? 'h-12' : 'h-[450px]'}`}>
+                    <div className="p-3 bg-[#015A62] text-white flex justify-between items-center cursor-pointer shrink-0 z-10 relative" onClick={() => setIsChatMinimized(!isChatMinimized)}>
                         <div className="flex items-center gap-2.5">
                             <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center"><ShieldCheck size={12} /></div>
                             <div>
@@ -619,10 +619,10 @@ const MyOrders = () => {
                                                 </div>
                                             )}
                                             <div className={`max-w-[85%] p-2 px-3 text-[10px] shadow-sm ${isUser
-                                                ? 'bg-[#10232A] dark:bg-[#B58863] text-white rounded-xl rounded-tr-none'
+                                                ? 'bg-[#015A62] dark:bg-[#ED6E3F] text-white rounded-xl rounded-tr-none'
                                                 : 'bg-white dark:bg-[#1C3540] text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-[#2A4550] rounded-xl rounded-tl-none'
                                                 }`}>
-                                                {!isUser && <p className="text-[8px] font-bold text-[#B58863] mb-0.5 opacity-80">{msg.senderName}</p>}
+                                                {!isUser && <p className="text-[8px] font-bold text-[#ED6E3F] mb-0.5 opacity-80">{msg.senderName}</p>}
                                                 <p className="leading-relaxed">{msg.message} {msg.edited && <span className="text-[8px] opacity-50 italic">(edited)</span>}</p>
                                                 <div className={`flex items-center justify-end gap-1 mt-0.5`}>
                                                     <span className={`text-[8px] font-bold ${isUser ? 'text-white/60' : 'text-gray-300'}`}>
@@ -648,10 +648,10 @@ const MyOrders = () => {
                                 <div ref={chatEndRef} />
                             </div>
 
-                            <div className="p-2.5 bg-white dark:bg-[#10232A] border-t border-gray-100 dark:border-[#1C3540] flex items-center gap-2 shrink-0">
+                            <div className="p-2.5 bg-white dark:bg-[#043E52] border-t border-gray-100 dark:border-[#1C3540] flex items-center gap-2 shrink-0">
                                 <button onClick={handleClearChat} className="text-gray-400 p-1 hover:text-red-500 transition" title="Clear Chat"><Archive size={16} /></button>
                                 <input
-                                    className="flex-1 bg-gray-50 dark:bg-[#1C3540] border border-gray-200 dark:border-[#2A4550] rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-[#B58863] transition-colors dark:text-white"
+                                    className="flex-1 bg-gray-50 dark:bg-[#1C3540] border border-gray-200 dark:border-[#2A4550] rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-[#ED6E3F] transition-colors dark:text-white"
                                     placeholder={editingMessageId ? "Edit message..." : "Type your message..."}
                                     value={chatMessage}
                                     onChange={handleTyping}
@@ -662,7 +662,7 @@ const MyOrders = () => {
                                         }
                                     }}
                                 />
-                                <button onClick={handleSendMessage} disabled={!chatMessage.trim() || isMessageSending} className={`p-1.5 rounded-lg ${chatMessage.trim() ? 'bg-[#B58863] text-white' : 'bg-gray-100 dark:bg-[#1C3540] text-gray-400'}`}>
+                                <button onClick={handleSendMessage} disabled={!chatMessage.trim() || isMessageSending} className={`p-1.5 rounded-lg ${chatMessage.trim() ? 'bg-[#ED6E3F] text-white' : 'bg-gray-100 dark:bg-[#1C3540] text-gray-400'}`}>
                                     {isMessageSending ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
                                 </button>
                             </div>

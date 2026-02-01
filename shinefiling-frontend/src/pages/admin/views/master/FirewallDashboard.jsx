@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
     Shield, Lock, Globe, Server, Activity, AlertTriangle, RefreshCcw, Power, CheckCircle, Smartphone, Wifi, Zap
 } from 'lucide-react';
@@ -34,7 +34,7 @@ const SecurityFlowDiagram = ({ status }) => {
                 {/* Node 2: Firewall Core */}
                 <div className="flex flex-col items-center gap-4 relative z-20">
                     <div className="relative">
-                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#10232A] to-[#2B3446] dark:from-slate-700 dark:to-slate-900 flex items-center justify-center text-white shadow-xl shadow-blue-900/20 border-4 border-white dark:border-slate-800">
+                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#043E52] to-[#2B3446] dark:from-slate-700 dark:to-slate-900 flex items-center justify-center text-white shadow-xl shadow-blue-900/20 border-4 border-white dark:border-slate-800">
                             <Shield size={42} className="text-[#F97316]" />
                         </div>
                         {/* Orbiting Particles */}
@@ -42,7 +42,7 @@ const SecurityFlowDiagram = ({ status }) => {
                         <div className="absolute -inset-2 border border-blue-500/20 rounded-full animate-[pulse_3s_infinite]"></div>
                     </div>
                     <div className="text-center">
-                        <p className="text-sm font-bold text-[#10232A] dark:text-white uppercase tracking-wider">Firewall Core</p>
+                        <p className="text-sm font-bold text-[#043E52] dark:text-white uppercase tracking-wider">Firewall Core</p>
                         <p className="text-xs text-[#F97316] font-bold mt-0.5">Active Filtering</p>
                     </div>
                 </div>
@@ -132,7 +132,7 @@ const FirewallDashboard = () => {
                     <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-700/50 rounded-lg transition-colors">
                         <RefreshCcw size={18} />
                     </button>
-                    <button className="px-4 py-2 bg-[#10232A] text-white text-sm font-bold rounded-lg hover:bg-[#F97316] transition shadow-lg shadow-orange-500/20 flex items-center gap-2">
+                    <button className="px-4 py-2 bg-[#043E52] text-white text-sm font-bold rounded-lg hover:bg-[#F97316] transition shadow-lg shadow-orange-500/20 flex items-center gap-2">
                         <Power size={16} /> Emergency Shutdown
                     </button>
                 </div>
@@ -161,7 +161,7 @@ const FirewallDashboard = () => {
                     ))}
 
                     {/* Console Log Area */}
-                    <div className="bg-[#10232A] rounded-2xl p-4 h-[120px] overflow-hidden font-mono text-[10px] text-green-400 leading-relaxed shadow-inner">
+                    <div className="bg-[#043E52] rounded-2xl p-4 h-[120px] overflow-hidden font-mono text-[10px] text-green-400 leading-relaxed shadow-inner">
                         <div className="flex items-center gap-2 border-b border-white/10 pb-2 mb-2 text-gray-400">
                             <div className="flex gap-1.5">
                                 <div className="w-2 h-2 rounded-full bg-red-500"></div>

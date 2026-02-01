@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     ArrowRight, Check, Play, Building, Shield, Zap,
     Users, Clock, Globe, Briefcase, FileText, Layout,
     ChevronDown, Star, Award, Mail, Lock, Phone,
-    TrendingUp, FileCheck, Headphones, User, Lightbulb, PenTool
+    TrendingUp, FileCheck, Headphones, User, Lightbulb, PenTool, MessageCircle, Plane, Link2, Camera, MoreVertical, Search
 } from 'lucide-react';
 import { getApprovedTestimonials } from '../api';
 import heroBg from '../assets/hero-bg-final.png';
 import servicesBg from '../assets/services-bg.png';
 import HeroAnimation from '../components/HeroAnimation';
 
+import heroBgReal from '../assets/hero-bg-office.png'; // Updated Background Image
 import heroBgProfessional from '../assets/hero-bg-professional.png';
 import ProfessionalBackground from '../components/ProfessionalBackground';
 import HeroIsometricBackground from '../components/HeroIsometricBackground';
@@ -70,7 +71,7 @@ const TestimonialsSection = () => {
     if (loading) {
         return (
             <div className="text-center py-12">
-                <div className="inline-block w-8 h-8 border-4 border-[#B58863] border-t-transparent rounded-full animate-spin"></div>
+                <div className="inline-block w-8 h-8 border-4 border-[#ED6E3F] border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -86,16 +87,16 @@ const TestimonialsSection = () => {
             {testimonials.map((t, i) => (
                 <motion.div key={i} variants={fadeInUp} className="bg-white p-8 rounded-2xl border border-slate-200 hover:shadow-xl transition-shadow text-left">
                     <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#B58863] to-[#D4B08C] flex items-center justify-center text-white font-bold text-lg shadow-md">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ED6E3F] to-[#F9A65E] flex items-center justify-center text-white font-bold text-lg shadow-md">
                             {t.customerName?.charAt(0).toUpperCase() || 'U'}
                         </div>
                         <div>
-                            <h4 className="font-bold text-[#10232A] text-sm">{t.customerName || 'Anonymous'}</h4>
+                            <h4 className="font-bold text-[#043E52] text-sm">{t.customerName || 'Anonymous'}</h4>
                             <p className="text-[10px] text-[#3D4D55] uppercase tracking-wider">{t.serviceName || 'Customer'}</p>
                         </div>
                     </div>
                     <p className="text-slate-600 text-sm italic leading-relaxed mb-6">"{t.feedback}"</p>
-                    <div className="flex text-[#B58863]">
+                    <div className="flex text-[#F9A65E]">
                         {[...Array(t.rating || 5)].map((_, j) => <Star key={j} size={14} fill="currentColor" />)}
                     </div>
                 </motion.div>
@@ -104,44 +105,16 @@ const TestimonialsSection = () => {
     );
 };
 
-const LandingPage = () => {
+const LandingPage = ({ isLoggedIn }) => {
+    const [isMobile, setIsMobile] = useState(false);
     const [activeFaq, setActiveFaq] = useState(0);
-
-    // --- HERO TEXT SLIDER ---
-    const [activeSlide, setActiveSlide] = useState(0);
-
-    const heroSlides = [
-        {
-            title1: "Launch & Grow Your",
-            title2: "Business with Confidence",
-            subtitle: "India's most trusted platform for Company Registration, Trademark Protection, and Tax Filing.",
-            cta: "Get Started for Free"
-        },
-        {
-            title1: "Protect Your Brand",
-            title2: "Identity & Assets",
-            subtitle: "Secure your intellectual property with our expert Trademark and Copyright services.",
-            cta: "Protect Now"
-        },
-        {
-            title1: "Simplify Your",
-            title2: "Tax & Compliance",
-            subtitle: "Seamless GST, ITR, and Annual Compliance services for hassle-free business operations.",
-            cta: "File Taxes"
-        },
-        {
-            title1: "Expert Partner for",
-            title2: "Financial Growth",
-            subtitle: "Expert book-keeping, VC/CFO services, and financial planning to scale your business.",
-            cta: "Explore Services"
-        }
-    ];
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setActiveSlide((prev) => (prev + 1) % heroSlides.length);
-        }, 5000);
-        return () => clearInterval(timer);
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
     // --- Data: Matched to User's "Services Grid" Image ---
@@ -171,50 +144,327 @@ const LandingPage = () => {
 
     return (
         <div className="font-sans text-navy bg-white selection:bg-bronze/30 selection:text-navy overflow-x-hidden">
+            {/* --- HERO SECTION (Refined Design) --- */}
+            <section className="relative w-full min-h-[90vh] flex items-center pt-24 pb-32 lg:pt-32 lg:pb-40 overflow-hidden bg-slate-50">
 
-            {/* --- HERO SECTION --- */}
-            <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-navy pt-20">
-                {/* 3D Isometric Animated Background (Center Focused) */}
-                <HeroIsometricBackground />
+                {/* --- 1. Background Effects (Gradients & Glows) --- */}
+                {/* --- 1. Background Effects (Image Based) --- */}
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                    <img
+                        src={heroBgReal}
+                        alt="Background"
+                        className="w-full h-full object-cover object-center"
+                    />
+                    {/* Dark Overlay for text readability */}
+                    <div className="absolute inset-0 bg-black/30"></div>
+                </div>
+                {/* Dynamic Floating Icons */}
+                <div className="absolute inset-0 z-0 overflow-hidden opacity-30 pointer-events-none">
+                    <FloatingIconsAnimation />
+                </div>
 
-                <div className="relative z-20 max-w-5xl mx-auto px-6 w-full flex flex-col items-center justify-start h-full pt-32 pointer-events-none">
+                <div className="container mx-auto px-4 relative z-10 flex flex-col justify-center h-full pt-12">
+                    {/* Text Content Area (Centered) */}
+                    <div className="w-full flex flex-col items-center text-center mb-20">
+
+                        {/* --- 2. Top Badge --- */}
 
 
-
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeSlide}
-                            initial={{ opacity: 0, y: 30 }}
+                        {/* --- 3. Main Headline --- */}
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -30 }}
-                            transition={{ duration: 0.6 }}
-                            className="text-center pointer-events-auto"
+                            transition={{ duration: 0.6, delay: 0.1 }}
+                            className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.2] mb-6 tracking-tight max-w-5xl"
                         >
-                            {/* Main Headline */}
-                            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 tracking-tight leading-[1.1] drop-shadow-2xl">
-                                {heroSlides[activeSlide].title1} <br />
-                                <span className="text-[#B58863]">
-                                    {heroSlides[activeSlide].title2}
-                                </span>
-                            </h1>
+                            Business Compliance & Filing <br />
+                            <span className="text-[#F9A65E]">Made Easy For Your Business</span>
+                        </motion.h1>
 
-                            {/* Subtext */}
-                            <p className="max-w-2xl mx-auto text-base sm:text-lg text-slate-200 mb-10 leading-relaxed font-light tracking-wide">
-                                Take control of your business filing, compliance, and auditing with our AI-powered platform.
-                                Fast, secure, and fully digital.
-                            </p>
+                        {/* --- 4. Subtext --- */}
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            className="max-w-2xl mx-auto text-base text-slate-100 mb-10 leading-relaxed"
+                        >
+                            Register your company, file your GST returns, and manage complex tax compliances effortlessly with ShineFiling's expert-led digital platform.
+                        </motion.p>
 
-                            {/* Buttons - Pill Shaped */}
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <Link to="/services" className="px-8 py-4 rounded-full bg-[#B58863] text-white font-bold text-lg hover:bg-[#946c4b] hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(181,136,99,0.4)] flex items-center gap-2">
-                                    Start Business <ArrowRight size={20} />
-                                </Link>
-                                <Link to="/contact" className="px-8 py-4 rounded-full border border-[#B58863] bg-[#0f172a]/50 backdrop-blur-sm text-white font-medium text-lg hover:bg-[#B58863] hover:border-[#B58863] transition-all duration-300 flex items-center gap-2 shadow-[0_0_15px_rgba(181,136,99,0.1)]">
-                                    Learn More <Play size={18} fill="currentColor" />
-                                </Link>
+                        {/* --- NEW: Hero Search & CTA Row --- */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.25 }}
+                            className="max-w-2xl mx-auto mb-20 relative z-30 w-full"
+                        >
+                            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+                                {/* Search Bar */}
+                                <div className="w-full relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                                        <Search className="h-5 w-5 text-slate-400 group-focus-within:text-[#043E52] transition-colors" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Search for any service..."
+                                        className="block w-full pl-14 pr-32 py-3 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-full text-base text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-4 focus:ring-[#ED6E3F]/10 transition-all shadow-xl font-medium"
+                                    />
+                                    <div className="absolute inset-y-1.5 right-1.5">
+                                        <button className="h-full px-6 bg-[#043E52] hover:bg-[#032d3c] text-white text-xs font-bold rounded-full transition-all flex items-center gap-2 shadow-lg active:scale-95">
+                                            Search
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* CTA Button */}
+                                <div className="w-auto shrink-0">
+                                    <button className="w-auto h-10 md:h-[48px] px-6 md:px-8 bg-[#ED6E3F] text-white rounded-full font-bold text-xs shadow-xl hover:bg-[#F9A65E] hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 group">
+                                        Get Started
+                                        <div className="bg-white/20 rounded-full p-1 group-hover:bg-white/30 transition-colors">
+                                            <ArrowRight size={14} className="text-white" />
+                                        </div>
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
-                    </AnimatePresence>
+                    </div> {/* End Text Column */}
+                </div>
+            </section>
+
+            {/* --- NEW SECTION: 3D Mockups --- */}
+            <section className="py-4 bg-transparent relative z-20 -mt-24 md:-mt-48">
+                <div className="container mx-auto px-4">
+                    {/* --- 6. 3D Mockup Container with Scroll Animation --- */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 100, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 1.2, ease: "easeOut" }}
+                        className="relative w-full max-w-[1200px] h-[500px] md:h-[600px] mx-auto perspective-[2500px] scale-[0.55] sm:scale-75 md:scale-90 lg:scale-100 px-4 flex justify-center items-center"
+                    >
+                        {/* --- A. Center Phone (The Hero) --- */}
+                        <motion.div
+                            initial={{ y: 50, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                        >
+                            <motion.div
+                                animate={{ y: [0, -15, 0] }}
+                                transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+                                className="relative z-30 w-[250px] sm:w-[280px] md:w-[300px] lg:w-[320px] h-[520px] sm:h-[580px] md:h-[600px] lg:h-[640px] bg-white rounded-[40px] sm:rounded-[50px] border-[8px] sm:border-[10px] border-[#043E52] shadow-2xl overflow-hidden ring-1 ring-black/5"
+                            >
+                                {/* Phone Notch/Status Bar */}
+                                <div className="h-14 bg-white flex items-center justify-between px-6 pt-2 border-b border-slate-50">
+                                    <span className="text-xs font-bold text-slate-900">9:41</span>
+                                    <div className="w-20 h-5 bg-slate-900 rounded-full absolute left-1/2 -translate-x-1/2 top-3"></div>
+                                    <div className="flex gap-1">
+                                        <div className="w-4 h-3 border border-slate-800 rounded-sm"></div>
+                                    </div>
+                                </div>
+
+                                {/* App Header */}
+                                <div className="px-4 pb-4 pt-2 bg-white">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h2 className="text-xl font-bold text-[#043E52]">ShineFiling</h2>
+                                        <div className="flex gap-3 text-[#ED6E3F]">
+                                            <TrendingUp size={20} />
+                                            <MoreVertical size={20} />
+                                        </div>
+                                    </div>
+                                    {/* Search Input Mock */}
+                                    <div className="w-full h-10 bg-slate-100 rounded-lg flex items-center px-4 gap-2 text-slate-400">
+                                        <div className="w-5 h-5 rounded-full border-2 border-[#043E52]/50 flex items-center justify-center">
+                                            <div className="w-full h-full bg-[#043E52] rounded-full opacity-50"></div>
+                                        </div>
+                                        <span className="text-sm">Search your filings...</span>
+                                    </div>
+                                </div>
+
+                                {/* Service Status List */}
+                                <div className="flex flex-col">
+                                    {/* Item 1 (Pvt Ltd) */}
+                                    <div className="flex items-center p-4 hover:bg-slate-50 transition-colors cursor-pointer">
+                                        <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-[#ED6E3F]">
+                                            <Building size={24} />
+                                        </div>
+                                        <div className="ml-3 flex-1 border-b border-slate-100 pb-4 mb-[-16px]">
+                                            <div className="flex justify-between items-baseline">
+                                                <h3 className="font-bold text-slate-900 text-sm">Pvt Ltd Registration</h3>
+                                                <span className="text-[10px] text-orange-500 font-bold">STEP 3/4</span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-500 truncate">Document Verification in Progress</p>
+                                        </div>
+                                    </div>
+                                    {/* Item 2 (GST) */}
+                                    <div className="flex items-center p-4 hover:bg-slate-50 transition-colors cursor-pointer bg-emerald-50/30">
+                                        <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+                                            <FileText size={24} />
+                                        </div>
+                                        <div className="ml-3 flex-1 border-b border-slate-100 pb-4 mb-[-16px]">
+                                            <div className="flex justify-between items-baseline">
+                                                <h3 className="font-bold text-slate-900 text-sm">GST Monthly Return</h3>
+                                                <span className="text-[10px] text-emerald-600 font-bold">FILED</span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-500 truncate">ACK: 882910JQ</p>
+                                        </div>
+                                    </div>
+                                    {/* Item 3 (Trademark) */}
+                                    <div className="flex items-center p-4 hover:bg-slate-50 transition-colors cursor-pointer">
+                                        <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                                            <Shield size={24} />
+                                        </div>
+                                        <div className="ml-3 flex-1 border-b border-slate-100 pb-4 mb-[-16px]">
+                                            <div className="flex justify-between items-baseline">
+                                                <h3 className="font-bold text-slate-900 text-sm">Trademark Search</h3>
+                                                <span className="text-[10px] text-blue-600 font-bold">READY</span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-500 truncate">Available for registration</p>
+                                        </div>
+                                    </div>
+                                    {/* Item 4 (Income Tax) */}
+                                    <div className="flex items-center p-4 hover:bg-slate-50 transition-colors cursor-pointer">
+                                        <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
+                                            <TrendingUp size={24} />
+                                        </div>
+                                        <div className="ml-3 flex-1 border-b border-slate-100 pb-4 mb-[-16px]">
+                                            <div className="flex justify-between items-baseline">
+                                                <h3 className="font-bold text-slate-900 text-sm">Income Tax Filing</h3>
+                                                <span className="text-[10px] text-slate-400">PENDING</span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-500 truncate">Expert assigned to your file</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+
+                        {/* --- B. Left Card (Discount) --- */}
+                        <motion.div
+                            initial={{ x: -100, opacity: 0, rotateY: 20 }}
+                            animate={{ x: 0, opacity: 1, rotateY: 12, rotateZ: -6 }}
+                            transition={{ duration: 1, delay: 0.4 }}
+                            className="absolute left-[2%] md:left-[5%] lg:left-[8%] top-0 md:top-10 w-[260px] md:w-[280px] h-[480px] bg-white rounded-[32px] p-6 shadow-2xl border border-slate-100 z-40 transform-style-3d origin-right"
+                        >
+                            {/* Speech Bubble Tail */}
+                            <div className="absolute -top-12 -left-8 bg-white p-3 rounded-tr-3xl rounded-tl-3xl rounded-bl-3xl shadow-lg border border-slate-100 flex items-center justify-center gap-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                                <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                                <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                            </div>
+
+                            {/* Connection Line/Icon */}
+                            <div className="absolute -right-6 top-1/2 w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-blue-500 z-30">
+                                <Link2 size={20} />
+                            </div>
+
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">N</div>
+                                <div>
+                                    <h4 className="font-bold text-sm text-slate-900">TechNova Solutions</h4>
+                                    <span className="text-[10px] text-slate-400">Application SF-882</span>
+                                </div>
+                            </div>
+
+                            <p className="text-xs text-slate-600 mb-4 leading-relaxed">
+                                Your Pvt Ltd Incorporation application has been successfully verified. <span className="font-bold text-[#043E52]">Final Certificate</span> is ready for download.
+                            </p>
+
+                            {/* Added Timeline to fill space */}
+                            <div className="space-y-3 mb-6 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                                <div className="flex items-center gap-2 text-[11px] font-bold text-slate-800">
+                                    <TrendingUp size={14} className="text-emerald-500" />
+                                    FILING TIMELINE
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between text-[10px]">
+                                        <span className="text-slate-500">DIN & DSC Approval</span>
+                                        <span className="text-emerald-600 font-bold flex items-center gap-1"><Check size={10} /> COMPLETED</span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-[10px]">
+                                        <span className="text-slate-500">Name Reservation (RUN)</span>
+                                        <span className="text-emerald-600 font-bold flex items-center gap-1"><Check size={10} /> COMPLETED</span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-[10px]">
+                                        <span className="text-slate-500">MCA Form Submission</span>
+                                        <span className="text-emerald-600 font-bold flex items-center gap-1"><Check size={10} /> COMPLETED</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-between bg-emerald-50 rounded-xl p-3 border border-emerald-100 mb-4">
+                                <div>
+                                    <p className="text-[10px] text-emerald-600 uppercase font-bold mb-0.5">Registration Status</p>
+                                    <p className="text-lg font-bold text-[#043E52]">ACTIVE</p>
+                                </div>
+                                <Shield size={24} className="text-emerald-600 opacity-20" />
+                            </div>
+
+                            <button className="w-full py-2 rounded-lg bg-[#ED6E3F] text-white text-sm font-bold hover:bg-[#F9A65E] transition-colors">
+                                Download Certificate
+                            </button>
+                        </motion.div>
+
+                        {/* --- C. Right Card (Travel) --- */}
+                        <motion.div
+                            initial={{ x: 100, opacity: 0, rotateY: -20 }}
+                            animate={{ x: 0, opacity: 1, rotateY: -12, rotateZ: 6 }}
+                            transition={{ duration: 1, delay: 0.4 }}
+                            className="absolute right-[2%] md:right-[5%] lg:right-[8%] top-0 md:top-10 w-[260px] md:w-[280px] h-[480px] bg-white rounded-[32px] p-6 shadow-2xl border border-slate-100 z-40 transform-style-3d origin-left"
+                        >
+                            {/* Speech Bubble Tail (Right) */}
+                            <div className="absolute -top-10 -right-8 bg-white p-3 rounded-tr-3xl rounded-tl-3xl rounded-br-3xl shadow-lg border border-slate-100 flex items-center justify-center gap-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                                <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                                <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                            </div>
+
+                            {/* Connection Line/Icon */}
+                            <div className="absolute -left-6 top-1/2 w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-orange-500 z-30">
+                                <Plane size={20} />
+                            </div>
+
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">GST</div>
+                                <div>
+                                    <h4 className="font-bold text-sm text-slate-900">GST Compliance</h4>
+                                    <span className="text-[10px] text-slate-400">Due in 3 days</span>
+                                </div>
+                            </div>
+
+                            <p className="text-xs text-slate-600 mb-4">
+                                Q3 GST Returns are pending. Complete your filing to avoid late penalties and maintain your compliance score.
+                            </p>
+
+                            {/* Added Deadlines to fill space */}
+                            <div className="space-y-2 mb-4">
+                                <div className="flex items-center gap-2 text-[11px] font-bold text-slate-800 mb-1">
+                                    <Clock size={14} className="text-orange-500" />
+                                    UPCOMING DEADLINES
+                                </div>
+                                <div className="bg-orange-50 rounded-lg p-2 flex justify-between items-center text-[10px] border border-orange-100">
+                                    <span className="font-bold text-slate-700">GSTR-1 (Monthly)</span>
+                                    <span className="text-orange-600 font-bold">11 OCT</span>
+                                </div>
+                                <div className="bg-slate-50 rounded-lg p-2 flex justify-between items-center text-[10px] border border-slate-100">
+                                    <span className="font-bold text-slate-700">GSTR-3B (Filing)</span>
+                                    <span className="text-slate-500 font-bold">20 OCT</span>
+                                </div>
+                            </div>
+
+                            {/* Image Card */}
+                            <div className="relative h-32 w-full rounded-xl overflow-hidden mb-3 group">
+                                <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=500" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Compliance" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-3">
+                                    <span className="text-white font-bold text-sm">Tax Compliance</span>
+                                    <span className="text-white/80 text-[10px]">Financial Year 2024-25</span>
+                                </div>
+                            </div>
+
+                            <button className="w-full py-2 rounded-lg border border-[#ED6E3F] text-[#ED6E3F] text-sm font-bold hover:bg-[#ED6E3F] hover:text-white transition-all">
+                                File Return Now
+                            </button>
+                        </motion.div>
+
+                    </motion.div>
                 </div>
             </section>
             <motion.div
@@ -222,42 +472,40 @@ const LandingPage = () => {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1 }}
-                className="bg-[#EBE5DE] py-8 border-b border-white/20"
+                className="bg-white border-y border-slate-100 py-6 relative z-30 mt-12 md:mt-20"
             >
                 <div className="max-w-[1400px] mx-auto px-6 text-center overflow-hidden">
-                    <p className="text-[10px] font-bold tracking-[0.2em] text-navy/60 uppercase mb-8">Officially Recognized & Compliant With</p>
-
                     <Marquee speed={40}>
-                        <div className="flex items-center gap-16 md:gap-24 opacity-70 hover:opacity-100 transition-opacity duration-300">
+                        <div className="flex items-center gap-16 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
 
                             {/* Startup India */}
                             <div className="flex items-center gap-3 group cursor-pointer">
-                                <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-all"><Award className="text-[#D4B08C]" size={24} /></div>
-                                <span className="text-xl font-bold text-navy/80">Startup India</span>
+                                <Award className="text-[#ED6E3F]" size={28} />
+                                <span className="text-sm md:text-xl font-bold text-[#043E52]">Startup India</span>
                             </div>
 
                             {/* Digital India */}
                             <div className="flex items-center gap-3 group cursor-pointer">
-                                <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-all"><Globe className="text-blue-600" size={24} /></div>
-                                <span className="text-xl font-bold text-navy/80">Digital India</span>
+                                <Globe className="text-[#ED6E3F]" size={28} />
+                                <span className="text-sm md:text-xl font-bold text-slate-700">Digital India</span>
                             </div>
 
                             {/* MCA */}
                             <div className="flex items-center gap-3 group cursor-pointer">
-                                <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-all"><Building className="text-slate-600" size={24} /></div>
-                                <span className="text-xl font-bold text-navy/80">MCA Govt</span>
+                                <Building className="text-[#043E52]" size={28} />
+                                <span className="text-sm md:text-xl font-bold text-[#043E52]">MCA Govt</span>
                             </div>
 
                             {/* MSME */}
                             <div className="flex items-center gap-3 group cursor-pointer">
-                                <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-all"><Briefcase className="text-[#B58863]" size={24} /></div>
-                                <span className="text-xl font-bold text-navy/80">MSME</span>
+                                <Briefcase className="text-[#F9A65E]" size={28} />
+                                <span className="text-sm md:text-xl font-bold text-[#043E52]">MSME</span>
                             </div>
 
                             {/* ISO */}
                             <div className="flex items-center gap-3 group cursor-pointer">
-                                <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-all"><Shield className="text-green-600" size={24} /></div>
-                                <span className="text-xl font-bold text-navy/80">ISO 9001:2015</span>
+                                <Shield className="text-[#043E52]" size={28} />
+                                <span className="text-sm md:text-xl font-bold text-[#043E52]">ISO 9001:2015</span>
                             </div>
 
                         </div>
@@ -267,7 +515,7 @@ const LandingPage = () => {
 
             {/* --- SECTION 1: SERVICES GRID (Matched to Image) --- */}
             <section className="py-24 px-6 lg:px-12 relative overflow-hidden bg-slate-50">
-                <FloatingIconsAnimation /> {/* Added Animation here */}
+                {!isMobile && <FloatingIconsAnimation />}
                 <div className="absolute inset-0 z-0">
                     <img src={servicesBg} alt="Services Background" className="w-full h-full object-cover opacity-10" />
                 </div>
@@ -277,10 +525,11 @@ const LandingPage = () => {
                         whileInView="visible"
                         viewport={{ once: true }}
                         variants={fadeInUp}
-                        className="mb-12"
+                        className="mb-12 text-center"
                     >
-                        <h2 className="text-3xl font-bold text-navy">Services</h2>
-                        <div className="h-1 w-20 bg-bronze mt-2"></div>
+                        <span className="text-[#ED6E3F] font-bold tracking-widest uppercase text-xs">OUR SOLUTIONS</span>
+                        <h2 className="text-3xl md:text-4xl font-bold text-[#043E52] mt-2">Services We Offer</h2>
+                        <div className="h-1 w-20 bg-[#ED6E3F] mx-auto mt-4 rounded-full"></div>
                     </motion.div>
                     <motion.div
                         initial="hidden"
@@ -293,13 +542,14 @@ const LandingPage = () => {
                             <motion.div key={i} variants={fadeInUp}>
                                 <Link
                                     to={`/services/${svc.title.toLowerCase().replace(/ /g, '-')}`}
-                                    className="group p-6 rounded-2xl bg-white border border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.05)] hover:shadow-[0_10px_30px_rgba(181,136,99,0.15)] transition-all duration-300 flex flex-col items-center text-center h-full hover:-translate-y-1"
+                                    className="group p-6 rounded-2xl bg-white border border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_rgba(237,110,63,0.15)] transition-all duration-300 flex flex-col items-center text-center h-full hover:-translate-y-2 relative overflow-hidden"
                                 >
-                                    <div className="w-16 h-16 rounded-full bg-[#FAF6F3] text-bronze flex items-center justify-center mb-4 group-hover:bg-bronze group-hover:text-white transition-colors duration-300">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-[#F9A65E] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                                    <div className="w-16 h-16 rounded-2xl bg-[#FFF5F1] text-[#ED6E3F] flex items-center justify-center mb-6 group-hover:bg-[#ED6E3F] group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-orange-200">
                                         <svc.icon size={28} strokeWidth={1.5} />
                                     </div>
-                                    <h3 className="text-base font-bold text-navy mb-2 leading-tight group-hover:text-bronze transition-colors">{svc.title}</h3>
-                                    <p className="text-xs text-slate-500 leading-relaxed font-medium">{svc.desc}</p>
+                                    <h3 className="text-lg font-bold text-[#043E52] mb-2 leading-tight group-hover:text-[#ED6E3F] transition-colors">{svc.title}</h3>
+                                    <p className="text-sm text-slate-500 leading-relaxed font-medium">{svc.desc}</p>
                                 </Link>
                             </motion.div>
                         ))}
@@ -316,17 +566,17 @@ const LandingPage = () => {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
-                        className="bg-[#DBCFB0] p-12 lg:p-16 flex flex-col justify-center order-2 lg:order-1"
+                        className="bg-[#043E52] p-8 md:p-12 lg:p-16 flex flex-col justify-center order-2 lg:order-1"
                     >
-                        <span className="text-navy font-bold uppercase tracking-widest text-xs mb-4">WHO WE ARE</span>
-                        <h2 className="text-3xl lg:text-5xl font-bold text-navy mb-6 leading-tight">
-                            Simplifying Compliance for Every Business
+                        <span className="text-[#F9A65E] font-bold uppercase tracking-widest text-xs mb-4">OUR PHILOSOPHY</span>
+                        <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+                            Complete Corporate Governance & Compliance
                         </h2>
-                        <p className="text-[#4A4A4A] text-lg leading-relaxed mb-8">
-                            At ShineFiling, we serve as your all-in-one compliance partner. From starting your business to protecting your brand and ensuring tax compliance, we provide legal and secretarial solutions at one click.
+                        <p className="text-slate-100 text-lg leading-relaxed mb-8">
+                            At ShineFiling, we act as the strategic backbone for your venture. From the initial spark of incorporation to the rigorous demands of annual audits and trademark protection, we manage your legal complexities so you can focus on building your legacy.
                         </p>
-                        <Link to="/about-us" className="inline-flex items-center gap-2 text-navy font-bold hover:text-white transition-colors uppercase tracking-widest text-sm self-start border-b-2 border-navy hover:border-white pb-1">
-                            READ MORE <ArrowRight size={16} />
+                        <Link to="/about-us" className="inline-flex items-center gap-2 text-white font-bold hover:text-[#F9A65E] transition-colors uppercase tracking-widest text-sm self-start border-b-2 border-white/30 hover:border-[#F9A65E] pb-1">
+                            EXPLORE OUR EXPERTISE <ArrowRight size={16} />
                         </Link>
                     </motion.div>
 
@@ -344,6 +594,103 @@ const LandingPage = () => {
                             className="absolute inset-0 w-full h-full object-cover"
                         />
                     </motion.div>
+                </div>
+            </section>
+
+            {/* --- SECTION 2.5: GST COMPLIANCE FOCUS --- */}
+            <section className="py-24 px-6 lg:px-12 bg-slate-50 relative overflow-hidden">
+                <div className="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-16 items-center">
+
+                    {/* Left: Content */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <span className="text-[#ED6E3F] font-bold tracking-widest uppercase text-xs mb-4 block">TAXATION SERVICES</span>
+                        <h2 className="text-4xl lg:text-5xl font-bold text-[#043E52] mb-8 leading-tight">
+                            Effortless GST Compliance <br />
+                            <span className="text-[#043E52]">& Tax Advisory</span>
+                        </h2>
+                        <p className="text-slate-600 text-lg mb-10 leading-relaxed">
+                            Stay ahead of regulatory deadlines and avoid heavy penalties. Our automated tax platform ensures your GST returns are filed with 100% accuracy while maximizing your Input Tax Credit (ITC).
+                        </p>
+
+                        <div className="grid sm:grid-cols-2 gap-8 mb-10">
+                            <div className="flex gap-4">
+                                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-[#ED6E3F]">
+                                    <FileCheck size={24} />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-[#043E52] mb-1">GSTR-1 & 3B Filing</h4>
+                                    <p className="text-sm text-slate-500">Accurate monthly & quarterly return filing by experts.</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center text-[#043E52]">
+                                    <Shield size={24} />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-[#043E52] mb-1">ITC Reconciliation</h4>
+                                    <p className="text-sm text-slate-500">Match your purchases with 2A/2B to claim full credits.</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                                    <Zap size={24} />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-[#043E52] mb-1">E-Invoicing</h4>
+                                    <p className="text-sm text-slate-500">Generate IRN and E-Way bills in seconds.</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
+                                    <Award size={24} />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-[#043E52] mb-1">GST Audit & Annual</h4>
+                                    <p className="text-sm text-slate-500">Comprehensive support for GSTR-9 and 9C filings.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <Link to="/services/gst-filing" className="px-10 py-4 bg-[#043E52] text-white font-bold rounded-full hover:bg-[#043E52] transition-all shadow-lg hover:shadow-[#043E52]/20 inline-flex items-center gap-2">
+                            Check GST Status <ArrowRight size={20} />
+                        </Link>
+                    </motion.div>
+
+                    {/* Right: Modern Visual/Mockup */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                        className="relative"
+                    >
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-[#ED6E3F]/10 to-[#043E52]/10 rounded-[40px] blur-2xl"></div>
+                        <div className="relative rounded-[40px] overflow-hidden shadow-2xl border border-white">
+                            <img
+                                src="/taxation-service.png"
+                                alt="Tax professional compliance dashboard"
+                                className="w-full h-[350px] md:h-[500px] lg:h-[600px] object-cover"
+                            />
+                            {/* Floating Floating Stat Badge */}
+                            <div className="absolute top-12 left-8 bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-white/50 animate-bounce-slow">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-600">
+                                        <TrendingUp size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Returns Filed</p>
+                                        <h4 className="text-2xl font-bold text-[#043E52]">1.2M+</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+
                 </div>
             </section>
 
@@ -375,10 +722,10 @@ const LandingPage = () => {
                         ].map((item, i) => (
                             <motion.div key={i} variants={fadeInUp} className="flex flex-col items-center group">
                                 <div className="w-20 h-20 mb-6 relative flex items-center justify-center">
-                                    <div className="absolute inset-0 bg-bronze/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
-                                    <item.icon size={48} strokeWidth={1} className="text-[#B58863] relative z-10" />
+                                    <div className="absolute inset-0 bg-[#ED6E3F]/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                                    <item.icon size={48} strokeWidth={1} className="text-[#ED6E3F] relative z-10" />
                                 </div>
-                                <h4 className="text-lg font-bold text-navy mb-2 uppercase tracking-wide">{item.title}</h4>
+                                <h4 className="text-lg font-bold text-[#043E52] mb-2 uppercase tracking-wide">{item.title}</h4>
                                 <p className="text-slate-500 text-sm max-w-[200px] leading-relaxed">{item.desc}</p>
                             </motion.div>
                         ))}
@@ -400,7 +747,7 @@ const LandingPage = () => {
                             whileInView={{ scaleX: 1 }}
                             viewport={{ once: true }}
                             transition={{ duration: 1, delay: 0.5 }}
-                            className="hidden lg:block absolute top-[50px] left-[15%] right-[15%] h-px bg-bronze/30 z-0 origin-left"
+                            className="hidden lg:block absolute top-[50px] left-[15%] right-[15%] h-px bg-[#ED6E3F]/30 z-0 origin-left"
                         ></motion.div>
 
                         <motion.div
@@ -417,11 +764,11 @@ const LandingPage = () => {
                                 { title: 'Completion & Handover', desc: 'Receive your license & start business.', icon: Check, step: 'STEP 4' }
                             ].map((step, i) => (
                                 <motion.div key={i} variants={scaleIn} className="flex flex-col items-center text-center group">
-                                    <div className="w-24 h-24 rounded-full bg-[#B58863] border-4 border-white shadow-xl flex items-center justify-center text-white mb-6 transform group-hover:scale-110 transition-all duration-300 relative z-10">
+                                    <div className="w-24 h-24 rounded-full bg-[#ED6E3F] border-4 border-white shadow-xl flex items-center justify-center text-white mb-6 transform group-hover:scale-110 transition-all duration-300 relative z-10">
                                         <step.icon size={32} strokeWidth={1.5} />
                                     </div>
-                                    <span className="text-xs font-bold text-navy uppercase tracking-widest mb-1">{step.step}</span>
-                                    <h3 className="text-lg font-bold text-navy mb-2">{step.title}</h3>
+                                    <span className="text-xs font-bold text-[#043E52] uppercase tracking-widest mb-1">{step.step}</span>
+                                    <h3 className="text-lg font-bold text-[#043E52] mb-2">{step.title}</h3>
                                     <p className="text-xs text-slate-500 max-w-[200px] leading-relaxed">{step.desc}</p>
                                 </motion.div>
                             ))}
@@ -431,11 +778,11 @@ const LandingPage = () => {
             </section>
 
             {/* --- SECTION 4: STATS BAR (Dark Band) --- */}
-            <section className="py-16 px-6 lg:px-12 bg-[#10232A] text-white relative overflow-hidden">
+            <section className="py-16 px-6 lg:px-12 bg-[#043E52] text-white relative overflow-hidden">
                 {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-500 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#043E52] via-transparent to-transparent"></div>
 
-                <div className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-white/10 relative z-10">
+                <div className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-10 md:gap-y-0 text-center md:divide-x divide-white/10 relative z-10">
                     {[
                         { val: 50, suffix: "+", label: "Legal Services" },
                         { val: 100, suffix: "%", label: "Digital Process" },
@@ -448,9 +795,9 @@ const LandingPage = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1, duration: 0.5 }}
-                            className="px-4"
+                            className="px-0 md:px-4"
                         >
-                            <h4 className="text-4xl lg:text-5xl font-bold text-[#B58863] mb-2 font-display flex justify-center items-baseline gap-1">
+                            <h4 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#F9A65E] mb-2 font-display flex justify-center items-baseline gap-1">
                                 <AnimatedCounter from={0} to={stat.val} duration={2} />
                                 <span>{stat.suffix}</span>
                             </h4>
@@ -493,8 +840,8 @@ const LandingPage = () => {
                                     onClick={() => setActiveFaq(activeFaq === i ? null : i)}
                                     className="w-full flex justify-between items-center py-5 focus:outline-none group"
                                 >
-                                    <span className={`text-base font-bold transition-colors ${activeFaq === i ? 'text-[#B58863]' : 'text-navy group-hover:text-[#B58863]'}`}>{faq.q}</span>
-                                    <ChevronDown size={18} className={`transform transition-transform text-slate-400 ${activeFaq === i ? 'rotate-180 text-[#B58863]' : ''}`} />
+                                    <span className={`text-base font-bold transition-colors ${activeFaq === i ? 'text-[#ED6E3F]' : 'text-[#043E52] group-hover:text-[#ED6E3F]'}`}>{faq.q}</span>
+                                    <ChevronDown size={18} className={`transform transition-transform text-slate-400 ${activeFaq === i ? 'rotate-180 text-[#ED6E3F]' : ''}`} />
                                 </button>
                                 <AnimatePresence>
                                     {activeFaq === i && (
@@ -527,7 +874,7 @@ const LandingPage = () => {
                             <p className="text-slate-500 mb-8 leading-relaxed">
                                 A brief blog news post displayed personally served as writing assessment. However, we're dedicated to customer success.
                             </p>
-                            <Link to="/blog/1" className="px-8 py-3 bg-[#B58863] text-white font-bold text-sm tracking-widest uppercase rounded hover:bg-[#a37853] transition-colors inline-block">
+                            <Link to="/blog/1" className="px-8 py-3 bg-[#ED6E3F] text-white font-bold text-sm tracking-widest uppercase rounded hover:bg-[#a37853] transition-colors inline-block">
                                 READ FULL
                             </Link>
                         </div>
@@ -554,7 +901,7 @@ const LandingPage = () => {
                             <p className="text-slate-500 mb-8 leading-relaxed">
                                 A brief blog news post displayed personally served as writing assessment. However, we're dedicated to customer success.
                             </p>
-                            <Link to="/blog/2" className="px-8 py-3 bg-[#B58863] text-white font-bold text-sm tracking-widest uppercase rounded hover:bg-[#a37853] transition-colors inline-block">
+                            <Link to="/blog/2" className="px-8 py-3 bg-[#ED6E3F] text-white font-bold text-sm tracking-widest uppercase rounded hover:bg-[#a37853] transition-colors inline-block">
                                 READ FULL
                             </Link>
                         </div>
@@ -599,7 +946,7 @@ const LandingPage = () => {
                 </div>
             </section>
             {/* --- FINAL CTA --- */}
-            <section className="py-24 px-6 lg:px-12 bg-navy relative overflow-hidden" >
+            <section className="py-24 px-6 lg:px-12 bg-[#043E52] relative overflow-hidden" >
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -611,7 +958,7 @@ const LandingPage = () => {
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Launch Your Business?</h2>
                     <p className="text-xl text-slate-300 mb-10 font-light">Join thousands of Indian entrepreneurs who trust ShineFiling.</p>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                        <Link to="/signup" className="px-12 py-5 bg-bronze text-white font-bold rounded-full text-lg shadow-2xl hover:bg-bronze-dark transition-all hover:-translate-y-1">
+                        <Link to="/signup" className="px-12 py-5 bg-[#ED6E3F] text-white font-bold rounded-full text-lg shadow-2xl hover:bg-[#F9A65E] transition-all hover:-translate-y-1">
                             Get Started Now
                         </Link>
                         <Link to="/contact" className="px-12 py-5 bg-transparent border border-white/20 text-white font-bold rounded-full text-lg hover:bg-white/10 transition-all">
@@ -619,8 +966,7 @@ const LandingPage = () => {
                         </Link>
                     </div>
                 </motion.div>
-            </section >
-
+            </section>
         </div >
     );
 };

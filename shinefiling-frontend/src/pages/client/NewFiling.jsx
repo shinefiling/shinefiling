@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Search, CheckCircle, Upload, ArrowRight, Zap, Loader, ChevronRight, Briefcase, FileText } from 'lucide-react';
 import { submitServiceRequest, getServiceCatalog } from '../../api';
 import { getInactiveServices } from '../../utils/serviceManager';
@@ -187,8 +187,8 @@ const NewFiling = ({ setActiveTab, initialCategory }) => {
             {step === 1 && (
                 <>
                     {/* Header Section */}
-                    <div className="bg-white dark:bg-[#10232A] rounded-3xl p-8 border border-slate-100 dark:border-[#1C3540] shadow-sm text-center relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#B58863]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="bg-white dark:bg-[#043E52] rounded-3xl p-8 border border-slate-100 dark:border-[#1C3540] shadow-sm text-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#ED6E3F]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                         <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-3 relative z-10">Start a New Service</h2>
                         <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-xl mx-auto relative z-10">Select from our comprehensive list of legal, tax, and compliance services to get started.</p>
 
@@ -198,7 +198,7 @@ const NewFiling = ({ setActiveTab, initialCategory }) => {
                                 <input
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-2xl py-4 pl-14 pr-6 shadow-sm focus:outline-none focus:border-[#B58863] focus:ring-4 focus:ring-[#B58863]/10 transition text-base text-slate-800 dark:text-white placeholder:text-slate-400"
+                                    className="w-full bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-2xl py-4 pl-14 pr-6 shadow-sm focus:outline-none focus:border-[#ED6E3F] focus:ring-4 focus:ring-[#ED6E3F]/10 transition text-base text-slate-800 dark:text-white placeholder:text-slate-400"
                                     placeholder="Search for a service (e.g. GST, Private Limited, Trademark)..."
                                 />
                             </div>
@@ -214,38 +214,38 @@ const NewFiling = ({ setActiveTab, initialCategory }) => {
                                     key={cat.id}
                                     onClick={() => { setActiveCategory(cat.id); setSearchTerm(''); }}
                                     className={`w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-bold transition-all text-left ${activeCategory === cat.id && !searchTerm
-                                        ? 'bg-[#10232A] dark:bg-white text-white dark:text-[#10232A] shadow-lg'
+                                        ? 'bg-[#043E52] dark:bg-white text-white dark:text-[#043E52] shadow-lg'
                                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1C3540]'
                                         }`}
                                 >
-                                    <cat.icon size={18} className={activeCategory === cat.id && !searchTerm ? 'text-[#B58863] dark:text-[#10232A]' : 'text-slate-400'} />
+                                    <cat.icon size={18} className={activeCategory === cat.id && !searchTerm ? 'text-[#ED6E3F] dark:text-[#043E52]' : 'text-slate-400'} />
                                     {cat.label}
                                 </button>
                             ))}
                         </div>
 
                         {/* Grid */}
-                        <div className={`flex-1 ${!searchTerm ? 'bg-white dark:bg-[#10232A] p-6 rounded-3xl border border-slate-100 dark:border-[#1C3540]' : ''}`}>
+                        <div className={`flex-1 ${!searchTerm ? 'bg-white dark:bg-[#043E52] p-6 rounded-3xl border border-slate-100 dark:border-[#1C3540]' : ''}`}>
                             {filteredServices.length > 0 ? (
                                 <>
-                                    {!searchTerm && <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2"><Briefcase className="text-[#B58863]" size={20} /> {categories.find(c => c.id === activeCategory)?.label || 'Services'}</h3>}
+                                    {!searchTerm && <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2"><Briefcase className="text-[#ED6E3F]" size={20} /> {categories.find(c => c.id === activeCategory)?.label || 'Services'}</h3>}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {filteredServices.map((srv, idx) => (
                                             <div
                                                 key={idx}
                                                 onClick={() => handleSelectService(srv.name, srv.category)}
-                                                className="bg-slate-50 dark:bg-[#1C3540] p-5 rounded-2xl border border-slate-100 dark:border-[#2A4550] hover:border-[#B58863] dark:hover:border-[#B58863] hover:shadow-md cursor-pointer transition-all group flex items-start justify-between"
+                                                className="bg-slate-50 dark:bg-[#1C3540] p-5 rounded-2xl border border-slate-100 dark:border-[#2A4550] hover:border-[#ED6E3F] dark:hover:border-[#ED6E3F] hover:shadow-md cursor-pointer transition-all group flex items-start justify-between"
                                             >
                                                 <div className="flex items-start gap-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-[#10232A] text-[#10232A] dark:text-white flex items-center justify-center shrink-0 group-hover:bg-[#10232A] dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-[#10232A] transition-colors shadow-sm">
+                                                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-[#043E52] text-[#043E52] dark:text-white flex items-center justify-center shrink-0 group-hover:bg-[#043E52] dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-[#043E52] transition-colors shadow-sm">
                                                         <Zap size={18} />
                                                     </div>
                                                     <div>
-                                                        <h4 className="font-bold text-slate-800 dark:text-white text-sm group-hover:text-[#B58863] transition-colors line-clamp-2">{srv.name}</h4>
+                                                        <h4 className="font-bold text-slate-800 dark:text-white text-sm group-hover:text-[#ED6E3F] transition-colors line-clamp-2">{srv.name}</h4>
                                                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{srv.category}</p>
                                                     </div>
                                                 </div>
-                                                <ArrowRight size={16} className="text-slate-300 dark:text-slate-600 group-hover:text-[#B58863] group-hover:translate-x-1 transition-all" />
+                                                <ArrowRight size={16} className="text-slate-300 dark:text-slate-600 group-hover:text-[#ED6E3F] group-hover:translate-x-1 transition-all" />
                                             </div>
                                         ))}
                                     </div>
@@ -266,19 +266,66 @@ const NewFiling = ({ setActiveTab, initialCategory }) => {
 
             {/* Step 2 & 3 would remain similar but wrapped in the new container style */}
             {step === 2 && selectedService && (
-                // ... (Using similar clean container style as above)
-                <div className="bg-white dark:bg-[#10232A] p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-[#1C3540] max-w-3xl mx-auto">
-                    {/* Simplified for brevity - Imagine premium form here */}
-                    <h2 className="text-2xl font-bold mb-6 text-slate-800 dark:text-white">{selectedService.name}</h2>
-                    {/* ... Form Logic ... */}
-                    <button onClick={() => setStep(1)} className="text-slate-500">Back</button>
+                <div className="bg-white dark:bg-[#043E52] p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-[#1C3540] max-w-2xl mx-auto animate-in zoom-in-95 duration-300">
+                    <div className="text-center mb-8">
+                        <div className="w-16 h-16 bg-[#ED6E3F]/10 text-[#ED6E3F] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <FileText size={32} />
+                        </div>
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Service Agreement</h2>
+                        <p className="text-slate-500 dark:text-slate-400">You are applying for <span className="font-bold text-[#043E52] dark:text-white">{selectedService.name}</span></p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="bg-slate-50 dark:bg-[#1C3540] p-4 rounded-xl text-sm text-slate-600 dark:text-slate-300 max-h-40 overflow-y-auto border border-slate-100 dark:border-[#2A4550]">
+                            <h4 className="font-bold mb-2 text-[#043E52] dark:text-white">Terms & Conditions</h4>
+                            <p className="mb-2">1. <strong>Service Scope:</strong> ShineFiling will provide professional assistance for the selected service. Government fees are subject to change.</p>
+                            <p className="mb-2">2. <strong>Documents:</strong> You agree to provide accurate and authentic documents. ShineFiling is not responsible for rejection due to incorrect data.</p>
+                            <p className="mb-2">3. <strong>Timeline:</strong> Estimated timelines are subject to government processing speeds.</p>
+                            <p className="mb-2">4. <strong>Refund Policy:</strong> Processing fees are non-refundable once the application work has commenced.</p>
+                            <p>5. <strong>Communication:</strong> You agree to receive updates via Email/SMS/WhatsApp regarding your application.</p>
+                        </div>
+
+                        <div className="flex items-start gap-3">
+                            <div className="flex items-center h-5">
+                                <input
+                                    id="terms"
+                                    type="checkbox"
+                                    required
+                                    className="w-4 h-4 text-[#ED6E3F] border-slate-300 rounded focus:ring-[#ED6E3F]"
+                                />
+                            </div>
+                            <label htmlFor="terms" className="text-sm text-slate-600 dark:text-slate-400">
+                                I have read and agree to the <span className="text-[#ED6E3F] font-bold cursor-pointer hover:underline">Terms and Conditions</span> stated above.
+                            </label>
+                        </div>
+
+                        <div className="flex gap-4 pt-4">
+                            <button
+                                type="button"
+                                onClick={() => setStep(1)}
+                                className="flex-1 py-3.5 border border-slate-200 dark:border-[#2A4550] text-slate-600 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-[#1C3540] transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="flex-1 py-3.5 bg-[#043E52] dark:bg-[#ED6E3F] text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+                            >
+                                {loading ? <Loader className="animate-spin" size={20} /> : <>Confirm & Apply <ArrowRight size={18} /></>}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             )}
             {step === 3 && (
-                <div className="text-center py-20 bg-white dark:bg-[#10232A] rounded-3xl shadow-xl border border-slate-100 dark:border-[#1C3540] max-w-2xl mx-auto">
-                    <CheckCircle size={64} className="text-emerald-500 mx-auto mb-6" />
+                <div className="text-center py-20 bg-white dark:bg-[#043E52] rounded-3xl shadow-xl border border-slate-100 dark:border-[#1C3540] max-w-2xl mx-auto animate-in zoom-in-95 duration-500">
+                    <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle size={40} />
+                    </div>
                     <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-4">Application Submitted!</h2>
-                    <button onClick={() => setActiveTab('orders')} className="bg-[#10232A] text-white px-8 py-3 rounded-xl font-bold">Track Status</button>
+                    <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto">Your request for <strong>{selectedService?.name}</strong> has been received. Our team will contact you shortly.</p>
+                    <button onClick={() => setActiveTab('orders')} className="bg-[#043E52] dark:bg-[#ED6E3F] text-white px-8 py-3.5 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all">Track Application Status</button>
                 </div>
             )}
         </div>

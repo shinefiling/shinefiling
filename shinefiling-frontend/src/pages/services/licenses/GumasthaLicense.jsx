@@ -10,7 +10,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
 
     const faqs = [
         { q: "Is Gumastha mandatory in Maharashtra?", a: "Yes, obtaining a Gumastha License (Shop Act) is mandatory for every shop, commercial establishment, and profession in Maharashtra." },
-        { q: "What is Intimation vs Registration?", a: "Establishments with < 10 employees need to file an online Intimation (Form F). Those with ≥ 10 employees need a Registration Certificate." },
+        { q: "What is Intimation vs Registration?", a: "Establishments with < 10 employees need to file an online Intimation (Form F). Those with = 10 employees need a Registration Certificate." },
         { q: "Validity of Gumastha License?", a: "Previously it needed renewal, but now the Intimation Receipt (for < 10 employees) is often valid for a lifetime unless details change." },
         { q: "Documents for bank account?", a: "Gumastha License is the primary proof of business required by banks to open a current account in Maharashtra." },
     ];
@@ -111,7 +111,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Apply Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <BookOpen size={18} /> Learn More
                                 </button>
                             </div>
@@ -129,7 +129,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
                                 <div className="text-center mb-6">
                                     <h3 className="text-navy font-bold text-xl mb-2">Gumastha License</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹1,499</h3>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">?1,499</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ Shop</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
@@ -157,7 +157,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Introduction */}
                     <section>
@@ -205,7 +205,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
                             <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
                                 <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
                                 <h3 className="text-xl font-bold text-white mb-2">Standard</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹1,499</div>
+                                <div className="text-4xl font-black text-white mb-1">?1,499</div>
                                 <p className="text-xs text-gray-400 mb-6">+ Govt Fees (Actuals)</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Application Filing</li>
@@ -218,7 +218,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
                             {/* Premium - Large Establishment */}
                             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
                                 <h3 className="text-xl font-bold text-navy mb-2">Registration (10+ Emp)</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹2,999</div>
+                                <div className="text-4xl font-black text-navy mb-1">?2,999</div>
                                 <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Form B Registration</li>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { User, Lock, Upload, Save, Shield, Mail, Phone, Building } from 'lucide-react';
 import { updateUserProfile, uploadProfilePicture } from '../../../api';
 
@@ -59,7 +59,7 @@ const AdminSettings = () => {
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-[#10232A]">Account Settings</h2>
+            <h2 className="text-2xl font-bold text-[#043E52]">Account Settings</h2>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Profile Card */}
@@ -79,9 +79,9 @@ const AdminSettings = () => {
                             </label>
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold text-[#10232A]">{user.fullName || 'Admin User'}</h3>
+                            <h3 className="text-xl font-bold text-[#043E52]">{user.fullName || 'Admin User'}</h3>
                             <p className="text-gray-500 text-sm">{user.email}</p>
-                            <span className="inline-block mt-2 px-3 py-1 bg-[#B58863]/10 text-[#B58863] text-xs font-bold rounded-full uppercase tracking-wider">
+                            <span className="inline-block mt-2 px-3 py-1 bg-[#ED6E3F]/10 text-[#ED6E3F] text-xs font-bold rounded-full uppercase tracking-wider">
                                 {user.role?.replace('_', ' ')}
                             </span>
                         </div>
@@ -97,25 +97,25 @@ const AdminSettings = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Full Name</label>
-                                <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-[#B58863]/20 transition-all">
+                                <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-[#ED6E3F]/20 transition-all">
                                     <User size={18} className="text-gray-400" />
                                     <input
                                         name="fullName"
                                         value={user.fullName || ''}
                                         onChange={handleChange}
-                                        className="bg-transparent w-full outline-none text-sm font-semibold text-[#10232A]"
+                                        className="bg-transparent w-full outline-none text-sm font-semibold text-[#043E52]"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Mobile Number</label>
-                                <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-[#B58863]/20 transition-all">
+                                <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-[#ED6E3F]/20 transition-all">
                                     <Phone size={18} className="text-gray-400" />
                                     <input
                                         name="mobile"
                                         value={user.mobile || ''}
                                         onChange={handleChange}
-                                        className="bg-transparent w-full outline-none text-sm font-semibold text-[#10232A]"
+                                        className="bg-transparent w-full outline-none text-sm font-semibold text-[#043E52]"
                                     />
                                 </div>
                             </div>
@@ -125,7 +125,7 @@ const AdminSettings = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="px-6 py-3 bg-[#10232A] text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-[#1A3642] transition-all flex items-center gap-2"
+                                className="px-6 py-3 bg-[#043E52] text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-[#1A3642] transition-all flex items-center gap-2"
                             >
                                 <Save size={18} /> {loading ? 'Saving...' : 'Save Changes'}
                             </button>
@@ -135,7 +135,7 @@ const AdminSettings = () => {
 
                 {/* Security Box */}
                 <div className="space-y-6">
-                    <div className="bg-[#10232A] text-white p-6 rounded-2xl shadow-lg relative overflow-hidden group">
+                    <div className="bg-[#043E52] text-white p-6 rounded-2xl shadow-lg relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-4">
@@ -143,12 +143,12 @@ const AdminSettings = () => {
                                 <h4 className="font-bold text-lg">Admin Security</h4>
                             </div>
                             <p className="text-gray-400 text-xs mb-6 leading-relaxed">Ensure your account is protected with a strong password and 2FA enabled.</p>
-                            <button className="w-full py-2.5 bg-[#B58863] text-white rounded-lg text-sm font-bold hover:bg-[#a37a58] transition-colors shadow-lg">Change Password</button>
+                            <button className="w-full py-2.5 bg-[#ED6E3F] text-white rounded-lg text-sm font-bold hover:bg-[#a37a58] transition-colors shadow-lg">Change Password</button>
                         </div>
                     </div>
 
                     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                        <h4 className="font-bold text-[#10232A] mb-4 text-sm uppercase tracking-wider">System Preferences</h4>
+                        <h4 className="font-bold text-[#043E52] mb-4 text-sm uppercase tracking-wider">System Preferences</h4>
                         <div className="space-y-3">
                             <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition">
                                 <span className="text-sm font-semibold text-gray-600">Email Notifications</span>

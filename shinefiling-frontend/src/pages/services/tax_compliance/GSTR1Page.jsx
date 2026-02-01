@@ -140,10 +140,10 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                                 transition={{ delay: 0.6 }}
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     File GSTR-1 Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Filing Guide
                                 </button>
                             </motion.div>
@@ -156,7 +156,7 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
                                 {/* Top Gold Line (Matching other pages) */}
                                 <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
@@ -219,12 +219,12 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    onClick={() => handlePlanSelect('startup')}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
                                 </button>
-                                
+
                                 <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
                                     Compare all plans below
                                 </p>
@@ -256,8 +256,8 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Monthly</h3>
                             <p className="text-slate-500 text-sm mb-6">Pay as you go per month.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹499</span>
-                                <span className="text-slate-400 line-through text-sm">₹999</span>
+                                <span className="text-4xl font-black text-navy">?499</span>
+                                <span className="text-slate-400 line-through text-sm">?999</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -272,7 +272,7 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Monthly
                             </button>
                         </motion.div>
@@ -284,32 +284,32 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Popular
                             </div>
 
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">G S T R1</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹999</span>
-                                <span className="text-gray-500 line-through text-sm">₹2k</span>
+                                <span className="text-5xl font-black text-white">?999</span>
+                                <span className="text-gray-500 line-through text-sm">?2k</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
                                 {["3 Months Filing",
-                                        "IFF Support (QRMP)",
-                                        "Invoice Corrections"].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
-                                    </li>
-                                ))}
+                                    "IFF Support (QRMP)",
+                                    "Invoice Corrections"].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                        </li>
+                                    ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -325,8 +325,8 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Annual</h3>
                             <p className="text-slate-500 text-sm mb-6">Complete yearly peace of mind.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹4,499</span>
-                                <span className="text-slate-400 line-through text-sm">₹11,988</span>
+                                <span className="text-4xl font-black text-navy">?4,499</span>
+                                <span className="text-slate-400 line-through text-sm">?11,988</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -341,7 +341,7 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Annual
                             </button>
                         </motion.div>
@@ -351,7 +351,7 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
 
             {/* DETAILS SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
                             <FileText className="text-bronze" /> What is GSTR-1?
@@ -441,7 +441,7 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                                         <p className="text-sm mb-4 text-gray-600 font-medium italic">Accuracy is mandatory for tax flow.</p>
                                         <ul className="space-y-3 list-disc pl-5 text-sm">
                                             <li><strong>B2B Invoices:</strong> Mandatory invoice-wise reporting including Receiver's GSTIN.</li>
-                                            <li><strong>B2C Large:</strong> Inter-state sales &gt; ₹2.5 Lakhs must be reported invoice-wise.</li>
+                                            <li><strong>B2C Large:</strong> Inter-state sales &gt; ?2.5 Lakhs must be reported invoice-wise.</li>
                                             <li><strong>B2C Others:</strong> Consolidated reporting of sales below the threshold.</li>
                                             <li><strong>Debit/Credit Notes:</strong> Adjustment of sales records for returns or price changes.</li>
                                         </ul>
@@ -452,8 +452,8 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                                         </h3>
                                         <p className="text-sm mb-4 text-gray-600 font-medium italic">Monthly or QRMP Scheme.</p>
                                         <ul className="space-y-3 list-disc pl-5 text-sm">
-                                            <li><strong>Monthly:</strong> For businesses with turnover &gt; ₹5 Crores. Due on 11th of next month.</li>
-                                            <li><strong>Quarterly (QRMP):</strong> For businesses with turnover &lt; ₹5 Crores. Due on 13th of the month following the quarter.</li>
+                                            <li><strong>Monthly:</strong> For businesses with turnover &gt; ?5 Crores. Due on 11th of next month.</li>
+                                            <li><strong>Quarterly (QRMP):</strong> For businesses with turnover &lt; ?5 Crores. Due on 13th of the month following the quarter.</li>
                                             <li><strong>IFF (Invoice Furnishing Facility):</strong> Allows QRMP taxpayers to upload B2B invoices monthly.</li>
                                         </ul>
                                     </div>
@@ -486,7 +486,7 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                         <h2 className="text-3xl font-bold text-navy mb-6">Late Fees & Penalties</h2>
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                             <table className="w-full text-left">
-                                <thead className="bg-[#10232A] text-white">
+                                <thead className="bg-[#043E52] text-white">
                                     <tr>
                                         <th className="p-4 font-semibold text-sm uppercase tracking-wider">Scenario</th>
                                         <th className="p-4 font-semibold text-sm uppercase tracking-wider">Late Fee (Per Day)</th>
@@ -496,12 +496,12 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                                 <tbody className="divide-y divide-gray-100">
                                     <tr className="hover:bg-gray-50 transition">
                                         <td className="p-4 text-navy font-medium">Nil Return (No Sales)</td>
-                                        <td className="p-4 text-gray-600">₹20 (₹10 CGST + ₹10 SGST)</td>
-                                        <td className="p-4 text-gray-600">₹500</td>
+                                        <td className="p-4 text-gray-600">?20 (?10 CGST + ?10 SGST)</td>
+                                        <td className="p-4 text-gray-600">?500</td>
                                     </tr>
                                     <tr className="hover:bg-gray-50 transition">
                                         <td className="p-4 text-navy font-medium">Regular Return (With Sales)</td>
-                                        <td className="p-4 text-gray-600">₹50 (₹25 CGST + ₹25 SGST)</td>
+                                        <td className="p-4 text-gray-600">?50 (?25 CGST + ?25 SGST)</td>
                                         <td className="p-4 text-gray-600">Subject to Turnover</td>
                                     </tr>
                                 </tbody>
@@ -543,7 +543,7 @@ const GSTR1Page = ({ isLoggedIn, onLogout }) => {
                     </section>
 
                     {/* WHY CHOOSE SHINEFILING */}
-                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-16">
+                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-16">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
                         <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling for GSTR-1?</h2>
                         <div className="grid md:grid-cols-2 gap-8 relative z-10">

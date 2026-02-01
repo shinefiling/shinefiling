@@ -12,9 +12,9 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const faqs = [
-        { q: "Who needs GST Registration?", a: "Businesses with turnover > ₹20 Lakhs (Services) or ₹40 Lakhs (Goods), or those selling online (E-commerce) or making inter-state sales." },
+        { q: "Who needs GST Registration?", a: "Businesses with turnover > ?20 Lakhs (Services) or ?40 Lakhs (Goods), or those selling online (E-commerce) or making inter-state sales." },
         { q: "Is a physical office required?", a: "Yes, you need a proof of address (Electricity Bill/NOC). However, it can be a residential address too if you operate from home." },
-        { q: "What is the penalty for not registering?", a: "Penalty can be 100% of the tax due or ₹10,000, whichever is higher, along with potential confiscation of goods." },
+        { q: "What is the penalty for not registering?", a: "Penalty can be 100% of the tax due or ?10,000, whichever is higher, along with potential confiscation of goods." },
         { q: "Can I register voluntarily?", a: "Yes, voluntary registration is allowed and beneficial for claiming Input Tax Credit (ITC)." },
         { q: "Difference between Regular and Composition?", a: "Regular scheme allows ITC claim but requires monthly returns. Composition scheme has lower tax rates but no ITC and cannot make inter-state sales." },
         { q: "Do I need to file returns if I have no sales?", a: "Yes, filing Nil Returns is mandatory to avoid late fees and penalties." },
@@ -126,7 +126,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Register Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn More
                                 </button>
                             </motion.div>
@@ -143,13 +143,13 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 {/* Top Gold Line */}
                                 <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
-                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
+                                <div className="absolute top-3 right-0 bg-[#043E52] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
 
                                 <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">Standard Plan</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹1,499</h3>
-                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">₹3k</span>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">?1,499</h3>
+                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">?3k</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees may apply</p>
                                 </div>
@@ -188,7 +188,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Introduction - Expanded for SEO */}
                     <section>
@@ -200,7 +200,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 <strong>Goods and Services Tax (GST)</strong> is a unified indirect tax system in India that acts as a comprehensive, destination-based tax on the manufacture, sale, and consumption of goods and services.
                             </p>
                             <p>
-                                GST Registration is mandatory for businesses whose aggregate turnover exceeds <strong>₹40 Lakhs (for Goods)</strong> or <strong>₹20 Lakhs (for Services)</strong>. However, for certain categories like <strong>Inter-state Sellers</strong>, <strong>E-commerce Operators</strong> (like Amazon/Flipkart sellers), and <strong>Casual Taxable Persons</strong>, registration is compulsory regardless of turnover.
+                                GST Registration is mandatory for businesses whose aggregate turnover exceeds <strong>?40 Lakhs (for Goods)</strong> or <strong>?20 Lakhs (for Services)</strong>. However, for certain categories like <strong>Inter-state Sellers</strong>, <strong>E-commerce Operators</strong> (like Amazon/Flipkart sellers), and <strong>Casual Taxable Persons</strong>, registration is compulsory regardless of turnover.
                             </p>
                             <p>
                                 Obtaining a GSTIN (GST Identification Number) not only legalizes your business but also allows you to collect tax from customers and claim <strong>Input Tax Credit (ITC)</strong> on your business purchases, maintaining a healthy cash flow.
@@ -247,7 +247,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-100">
                                     {[
-                                        { f: "Turnover Limit", r: "No limit (Mandatory > ₹40L)", c: "Up to ₹1.5 Crores only" },
+                                        { f: "Turnover Limit", r: "No limit (Mandatory > ?40L)", c: "Up to ?1.5 Crores only" },
                                         { f: "Input Tax Credit", r: "Available (Can claim ITC)", c: "Not Available (Cannot claim ITC)" },
                                         { f: "Inter-state Sales", r: "Allowed", c: "Not Allowed (Intra-state only)" },
                                         { f: "Tax Rate", r: "Standard Rates (5%, 12%, 18%, 28%)", c: "Lower Rates (1% Traders, 5% Restaurants, 6% Service)" },
@@ -272,7 +272,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                             <p className="mb-6 text-gray-600">Mandatory for the following entities:</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
                                 {[
-                                    "Turnover > ₹40L (Goods)", "Turnover > ₹20L (Services)",
+                                    "Turnover > ?40L (Goods)", "Turnover > ?20L (Services)",
                                     "Inter-state Suppliers", "Casual Taxable Persons",
                                     "E-commerce Sellers", "Non-Resident Taxable Persons",
                                     "TDS/TCS Deductors", "Input Service Distributors"
@@ -336,8 +336,8 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
                                 <p className="text-slate-500 text-sm mb-6">Essential for small businesses.</p>
                                 <div className="flex items-baseline gap-1 mb-6">
-                                    <span className="text-4xl font-black text-navy">₹999</span>
-                                    <span className="text-slate-400 line-through text-sm">₹2000</span>
+                                    <span className="text-4xl font-black text-navy">?999</span>
+                                    <span className="text-slate-400 line-through text-sm">?2000</span>
                                 </div>
 
                                 <ul className="space-y-4 mb-8 flex-1">
@@ -356,20 +356,20 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: 0.2 }}
-                                className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                                className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                             >
                                 {/* Top Gold Line */}
                                 <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                                <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                                <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                     Most Popular
                                 </div>
 
                                 <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
                                 <p className="text-gray-400 text-sm mb-6">Complete expert assisted registration.</p>
                                 <div className="flex items-baseline gap-1 mb-6">
-                                    <span className="text-5xl font-black text-white">₹1,499</span>
-                                    <span className="text-gray-500 line-through text-sm">₹3,000</span>
+                                    <span className="text-5xl font-black text-white">?1,499</span>
+                                    <span className="text-gray-500 line-through text-sm">?3,000</span>
                                 </div>
 
                                 <ul className="space-y-4 mb-8 flex-1">
@@ -401,8 +401,8 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 <h3 className="text-xl font-bold text-navy mb-2">Premium</h3>
                                 <p className="text-slate-500 text-sm mb-6">Registration + 3 Months Compliance.</p>
                                 <div className="flex items-baseline gap-1 mb-6">
-                                    <span className="text-4xl font-black text-navy">₹2,999</span>
-                                    <span className="text-slate-400 line-through text-sm">₹5,000</span>
+                                    <span className="text-4xl font-black text-navy">?2,999</span>
+                                    <span className="text-slate-400 line-through text-sm">?5,000</span>
                                 </div>
 
                                 <ul className="space-y-4 mb-8 flex-1">
@@ -460,7 +460,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
 
 
                     {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
-                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-16">
+                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-16">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
                         <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling?</h2>
                         <div className="grid md:grid-cols-2 gap-8 relative z-10">
@@ -506,7 +506,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                             <Building size={20} className="text-bronze" /> Who Must Register?
                                         </h3>
                                         <ul className="space-y-3 list-disc pl-5">
-                                            <li><strong>Threshold Limit:</strong> Service providers with turnover &gt; ₹20 Lakhs and Goods suppliers with turnover &gt; ₹40 Lakhs.</li>
+                                            <li><strong>Threshold Limit:</strong> Service providers with turnover &gt; ?20 Lakhs and Goods suppliers with turnover &gt; ?40 Lakhs.</li>
                                             <li><strong>Inter-state Trade:</strong> Businesses making sales across different states.</li>
                                             <li><strong>E-commerce Sellers:</strong> Anyone selling via platforms like Amazon, Flipkart, or Myntra.</li>
                                             <li><strong>Casual Taxable Persons:</strong> Those who conduct business occasionally in a territory where they have no fixed place.</li>
@@ -536,7 +536,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                         </div>
                                         <div className="p-4 border border-gray-100 rounded-xl hover:shadow-md transition">
                                             <h4 className="font-bold text-bronze mb-2">Composition Scheme</h4>
-                                            <p className="text-sm">For small businesses with turnover up to ₹1.5 Cr. Lower tax rates but no ITC benefits.</p>
+                                            <p className="text-sm">For small businesses with turnover up to ?1.5 Cr. Lower tax rates but no ITC benefits.</p>
                                         </div>
                                         <div className="p-4 border border-gray-100 rounded-xl hover:shadow-md transition">
                                             <h4 className="font-bold text-bronze mb-2">Non-Resident Taxable</h4>
@@ -642,7 +642,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
 
                             <div className="mt-8 bg-beige/10 p-4 rounded-xl border border-blue-100">
                                 <p className="text-xs text-blue-800 font-medium leading-relaxed flex gap-2">
-                                    <span className="text-lg">💡</span>
+                                    <span className="text-lg">??</span>
                                     <span><strong>Pro Tip:</strong> The Electricity Bill must be recent (less than 2 months old) and clearly show the owner's name.</span>
                                 </p>
                             </div>

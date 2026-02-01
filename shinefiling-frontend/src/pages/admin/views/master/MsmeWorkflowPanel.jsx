@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, AlertTriangle, Globe, FileText, Download, Play, RefreshCw, Smartphone, ShieldCheck, UserCheck } from 'lucide-react';
 
@@ -92,9 +92,9 @@ const MsmeWorkflowPanel = ({ order, onUpdateStatus, onClose }) => {
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
-            <div className="p-4 bg-gradient-to-r from-[#10232A] to-[#3D4D55] border-b border-[#10232A]/20 flex justify-between items-center">
+            <div className="p-4 bg-gradient-to-r from-[#043E52] to-[#3D4D55] border-b border-[#043E52]/20 flex justify-between items-center">
                 <h3 className="font-bold text-white flex items-center gap-2">
-                    <ShieldCheck size={18} className="text-[#B58863]" /> MSME / Udyam Super Admin Console
+                    <ShieldCheck size={18} className="text-[#ED6E3F]" /> MSME / Udyam Super Admin Console
                 </h3>
                 <span className="text-[10px] font-bold bg-white/10 px-2 py-1 rounded text-white/80">ORD-{order.id}</span>
             </div>
@@ -109,7 +109,7 @@ const MsmeWorkflowPanel = ({ order, onUpdateStatus, onClose }) => {
                             <button
                                 onClick={handleVerifyParams}
                                 disabled={loading}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-[#FDFBF7] text-[#B58863] hover:bg-white border border-[#B58863]/20 rounded-lg text-xs font-bold transition shadow-sm"
+                                className="flex items-center gap-2 px-3 py-1.5 bg-[#FDFBF7] text-[#ED6E3F] hover:bg-white border border-[#ED6E3F]/20 rounded-lg text-xs font-bold transition shadow-sm"
                             >
                                 {loading ? <RefreshCw className="animate-spin" size={14} /> : <Play size={14} />} Run Auto-Verify
                             </button>
@@ -143,7 +143,7 @@ const MsmeWorkflowPanel = ({ order, onUpdateStatus, onClose }) => {
                             <button
                                 onClick={handleUdyamSubmission}
                                 disabled={loading || verificationStatus.aadhaar !== 'VERIFIED'}
-                                className="flex items-center gap-2 px-4 py-2 bg-[#10232A] hover:bg-[#B58863] text-white rounded-lg text-xs font-bold transition disabled:opacity-50 shadow-lg shadow-[#10232A]/20"
+                                className="flex items-center gap-2 px-4 py-2 bg-[#043E52] hover:bg-[#ED6E3F] text-white rounded-lg text-xs font-bold transition disabled:opacity-50 shadow-lg shadow-[#043E52]/20"
                             >
                                 <Globe size={14} /> Sync with Udyam Portal
                             </button>

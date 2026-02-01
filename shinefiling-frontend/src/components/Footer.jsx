@@ -1,18 +1,27 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+﻿import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Instagram, Twitter, Linkedin, Facebook, MapPin, Phone, Mail, ChevronRight } from 'lucide-react';
 import { SERVICE_DATA } from '../data/services';
+import AuthContext from '../context/AuthContext';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
+    const navigate = useNavigate();
+    const auth = useContext(AuthContext);
+    // Fallback if auth is null (should not verify happen if wrapped in Provider)
+    const isLoggedIn = auth ? auth.isLoggedIn : false;
 
-    // Helper to get slug (Duplicate of Navbar logic to ensure independence)
+    if (!auth) {
+        console.warn('Footer: AuthContext is null. Ensure Footer is wrapped in AuthProvider.');
+    }
+
+    // Helper to get slug
     const getServiceSlug = (name) => {
         const normalize = (str) =>
             str.toLowerCase().replace(/[^a-z0-9]/g, '');
 
         const map = {
-            "privatelimitedcompanyregistration": "business-registration/private-limited-company", // Corrected manual mapping for safety
+            "privatelimitedcompanyregistration": "business-registration/private-limited-company",
             "privatecompany": "business-registration/private-limited-company",
             "onepersoncompanyopcregistration": "business-registration/one-person-company",
             "limitedliabilitypartnershipllpregistration": "business-registration/llp-registration",
@@ -95,8 +104,6 @@ const Footer = () => {
             "esiregistration": "labour/esi-registration",
             "esifiling": "labour/esi-filing",
             "esireturnfiling": "labour/esi-filing",
-            // "professionaltaxregreturn": "labour/professional-tax-registration", // Removed duplicate
-            // "professionaltaxregistration": "labour/professional-tax-registration", 
             "professionaltaxfiling": "labour/professional-tax-filing",
             "labourwelfarefundfiling": "labour/labour-welfare-fund",
             "payrollcompliance": "labour/payroll-compliance",
@@ -147,7 +154,6 @@ const Footer = () => {
             "cashflowstatement": "financial-services/cash-flow-compliance",
         };
         const key = normalize(name);
-        // Fallback for direct matches if exact key isn't found but mapped vaguely
         return map[key] || "services/apply";
     };
 
@@ -172,36 +178,66 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="bg-navy pt-20 pb-10 text-white border-t border-navy-light font-sans">
-            <div className="max-w-[1600px] mx-auto px-6 grid grid-cols-1 xl:grid-cols-12 gap-10 xl:gap-8 text-sm mb-16">
+        <footer className="bg-white pt-20 pb-10 text-slate-900 font-sans relative overflow-hidden border-t border-slate-100">
+            {/* Subtle Gradient Overlay */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ED6E3F]/20 to-transparent"></div>
 
-                {/* BRAND COLUMN (Span 2/12) */}
-                <div className="xl:col-span-2 space-y-6">
-                    <Link to="/" className="flex items-center gap-0.5 mb-6 group">
-                        <img src="/logo.png" alt="ShineFiling" className="h-10 w-auto object-contain" />
-                        <span className="text-2xl font-black tracking-tighter text-white leading-none mt-1">
-                            hine<span className="text-[#B58863]">Filing</span>
-                        </span>
+            <div className="max-w-[1600px] mx-auto px-6 grid grid-cols-1 xl:grid-cols-12 gap-12 xl:gap-8 text-sm mb-20">
+
+                {/* BRAND COLUMN */}
+                <div className="xl:col-span-3 space-y-8">
+                    <Link to="/" className="inline-block group">
+                        <img
+                            src="/logo.png"
+                            alt="ShineFiling"
+                            className="h-16 w-auto object-contain hover:opacity-90 transition-opacity"
+                        />
                     </Link>
-                    <p className="text-slate-400 leading-relaxed mb-6 text-xs font-light">
-                        India's most trusted AI-Powered Legal & Financial Compliance Platform.
-                    </p>
-                    <div className="flex gap-3 text-slate-400">
+
+                    <div className="space-y-4">
+                        <p className="text-slate-500 leading-relaxed text-sm font-light max-w-xs">
+                            Premium business registration, expert taxation, and comprehensive legal compliance. Simplifying the complexities of law so you can focus on building your empire.
+                        </p>
+
+                        <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-3 text-slate-600 group cursor-pointer hover:text-[#043E52] transition-colors">
+                                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-[#ED6E3F]/10 group-hover:text-[#ED6E3F] transition-all">
+                                    <Mail size={14} />
+                                </div>
+                                <span className="text-xs">support@shinefiling.com</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-slate-600 group cursor-pointer hover:text-[#043E52] transition-colors">
+                                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-[#ED6E3F]/10 group-hover:text-[#ED6E3F] transition-all">
+                                    <Phone size={14} />
+                                </div>
+                                <span className="text-xs">+91 98765 43210</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-3">
                         {[Instagram, Twitter, Linkedin, Facebook].map((Icon, i) => (
-                            <a key={i} href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-bronze hover:text-white transition-all">
-                                <Icon size={14} />
+                            <a
+                                key={i}
+                                href="#"
+                                className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-[#ED6E3F] hover:text-white hover:-translate-y-1 transition-all duration-300 shadow-sm"
+                            >
+                                <Icon size={18} />
                             </a>
                         ))}
                     </div>
                 </div>
 
-                {/* DYNAMIC COLUMNS (Span 10/12) */}
-                <div className="xl:col-span-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {/* DYNAMIC COLUMNS */}
+                <div className="xl:col-span-9 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
                     {columns.map((col, idx) => (
-                        <div key={idx} className="flex flex-col gap-4">
-                            <h4 className="text-bronze font-bold tracking-widest uppercase text-xs border-b border-white/10 pb-2 mb-2">{col.title}</h4>
-                            <ul className="space-y-2 text-slate-400 font-light text-xs">
-                                {col.items.slice(0, 15).map((item, i) => { // Limit to 15 per column to keep it "neat"
+                        <div key={idx} className="flex flex-col gap-6">
+                            <h4 className="text-[#043E52] font-bold tracking-widest uppercase text-[11px] flex items-center gap-2 group">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#ED6E3F]"></span>
+                                {col.title}
+                            </h4>
+                            <ul className="space-y-3.5">
+                                {col.items.slice(0, 15).map((item, i) => {
                                     const slug = getServiceSlug(item);
                                     const linkTo = slug.startsWith('http') ? slug : `/services/${slug}`;
                                     return (
@@ -212,9 +248,15 @@ const Footer = () => {
                                 })}
                                 {col.items.length > 15 && (
                                     <li>
-                                        <Link to="/services" className="text-bronze hover:underline text-xs font-bold italic flex items-center gap-1">
-                                            View {col.items.length - 15} more <ChevronRight size={10} />
-                                        </Link>
+                                        <button
+                                            onClick={() => {
+                                                if (isLoggedIn) navigate('/dashboard/new-filings');
+                                                else navigate('/?login=true');
+                                            }}
+                                            className="text-[#ED6E3F] hover:text-[#043E52] text-xs font-bold flex items-center gap-1.5 transition-colors group"
+                                        >
+                                            View {col.items.length - 15} more <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                                        </button>
                                     </li>
                                 )}
                             </ul>
@@ -224,12 +266,26 @@ const Footer = () => {
             </div>
 
             {/* Bottom Bar */}
-            <div className="max-w-[1600px] mx-auto px-6 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500 font-medium">
-                <p>&copy; {currentYear} ShineFiling India Private Limited. All rights reserved.</p>
-                <div className="flex gap-6 mt-4 md:mt-0">
-                    <Link to="/terms" className="hover:text-bronze transition-colors">Terms of Service</Link>
-                    <Link to="/privacy" className="hover:text-bronze transition-colors">Privacy Policy</Link>
-                    <Link to="/refund" className="hover:text-bronze transition-colors">Refund Policy</Link>
+            <div className="max-w-[1600px] mx-auto px-6">
+                <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-slate-500 font-medium">
+                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8">
+                        <p>&copy; {currentYear} ShineFiling Private Limited.</p>
+                        <div className="flex gap-6">
+                            <Link to="/terms" className="hover:text-[#ED6E3F] transition-colors">Terms</Link>
+                            <Link to="/privacy" className="hover:text-[#ED6E3F] transition-colors">Privacy</Link>
+                            <Link to="/refund" className="hover:text-[#ED6E3F] transition-colors">Refunds</Link>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 py-2 px-4 rounded-full bg-slate-50 border border-slate-100">
+                        <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Awarded Compliance Partner</p>
+                        <div className="flex gap-3 opacity-30 grayscale">
+                            {/* Placeholder for payment icons */}
+                            <div className="w-6 h-4 bg-slate-400 rounded-sm"></div>
+                            <div className="w-6 h-4 bg-slate-400 rounded-sm"></div>
+                            <div className="w-6 h-4 bg-slate-400 rounded-sm"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </footer>
@@ -237,9 +293,9 @@ const Footer = () => {
 };
 
 const FooterLink = ({ to, label }) => (
-    <Link to={to} className="hover:text-white transition-colors flex items-start gap-2 group leading-tight">
-        <span className="w-1 h-1 rounded-full bg-bronze mt-1.5 opacity-50 group-hover:opacity-100 transition-all flex-shrink-0"></span>
-        <span className="group-hover:translate-x-0.5 transition-transform duration-200">{label}</span>
+    <Link to={to} className="text-slate-500 hover:text-[#043E52] transition-all text-[13px] font-medium flex items-center group leading-snug">
+        <span className="w-0 group-hover:w-2 h-0.5 bg-[#ED6E3F] mr-0 group-hover:mr-2 transition-all duration-300"></span>
+        <span className="group-hover:translate-x-0.5 transition-transform duration-300">{label}</span>
     </Link>
 );
 

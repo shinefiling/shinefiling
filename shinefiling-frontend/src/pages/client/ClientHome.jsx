@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
     FileText, CheckCircle, AlertCircle,
-    TrendingUp, ArrowRight, Download, MoreHorizontal, Activity, Star, Clock, Loader2, Headset
+    TrendingUp, ArrowRight, Download, MoreHorizontal, Activity, Star, Clock, Loader2, Headset, Folder
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getUserApplications } from '../../api';
 
 const ClientHome = ({ setActiveTab }) => {
     const [stats, setStats] = useState([
-        { label: 'Total Filings', value: '0', icon: FileText, bg: 'bg-[#10232A]', text: 'text-white', subtext: 'text-slate-400', isPrimary: true },
-        { label: 'In Progress', value: '0', icon: Activity, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
-        { label: 'Completed', value: '0', icon: CheckCircle, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
-        { label: 'Actions Needed', value: '0', icon: AlertCircle, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' }
+        { label: 'Total Filings', value: '0', icon: FileText, bg: 'bg-[#015A62]', text: 'text-white', subtext: 'text-slate-400', isPrimary: true },
+        { label: 'In Progress', value: '0', icon: Activity, bg: 'bg-white dark:bg-[#043E52]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
+        { label: 'Completed', value: '0', icon: CheckCircle, bg: 'bg-white dark:bg-[#043E52]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
+        { label: 'Document Wallet', value: '0', icon: Folder, bg: 'bg-white dark:bg-[#043E52]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' }
     ]);
     const [recentServices, setRecentServices] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -30,13 +30,13 @@ const ClientHome = ({ setActiveTab }) => {
                     const total = applications.length;
                     const inProgress = applications.filter(a => !['Completed', 'Action Required', 'Draft'].includes(a.status)).length;
                     const completed = applications.filter(a => a.status === 'Completed').length;
-                    const actionNeeded = applications.filter(a => a.status === 'Action Required').length;
+                    const walletDocCount = 0; // Placeholder for now
 
                     setStats([
-                        { label: 'Total Filings', value: total.toString(), icon: FileText, bg: 'bg-[#10232A]', text: 'text-white', subtext: 'text-slate-400', isPrimary: true },
-                        { label: 'In Progress', value: inProgress.toString(), icon: Activity, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
-                        { label: 'Completed', value: completed.toString(), icon: CheckCircle, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
-                        { label: 'Actions Needed', value: actionNeeded.toString(), icon: AlertCircle, bg: 'bg-white dark:bg-[#10232A]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' }
+                        { label: 'Total Filings', value: total.toString(), icon: FileText, bg: 'bg-[#015A62]', text: 'text-white', subtext: 'text-slate-400', isPrimary: true },
+                        { label: 'In Progress', value: inProgress.toString(), icon: Activity, bg: 'bg-white dark:bg-[#043E52]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
+                        { label: 'Completed', value: completed.toString(), icon: CheckCircle, bg: 'bg-white dark:bg-[#043E52]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' },
+                        { label: 'Document Wallet', value: walletDocCount.toString(), icon: Folder, bg: 'bg-white dark:bg-[#043E52]', text: 'text-slate-800 dark:text-white', subtext: 'text-slate-500' }
                     ]);
 
                     // Update Recent Services (Top 5)
@@ -121,7 +121,7 @@ const ClientHome = ({ setActiveTab }) => {
                     <p className="text-slate-500 dark:text-slate-400 mt-1">Welcome back! Here's what's happening with your business today.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button onClick={() => setActiveTab('new-filing')} className="px-5 py-2.5 bg-[#B58863] hover:bg-[#A57753] text-white font-bold rounded-xl shadow-lg shadow-[#B58863]/20 transition-all flex items-center gap-2">
+                    <button onClick={() => setActiveTab('new-filing')} className="px-5 py-2.5 bg-[#ED6E3F] hover:bg-[#A57753] text-white font-bold rounded-xl shadow-lg shadow-[#ED6E3F]/20 transition-all flex items-center gap-2">
                         + New Service
                     </button>
                 </div>
@@ -130,9 +130,9 @@ const ClientHome = ({ setActiveTab }) => {
             {/* Top Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat, i) => (
-                    <div key={i} className={`${stat.bg} ${stat.isPrimary ? 'shadow-xl shadow-[#10232A]/20' : 'shadow-sm border border-slate-100 dark:border-[#1C3540]'} rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden group hover:scale-[1.02] transition-all duration-300`}>
+                    <div key={i} className={`${stat.bg} ${stat.isPrimary ? 'shadow-xl shadow-[#015A62]/20' : 'shadow-sm border border-slate-100 dark:border-[#1C3540]'} rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden group hover:scale-[1.02] transition-all duration-300`}>
                         {stat.isPrimary && (
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#B58863]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#ED6E3F]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                         )}
                         <div className="flex justify-between items-start mb-4 relative z-10">
                             <div>
@@ -145,7 +145,7 @@ const ClientHome = ({ setActiveTab }) => {
                         </div>
                         {stat.isPrimary ? (
                             <div className="relative z-10 mt-2">
-                                <span className="text-xs font-medium text-[#B58863] bg-white px-2 py-1 rounded-md inline-block">Track Status</span>
+                                <span className="text-xs font-medium text-[#ED6E3F] bg-white px-2 py-1 rounded-md inline-block">Track Status</span>
                             </div>
                         ) : (
                             <div className="flex items-center gap-2 text-xs font-bold text-emerald-500 mt-2">
@@ -160,7 +160,7 @@ const ClientHome = ({ setActiveTab }) => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {/* Analytics Chart */}
-                <div className="lg:col-span-2 bg-white dark:bg-[#10232A] rounded-2xl p-8 shadow-sm border border-slate-100 dark:border-[#1C3540]">
+                <div className="lg:col-span-2 bg-white dark:bg-[#043E52] rounded-2xl p-8 shadow-sm border border-slate-100 dark:border-[#1C3540]">
                     <div className="flex justify-between items-center mb-8">
                         <div>
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white">Activity Overview</h3>
@@ -179,20 +179,20 @@ const ClientHome = ({ setActiveTab }) => {
                                         initial={{ height: 0 }}
                                         animate={{ height: `${h}%` }}
                                         transition={{ duration: 1, delay: i * 0.1 }}
-                                        className={`absolute bottom-0 w-full rounded-t-xl ${i % 2 === 0 ? 'bg-[#10232A] dark:bg-white' : 'bg-[#B58863]'}`}
+                                        className={`absolute bottom-0 w-full rounded-t-xl ${i % 2 === 0 ? 'bg-[#015A62] dark:bg-white' : 'bg-[#ED6E3F]'}`}
                                     ></motion.div>
                                 </div>
-                                <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#B58863] transition-colors">Week {i + 1}</span>
+                                <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#ED6E3F] transition-colors">Week {i + 1}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Recent Services List */}
-                <div className="bg-white dark:bg-[#10232A] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-[#1C3540] flex flex-col">
+                <div className="bg-white dark:bg-[#043E52] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-[#1C3540] flex flex-col">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="font-bold text-slate-800 dark:text-white">Recent Services</h3>
-                        <button onClick={() => setActiveTab('orders')} className="text-xs font-bold text-[#B58863] hover:underline">View All</button>
+                        <button onClick={() => setActiveTab('orders')} className="text-xs font-bold text-[#ED6E3F] hover:underline">View All</button>
                     </div>
                     <div className="flex-1 space-y-3 overflow-y-auto no-scrollbar max-h-[300px]">
                         {loading ? (
@@ -200,7 +200,7 @@ const ClientHome = ({ setActiveTab }) => {
                         ) : recentServices.length > 0 ? (
                             recentServices.map((item, i) => (
                                 <div key={i} className="flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-[#1C3540] rounded-xl transition cursor-pointer group border border-transparent hover:border-slate-100 dark:border-[#2A4550]">
-                                    <div className="w-10 h-10 bg-slate-100 dark:bg-[#0D1C22] rounded-lg flex items-center justify-center text-lg shadow-sm group-hover:bg-white dark:group-hover:bg-[#10232A] transition-colors">
+                                    <div className="w-10 h-10 bg-slate-100 dark:bg-[#0D1C22] rounded-lg flex items-center justify-center text-lg shadow-sm group-hover:bg-white dark:group-hover:bg-[#043E52] transition-colors">
                                         {item.icon}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -216,7 +216,19 @@ const ClientHome = ({ setActiveTab }) => {
                                 </div>
                             ))
                         ) : (
-                            <div className="text-center py-8 text-slate-400 text-xs">No recent activity</div>
+                            <div className="text-center py-10 flex flex-col items-center">
+                                <div className="w-16 h-16 bg-[#ED6E3F]/10 rounded-full flex items-center justify-center text-[#ED6E3F] mb-4">
+                                    <Star size={32} />
+                                </div>
+                                <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-2">Welcome to ShineFiling!</h4>
+                                <p className="text-xs text-slate-500 mb-6 max-w-xs leading-relaxed">You haven't applied for any services yet. Start your journey by registering your business or filing taxes.</p>
+                                <button
+                                    onClick={() => setActiveTab('new-filing')}
+                                    className="px-6 py-2.5 bg-[#015A62] dark:bg-[#ED6E3F] text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all text-xs"
+                                >
+                                    Start New Filing
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -226,11 +238,11 @@ const ClientHome = ({ setActiveTab }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {/* Profile Health (Horizontal Layout) */}
-                <div className="bg-white dark:bg-[#10232A] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-[#1C3540] flex items-center justify-between relative overflow-hidden">
+                <div className="bg-white dark:bg-[#043E52] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-[#1C3540] flex items-center justify-between relative overflow-hidden">
                     <div className="relative z-10 max-w-[60%]">
                         <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-2">Profile Health</h3>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">Your profile is 85% complete. Add a secondary contact number to reach 100%.</p>
-                        <button onClick={() => setActiveTab('profile')} className="text-xs font-bold text-white bg-[#10232A] dark:bg-[#B58863] px-4 py-2 rounded-lg hover:opacity-90 transition">Complete Now</button>
+                        <button onClick={() => setActiveTab('profile')} className="text-xs font-bold text-white bg-[#015A62] dark:bg-[#ED6E3F] px-4 py-2 rounded-lg hover:opacity-90 transition">Complete Now</button>
                     </div>
 
                     <div className="relative">
@@ -252,14 +264,14 @@ const ClientHome = ({ setActiveTab }) => {
                                 }}
                                 transition={{ duration: 1.5, ease: "easeOut" }}
                                 cx="64" cy="64" r="54"
-                                className="stroke-[#B58863]"
+                                className="stroke-[#ED6E3F]"
                                 strokeWidth="8"
                                 fill="transparent"
                                 strokeLinecap="round"
                             />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-2xl font-bold text-[#10232A] dark:text-white">{(() => {
+                            <span className="text-2xl font-bold text-[#015A62] dark:text-white">{(() => {
                                 const u = JSON.parse(localStorage.getItem('user') || '{}');
                                 let score = 0;
                                 if (u.fullName) score += 20;
@@ -274,15 +286,15 @@ const ClientHome = ({ setActiveTab }) => {
                 </div>
 
                 {/* Premium Support / Promo */}
-                <div className="bg-[#10232A] rounded-2xl p-8 text-white relative overflow-hidden shadow-lg group cursor-pointer">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#B58863]/30 rounded-full blur-[60px] translate-x-1/3 -translate-y-1/3"></div>
+                <div className="bg-[#015A62] rounded-2xl p-8 text-white relative overflow-hidden shadow-lg group cursor-pointer">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#ED6E3F]/30 rounded-full blur-[60px] translate-x-1/3 -translate-y-1/3"></div>
 
                     <div className="relative z-10 flex flex-col h-full justify-between">
                         <div className="flex justify-between items-start">
                             <div>
                                 <div className="flex items-center gap-2 mb-2">
-                                    <Star size={16} className="text-[#B58863] fill-[#B58863]" />
-                                    <span className="text-[#B58863] text-xs font-bold uppercase tracking-wider">Premium Plan</span>
+                                    <Star size={16} className="text-[#ED6E3F] fill-[#ED6E3F]" />
+                                    <span className="text-[#ED6E3F] text-xs font-bold uppercase tracking-wider">Premium Plan</span>
                                 </div>
                                 <h3 className="text-2xl font-bold">Priority Support</h3>
                             </div>
@@ -293,7 +305,7 @@ const ClientHome = ({ setActiveTab }) => {
 
                         <div className="mt-6 flex items-center justify-between">
                             <p className="text-white/60 text-xs max-w-[70%]">Get your queries resolved instantly with our dedicated relationship managers.</p>
-                            <button className="bg-[#B58863] text-white p-2 rounded-lg hover:bg-[#A57753] transition shadow-lg">
+                            <button className="bg-[#ED6E3F] text-white p-2 rounded-lg hover:bg-[#A57753] transition shadow-lg">
                                 <ArrowRight size={20} />
                             </button>
                         </div>
@@ -301,19 +313,41 @@ const ClientHome = ({ setActiveTab }) => {
                 </div>
             </div>
 
-            {/* Mobile App Banner - Small */}
-            <div className="bg-gradient-to-r from-[#10232A] to-[#2A4550] rounded-2xl p-1 relative overflow-hidden">
-                <div className="bg-[#0D1C22] rounded-xl p-4 flex items-center justify-between relative z-10">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-[#B58863]/20 rounded-xl text-[#B58863]">
-                            <Download size={20} />
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-white text-sm">Download Mobile App</h4>
-                            <p className="text-xs text-white/50">Manage your business on the go.</p>
-                        </div>
+            {/* Digital Document Wallet Section */}
+            <div>
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 className="text-xl font-bold text-slate-800 dark:text-white">Digital Document Wallet</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Securely store and access your essential documents.</p>
                     </div>
-                    <button className="text-xs font-bold text-white bg-[#B58863] px-3 py-1.5 rounded-lg hover:bg-[#A57753] transition">Get App</button>
+                    <button className="text-[#ED6E3F] text-sm font-bold hover:underline">View All</button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Identity Card Component */}
+                    {[
+                        { title: 'Aadhaar Card', sub: 'Unique Identification Authority', color: 'bg-red-50 text-red-600', border: 'border-red-100', icon: 'Fingerprint' },
+                        { title: 'PAN Card', sub: 'Income Tax Department', color: 'bg-blue-50 text-blue-600', border: 'border-blue-100', icon: 'CreditCard' },
+                        { title: 'Driving License', sub: 'Ministry of Road Transport', color: 'bg-green-50 text-green-600', border: 'border-green-100', icon: 'Car' },
+                        { title: 'Voter ID', sub: 'Election Commission of India', color: 'bg-orange-50 text-orange-600', border: 'border-orange-100', icon: 'Vote' },
+                    ].map((item, idx) => (
+                        <div key={idx} className={`bg-white dark:bg-[#043E52] p-5 rounded-2xl border ${item.border} dark:border-[#2A4550] shadow-sm hover:shadow-md transition-all cursor-pointer group`}>
+                            <div className="flex justify-between items-start mb-4">
+                                <div className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center`}>
+                                    {/* Simple Text Icon Fallback since generic icon logic is complex here without imports */}
+                                    {idx === 0 ? <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" /></svg> :
+                                        idx === 1 ? <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg> :
+                                            idx === 2 ? <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg> :
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                                </div>
+                                <span className="bg-gray-100 dark:bg-black/20 text-gray-500 text-[10px] font-bold px-2 py-1 rounded">ADD</span>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-slate-800 dark:text-white">{item.title}</h4>
+                                <p className="text-[10px] text-slate-400 font-medium group-hover:text-[#ED6E3F] transition-colors">{item.sub}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 

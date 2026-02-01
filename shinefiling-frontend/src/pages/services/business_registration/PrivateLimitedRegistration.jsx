@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
@@ -63,6 +63,7 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
 
     const [uploadedFiles, setUploadedFiles] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [automationPayload, setAutomationPayload] = useState(null);
     const [errors, setErrors] = useState({});
@@ -513,7 +514,29 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
                             <p className="text-[10px] text-gray-400 text-right">+ Govt Fees (Later)</p>
                         </div>
 
-                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
+                        {/* Terms & Conditions Checkbox */}
+                        <div className="max-w-md mx-auto mb-6 text-left bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <div className="flex items-start gap-3">
+                                <div className="flex items-center h-5">
+                                    <input
+                                        id="terms_pvt"
+                                        type="checkbox"
+                                        checked={isTermsAccepted}
+                                        onChange={(e) => setIsTermsAccepted(e.target.checked)}
+                                        className="w-4 h-4 text-bronze border-gray-300 rounded focus:ring-bronze"
+                                    />
+                                </div>
+                                <label htmlFor="terms_pvt" className="text-sm text-gray-600">
+                                    I agree to the <span className="font-bold text-navy cursor-pointer hover:underline">Terms & Conditions</span>, <span className="font-bold text-navy cursor-pointer hover:underline">Privacy Policy</span>, and Refund Policy. I confirm that all documents provided are authentic.
+                                </label>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={submitApplication}
+                            disabled={isSubmitting || !isTermsAccepted}
+                            className={`w-full py-4 rounded-xl font-bold shadow-lg transition flex items-center justify-center gap-2 ${isSubmitting || !isTermsAccepted ? 'bg-gray-400 cursor-not-allowed opacity-70' : 'bg-green-600 hover:bg-green-700 hover:shadow-xl text-white'}`}
+                        >
                             {isSubmitting ? 'Processing Payment...' : 'Pay Now & Submit Application'}
                             {!isSubmitting && <ArrowRight size={18} />}
                         </button>

@@ -7,16 +7,23 @@ import NidhiRegistration from './NidhiRegistration';
 
 const NidhiPage = ({ isLoggedIn, onLogout }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState('basic');
+    const [selectedPlan, setSelectedPlan] = useState('startup');
     const navigate = useNavigate();
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
+
+    const scrollToPlans = () => {
+        const section = document.getElementById('pricing-section');
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     const faqs = [
         { q: "What is a Nidhi Company?", a: "A Nidhi Company is a type of Non-Banking Financial Company (NBFC) that works on the concept of 'Paraspar Sahayata' (Mutual Benefit). It can lend to and borrow from its members only." },
         { q: "Do we need RBI license?", a: "No, Nidhi Companies are exempted from the core provisions of the RBI Act and do not require an RBI license to operate." },
         { q: "Who can become a member?", a: "Any individual can become a member. A Nidhi Company cannot admit a body corporate or trust as a member." },
-        { q: "What is the minimum capital?", a: "The minimum paid-up equity capital for a Nidhi Company is ₹5 Lakhs, but to get Nidhi Status (NDH-4), Net Owned Funds of ₹10 Lakhs (or 20L depending on rules) is required within a year." },
+        { q: "What is the minimum capital?", a: "The minimum paid-up equity capital for a Nidhi Company is ?5 Lakhs, but to get Nidhi Status (NDH-4), Net Owned Funds of ?10 Lakhs (or 20L depending on rules) is required within a year." },
         { q: "Can we open branches?", a: "Yes, you can open up to 3 branches within the district after making profits for 3 consecutive years." },
         { q: "Can we accept deposits from the public?", a: "No, you can strictly accept deposits only from your registered members." }
     ];
@@ -122,10 +129,10 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
                                 transition={{ delay: 0.6 }}
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={scrollToPlans} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Start Nidhi Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn Rules
                                 </button>
                             </motion.div>
@@ -138,7 +145,7 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
                                 {/* Top Gold Line (Matching other pages) */}
                                 <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
@@ -201,12 +208,12 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    onClick={scrollToPlans}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
                                 </button>
-                                
+
                                 <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
                                     Compare all plans below
                                 </p>
@@ -238,8 +245,8 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Starter</h3>
                             <p className="text-slate-500 text-sm mb-6">Incorporation only.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹14,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹25,000</span>
+                                <span className="text-4xl font-black text-navy">?14,999</span>
+                                <span className="text-slate-400 line-through text-sm">?25,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -262,7 +269,7 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
                                     <X size={16} className="shrink-0" /> NDH-4 Compliance
                                 </li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Starter
                             </button>
                         </motion.div>
@@ -274,32 +281,32 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Popular
                             </div>
 
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Nidhi</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹14,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹25k</span>
+                                <span className="text-5xl font-black text-white">?14,999</span>
+                                <span className="text-gray-500 line-through text-sm">?25k</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
                                 {["Everything in Starter",
-                                        "Loan Agreement Formats",
-                                        "Membership Forms"].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
-                                    </li>
-                                ))}
+                                    "Loan Agreement Formats",
+                                    "Membership Forms"].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                        </li>
+                                    ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -315,8 +322,8 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Banker</h3>
                             <p className="text-slate-500 text-sm mb-6">Compliance & Software.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹29,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹50,000</span>
+                                <span className="text-4xl font-black text-navy">?29,999</span>
+                                <span className="text-slate-400 line-through text-sm">?50,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -333,7 +340,7 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Banker
                             </button>
                         </motion.div>
@@ -343,7 +350,7 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Introduction - Expanded for SEO */}
                     <section>
@@ -369,7 +376,7 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
                                 { title: "No RBI License", desc: "Exempted from strict RBI regulations applicable to other NBFCs.", icon: Shield },
-                                { title: "Low Capital", desc: "Start with just ₹5 Lakhs capital. Raise to ₹10 Lakhs within a year.", icon: Coins },
+                                { title: "Low Capital", desc: "Start with just ?5 Lakhs capital. Raise to ?10 Lakhs within a year.", icon: Coins },
                                 { title: "Accept Deposits", desc: "Legally accept Fixed Deposits (FD), Recurring Deposits (RD), and Savings from members.", icon: TrendingUp },
                                 { title: "Secured Lending", desc: "Low risk business as lending is mostly secured against Gold or Property.", icon: LockIcon },
                                 { title: "Easy Formation", desc: "Simple registration process similar to a Public Limited Company.", icon: Rocket },
@@ -405,7 +412,7 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
-                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Minimum Capital</td><td className="px-6 py-4 text-slate font-bold bg-beige/10 text-green-600">₹5 Lakhs</td><td className="px-6 py-4 text-orange-500">₹2 Crores</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Minimum Capital</td><td className="px-6 py-4 text-slate font-bold bg-beige/10 text-green-600">?5 Lakhs</td><td className="px-6 py-4 text-orange-500">?2 Crores</td></tr>
                                     <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">RBI Approval</td><td className="px-6 py-4 text-slate font-bold bg-beige/10 text-green-600">Not Required</td><td className="px-6 py-4 text-orange-500">Mandatory</td></tr>
                                     <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Lending To</td><td className="px-6 py-4 text-slate font-bold bg-beige/10">Members Only</td><td className="px-6 py-4 text-slate-500">General Public</td></tr>
                                     <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-900">Micro Finance</td><td className="px-6 py-4 text-slate font-bold bg-beige/10 text-green-600">Perfect</td><td className="px-6 py-4 text-orange-500">Complex</td></tr>
@@ -447,7 +454,7 @@ const NidhiPage = ({ isLoggedIn, onLogout }) => {
 
 
                     {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
-                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
                         {/* Background Deco */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
 

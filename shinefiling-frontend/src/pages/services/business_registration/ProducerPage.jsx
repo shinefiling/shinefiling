@@ -7,15 +7,22 @@ import ProducerRegistration from './ProducerRegistration';
 
 const ProducerPage = ({ isLoggedIn }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState('basic');
+    const [selectedPlan, setSelectedPlan] = useState('startup');
     const navigate = useNavigate();
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
+    const scrollToPlans = () => {
+        const section = document.getElementById('pricing-section');
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     const faqs = [
         { q: "What is a Producer Company?", a: "A Producer Company is a body corporate formed by farmers and producers (10+ individuals or 2+ institutions). It combines the goodness of a Cooperative Society with the vibrancy and efficiency of a Private Limited Company." },
         { q: "Who can be a member?", a: "Only 'Primary Producers' (farmers, artisans, etc.) or Producer Institutions can be members. It is designed to benefit the producing community." },
-        { q: "What is the minimum capital required?", a: "A minimum paid-up capital of ₹5 Lakhs is required to incorporate a Producer Company." },
+        { q: "What is the minimum capital required?", a: "A minimum paid-up capital of ?5 Lakhs is required to incorporate a Producer Company." },
         { q: "How many directors are needed?", a: "A minimum of 5 and a maximum of 15 directors are required. Also, a minimum of 10 members (shareholders) is needed." },
         { q: "Are there tax benefits?", a: "Yes, agricultural income is 100% exempt. Additionally, Producer Companies enjoy various deductions under the IT Act subject to specific conditions." },
         { q: "What is an FPO?", a: "FPO (Farmer Producer Organization) is a legal entity formed by primary producers. A Producer Company is the most popular legal structure for an FPO." }
@@ -122,10 +129,10 @@ const ProducerPage = ({ isLoggedIn }) => {
                                 transition={{ delay: 0.6 }}
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={scrollToPlans} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Start FPO Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn Benefits
                                 </button>
                             </motion.div>
@@ -138,7 +145,7 @@ const ProducerPage = ({ isLoggedIn }) => {
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
                                 {/* Top Gold Line (Matching other pages) */}
                                 <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
@@ -201,12 +208,12 @@ const ProducerPage = ({ isLoggedIn }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    onClick={scrollToPlans}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
                                 </button>
-                                
+
                                 <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
                                     Compare all plans below
                                 </p>
@@ -238,8 +245,8 @@ const ProducerPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Seeds</h3>
                             <p className="text-slate-500 text-sm mb-6">Basic incorporation.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹14,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹25,000</span>
+                                <span className="text-4xl font-black text-navy">?14,999</span>
+                                <span className="text-slate-400 line-through text-sm">?25,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -261,7 +268,7 @@ const ProducerPage = ({ isLoggedIn }) => {
                                     <X size={16} className="shrink-0" /> NABARD Docs
                                 </li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Seeds
                             </button>
                         </motion.div>
@@ -273,32 +280,32 @@ const ProducerPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Popular
                             </div>
 
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Producer</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹14,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹25k</span>
+                                <span className="text-5xl font-black text-white">?14,999</span>
+                                <span className="text-gray-500 line-through text-sm">?25k</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
                                 {["Everything in Seeds",
-                                        "5 DSC & 5 DIN Acquisition",
-                                        "Board Resolution Dossier"].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
-                                    </li>
-                                ))}
+                                    "5 DSC & 5 DIN Acquisition",
+                                    "Board Resolution Dossier"].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                        </li>
+                                    ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -314,8 +321,8 @@ const ProducerPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Bounty</h3>
                             <p className="text-slate-500 text-sm mb-6">Compliance & Subsidy.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹39,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹55,000</span>
+                                <span className="text-4xl font-black text-navy">?39,999</span>
+                                <span className="text-slate-400 line-through text-sm">?55,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -332,7 +339,7 @@ const ProducerPage = ({ isLoggedIn }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Bounty
                             </button>
                         </motion.div>
@@ -342,7 +349,7 @@ const ProducerPage = ({ isLoggedIn }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Introduction - Expanded for SEO */}
                     <section>
@@ -351,7 +358,7 @@ const ProducerPage = ({ isLoggedIn }) => {
                         </h2>
                         <div className="prose prose-lg text-gray-600">
                             <p className="lead text-xl text-gray-800 font-medium">
-                                A <strong>Producer Company</strong> is a unique hybrid business structure that combines the efficiency of a Private Limited Company with the cooperative spirit of a Society. Governed by the <strong>Companies Act, 2013</strong>, it allows primary producers—such as farmers, milk producers, fishermen, weavers, and artisans—to come together and form a corporate entity.
+                                A <strong>Producer Company</strong> is a unique hybrid business structure that combines the efficiency of a Private Limited Company with the cooperative spirit of a Society. Governed by the <strong>Companies Act, 2013</strong>, it allows primary producersï¿½such as farmers, milk producers, fishermen, weavers, and artisansï¿½to come together and form a corporate entity.
                             </p>
                             <p>
                                 By organizing themselves into a <strong>Farmer Producer Organization (FPO)</strong>, members gain collective bargaining power, enabling them to buy inputs (seeds, fertilizers) at wholesale rates and sell their produce directly to large markets or processors, bypassing middlemen. This structure not only increases profitability but also provides access to advanced technology and credit facilities.
@@ -446,7 +453,7 @@ const ProducerPage = ({ isLoggedIn }) => {
 
 
                     {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
-                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
                         {/* Background Deco */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
 
@@ -459,7 +466,7 @@ const ProducerPage = ({ isLoggedIn }) => {
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-lg">Grant Expertise</h4>
-                                        <p className="text-gray-300 text-sm">Our consultants are experts in Equity Grant Schemes. We guide you on how to structure your FPO to be eligible for up to ₹15 Lakhs grant.</p>
+                                        <p className="text-gray-300 text-sm">Our consultants are experts in Equity Grant Schemes. We guide you on how to structure your FPO to be eligible for up to ?15 Lakhs grant.</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-4">

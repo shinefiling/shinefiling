@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -134,10 +134,10 @@ const ProfessionalTaxPage = ({ isLoggedIn }) => {
                                 transition={{ delay: 0.6 }}
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Enable Compliance
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn More
                                 </button>
                             </motion.div>
@@ -214,7 +214,7 @@ const ProfessionalTaxPage = ({ isLoggedIn }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    onClick={() => handlePlanSelect('startup')}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
@@ -241,7 +241,7 @@ const ProfessionalTaxPage = ({ isLoggedIn }) => {
                     <div className="grid md:grid-cols-3 gap-8 items-stretch">
                         {/* EXPERT ASSIST (Standard) */}
                         {/* EXPERT ASSIST (Standard) */}
-                        <div className="bg-[#10232A] text-white rounded-3xl p-10 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col">
+                        <div className="bg-[#043E52] text-white rounded-3xl p-10 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col">
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-bronze via-yellow-400 to-bronze rounded-t-3xl"></div>
 
@@ -258,7 +258,7 @@ const ProfessionalTaxPage = ({ isLoggedIn }) => {
                                     <li key={i} className="flex gap-3"><CheckCircle size={18} className="text-bronze" /> {f}</li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-bronze/20 transition-all hover:scale-105">Start Filing</button>
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-bronze/20 transition-all hover:scale-105">Start Filing</button>
                         </div>
 
                         {/* YEARLY (Premium) */}
@@ -274,7 +274,7 @@ const ProfessionalTaxPage = ({ isLoggedIn }) => {
                                     <li key={i} className="flex gap-3"><CheckCircle size={18} className="text-bronze" /> {f}</li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 bg-slate-50 text-navy font-bold rounded-xl hover:bg-navy hover:text-white transition-colors border border-slate-200">Select Annual</button>
+                            <button onClick={() => handlePlanSelect('enterprise')} className="w-full py-3 bg-slate-50 text-navy font-bold rounded-xl hover:bg-navy hover:text-white transition-colors border border-slate-200">Select Annual</button>
                         </div>
 
                         {/* The third pricing card (PREMIUM) was removed as per the instruction */}
@@ -283,7 +283,7 @@ const ProfessionalTaxPage = ({ isLoggedIn }) => {
             </section>
 
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16 text-slate-600 leading-relaxed">
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
                     {/* PT REGISTRATION WORKFLOW */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-8">Professional Tax Registration Process</h2>

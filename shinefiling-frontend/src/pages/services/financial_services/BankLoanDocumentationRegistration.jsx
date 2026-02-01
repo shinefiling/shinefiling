@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -42,7 +42,7 @@ const BankLoanDocumentationRegistration = ({ isModal, onClose, initialData = {} 
             title: 'Valuation Report',
             features: ["Govt Approved Valuer", "Fair Market Value", "Distress Sale Value", "Site Visit Included"],
             recommended: true,
-            color: 'bg-[#10232A] text-white border-gray-700'
+            color: 'bg-[#043E52] text-white border-gray-700'
         },
         full_kit: {
             price: 7999,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Clock, ArrowRight, Zap, Target, Users, Search } from 'lucide-react';
 

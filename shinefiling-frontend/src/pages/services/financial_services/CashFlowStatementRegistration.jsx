@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -42,7 +42,7 @@ const CashFlowStatementRegistration = ({ isModal, onClose, initialData = {} }) =
             title: 'Forecasting',
             features: ["Everything in Statement", "12-Month Projection", "Scenario Analysis", "Investor Format"],
             recommended: true,
-            color: 'bg-[#10232A] text-white border-gray-700'
+            color: 'bg-[#043E52] text-white border-gray-700'
         },
         management: {
             price: 19999,

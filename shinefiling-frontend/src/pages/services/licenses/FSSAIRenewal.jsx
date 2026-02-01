@@ -16,7 +16,7 @@ const FSSAIRenewalPage = ({ isLoggedIn }) => {
 
     const faqs = [
         { q: "When should I renew my FSSAI License?", a: "You must file for renewal at least 30 days before the expiry date of your current license/registration." },
-        { q: "What happens if I miss the specific date?", a: "If you file late, a penalty of ₹100 per day is charged until the license expires. If it expires, you must apply for a fresh license." },
+        { q: "What happens if I miss the specific date?", a: "If you file late, a penalty of ?100 per day is charged until the license expires. If it expires, you must apply for a fresh license." },
         { q: "Can I renew an expired license?", a: "No. Once a license is expired, it cannot be renewed. You have to stop business activities and apply for a new license immediately." },
         { q: "Can I modify details during renewal of license?", a: "No, renewal is strictly for extending validity. For changing details, you need to file a Modification Application separately." },
     ];
@@ -77,7 +77,7 @@ const FSSAIRenewalPage = ({ isLoggedIn }) => {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">License Renewal</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Don't let your food license expire. Renew it 30 days before expiry to avoid penalties (₹100/day) and business disruption.
+                                    Don't let your food license expire. Renew it 30 days before expiry to avoid penalties (?100/day) and business disruption.
                                 </p>
                             </motion.div>
 
@@ -102,7 +102,7 @@ const FSSAIRenewalPage = ({ isLoggedIn }) => {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Late Fee</p>
-                                        <p className="font-bold text-sm text-white">₹100 / Day</p>
+                                        <p className="font-bold text-sm text-white">?100 / Day</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -111,7 +111,7 @@ const FSSAIRenewalPage = ({ isLoggedIn }) => {
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Apply for Renewal
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Shield size={18} /> Learn Rules
                                 </button>
                             </div>
@@ -129,7 +129,7 @@ const FSSAIRenewalPage = ({ isLoggedIn }) => {
                                 <div className="text-center mb-6">
                                     <h3 className="text-navy font-bold text-xl mb-2">Renewal Service</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹999</h3>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">?999</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ Onwards</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
@@ -157,7 +157,7 @@ const FSSAIRenewalPage = ({ isLoggedIn }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* DETAILED SEO CONTENT SECTION */}
                     <section className="mt-10 space-y-12 mb-20">
@@ -173,7 +173,7 @@ const FSSAIRenewalPage = ({ isLoggedIn }) => {
                                         An FSSAI license is issued for a specific validity period (mostly 1 to 5 years). Under Food Safety guidelines, you must apply for renewal <strong>30 days before</strong> the current license expires.
                                     </p>
                                     <p>
-                                        Failing to do so attracts a penalty of ₹100 per day. If not renewed before the expiry date, the license becomes invalid, and you have to apply for a fresh one, losing your old license number and history.
+                                        Failing to do so attracts a penalty of ?100 per day. If not renewed before the expiry date, the license becomes invalid, and you have to apply for a fresh one, losing your old license number and history.
                                     </p>
                                 </div>
 
@@ -184,7 +184,7 @@ const FSSAIRenewalPage = ({ isLoggedIn }) => {
                                             <ChevronRight size={16} /> Business Stoppage: Strictly illegal to operate with expired license.
                                         </li>
                                         <li className="flex items-center gap-2 text-sm text-red-800 font-bold">
-                                            <ChevronRight size={16} /> Heavy Fines: Up to ₹5 Lakhs for operating without valid license.
+                                            <ChevronRight size={16} /> Heavy Fines: Up to ?5 Lakhs for operating without valid license.
                                         </li>
                                         <li className="flex items-center gap-2 text-sm text-red-800 font-bold">
                                             <ChevronRight size={16} /> Loss of Brand Reputation: Old license number is removed from databases.
@@ -241,7 +241,7 @@ const FSSAIRenewalPage = ({ isLoggedIn }) => {
                             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-xl relative overflow-hidden flex flex-col group hover:shadow-2xl transition-all">
                                 <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-navy via-slate-600 to-navy"></div>
                                 <h3 className="text-xl font-bold text-navy mb-2 mt-4">Professional Renewal</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹999</div>
+                                <div className="text-4xl font-black text-navy mb-1">?999</div>
                                 <p className="text-xs text-slate-400 mb-6">+ Govt Fees (Depends on years chosen)</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-slate-600"><CheckCircle size={14} className="text-bronze" /> Document Review</li>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle, Upload, AlertTriangle, FileText, ArrowRight, CreditCard, Shield, AlertCircle } from 'lucide-react';
@@ -52,7 +52,7 @@ const ApplyGratuityAct = ({ isLoggedIn }) => {
         if (formData.employeeCount) {
             const count = parseInt(formData.employeeCount);
             if (count < 10) {
-                setEligibilityWarning('⚠️ Gratuity Act registration requires minimum 10 employees. Your application may be rejected.');
+                setEligibilityWarning('⚠️ Gratuity Act registration requires minimum 10 employees. Your application may be rejected.');
             } else {
                 setEligibilityWarning('');
             }

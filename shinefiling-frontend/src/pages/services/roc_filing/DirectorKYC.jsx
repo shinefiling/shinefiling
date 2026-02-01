@@ -11,7 +11,7 @@ const DirectorKYCPage = ({ isLoggedIn }) => {
     const faqs = [
         { q: "Who needs to file DIR-3 KYC?", a: "Any person who has been allotted a Director Identification Number (DIN) and the status of DIN is 'Approved' must file KYC annually." },
         { q: "What is the due date?", a: "The due date is 30th September of every financial year. For ex: For FY 2023-24, due date is 30th Sep 2024." },
-        { q: "Is there a govt fee?", a: "No, there is no government fee if filed on time. Late filing attracts a FLAT penalty of ₹5,000 per DIN." },
+        { q: "Is there a govt fee?", a: "No, there is no government fee if filed on time. Late filing attracts a FLAT penalty of ?5,000 per DIN." },
         { q: "What happens if not filed?", a: "The DIN status will be marked as 'Deactivated due to non-filing of DIR-3 KYC', and the director cannot sign any forms or be appointed in new companies." },
         { q: "Can a disqualified director file KYC?", a: "Yes, even disqualified directors must file DIR-3 KYC to keep their DIN active/trackable." },
     ];
@@ -103,7 +103,7 @@ const DirectorKYCPage = ({ isLoggedIn }) => {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Penalty Saver</p>
-                                        <p className="font-bold text-sm text-white">Save ₹5,000</p>
+                                        <p className="font-bold text-sm text-white">Save ?5,000</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -117,7 +117,7 @@ const DirectorKYCPage = ({ isLoggedIn }) => {
                                 <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     File KYC Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn More
                                 </button>
                             </motion.div>
@@ -134,12 +134,12 @@ const DirectorKYCPage = ({ isLoggedIn }) => {
                                 {/* Top Gold Line */}
                                 <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
-                                <div className="absolute top-3 right-0 bg-[#10232A] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Web KYC</div>
+                                <div className="absolute top-3 right-0 bg-[#043E52] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Web KYC</div>
 
                                 <div className="text-center mb-6 mt-4">
                                     <h3 className="text-navy font-bold text-xl mb-2">Web Based</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹499</h3>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">?499</h3>
                                         <span className="text-lg text-slate-400 font-medium">+ GST</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Most Popular</p>
@@ -190,17 +190,17 @@ const DirectorKYCPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Popular
                             </div>
                             <h3 className="text-xl font-bold text-white mb-2 mt-4">Web Based</h3>
                             <p className="text-gray-400 text-sm mb-6">If no change in details</p>
-                            <div className="text-5xl font-black text-white mb-2">₹499</div>
+                            <div className="text-5xl font-black text-white mb-2">?499</div>
                             <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide mb-8">+ GST</p>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -223,7 +223,7 @@ const DirectorKYCPage = ({ isLoggedIn }) => {
                         >
                             <h3 className="text-xl font-bold text-navy mb-2">e-Form KYC</h3>
                             <p className="text-slate-500 text-sm mb-6">For changes or first-time</p>
-                            <div className="text-4xl font-black text-navy mb-2">₹1,499</div>
+                            <div className="text-4xl font-black text-navy mb-2">?1,499</div>
                             <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-widest">+ GST</p>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -243,7 +243,7 @@ const DirectorKYCPage = ({ isLoggedIn }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* DETAILED SEO CONTENT SECTION - COMPREHENSIVE GUIDE */}
                     <section className="mt-10 space-y-12 mb-20">
@@ -296,7 +296,7 @@ const DirectorKYCPage = ({ isLoggedIn }) => {
                                         </p>
                                         <ul className="mt-4 space-y-2">
                                             <li className="flex items-center gap-2 text-red-700 font-bold">
-                                                <X size={16} /> ₹5,000 Late Fee (Mandatory)
+                                                <X size={16} /> ?5,000 Late Fee (Mandatory)
                                             </li>
                                             <li className="flex items-center gap-2 text-red-700 font-bold">
                                                 <X size={16} /> DIN Deactivation

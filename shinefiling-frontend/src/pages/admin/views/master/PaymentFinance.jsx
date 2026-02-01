@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
     DollarSign, Download, CreditCard, RefreshCcw, CheckCircle,
     ArrowUpRight, ArrowDownLeft, Search, Filter, FileText, AlertCircle,
@@ -36,7 +36,7 @@ const StatCard = ({ label, value, subtext, icon: Icon, color }) => (
     <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between group hover:shadow-md transition-all">
         <div>
             <p className="text-[10px] font-bold text-[#3D4D55] uppercase tracking-widest">{label}</p>
-            <h3 className="text-2xl font-extrabold text-[#10232A] mt-1">{value}</h3>
+            <h3 className="text-2xl font-extrabold text-[#043E52] mt-1">{value}</h3>
             {subtext && <p className={`text-[10px] font-bold mt-1 ${color?.text || 'text-[#3D4D55]'}`}>{subtext}</p>}
         </div>
         <div className={`p-3 rounded-xl ${color?.bg} ${color?.text} group-hover:scale-110 transition-transform`}>
@@ -53,7 +53,7 @@ const InvoiceCard = ({ invoice }) => (
                     <FileText size={20} />
                 </div>
                 <div>
-                    <h4 className="font-bold text-[#10232A] text-sm">{invoice.id}</h4>
+                    <h4 className="font-bold text-[#043E52] text-sm">{invoice.id}</h4>
                     <p className="text-xs text-[#3D4D55]">{invoice.client}</p>
                 </div>
             </div>
@@ -75,7 +75,7 @@ const InvoiceCard = ({ invoice }) => (
         <div className="flex items-center justify-between pt-4 border-t border-gray-50">
             <div>
                 <p className="text-[10px] text-[#3D4D55] font-bold uppercase">Total Amount</p>
-                <p className="font-extrabold text-[#10232A]">₹{invoice.amount.toLocaleString()}</p>
+                <p className="font-extrabold text-[#043E52]">₹{invoice.amount.toLocaleString()}</p>
             </div>
             <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition">
                 <Download size={16} />
@@ -134,7 +134,7 @@ const PaymentFinance = () => {
                         <Landmark size={28} />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold text-[#10232A]">Financial Operations</h2>
+                        <h2 className="text-2xl font-bold text-[#043E52]">Financial Operations</h2>
                         <div className="flex items-center gap-2 mt-1">
                             <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase border border-emerald-200">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
@@ -156,8 +156,8 @@ const PaymentFinance = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === tab.id
-                                ? 'bg-[#10232A] text-white shadow-md'
-                                : 'text-[#3D4D55] hover:bg-gray-50 hover:text-[#10232A]'
+                                ? 'bg-[#043E52] text-white shadow-md'
+                                : 'text-[#3D4D55] hover:bg-gray-50 hover:text-[#043E52]'
                                 }`}
                         >
                             <tab.icon size={14} /> {tab.label}
@@ -206,7 +206,7 @@ const PaymentFinance = () => {
                         <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
                             <div className="flex justify-between items-center mb-6">
                                 <div>
-                                    <h3 className="font-bold text-[#10232A]">Revenue Flow</h3>
+                                    <h3 className="font-bold text-[#043E52]">Revenue Flow</h3>
                                     <p className="text-xs text-[#3D4D55]">Net transaction volume over time</p>
                                 </div>
                                 <button className="p-2 hover:bg-gray-50 rounded-lg text-gray-400"><Calendar size={18} /></button>
@@ -290,13 +290,13 @@ const PaymentFinance = () => {
                                                     {t.type === 'Credit' ? <ArrowDownLeft size={16} /> : <ArrowUpRight size={16} />}
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-[#10232A] text-xs">{t.id}</p>
+                                                    <p className="font-bold text-[#043E52] text-xs">{t.id}</p>
                                                     <p className="text-[10px] text-[#3D4D55]">{t.date}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="font-bold text-[#10232A] text-xs">{t.client}</span>
+                                            <span className="font-bold text-[#043E52] text-xs">{t.client}</span>
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className="text-xs text-gray-500 flex items-center gap-1">
@@ -350,10 +350,10 @@ const PaymentFinance = () => {
                             <input
                                 type="text"
                                 placeholder="Enter Transaction ID (e.g. TXN-9988)"
-                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#B58863]/20 focus:bg-white transition"
+                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#ED6E3F]/20 focus:bg-white transition"
                             />
                         </div>
-                        <button className="px-6 py-3 bg-[#10232A] text-white font-bold rounded-xl hover:bg-[#B58863] transition shadow-lg">
+                        <button className="px-6 py-3 bg-[#043E52] text-white font-bold rounded-xl hover:bg-[#ED6E3F] transition shadow-lg">
                             Search
                         </button>
                     </div>

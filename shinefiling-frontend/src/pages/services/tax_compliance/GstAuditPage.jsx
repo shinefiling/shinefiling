@@ -14,7 +14,7 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
     const faqs = [
         { q: "Is GST Audit by CA mandatory?", a: "No, CA Certification for GSTR-9C is removed. It is now self-certified by the taxpayer." },
         { q: "What is GSTR-9C?", a: "It is a Reconciliation Statement reconciling the values declared in GST Returns with the Audited Financial Statements." },
-        { q: "When is GSTR-9C applicable?", a: "If your Aggregate Turnover during the financial year exceeds ₹5 Crores." },
+        { q: "When is GSTR-9C applicable?", a: "If your Aggregate Turnover during the financial year exceeds ?5 Crores." },
         { q: "What is Department Audit?", a: "The GST Department can conduct an audit of your records under Section 65. We provide assistance in replying to such audit queries." }
     ];
 
@@ -125,10 +125,10 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
                                 transition={{ delay: 0.6 }}
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     File GSTR-9C Now
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Audit Guide
                                 </button>
                             </motion.div>
@@ -141,7 +141,7 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                             <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
                                 {/* Top Gold Line (Matching other pages) */}
                                 <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
@@ -204,12 +204,12 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    onClick={() => handlePlanSelect('startup')}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
                                 </button>
-                                
+
                                 <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
                                     Compare all plans below
                                 </p>
@@ -235,8 +235,8 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Compliance Health</h3>
                             <p className="text-slate-500 text-sm mb-6">Pre-Audit Simulation.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹2,999</span>
-                                <span className="text-slate-400 line-through text-lg">₹4,999</span>
+                                <span className="text-4xl font-black text-navy">?2,999</span>
+                                <span className="text-slate-400 line-through text-lg">?4,999</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -251,7 +251,7 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Book Review
                             </button>
                         </motion.div>
@@ -263,32 +263,32 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
                         >
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                                 Most Popular
                             </div>
 
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Gst Audit</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹5,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹10k</span>
+                                <span className="text-5xl font-black text-white">?5,999</span>
+                                <span className="text-gray-500 line-through text-sm">?10k</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
                                 {["Books vs GST Recon",
-                                        "Turnover reconciliation",
-                                        "Self-Certification Prep"].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
-                                    </li>
-                                ))}
+                                    "Turnover reconciliation",
+                                    "Self-Certification Prep"].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                        </li>
+                                    ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -304,8 +304,8 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Audit Shield</h3>
                             <p className="text-slate-500 text-sm mb-6">Notice & Dept Support.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹9,999</span>
-                                <span className="text-slate-400 line-through text-lg">₹15,000</span>
+                                <span className="text-4xl font-black text-navy">?9,999</span>
+                                <span className="text-slate-400 line-through text-lg">?15,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -320,7 +320,7 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Get Support
                             </button>
                         </motion.div>
@@ -332,7 +332,7 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Introduction */}
                     <section>
@@ -410,7 +410,7 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
                         <h2 className="text-3xl font-bold text-navy mb-6">Potential Liabilities</h2>
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                             <table className="w-full text-left">
-                                <thead className="bg-[#10232A] text-white">
+                                <thead className="bg-[#043E52] text-white">
                                     <tr>
                                         <th className="p-4 font-semibold text-sm uppercase tracking-wider">Violation Type</th>
                                         <th className="p-4 font-semibold text-sm uppercase tracking-wider">Penalty / Interest</th>
@@ -420,7 +420,7 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
                                 <tbody className="divide-y divide-gray-100">
                                     <tr className="hover:bg-gray-50 transition">
                                         <td className="p-4 text-navy font-medium">Short Payment (Normal)</td>
-                                        <td className="p-4 text-gray-600">10% of Tax or ₹10,000 (Higher)</td>
+                                        <td className="p-4 text-gray-600">10% of Tax or ?10,000 (Higher)</td>
                                         <td className="p-4 text-gray-500 text-sm">Bonafide errors</td>
                                     </tr>
                                     <tr className="hover:bg-gray-50 transition">
@@ -460,7 +460,7 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
                                             <Search size={20} className="text-bronze" /> Types of GST Audits
                                         </h3>
                                         <ul className="space-y-3 list-disc pl-5 text-sm">
-                                            <li><strong>Mandatory Audit (9C):</strong> Required when aggregate turnover exceeds ₹5 Crores in a Financial Year.</li>
+                                            <li><strong>Mandatory Audit (9C):</strong> Required when aggregate turnover exceeds ?5 Crores in a Financial Year.</li>
                                             <li><strong>Departmental Audit (Sec 65):</strong> Conducted by the Commissioner or an officer authorized by him.</li>
                                             <li><strong>Special Audit (Sec 66):</strong> Directed by an Assistant Commissioner if the case is complex.</li>
                                         </ul>
@@ -530,7 +530,7 @@ const GstAuditPage = ({ isLoggedIn, onLogout }) => {
                     </section>
 
                     {/* WHY CHOOSE SHINEFILING */}
-                    <section className="bg-gradient-to-br from-[#10232A] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
                         <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling for Audit?</h2>
                         <div className="grid md:grid-cols-2 gap-8 relative z-10">

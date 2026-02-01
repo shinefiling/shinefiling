@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { CreditCard, Download, Clock, CheckCircle } from 'lucide-react';
 import { getUserPayments, getUserApplications, BASE_URL } from '../../api';
 
@@ -87,8 +87,8 @@ const ClientPayments = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {/* Total Spend Card */}
-                <div className="lg:col-span-2 bg-gradient-to-br from-[#10232A] via-[#1C3540] to-[#2A4550] rounded-2xl p-6 text-white shadow-xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#B58863]/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
+                <div className="lg:col-span-2 bg-gradient-to-br from-[#043E52] via-[#1C3540] to-[#2A4550] rounded-2xl p-6 text-white shadow-xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#ED6E3F]/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
 
                     <div className="relative z-10 flex flex-col justify-between h-full">
                         <div className="flex justify-between items-start">
@@ -97,12 +97,12 @@ const ClientPayments = () => {
                                 <h3 className="text-3xl font-bold tracking-tight">₹{history.reduce((acc, curr) => acc + (parseFloat(curr.amount) || 0), 0).toLocaleString()}<span className="text-xl text-slate-500">.00</span></h3>
                             </div>
                             <div className="p-2.5 bg-white/5 rounded-xl backdrop-blur-md border border-white/10">
-                                <CreditCard size={20} className="text-[#B58863]" />
+                                <CreditCard size={20} className="text-[#ED6E3F]" />
                             </div>
                         </div>
 
                         <div className="mt-6 flex gap-3">
-                            <button className="px-4 py-2 bg-[#B58863] text-white rounded-xl text-xs font-bold shadow-lg hover:bg-[#A57753] transition flex items-center gap-2">
+                            <button className="px-4 py-2 bg-[#ED6E3F] text-white rounded-xl text-xs font-bold shadow-lg hover:bg-[#A57753] transition flex items-center gap-2">
                                 Add Funds Credit
                             </button>
                             <button className="px-4 py-2 bg-white/10 text-white rounded-xl text-xs font-bold hover:bg-white/20 transition flex items-center gap-2">
@@ -113,7 +113,7 @@ const ClientPayments = () => {
                 </div>
 
                 {/* Saved Methods */}
-                <div className="bg-white dark:bg-[#10232A] border border-slate-200 dark:border-[#1C3540] rounded-2xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
+                <div className="bg-white dark:bg-[#043E52] border border-slate-200 dark:border-[#1C3540] rounded-2xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
                     <div>
                         <h4 className="font-bold text-slate-800 dark:text-white text-base mb-1">Payment Methods</h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Manage your saved cards and UPI handles used for checkout.</p>
@@ -132,10 +132,10 @@ const ClientPayments = () => {
             </div>
 
             {/* History Table */}
-            <div className="bg-white dark:bg-[#10232A] border border-slate-200 dark:border-[#1C3540] rounded-2xl shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100 dark:border-[#1C3540] flex items-center justify-center md:justify-between bg-[#FDFBF7] dark:bg-[#10232A]">
-                    <h3 className="font-bold text-[#10232A] dark:text-white text-base">Billing & Invoices</h3>
-                    <button className="text-[#B58863] text-xs font-bold hover:underline hidden md:block">View All</button>
+            <div className="bg-white dark:bg-[#043E52] border border-slate-200 dark:border-[#1C3540] rounded-2xl shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 dark:border-[#1C3540] flex items-center justify-center md:justify-between bg-[#FDFBF7] dark:bg-[#043E52]">
+                    <h3 className="font-bold text-[#043E52] dark:text-white text-base">Billing & Invoices</h3>
+                    <button className="text-[#ED6E3F] text-xs font-bold hover:underline hidden md:block">View All</button>
                 </div>
 
                 <div className="overflow-x-auto">

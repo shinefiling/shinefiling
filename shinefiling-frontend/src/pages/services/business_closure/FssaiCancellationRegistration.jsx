@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -42,7 +42,7 @@ const FssaiCancellationRegistration = ({ isModal, onClose, initialData = {} }) =
             title: 'State License',
             features: ["State/Central Surrender", "Declaration Drafting", "FSO Liaison", "Surrender Proof"],
             recommended: true,
-            color: 'bg-[#10232A] text-white border-gray-700'
+            color: 'bg-[#043E52] text-white border-gray-700'
         },
         death: {
             price: 2499,

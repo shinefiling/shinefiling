@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Save, Lock, Database, Camera, ShieldCheck, ChevronRight, Fingerprint, AlertTriangle } from 'lucide-react';
 import { updateUserProfile, uploadProfilePicture } from '../../api';
 
@@ -54,15 +54,15 @@ const ClientProfile = () => {
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
             {/* Header */}
             <div>
-                <h2 className="text-3xl font-bold text-[#10232A] dark:text-white">Account Settings</h2>
+                <h2 className="text-3xl font-bold text-[#043E52] dark:text-white">Account Settings</h2>
                 <p className="text-slate-500 dark:text-slate-400 mt-1">Manage your personal information and security preferences.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Profile Form */}
-                <div className="lg:col-span-2 bg-white dark:bg-[#10232A] rounded-3xl shadow-sm border border-slate-100 dark:border-[#1C3540] overflow-hidden">
-                    <div className="p-8 border-b border-slate-100 dark:border-[#1C3540] flex justify-between items-center bg-[#FDFBF7] dark:bg-[#10232A]">
-                        <h3 className="font-bold text-lg text-[#10232A] dark:text-white flex items-center gap-2">
+                <div className="lg:col-span-2 bg-white dark:bg-[#043E52] rounded-3xl shadow-sm border border-slate-100 dark:border-[#1C3540] overflow-hidden">
+                    <div className="p-8 border-b border-slate-100 dark:border-[#1C3540] flex justify-between items-center bg-[#FDFBF7] dark:bg-[#043E52]">
+                        <h3 className="font-bold text-lg text-[#043E52] dark:text-white flex items-center gap-2">
                             Profile Details
                         </h3>
                         <span className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-emerald-100 dark:border-emerald-800">
@@ -77,19 +77,19 @@ const ClientProfile = () => {
                                     {user.profileImage ? (
                                         <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
                                     ) : (
-                                        <div className="w-full h-full bg-[#B58863] flex items-center justify-center text-white">
+                                        <div className="w-full h-full bg-[#ED6E3F] flex items-center justify-center text-white">
                                             {user.fullName ? <span className="text-4xl font-bold">{user.fullName.charAt(0)}</span> : <User size={48} />}
                                         </div>
                                     )}
                                 </div>
-                                <label className="absolute bottom-0 right-0 z-20 bg-[#10232A] text-white p-2.5 rounded-full shadow-lg cursor-pointer hover:bg-[#B58863] transition hover:scale-110">
+                                <label className="absolute bottom-0 right-0 z-20 bg-[#043E52] text-white p-2.5 rounded-full shadow-lg cursor-pointer hover:bg-[#ED6E3F] transition hover:scale-110">
                                     <Camera size={18} />
                                     <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                                 </label>
                             </div>
 
                             <div className="text-center md:text-left pt-2">
-                                <h2 className="text-2xl font-bold text-[#10232A] dark:text-white mb-1">{user.fullName || 'User Name'}</h2>
+                                <h2 className="text-2xl font-bold text-[#043E52] dark:text-white mb-1">{user.fullName || 'User Name'}</h2>
                                 <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-3">Client Account • ID: <span className="font-mono text-xs bg-slate-100 dark:bg-[#1C3540] px-1.5 py-0.5 rounded">#{user.id || '---'}</span></p>
                                 <p className="text-xs text-slate-400 max-w-xs">Update your photo and personal details here.</p>
                             </div>
@@ -104,7 +104,7 @@ const ClientProfile = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Full Name</label>
-                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#B58863] focus-within:ring-4 focus-within:ring-[#B58863]/10 transition">
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#ED6E3F] focus-within:ring-4 focus-within:ring-[#ED6E3F]/10 transition">
                                     <User size={18} className="text-slate-400" />
                                     <input name="fullName" value={user.fullName || ''} onChange={handleChange} className="bg-transparent w-full text-slate-800 dark:text-white font-bold text-sm focus:outline-none" />
                                 </div>
@@ -118,14 +118,14 @@ const ClientProfile = () => {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Mobile Number</label>
-                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#B58863] focus-within:ring-4 focus-within:ring-[#B58863]/10 transition">
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#ED6E3F] focus-within:ring-4 focus-within:ring-[#ED6E3F]/10 transition">
                                     <Phone size={18} className="text-slate-400" />
                                     <input name="mobile" value={user.mobile || ''} onChange={handleChange} type="tel" className="bg-transparent w-full text-slate-800 dark:text-white font-bold text-sm focus:outline-none" />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Location</label>
-                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#B58863] focus-within:ring-4 focus-within:ring-[#B58863]/10 transition">
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#ED6E3F] focus-within:ring-4 focus-within:ring-[#ED6E3F]/10 transition">
                                     <MapPin size={18} className="text-slate-400" />
                                     <input name="address" value={user.address || ''} onChange={handleChange} placeholder="City, State" className="bg-transparent w-full text-slate-800 dark:text-white font-bold text-sm focus:outline-none" />
                                 </div>
@@ -133,7 +133,7 @@ const ClientProfile = () => {
                         </div>
 
                         <div className="mt-10 pt-8 border-t border-slate-100 dark:border-[#1C3540] flex justify-end">
-                            <button onClick={handleSave} disabled={loading} className="px-8 py-3.5 bg-[#10232A] dark:bg-[#B58863] text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center gap-2 disabled:opacity-50 text-sm">
+                            <button onClick={handleSave} disabled={loading} className="px-8 py-3.5 bg-[#043E52] dark:bg-[#ED6E3F] text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center gap-2 disabled:opacity-50 text-sm">
                                 <Save size={18} /> {loading ? 'Saving Changes...' : 'Save Changes'}
                             </button>
                         </div>
@@ -163,18 +163,18 @@ const ClientProfile = () => {
                     </div>
 
                     {/* Security */}
-                    <div className="bg-white dark:bg-[#10232A] border border-slate-100 dark:border-[#1C3540] p-6 rounded-3xl shadow-sm">
+                    <div className="bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] p-6 rounded-3xl shadow-sm">
                         <div className="flex items-center gap-4 mb-6">
                             <div className="p-3 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-xl border border-rose-100 dark:border-rose-900/30">
                                 <Lock size={20} />
                             </div>
-                            <h4 className="font-bold text-[#10232A] dark:text-white text-lg">Login & Security</h4>
+                            <h4 className="font-bold text-[#043E52] dark:text-white text-lg">Login & Security</h4>
                         </div>
                         <div className="space-y-3">
                             {['Change Password', 'Two-Factor Authentication', 'Active Sessions'].map((item, i) => (
                                 <button key={i} className="w-full text-left py-4 px-5 rounded-2xl text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-[#1C3540] hover:bg-slate-100 dark:hover:bg-[#2A4550] transition-all flex justify-between items-center group">
                                     {item}
-                                    <ChevronRight size={16} className="text-slate-300 group-hover:text-[#B58863] group-hover:translate-x-1 transition-all" />
+                                    <ChevronRight size={16} className="text-slate-300 group-hover:text-[#ED6E3F] group-hover:translate-x-1 transition-all" />
                                 </button>
                             ))}
                         </div>

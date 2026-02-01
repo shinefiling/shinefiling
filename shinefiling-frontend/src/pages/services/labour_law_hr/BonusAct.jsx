@@ -16,8 +16,8 @@ const BonusAct = ({ isLoggedIn }) => {
 
     const faqs = [
         { q: "What is Payment of Bonus Act?", a: "It mandates the payment of bonus to employees of certain establishments on the basis of profits or production." },
-        { q: "Who is eligible?", a: "Employees earning up to ₹21,000 per month and having worked for at least 30 days in the financial year." },
-        { q: "What is the minimum bonus?", a: "Minimum bonus is 8.33% of the salary or ₹100, whichever is higher, regardless of profit or loss." },
+        { q: "Who is eligible?", a: "Employees earning up to ?21,000 per month and having worked for at least 30 days in the financial year." },
+        { q: "What is the minimum bonus?", a: "Minimum bonus is 8.33% of the salary or ?100, whichever is higher, regardless of profit or loss." },
         { q: "What is the maximum bonus?", a: "Maximum bonus payable is 20% of the salary." },
     ];
 
@@ -111,7 +111,7 @@ const BonusAct = ({ isLoggedIn }) => {
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Start Filing
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <BookOpen size={18} /> Learn More
                                 </button>
                             </div>
@@ -129,7 +129,7 @@ const BonusAct = ({ isLoggedIn }) => {
                                 <div className="text-center mb-6">
                                     <h3 className="text-navy font-bold text-xl mb-2">Bonus Return</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹1,499</h3>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">?1,499</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ Year</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
@@ -157,7 +157,7 @@ const BonusAct = ({ isLoggedIn }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
                 {/* LEFT CONTENT COLUMN (8 Cols) */}
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
 
                     {/* Introduction */}
                     <section>
@@ -167,16 +167,16 @@ const BonusAct = ({ isLoggedIn }) => {
                         <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
                             <h3 className="text-xl font-bold text-navy mb-4">Bonus Calculation</h3>
                             <div className="bg-[#2B3446]/5 p-6 rounded-xl border border-gray-100 mb-6 font-mono text-center text-lg md:text-xl font-bold text-navy">
-                                Bonus = % Rate × (Higher of ₹7,000 or Min Wage)
+                                Bonus = % Rate × (Higher of ?7,000 or Min Wage)
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-600">
                                 <div>
                                     <strong className="block text-navy mb-1">Wage Ceiling</strong>
-                                    For calculation purposes, wage ceiling is ₹7,000 or minimum wage, whichever is higher.
+                                    For calculation purposes, wage ceiling is ?7,000 or minimum wage, whichever is higher.
                                 </div>
                                 <div>
                                     <strong className="block text-navy mb-1">Eligibility Limit</strong>
-                                    Employees earning &gt; ₹21,000 are not eligible (unless agreed otherwise).
+                                    Employees earning &gt; ?21,000 are not eligible (unless agreed otherwise).
                                 </div>
                             </div>
                         </div>
@@ -213,7 +213,7 @@ const BonusAct = ({ isLoggedIn }) => {
                             <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
                                 <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Complete</div>
                                 <h3 className="text-xl font-bold text-white mb-2">Bonus Return</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹1,499</div>
+                                <div className="text-4xl font-black text-white mb-1">?1,499</div>
                                 <p className="text-xs text-gray-400 mb-6">/ Year</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Annual Return Filing</li>
@@ -226,7 +226,7 @@ const BonusAct = ({ isLoggedIn }) => {
                             {/* Calculation */}
                             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
                                 <h3 className="text-xl font-bold text-navy mb-2">Calculation Only</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹999</div>
+                                <div className="text-4xl font-black text-navy mb-1">?999</div>
                                 <p className="text-xs text-slate-400 mb-6">/ Year</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Employee-wise Sheets</li>

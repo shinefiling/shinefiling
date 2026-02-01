@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -124,10 +124,10 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                                 transition={{ delay: 0.6 }}
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
-                                <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     File My Return
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
+                                <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn More
                                 </button>
                             </motion.div>
@@ -204,7 +204,7 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+                                    onClick={() => handlePlanSelect('startup')}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
@@ -257,12 +257,12 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#10232A] text-white rounded-3xl p-10 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col"
+                            className="bg-[#043E52] text-white rounded-3xl p-10 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col"
                         >
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#B58863] to-[#D4AF37] text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg">Most Popular</div>
+                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg">Most Popular</div>
 
                             <h3 className="text-2xl font-bold mb-2 text-white mt-2">Business / Pro</h3>
                             <p className="text-gray-400 text-sm mb-6">ITR-3 / ITR-4</p>
@@ -275,7 +275,7 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                                     <li key={i} className="flex gap-3"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {f}</li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('business')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg hover:shadow-bronze/20 transition-all hover:scale-105">Launch Filing</button>
+                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg hover:shadow-bronze/20 transition-all hover:scale-105">Launch Filing</button>
                         </motion.div>
 
                         {/* CAPITAL GAINS */}
@@ -326,7 +326,7 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
             </section>
 
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16 text-slate-600 leading-relaxed">
-                <div className="lg:col-span-8 space-y-20">
+                <div id="details-section" className="lg:col-span-8 space-y-20">
                     {/* ITR FILING WORKFLOW */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-8">ITR Filing Workflow</h2>
@@ -393,7 +393,7 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                         <h2 className="text-3xl font-bold text-navy mb-8">Late Filing Penalties (Sec 234F)</h2>
                         <div className="bg-white rounded-2xl shadow-sm border border-red-100 overflow-hidden">
                             <table className="w-full text-left">
-                                <thead className="bg-[#10232A] text-white">
+                                <thead className="bg-[#043E52] text-white">
                                     <tr>
                                         <th className="p-4 font-bold text-sm uppercase tracking-wider">Total Income Range</th>
                                         <th className="p-4 font-bold text-sm uppercase tracking-wider">Filing After Due Date</th>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
     Settings, Shield, FileText, Calendar, DollarSign, Users, Bell,
     Activity, Lock, Save, Plus, Trash2, CheckCircle, AlertTriangle, Briefcase,

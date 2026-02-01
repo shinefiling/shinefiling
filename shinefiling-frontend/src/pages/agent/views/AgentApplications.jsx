@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, RefreshCw, ChevronDown, CheckCircle, Clock, XCircle, FileText } from 'lucide-react';
@@ -33,7 +33,7 @@ const AgentApplications = ({ tasks, loading, onRefresh }) => {
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <h2 className="text-2xl font-bold text-[#10232A] dark:text-white">My Applications</h2>
+                <h2 className="text-2xl font-bold text-[#043E52] dark:text-white">My Applications</h2>
                 <div className="flex items-center gap-2">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -42,7 +42,7 @@ const AgentApplications = ({ tasks, loading, onRefresh }) => {
                             placeholder="Search applications..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 pr-4 py-2.5 bg-white dark:bg-[#1C3540] border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-[#B58863] outline-none dark:text-white w-64 md:w-80"
+                            className="pl-10 pr-4 py-2.5 bg-white dark:bg-[#1C3540] border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-[#ED6E3F] outline-none dark:text-white w-64 md:w-80"
                         />
                     </div>
                 </div>
@@ -55,7 +55,7 @@ const AgentApplications = ({ tasks, loading, onRefresh }) => {
                         key={status}
                         onClick={() => setStatusFilter(status)}
                         className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${statusFilter === status
-                            ? 'bg-[#10232A] text-white border-[#10232A] dark:bg-[#B58863] dark:border-[#B58863]'
+                            ? 'bg-[#043E52] text-white border-[#043E52] dark:bg-[#ED6E3F] dark:border-[#ED6E3F]'
                             : 'bg-white dark:bg-[#1C3540] text-slate-500 border-slate-200 dark:border-slate-700 hover:bg-slate-50'
                             }`}
                     >
@@ -65,7 +65,7 @@ const AgentApplications = ({ tasks, loading, onRefresh }) => {
             </div>
 
             {/* List */}
-            <div className="bg-white dark:bg-[#10232A] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm overflow-hidden min-h-[400px]">
+            <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm overflow-hidden min-h-[400px]">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-20 text-slate-400">
                         <RefreshCw className="animate-spin mb-4" size={32} />
@@ -89,7 +89,7 @@ const AgentApplications = ({ tasks, loading, onRefresh }) => {
                                     <tr key={task.id} className="hover:bg-slate-50 dark:hover:bg-[#1C3540]/50 transition-colors">
                                         <td className="px-6 py-4 font-mono text-xs text-slate-400">#{task.id.slice(-6).toUpperCase()}</td>
                                         <td className="px-6 py-4">
-                                            <div className="font-bold text-[#10232A] dark:text-white">{task.serviceName}</div>
+                                            <div className="font-bold text-[#043E52] dark:text-white">{task.serviceName}</div>
                                             <div className="text-xs text-slate-400">Business Registration</div>
                                         </td>
                                         <td className="px-6 py-4">
@@ -109,7 +109,7 @@ const AgentApplications = ({ tasks, loading, onRefresh }) => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button onClick={() => setSelectedApplication(task)} className="text-[#B58863] hover:text-[#A67C52] font-bold text-xs">View Details</button>
+                                            <button onClick={() => setSelectedApplication(task)} className="text-[#ED6E3F] hover:text-[#A67C52] font-bold text-xs">View Details</button>
                                         </td>
                                     </tr>
                                 ))}
