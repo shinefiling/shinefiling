@@ -92,6 +92,216 @@ const GstAmendmentRegistration = ({ planProp = 'non-core', isModal, onClose }) =
     const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 5));
     const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
+    const getPrice = () => {
+        if (selectedPlan === 'non-core') return 499;
+        if (selectedPlan === 'core') return 999;
+        return 1499;
+    };
+
+    if (isModal) {
+        return (
+            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR - DARK */}
+                <div className="w-72 bg-[#043E52] flex flex-col justify-between shrink-0 relative overflow-hidden">
+                    {/* Background Deco */}
+                    <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                        <div className="absolute right-0 top-0 w-48 h-48 bg-white blur-3xl rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                        <div className="absolute left-0 bottom-0 w-40 h-40 bg-bronze blur-3xl rounded-full translate-y-1/3 -translate-x-1/3"></div>
+                    </div>
+
+                    <div className="p-8 relative z-10 flex-1 overflow-y-auto custom-scrollbar">
+                        <div className="flex items-center gap-3 mb-8 text-white">
+                            <div className="p-2 bg-white/10 rounded-lg">
+                                <RefreshCw size={24} className="text-bronze" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold leading-tight">GST<br />Amendment</h3>
+                                <p className="text-[10px] text-gray-400 uppercase tracking-widest">Correction</p>
+                            </div>
+                        </div>
+
+                        {/* Steps Navigation */}
+                        <div className="space-y-6 relative">
+                            {/* Vertical Line */}
+                            <div className="absolute left-[15px] top-2 bottom-2 w-0.5 bg-white/10 z-0"></div>
+
+                            {steps.map((s, i) => {
+                                const stepNum = s.id;
+                                const isActive = currentStep === stepNum;
+                                const isCompleted = currentStep > stepNum;
+
+                                return (
+                                    <div
+                                        key={s.id}
+                                        className={`relative z-10 flex items-center gap-4 cursor-pointer group ${isActive ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`}
+                                        onClick={() => { if (isCompleted) setCurrentStep(stepNum) }}
+                                    >
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300
+                                            ${isActive ? 'bg-bronze border-bronze text-white scale-110 shadow-lg shadow-bronze/30' :
+                                                isCompleted ? 'bg-green-500 border-green-500 text-white' : 'bg-[#043E52] border-white/20 text-white/60'}`}
+                                        >
+                                            {isCompleted ? <CheckCircle size={14} /> : stepNum}
+                                        </div>
+                                        <span className={`text-sm font-medium transition-colors ${isActive ? 'text-white font-bold' : 'text-gray-400 group-hover:text-gray-200'}`}>
+                                            {s.title}
+                                        </span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Bottom Billing Card */}
+                    <div className="p-6 bg-black/20 backdrop-blur-sm border-t border-white/5 relative z-10 shrink-0">
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-xs text-gray-400">Total Payable</span>
+                            <span className="text-lg font-bold text-bronze">₹{getPrice().toLocaleString()}</span>
+                        </div>
+                        <p className="text-[10px] text-gray-500">{selectedPlan} Plan</p>
+                    </div>
+                </div>
+
+                {/* RIGHT CONTENT AREA - LIGHT */}
+                <div className="flex-1 flex flex-col bg-[#F2F1EF] h-full overflow-hidden relative">
+                    {/* Header */}
+                    <div className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 shrink-0 z-20">
+                        <h2 className="font-bold text-navy text-lg">
+                            {steps.find(s => s.id === currentStep)?.title || "Registration"}
+                        </h2>
+                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-red-500 transition">
+                            <X size={18} />
+                        </button>
+                    </div>
+
+                    {/* Scrollable Form Content */}
+                    <div className="flex-1 overflow-y-auto p-8">
+                        <div className="max-w-3xl mx-auto pb-12">
+                            {/* Reuse existing steps logic but stripped of the top nav */}
+                            <AnimatePresence mode="wait">
+                                {currentStep === 1 && (
+                                    <motion.div key="step1" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
+                                        <div className="grid md:grid-cols-3 gap-6">
+                                            {[
+                                                { id: 'non-core', name: 'Non-Core Field', price: '499', features: ["Email/Mobile Change", "Bank Detail Update"] },
+                                                { id: 'core', name: 'Core Field', price: '999', features: ["Address Change", "Business Name Change"] },
+                                                { id: 'complex', name: 'Director Change', price: '1499', features: ["Add/Remove Partner", "Constitution Change"] }
+                                            ].map(p => (
+                                                <div
+                                                    key={p.id}
+                                                    onClick={() => setSelectedPlan(p.id)}
+                                                    className={`p-6 rounded-2xl border-2 transition-all cursor-pointer relative overflow-hidden group ${selectedPlan === p.id ? 'border-bronze bg-amber-50 shadow-lg' : 'border-slate-100 hover:border-amber-200 bg-white'}`}
+                                                >
+                                                    {selectedPlan === p.id && <div className="absolute top-2 right-2 text-bronze"><CheckCircle size={20} /></div>}
+                                                    <h4 className={`text-md font-bold mb-1 uppercase ${selectedPlan === p.id ? 'text-navy' : 'text-slate-400'}`}>{p.name}</h4>
+                                                    <div className="text-2xl font-black mb-4">₹{p.price}</div>
+                                                    <div className="space-y-2">
+                                                        {p.features.map((f, i) => (
+                                                            <div key={i} className="flex gap-2 text-[10px] font-bold uppercase text-slate-500"><Check size={12} className="text-bronze" /> {f}</div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {currentStep === 2 && (
+                                    <motion.div key="step2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                        <h3 className="font-bold text-navy flex items-center gap-2"><Building size={20} /> BUSINESS DETAILS</h3>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-500 mb-1 block">GSTIN</label>
+                                                <input name="gstin" value={formData.gstin} onChange={handleInputChange} className="w-full p-3 border rounded-lg" placeholder="22AAAAA0000A1Z5" />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-500 mb-1 block">Business Name</label>
+                                                <input name="businessName" value={formData.businessName} onChange={handleInputChange} className="w-full p-3 border rounded-lg" placeholder="StartUp India Pvt Ltd" />
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {currentStep === 3 && (
+                                    <motion.div key="step3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                        <h3 className="font-bold text-navy flex items-center gap-2"><Edit3 size={20} /> AMENDMENT DETAILS</h3>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-500 mb-1 block">Change Type</label>
+                                                <select name="amendmentType" value={formData.amendmentType} onChange={handleInputChange} className="w-full p-3 border rounded-lg">
+                                                    <option value="Address Change">Principal Place of Business</option>
+                                                    <option value="Trade Name">Trade Name Correction</option>
+                                                    <option value="Directors">Directors / Partners</option>
+                                                    <option value="Contact">Contact Details</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-500 mb-1 block">Description</label>
+                                                <textarea name="details" value={formData.details} onChange={handleInputChange} rows="4" className="w-full p-3 border rounded-lg" placeholder="Describe the change..."></textarea>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {currentStep === 4 && (
+                                    <motion.div key="step4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                        <h3 className="font-bold text-navy mb-4">Supporting Evidence</h3>
+                                        <div className="border-2 border-dashed p-6 rounded-xl flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-gray-50 relative">
+                                            <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => handleFileUpload(e, 'supporting_doc')} />
+                                            <Upload size={32} className="text-gray-400" />
+                                            <div className="text-center">
+                                                <p className="font-bold text-sm text-navy">{files.supporting_doc ? files.supporting_doc.name : "Upload Document"}</p>
+                                                <p className="text-xs text-gray-400">PDF, JPG or PNG</p>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {currentStep === 5 && (
+                                    <motion.div key="step5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white p-8 rounded-3xl shadow-lg text-center">
+                                        <h2 className="text-2xl font-bold text-navy mb-4">Confirm & Pay</h2>
+                                        <div className="text-4xl font-black text-navy mb-2">₹{getPrice()}</div>
+                                        <p className="text-gray-500 mb-6">Professional Fee for {formData.amendmentType}</p>
+                                        <button onClick={handleSubmit} disabled={isSubmitting} className="w-full py-4 bg-navy text-white rounded-xl font-bold hover:bg-black transition">
+                                            {isSubmitting ? 'Processing...' : 'Pay & Submit'}
+                                        </button>
+                                    </motion.div>
+                                )}
+
+                                {currentStep === 6 && (
+                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
+                                        <CheckCircle size={64} className="text-green-500 mx-auto mb-6" />
+                                        <h2 className="text-3xl font-bold text-navy mb-2">Success!</h2>
+                                        <p className="text-gray-500 mb-8">Amendment request submitted.</p>
+                                        <button onClick={onClose} className="px-8 py-3 bg-navy text-white rounded-xl font-bold">Close</button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </div>
+
+                    {/* Sticky Footer */}
+                    {currentStep < 5 && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={prevStep}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            <button
+                                onClick={nextStep}
+                                className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                            >
+                                {currentStep === 5 ? "Submit" : "Save & Continue"} <ArrowRight size={16} />
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col h-full bg-white font-sans text-navy">
             {/* PROGRESS BAR */}

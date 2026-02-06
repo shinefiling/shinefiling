@@ -4,9 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Plane, Landmark, Anchor, X, Banknote, Handshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import IndianSubsidiaryRegistration from './IndianSubsidiaryRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
     const [selectedPlan, setSelectedPlan] = useState('standard');
     const navigate = useNavigate();
 
@@ -29,11 +32,18 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
     ];
 
     const handlePlanSelect = (plan) => {
+        setSelectedPlan(plan);
         if (isLoggedIn) {
-            setSelectedPlan(plan);
             setShowRegisterModal(true);
         } else {
-            navigate('/login', { state: { from: window.location.pathname } });
+            // Check if user is logged in via localStorage as a fallback
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                setShowRegisterModal(true);
+            } else {
+                setAuthMode('login');
+                setShowAuthModal(true);
+            }
         }
     };
 
@@ -245,8 +255,8 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Entry</h3>
                             <p className="text-slate-500 text-sm mb-6">Basic incorporation setup.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?19,999</span>
-                                <span className="text-slate-400 line-through text-sm">?35,000</span>
+                                <span className="text-4xl font-black text-navy">₹19,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹35,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -293,8 +303,8 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Indian Subsidiary</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?14,999</span>
-                                <span className="text-gray-500 line-through text-sm">?25k</span>
+                                <span className="text-5xl font-black text-white">₹14,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹25k</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -306,7 +316,7 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
                                         </li>
                                     ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -322,8 +332,8 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Global</h3>
                             <p className="text-slate-500 text-sm mb-6">Full market entry solution.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?49,999</span>
-                                <span className="text-slate-400 line-through text-sm">?80,000</span>
+                                <span className="text-4xl font-black text-navy">₹49,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹80,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -593,6 +603,16 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
                         </div>
                     )}
                 </AnimatePresence>
+                <AuthModal
+                    isOpen={showAuthModal}
+                    onClose={() => setShowAuthModal(false)}
+                    initialMode={authMode}
+                    onAuthSuccess={() => {
+                        setShowAuthModal(false);
+                        setShowRegisterModal(true);
+                    }}
+                />
+
             </div>
         </div >
     );

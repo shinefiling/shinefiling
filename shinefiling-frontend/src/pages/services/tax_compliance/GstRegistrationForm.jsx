@@ -1,5 +1,4 @@
-﻿
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     CheckCircle, Upload, CreditCard, FileText, User,
@@ -29,6 +28,17 @@ const GstRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
     };
 
     const [selectedPlan, setSelectedPlan] = useState(validatePlan(planProp || searchParams.get('plan')));
+
+    useEffect(() => {
+        if (planProp) {
+            setSelectedPlan(validatePlan(planProp));
+        } else {
+            const planParam = searchParams.get('plan');
+            if (planParam && ['basic', 'standard', 'premium'].includes(planParam.toLowerCase())) {
+                setSelectedPlan(planParam.toLowerCase());
+            }
+        }
+    }, [searchParams, planProp]);
 
     const [formData, setFormData] = useState({
         legalName: '',
@@ -76,9 +86,13 @@ const GstRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
         }
     };
 
-    useEffect(() => {
-        if (planProp) setSelectedPlan(validatePlan(planProp));
-    }, [planProp]);
+    const billDetails = useMemo(() => {
+        const plan = plans[selectedPlan];
+        const basePrice = plan.price;
+        const gst = Math.round(basePrice * 0.18);
+        const total = basePrice + gst;
+        return { basePrice, gst, total };
+    }, [selectedPlan]);
 
     const handleInputChange = (e, section = null, index = null) => {
         const { name, value } = e.target;
@@ -215,7 +229,7 @@ const GstRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                         {formData.partners.map((partner, i) => (
                             <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative">
-                                <div className="flex justify-between items-center mb-4 bg-beige/10 p-2 rounded-lg">
+                                <div className="flex justify-between items-center mb-4 bg-blue-50/50 p-2 rounded-lg">
                                     <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2"><User size={16} /> Partner/Proprietor {i + 1}</h4>
                                     {formData.partners.length > 1 && <button onClick={() => removePartner(i)} className="text-red-500 hover:bg-red-50 p-1 rounded"><Trash2 size={16} /></button>}
                                 </div>
@@ -282,16 +296,18 @@ const GstRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
             case 5:
                 return (
                     <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
-                        <div className="w-20 h-20 bg-beige/10 rounded-full flex items-center justify-center mx-auto mb-6 text-navy"><IndianRupee size={32} /></div>
+                        <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-navy"><Briefcase size={32} className="text-blue-600" /></div>
                         <h2 className="text-3xl font-bold text-navy mb-2">Payment Summary</h2>
                         <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
                             <div className="flex justify-between items-end mb-2">
                                 <span className="text-gray-500">Total Payable</span>
-                                <span className="text-3xl font-bold text-navy">₹{plans[selectedPlan].price}</span>
+                                <span className="text-3xl font-bold text-navy">₹{billDetails.total.toLocaleString()}</span>
                             </div>
+                            <p className="text-xs text-gray-400">Incl. of GST & Govt Fees</p>
                         </div>
-                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 transition">
-                            {isSubmitting ? 'Processing...' : 'Pay Now & Submit'}
+                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2">
+                            {isSubmitting ? 'Processing...' : 'Pay & Submit'}
+                            <ArrowRight size={18} />
                         </button>
                     </div>
                 );
@@ -299,44 +315,140 @@ const GstRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
         }
     };
 
-    return (
-        <div className={`bg-[#F8F9FA] ${isModal ? 'h-full overflow-y-auto p-6' : 'min-h-screen pb-20 pt-24 px-4 md:px-8'}`}>
-            {isSuccess ? (
-                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
-                    <CheckCircle size={48} className="text-slate mx-auto mb-4" />
-                    <h1 className="text-3xl font-bold text-navy mb-4">Registration Successful!</h1>
-                    <p className="text-gray-500 mb-8">Ref: {automationPayload?.submissionId}</p>
-                    <button onClick={() => isModal ? onClose() : navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Dashboard</button>
-                </div>
-            ) : (
-                <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
-                    <div className="w-full lg:w-80 space-y-6">
-                        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                            {['Business Details', 'Partners/Proprietor', 'Documents', 'Review', 'Payment'].map((step, i) => (
-                                <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-beige/10 border-beige' : 'opacity-60 cursor-pointer'}`} onClick={() => currentStep > i + 1 && setCurrentStep(i + 1)}>
-                                    <span className="font-bold text-sm text-navy">{step}</span>
-                                    {currentStep > i + 1 && <CheckCircle size={16} className="text-bronze" />}
-                                </div>
-                            ))}
-                        </div>
-                        <div className={`p-6 rounded-2xl border shadow-sm ${plans[selectedPlan].color} sticky top-24`}>
-                            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Current Plan</div>
-                            <div className="text-3xl font-bold text-gray-800 mb-2">{plans[selectedPlan].title}</div>
-                            <div className="text-3xl font-bold text-navy mb-4">₹{plans[selectedPlan].price}</div>
-                            <div className="space-y-3 mb-6">{plans[selectedPlan].features.map((feat, i) => <div key={i} className="flex gap-2 text-xs font-medium text-gray-600"><CheckCircle size={14} className="text-slate" /> {feat}</div>)}</div>
-                        </div>
+    if (isModal) {
+        return (
+            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR - DARK */}
+                <div className="w-72 bg-[#043E52] flex flex-col justify-between shrink-0 relative overflow-hidden">
+                    {/* Background Deco */}
+                    <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                        <div className="absolute right-0 top-0 w-48 h-48 bg-white blur-3xl rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                        <div className="absolute left-0 bottom-0 w-40 h-40 bg-bronze blur-3xl rounded-full translate-y-1/3 -translate-x-1/3"></div>
                     </div>
-                    <div className="flex-1">
-                        {renderStepContent()}
-                        {!isSuccess && currentStep < 5 && (
-                            <div className="mt-8 flex justify-between">
-                                <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
-                                <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg flex items-center gap-2">Next Step <ArrowRight size={18} /></button>
+
+                    <div className="p-8 relative z-10 flex-1 overflow-y-auto custom-scrollbar">
+                        <div className="flex items-center gap-3 mb-8 text-white">
+                            <div className="p-2 bg-white/10 rounded-lg">
+                                <Briefcase size={24} className="text-bronze" />
                             </div>
-                        )}
+                            <div>
+                                <h3 className="font-bold leading-tight">GST<br />Registration</h3>
+                                <p className="text-[10px] text-gray-400 uppercase tracking-widest">Advisory</p>
+                            </div>
+                        </div>
+
+                        {/* Steps Navigation */}
+                        <div className="space-y-6 relative">
+                            {/* Vertical Line */}
+                            <div className="absolute left-[15px] top-2 bottom-2 w-0.5 bg-white/10 z-0"></div>
+
+                            {['Company Details', 'Partners', 'Documents', 'Review', 'Payment'].map((step, i) => {
+                                const stepNum = i + 1;
+                                const isActive = currentStep === stepNum;
+                                const isCompleted = currentStep > stepNum;
+
+                                return (
+                                    <div
+                                        key={i}
+                                        className={`relative z-10 flex items-center gap-4 cursor-pointer group ${isActive ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`}
+                                        onClick={() => { if (isCompleted) setCurrentStep(stepNum) }}
+                                    >
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300
+                                            ${isActive ? 'bg-bronze border-bronze text-white scale-110 shadow-lg shadow-bronze/30' :
+                                                isCompleted ? 'bg-green-500 border-green-500 text-white' : 'bg-[#043E52] border-white/20 text-white/60'}`}
+                                        >
+                                            {isCompleted ? <CheckCircle size={14} /> : stepNum}
+                                        </div>
+                                        <span className={`text-sm font-medium transition-colors ${isActive ? 'text-white font-bold' : 'text-gray-400 group-hover:text-gray-200'}`}>
+                                            {step}
+                                        </span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Bottom Billing Card */}
+                    <div className="p-6 bg-black/20 backdrop-blur-sm border-t border-white/5 relative z-10 shrink-0">
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-xs text-gray-400">Total Payable</span>
+                            <span className="text-lg font-bold text-bronze">₹{billDetails.total.toLocaleString()}</span>
+                        </div>
+                        <p className="text-[10px] text-gray-500">{plans[selectedPlan]?.title} Plan</p>
                     </div>
                 </div>
-            )}
+
+                {/* RIGHT CONTENT AREA - LIGHT */}
+                <div className="flex-1 flex flex-col bg-[#F2F1EF] h-full overflow-hidden relative">
+                    {/* Header */}
+                    <div className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 shrink-0 z-20">
+                        <h2 className="font-bold text-navy text-lg">
+                            {currentStep === 1 && "Start Registration"}
+                            {currentStep === 2 && "Partner Details"}
+                            {currentStep === 3 && "Upload Documents"}
+                            {currentStep === 4 && "Review Application"}
+                            {currentStep === 5 && "Complete Payment"}
+                        </h2>
+                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-red-500 transition">
+                            <X size={18} />
+                        </button>
+                    </div>
+
+                    {/* Scrollable Form Content */}
+                    <div className="flex-1 overflow-y-auto p-8">
+                        <div className="max-w-3xl mx-auto pb-12">
+                            {isSuccess ? (
+                                <div className="flex flex-col items-center justify-center h-full pt-12 text-center">
+                                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-in zoom-in spin-in-90 duration-500">
+                                        <CheckCircle size={48} className="text-green-600" />
+                                    </div>
+                                    <h2 className="text-3xl font-bold text-navy mb-2">Registration Successful!</h2>
+                                    <p className="text-gray-500 max-w-md mb-8">
+                                        Your GST application (Ref: {automationPayload?.submissionId}) has been received.
+                                    </p>
+                                    <button onClick={onClose} className="px-8 py-3 bg-navy text-white rounded-xl font-bold hover:bg-black transition">
+                                        Return to Dashboard
+                                    </button>
+                                </div>
+                            ) : (
+                                renderStepContent()
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Sticky Footer */}
+                    {!isSuccess && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            {currentStep < 5 && (
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                                >
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className={` min-h-screen pb-20 pt-24 px-4 md:px-8 bg-[#F8F9FA]`}>
+            {/* Fallback for non-modal usage (if any) */}
+            <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm">
+                <h1 className="text-2xl font-bold mb-4">GST Registration</h1>
+                <p>Please use the detailed modal wizard for registration.</p>
+                <button onClick={() => navigate('/')} className="mt-4 text-blue-600 underline">Go Home</button>
+            </div>
         </div>
     );
 };

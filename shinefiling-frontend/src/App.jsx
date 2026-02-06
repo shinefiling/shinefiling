@@ -45,8 +45,8 @@ import ForeignCompanyPage from './pages/services/business_registration/ForeignCo
 import ForeignCompanyRegistration from './pages/services/business_registration/ForeignCompanyRegistration';
 import StartupAdvisoryPage from './pages/services/business_registration/StartupAdvisoryPage';
 import StartupAdvisoryRegistration from './pages/services/business_registration/StartupAdvisoryRegistration';
-import GstPage from './pages/services/tax_registration/GstPage';
-import GstRegistration from './pages/services/tax_registration/GstRegistration';
+import GstPage from './pages/services/tax_compliance/GSTRegistration';
+import GstRegistration from './pages/services/tax_compliance/GstRegistrationForm';
 import GSTMonthlyReturnPage from './pages/services/tax_compliance/GSTMonthlyReturnPage';
 import GSTMonthlyReturnRegistration from './pages/services/tax_compliance/GstMonthlyReturnRegistration';
 import GSTAnnualReturnPage from './pages/services/tax_compliance/GSTAnnualReturnPage';
@@ -225,19 +225,13 @@ import ApplyTanPan from './pages/services/business_certifications/ApplyTanPan';
 
 // Financial Services
 import CmaDataPreparation from './pages/services/financial_services/CmaDataPreparation';
-import ApplyCmaDataPreparation from './pages/services/financial_services/ApplyCmaDataPreparation';
 import ProjectReport from './pages/services/financial_services/ProjectReport';
-import ApplyProjectReport from './pages/services/financial_services/ApplyProjectReport';
 import BankLoanDocumentation from './pages/services/financial_services/BankLoanDocumentation';
-import ApplyBankLoanDocumentation from './pages/services/financial_services/ApplyBankLoanDocumentation';
 import CashFlowCompliance from './pages/services/financial_services/CashFlowCompliance';
-import ApplyCashFlowCompliance from './pages/services/financial_services/ApplyCashFlowCompliance';
 import StartupPitchDeck from './pages/services/financial_services/StartupPitchDeck';
-import ApplyStartupPitchDeck from './pages/services/financial_services/ApplyStartupPitchDeck';
 import BusinessValuation from './pages/services/financial_services/BusinessValuation';
-import ApplyBusinessValuation from './pages/services/financial_services/ApplyBusinessValuation';
 import VirtualCFO from './pages/services/financial_services/VirtualCFO';
-import ApplyVirtualCFO from './pages/services/financial_services/ApplyVirtualCFO';
+
 
 // Legal Notices
 import LegalNoticeDrafting from './pages/services/legal_notices/LegalNoticeDrafting';

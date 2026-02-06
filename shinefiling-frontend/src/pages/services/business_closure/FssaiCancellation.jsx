@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     CheckCircle, Coffee, FileText, AlertTriangle, HelpCircle, Shield,
@@ -6,16 +6,28 @@ import {
     Banknote, Gavel
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import FssaiCancellationRegistration from './FssaiCancellationRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const FssaiCancellation = ({ isLoggedIn }) => {
     const navigate = useNavigate();
 
+    const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState('state');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
+
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const handlePlanSelect = (plan) => {
-        const url = `/services/business-closure/fssai-cancellation/apply?plan=${plan}`;
-        if (isLoggedIn) navigate(url);
-        else navigate('/login', { state: { from: url } });
+        setSelectedPlan(plan);
+        const storedUser = localStorage.getItem('user');
+        if (isLoggedIn || !!storedUser) {
+            setShowRegistrationModal(true);
+        } else {
+            setAuthMode('login');
+            setShowAuthModal(true);
+        }
     };
 
     const faqs = [
@@ -28,6 +40,36 @@ const FssaiCancellation = ({ isLoggedIn }) => {
 
     return (
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
+
+            <AnimatePresence>
+                {showRegistrationModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6 animate-in fade-in duration-300">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <FssaiCancellationRegistration
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                planProp={selectedPlan}
+                                onClose={() => setShowRegistrationModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegistrationModal(true);
+                }}
+            />
 
             {/* HERO SECTION - PREMIUM DARK THEME */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -229,8 +271,8 @@ const FssaiCancellation = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Registration</h3>
                             <p className="text-slate-500 text-sm mb-6">Basic License.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?999</span>
-                                <span className="text-slate-400 line-through text-sm">?1,500</span>
+                                <span className="text-4xl font-black text-navy">₹999</span>
+                                <span className="text-slate-400 line-through text-sm">₹1,500</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -239,7 +281,7 @@ const FssaiCancellation = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Closure Intimation</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> No State License</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Basic</button>
+                            <button onClick={() => handlePlanSelect('registration')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Basic</button>
                         </motion.div>
 
                         {/* PLAN 2: STATE LICENSE - POPULAR */}
@@ -256,8 +298,8 @@ const FssaiCancellation = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">State License</h3>
                             <p className="text-gray-400 text-sm mb-6">State / Central License.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?1,499</span>
-                                <span className="text-gray-500 line-through text-sm">?2,500</span>
+                                <span className="text-5xl font-black text-white">₹1,499</span>
+                                <span className="text-gray-500 line-through text-sm">₹2,500</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -266,7 +308,7 @@ const FssaiCancellation = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> FSO Liaison</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Surrender Proof</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select State</button>
+                            <button onClick={() => handlePlanSelect('state')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select State</button>
                         </motion.div>
 
                         {/* PLAN 3: COMPLEX */}
@@ -280,8 +322,8 @@ const FssaiCancellation = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Death Case</h3>
                             <p className="text-slate-500 text-sm mb-6">Legal Heir Support.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?2,499</span>
-                                <span className="text-slate-400 line-through text-sm">?3,500</span>
+                                <span className="text-4xl font-black text-navy">₹2,499</span>
+                                <span className="text-slate-400 line-through text-sm">₹3,500</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -290,7 +332,7 @@ const FssaiCancellation = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Death Certificate Submission</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Priority Support</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Complex</button>
+                            <button onClick={() => handlePlanSelect('death')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Complex</button>
                         </motion.div>
                     </div>
                 </div>

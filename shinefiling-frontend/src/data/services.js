@@ -148,7 +148,7 @@ export const SERVICE_DATA = {
         color: 'teal',
         colorHex: '#14b8a6',
         items: [
-            'CMA Data Preparation', 'Project Report for Bank Loan', 'Business Valuation',
+            'CMA Data Preparation', 'Project Report for Bank Loan', 'Bank Loan Documentation', 'Business Valuation',
             'Startup Pitch Deck', 'Cash Flow Statement', 'Virtual CFO Services'
         ]
     }

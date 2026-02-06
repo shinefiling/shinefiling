@@ -1,19 +1,20 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     CheckCircle, Upload, ArrowLeft, ArrowRight, IndianRupee, Building, FileText, AlertCircle, Shield
 } from 'lucide-react';
 import { uploadFile, submitCompanyLlpCorrection } from '../../../api';
 
-const CompanyLLPDetailCorrectionRegistration = ({ isLoggedIn }) => {
+const CompanyLLPDetailCorrectionRegistration = ({ isLoggedIn, isModal = false, onClose, planProp }) => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [plan, setPlan] = useState('standard');
+    const [plan, setPlan] = useState(planProp || 'standard');
 
     // Protect Route
     useEffect(() => {
+        if (isModal) return;
         const storedUser = localStorage.getItem('user');
         const isReallyLoggedIn = isLoggedIn || !!storedUser;
 
@@ -21,14 +22,18 @@ const CompanyLLPDetailCorrectionRegistration = ({ isLoggedIn }) => {
             const planParam = searchParams.get('plan') || 'standard';
             navigate('/login', { state: { from: `/services/corrections/company-llp-correction/apply?plan=${planParam}` } });
         }
-    }, [isLoggedIn, navigate, searchParams]);
+    }, [isLoggedIn, navigate, searchParams, isModal]);
 
     useEffect(() => {
-        const planParam = searchParams.get('plan');
-        if (planParam && ['capital', 'standard', 'name'].includes(planParam.toLowerCase())) {
-            setPlan(planParam.toLowerCase());
+        if (planProp) {
+            setPlan(planProp.toLowerCase());
+        } else {
+            const planParam = searchParams.get('plan');
+            if (planParam && ['capital', 'standard', 'name'].includes(planParam.toLowerCase())) {
+                setPlan(planParam.toLowerCase());
+            }
         }
-    }, [searchParams]);
+    }, [searchParams, planProp]);
 
     const [formData, setFormData] = useState({
         companyName: '',
@@ -49,6 +54,25 @@ const CompanyLLPDetailCorrectionRegistration = ({ isLoggedIn }) => {
         'standard': { serviceFee: 3999, title: "Office Shift / Standard" },
         'name': { serviceFee: 7999, title: "Name Change" }
     };
+
+    // Memoize bill details
+    const billDetails = useMemo(() => {
+        const selectedPricing = pricing[plan] || pricing.standard;
+        const basePrice = selectedPricing.serviceFee;
+
+        // User Request: Total extra is 15% split into Platform Fee, Tax, and GST
+        const platformFee = Math.round(basePrice * 0.03); // 3%
+        const tax = Math.round(basePrice * 0.03);         // 3%
+        const gst = Math.round(basePrice * 0.09);         // 9%
+
+        return {
+            base: basePrice,
+            platformFn: platformFee,
+            tax: tax,
+            gst: gst,
+            total: basePrice + platformFee + tax + gst
+        };
+    }, [plan]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -112,7 +136,7 @@ const CompanyLLPDetailCorrectionRegistration = ({ isLoggedIn }) => {
                 submissionId: `ROC-C-${Date.now()}`,
                 userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
                 plan: plan,
-                amountPaid: pricing[plan].serviceFee,
+                amountPaid: billDetails.total,
                 status: "PAYMENT_SUCCESSFUL",
                 formData: formData,
                 documents: docsList
@@ -250,19 +274,21 @@ const CompanyLLPDetailCorrectionRegistration = ({ isLoggedIn }) => {
                 );
             case 5:
                 return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
+                    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center animate-in zoom-in-95">
                         <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-600">
                             <IndianRupee size={32} />
                         </div>
                         <h2 className="text-3xl font-bold text-navy mb-2">Professional Fee</h2>
                         <p className="text-gray-500 mb-8">Service fee for {pricing[plan].title}</p>
-                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="flex justify-between items-end">
-                                <span className="text-gray-500">Total</span>
-                                <span className="text-4xl font-bold text-navy">₹{pricing[plan].serviceFee}</span>
-                            </div>
-                            <p className="text-[10px] text-gray-400 text-right mt-1">+ MCA Govt Fees (as per actuals)</p>
+
+                        <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2 text-left">
+                            <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
                         </div>
+
                         <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition flex items-center justify-center gap-2">
                             {isSubmitting ? 'Processing...' : 'Pay & File Correction'}
                             {!isSubmitting && <ArrowRight size={18} />}
@@ -272,6 +298,106 @@ const CompanyLLPDetailCorrectionRegistration = ({ isLoggedIn }) => {
             default: return null;
         }
     };
+
+    if (isModal) {
+        return (
+            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK */}
+                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
+                            <span className="text-[#ED6E3F]">MCA</span>
+                            Services
+                        </h1>
+                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
+                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
+                            <p className="font-bold text-white leading-tight">{pricing[plan]?.title}</p>
+                            <p className="text-[#ED6E3F] font-bold mt-1">₹{billDetails.total.toLocaleString()}</p>
+                        </div>
+                    </div>
+
+                    {/* VERTICAL STEPPER */}
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {['Entity Info', 'Corrections', 'Documents', 'Review', 'Payment'].map((step, i) => (
+                            <div key={i}
+                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                            >
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* BOTTOM TOTAL */}
+                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
+                        <div className="flex justify-between items-end">
+                            <div>
+                                <p className="text-[10px] text-blue-200 uppercase">Total Payable</p>
+                                <p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p>
+                            </div>
+                            <IndianRupee className="text-white/20" size={24} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* RIGHT CONTENT: FORM */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    {/* Header Bar */}
+                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
+                        <h2 className="font-bold text-navy text-lg">
+                            {currentStep === 1 && "Entity Details"}
+                            {currentStep === 2 && "Correction Details"}
+                            {currentStep === 3 && "Documents"}
+                            {currentStep === 4 && "Review Application"}
+                            {currentStep === 5 && "Complete Payment"}
+                        </h2>
+                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition">
+                            <ArrowLeft size={18} className="rotate-180" />
+                        </button>
+                    </div>
+
+                    {/* Scrollable Area */}
+                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                        {isSuccess ? (
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Your request has been submitted successfully.</p>
+                                <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
+                            </div>
+                        ) : (
+                            renderStepContent()
+                        )}
+                    </div>
+
+                    {/* Sticky Footer */}
+                    {!isSuccess && currentStep < 5 && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            <button
+                                onClick={handleNext}
+                                className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                            >
+                                Save & Continue <ArrowRight size={16} />
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-[#F8F9FA] pb-20 pt-24 px-4 md:px-8">

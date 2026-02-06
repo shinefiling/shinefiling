@@ -1,7 +1,7 @@
-﻿import GstRegistration from '../tax_registration/GstRegistration';
+﻿import GstRegistration from './GstRegistrationForm';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Truck } from 'lucide-react';
+import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Truck, Handshake, Banknote } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const GSTRegistrationPage = ({ isLoggedIn }) => {
@@ -124,7 +124,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
                             >
                                 <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
-                                    Register Now
+                                    Start Registration
                                 </button>
                                 <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
                                     <Globe size={18} /> Learn More
@@ -132,50 +132,84 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                             </motion.div>
                         </div>
 
-                        {/* Pricing Card - Floating Glass Effect */}
+                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                {/* Top Gold Line */}
-                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                                {/* Top Gold Line (Matching other pages) */}
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
-                                <div className="absolute top-3 right-0 bg-[#043E52] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
-
-                                <div className="text-center mb-6 mt-4">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Standard Plan</h3>
-                                    <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">?1,499</h3>
-                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">?3k</span>
+                                {/* Header - COMPACT */}
+                                <div className="flex flex-col items-center justify-center text-center mb-5 mt-2">
+                                    <div className="mb-3 relative">
+                                        <div className="w-14 h-14 rounded-full bg-bronze/10 flex items-center justify-center">
+                                            <Shield size={28} className="text-bronze fill-bronze/20" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle size={14} className="text-green-500 fill-white" />
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees may apply</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">
+                                        Official <br />Registration
+                                    </h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">GST Registration</p>
                                 </div>
 
-                                <div className="space-y-4 mb-8 flex-1">
+                                {/* Divider */}
+                                <div className="h-px w-full bg-slate-100 mb-5"></div>
+
+                                {/* Stats Grid - COMPACT */}
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    {/* Left Stat */}
+                                    <div className="text-center relative">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Handshake size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">100%</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Process <br />Online</p>
+                                        <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
+                                    </div>
+
+                                    {/* Right Stat */}
+                                    <div className="text-center">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Shield size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Legal</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Protection <br />Assured</p>
+                                    </div>
+                                </div>
+
+                                {/* Check List - COMPACT */}
+                                <div className="space-y-3 mb-6 pl-2">
                                     {[
                                         "GST Application Filing",
                                         "Document Verification",
-                                        "ARN Generation",
-                                        "Digital Certificate",
-                                        "Expert Support",
-                                        "Harness Input Tax Credits"
+                                        "ARN Generation"
                                     ].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                                            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
-                                            <span className="leading-snug">{item}</span>
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="bg-green-100 rounded-full p-1 shrink-0">
+                                                <CheckCircle size={12} className="text-green-600" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-xs tracking-wide">{item}</span>
                                         </div>
                                     ))}
                                 </div>
 
+                                {/* CTA Button - COMPACT */}
                                 <button
                                     onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
-                                    className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >View Plans <ArrowRight size={18} /></button>
-                                <p className="text-center text-[10px] text-slate-400 mt-4 font-medium">
-                                    100% Online process • No hidden charges
+                                    className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                >
+                                    Start Registration <ArrowRight size={16} />
+                                </button>
+
+                                <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
+                                    Compare all plans below
                                 </p>
                             </div>
                         </motion.div>
@@ -385,7 +419,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                         </li>
                                     ))}
                                 </ul>
-                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                     Choose Standard
                                 </button>
                             </motion.div>

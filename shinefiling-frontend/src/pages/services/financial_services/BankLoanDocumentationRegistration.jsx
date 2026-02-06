@@ -52,6 +52,15 @@ const BankLoanDocumentationRegistration = ({ isModal, onClose, initialData = {} 
         }
     };
 
+    const billDetails = React.useMemo(() => {
+        const planPrice = plans[selectedPlan]?.price || 0;
+        const platformFee = Math.round(planPrice * 0.03); // 3% Platform Fee
+        const tax = Math.round(planPrice * 0.03); // 3% Tax
+        const gst = Math.round(planPrice * 0.09); // 9% GST
+        const total = planPrice + platformFee + tax + gst;
+        return { base: planPrice, platformFn: platformFee, tax, gst, total };
+    }, [selectedPlan]);
+
     useEffect(() => {
         const userStr = localStorage.getItem('user');
         if (userStr) {
@@ -109,17 +118,74 @@ const BankLoanDocumentationRegistration = ({ isModal, onClose, initialData = {} 
 
     const steps = ['Loan Context', 'Property Details', 'Documents', 'Review & Pay'];
 
+    if (isModal) {
+        return (
+            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK */}
+                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
+                            <span className="text-[#ED6E3F]">Loan</span>
+                            Docs
+                        </h1>
+                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
+                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
+                            <p className="font-bold text-white leading-tight">{plans[selectedPlan]?.title}</p>
+                            <p className="text-[#ED6E3F] font-bold mt-1">₹{billDetails.total.toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {steps.map((step, i) => (
+                            <div key={i} onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }} className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}>
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
+                        <div className="flex justify-between items-end">
+                            <div><p className="text-[10px] text-blue-200 uppercase">Total Payable</p><p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p></div>
+                            <IndianRupee className="text-white/20" size={24} />
+                        </div>
+                    </div>
+                </div>
+                {/* RIGHT CONTENT */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
+                        <h2 className="font-bold text-navy text-lg">{steps[currentStep - 1]}</h2>
+                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition"><X size={18} /></button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                        {success ? (
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Request Logged!</h2>
+                                <p className="text-gray-500 mt-2">Request received for <span className="font-bold text-navy">{plans[selectedPlan].title}</span>.</p>
+                                <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
+                            </div>
+                        ) : (
+                            renderStepContent()
+                        )}
+                    </div>
+                    {!success && currentStep < 4 && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30">Back</button>
+                            <button onClick={() => setCurrentStep(p => p + 1)} className="px-6 py-2.5 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2 text-sm">Next Step <ArrowRight size={16} /></button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     const renderStepContent = () => {
         switch (currentStep) {
             case 1: // Loan Context
                 return (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        {isModal && (
-                            <button onClick={onClose} className="absolute top-4 right-4 z-50 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-lg hover:bg-white transition text-navy border border-gray-200 group">
-                                <X size={20} className="group-hover:rotate-90 transition-transform duration-300" />
-                            </button>
-                        )}
-
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                             <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
                                 <Landmark size={20} className="text-blue-600" /> BANK INFORMATION
@@ -212,11 +278,11 @@ const BankLoanDocumentationRegistration = ({ isModal, onClose, initialData = {} 
                         <p className="text-gray-500 mb-8">Professional verification for loan approval.</p>
 
                         <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="text-sm text-gray-500 mb-1 uppercase tracking-wider font-bold">{plans[selectedPlan]?.title}</div>
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="text-gray-500">Service Fee</span>
-                                <span className="text-3xl font-bold text-navy">₹{plans[selectedPlan]?.price?.toLocaleString()}</span>
-                            </div>
+                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Base Price</span><span>₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Platform Fee</span><span>₹{billDetails.platformFn.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Tax</span><span>₹{billDetails.tax.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>GST</span><span>₹{billDetails.gst.toLocaleString()}</span></div>
+                            <div className="border-t pt-2 mt-2 flex justify-between items-end"><span className="text-gray-500 font-bold">Total Payable</span><span className="text-3xl font-bold text-navy">₹{billDetails.total.toLocaleString()}</span></div>
                         </div>
 
                         <div className="text-left bg-gray-50 p-4 rounded-xl mb-6 text-sm space-y-2 border border-gray-200">
@@ -234,10 +300,6 @@ const BankLoanDocumentationRegistration = ({ isModal, onClose, initialData = {} 
                             {loading ? 'Processing...' : 'Pay & Initiate Verification'}
                             {!loading && <ArrowRight size={18} />}
                         </button>
-
-                        <div className="flex items-center justify-center gap-2 mt-4 text-xs text-gray-400">
-                            <Lock size={12} /> Secure Multi-level Verification
-                        </div>
                     </div>
                 );
 

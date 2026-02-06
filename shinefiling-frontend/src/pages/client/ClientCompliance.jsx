@@ -132,72 +132,74 @@ const ClientCompliance = () => {
 
     return (
         <div className="animate-in fade-in duration-500 pb-10">
-            <h2 className="text-3xl font-bold text-[#043E52] dark:text-white mb-6">Compliance Calendar</h2>
+            <h2 className="text-xl font-bold text-[#043E52] dark:text-white mb-6">Calendar</h2>
 
-            <div className="flex flex-col lg:flex-row gap-6 h-auto lg:h-[600px]">
+            <div className="flex flex-col lg:flex-row gap-6 h-auto lg:h-[500px]">
                 {/* Left: Main Calendar */}
-                <div className="flex-1 bg-[#043E52] rounded-3xl p-8 lg:p-10 shadow-2xl relative overflow-hidden flex flex-col">
+                {/* Left: Main Calendar */}
+                <div className="flex-1 bg-[#043E52] rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col">
                     {/* Background Accents similar to image design */}
-                    <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#ED6E3F]/10 rounded-full blur-[80px]"></div>
-                    <div className="absolute bottom-0 right-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-[60px]"></div>
+                    <div className="absolute -top-16 -left-16 w-48 h-48 bg-[#ED6E3F]/10 rounded-full blur-[60px]"></div>
+                    <div className="absolute bottom-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-[40px]"></div>
 
                     {/* Month Header */}
-                    <div className="flex items-center justify-between mb-10 relative z-10">
-                        <button onClick={prevMonth} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition"><ChevronLeft size={24} /></button>
+                    <div className="flex items-center justify-between mb-6 relative z-10">
+                        <button onClick={prevMonth} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition"><ChevronLeft size={20} /></button>
                         <div className="text-center">
-                            <h3 className="text-2xl font-bold text-white tracking-wide">{months[currentDate.getMonth()]} {currentDate.getFullYear()}</h3>
+                            <h3 className="text-xl font-bold text-white tracking-wide">{months[currentDate.getMonth()]} {currentDate.getFullYear()}</h3>
                         </div>
-                        <button onClick={nextMonth} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition"><ChevronRight size={24} /></button>
+                        <button onClick={nextMonth} className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition"><ChevronRight size={20} /></button>
                     </div>
 
                     {/* Days Header */}
-                    <div className="grid grid-cols-7 mb-4 relative z-10">
+                    <div className="grid grid-cols-7 mb-2 relative z-10">
                         {daysOfWeek.map(d => (
-                            <div key={d} className="text-center text-xs font-bold text-slate-500 uppercase tracking-widest">{d}</div>
+                            <div key={d} className="text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">{d}</div>
                         ))}
                     </div>
 
                     {/* Calendar Grid */}
-                    <div className="grid grid-cols-7 gap-y-6 relative z-10 flex-1 content-start">
+                    <div className="grid grid-cols-7 gap-y-4 relative z-10 flex-1 content-start">
                         {calendarGrid}
                     </div>
                 </div>
 
                 {/* Right: Schedule Panel */}
-                <div className="w-full lg:w-[400px] bg-white dark:bg-[#1C3540] rounded-3xl p-8 shadow-xl flex flex-col border border-slate-100 dark:border-[#2A4550]">
-                    <div className="mb-8">
-                        <h4 className="text-[#ED6E3F] font-bold text-lg uppercase tracking-wider mb-1">{months[selectedDate.getMonth()]}</h4>
+                {/* Right: Schedule Panel */}
+                <div className="w-full lg:w-[350px] bg-white dark:bg-[#1C3540] rounded-2xl p-6 shadow-lg flex flex-col border border-slate-100 dark:border-[#2A4550]">
+                    <div className="mb-6">
+                        <h4 className="text-[#ED6E3F] font-bold text-sm uppercase tracking-wider mb-0.5">{months[selectedDate.getMonth()]}</h4>
                         <div className="flex items-baseline gap-2">
-                            <span className="text-6xl font-bold text-[#043E52] dark:text-white tracking-tighter">{selectedDate.getDate()}</span>
-                            <span className="text-xl text-slate-400 font-medium">{daysOfWeek[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay() - 1]}</span>
+                            <span className="text-5xl font-bold text-[#043E52] dark:text-white tracking-tighter">{selectedDate.getDate()}</span>
+                            <span className="text-base text-slate-400 font-medium">{daysOfWeek[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay() - 1]}</span>
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto no-scrollbar space-y-4">
+                    <div className="flex-1 overflow-y-auto no-scrollbar space-y-3">
                         {loading ? (
-                            <div className="flex justify-center py-10"><Loader2 className="animate-spin text-[#ED6E3F]" /></div>
+                            <div className="flex justify-center py-8"><Loader2 className="animate-spin text-[#ED6E3F]" size={20} /></div>
                         ) : selectedEvents.length > 0 ? (
                             selectedEvents.map((evt, i) => (
-                                <div key={i} className="group bg-[#FDFBF7] dark:bg-[#043E52] p-4 rounded-2xl border border-transparent hover:border-[#ED6E3F]/20 hover:shadow-lg transition-all cursor-pointer flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-2 h-12 rounded-full ${evt.status === 'Completed' ? 'bg-emerald-500' : evt.status === 'Overdue' ? 'bg-red-500' : 'bg-[#ED6E3F]'}`}></div>
+                                <div key={i} className="group bg-[#FDFBF7] dark:bg-[#043E52] p-3 rounded-xl border border-transparent hover:border-[#ED6E3F]/20 hover:shadow-md transition-all cursor-pointer flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-1.5 h-10 rounded-full ${evt.status === 'Completed' ? 'bg-emerald-500' : evt.status === 'Overdue' ? 'bg-red-500' : 'bg-[#ED6E3F]'}`}></div>
                                         <div>
-                                            <h5 className="font-bold text-[#043E52] dark:text-white text-sm mb-1">{evt.title}</h5>
-                                            <p className="text-xs text-slate-500 flex items-center gap-1">
+                                            <h5 className="font-bold text-[#043E52] dark:text-white text-xs mb-0.5">{evt.title}</h5>
+                                            <p className="text-[10px] text-slate-500 flex items-center gap-1">
                                                 <Clock size={10} /> {evt.time}
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="w-8 h-8 rounded-full bg-white dark:bg-[#1C3540] flex items-center justify-center text-slate-300 group-hover:text-[#ED6E3F] group-hover:translate-x-1 transition-all">
-                                        <ArrowRight size={14} />
+                                    <div className="w-6 h-6 rounded-full bg-white dark:bg-[#1C3540] flex items-center justify-center text-slate-300 group-hover:text-[#ED6E3F] group-hover:translate-x-1 transition-all">
+                                        <ArrowRight size={12} />
                                     </div>
                                 </div>
                             ))
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full text-slate-400 opacity-60">
-                                <CalendarIcon size={48} className="mb-4 text-slate-200 dark:text-slate-600" />
-                                <p className="text-sm font-medium">No events for this day</p>
-                                <button className="mt-4 text-[#ED6E3F] text-xs font-bold hover:underline">+ Add Reminder</button>
+                                <CalendarIcon size={32} className="mb-2 text-slate-200 dark:text-slate-600" />
+                                <p className="text-xs font-medium">No events for this day</p>
+                                <button className="mt-2 text-[#ED6E3F] text-[10px] font-bold hover:underline">+ Add Reminder</button>
                             </div>
                         )}
                     </div>

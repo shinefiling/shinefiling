@@ -60,7 +60,12 @@ public class CAController {
             // Maybe notify Super Admin
         } else if ("COMPLETED_FINAL".equalsIgnoreCase(status)) {
             request.setStatus("COMPLETED");
-            commissionService.processCommission(request);
+            if (payload.containsKey("generatedDocuments")) {
+                request.setGeneratedDocuments((String) payload.get("generatedDocuments"));
+            }
+            if (commissionService != null) {
+                commissionService.processCommission(request);
+            }
         } else {
             return ResponseEntity.badRequest().body(Map.of("message", "Invalid status"));
         }

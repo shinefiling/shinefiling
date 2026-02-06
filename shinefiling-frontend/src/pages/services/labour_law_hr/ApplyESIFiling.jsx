@@ -2,11 +2,11 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     CheckCircle, Upload, FileText,
-    ArrowLeft, ArrowRight, IndianRupee, AlertTriangle, Activity
+    ArrowLeft, ArrowRight, IndianRupee, AlertTriangle, Activity, X
 } from 'lucide-react';
 import { uploadFile, submitESIFiling } from '../../../api';
 
-const ApplyESIFiling = ({ isLoggedIn }) => {
+const ApplyESIFiling = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -15,13 +15,14 @@ const ApplyESIFiling = ({ isLoggedIn }) => {
 
     // Protect Route
     useEffect(() => {
+        if (isModal) return;
         const storedUser = localStorage.getItem('user');
         const isReallyLoggedIn = isLoggedIn || !!storedUser;
 
         if (!isReallyLoggedIn) {
             navigate('/login', { state: { from: `/services/labour/esi-filing/apply` } });
         }
-    }, [isLoggedIn, navigate]);
+    }, [isLoggedIn, navigate, isModal]);
 
     useEffect(() => {
         const plan = searchParams.get('plan');
@@ -104,6 +105,43 @@ const ApplyESIFiling = ({ isLoggedIn }) => {
         } catch (error) {
             console.error("Upload failed", error);
             alert("File upload failed. Please try again.");
+        }
+    };
+
+    const submitApplication = async () => {
+        setIsSubmitting(true);
+        setApiError(null);
+        try {
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
+                id: k,
+                filename: v.name,
+                fileUrl: v.fileUrl,
+                type: k
+            }));
+
+            const finalPayload = {
+                submissionId: `ESIF-${Date.now()}`,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                esicCode: formData.esicCode,
+                plan: planType,
+                amountPaid: getTotalPrice(),
+                status: "PAYMENT_SUCCESSFUL",
+                formData: {
+                    filingMonth: formData.filingMonth,
+                    coveredEmployees: formData.coveredEmployees,
+                    totalWages: formData.totalWages
+                },
+                documents: docsList
+            };
+
+            await submitESIFiling(finalPayload);
+            setIsSuccess(true);
+
+        } catch (error) {
+            console.error(error);
+            setApiError(error.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -207,45 +245,14 @@ const ApplyESIFiling = ({ isLoggedIn }) => {
         }
     };
 
-    const submitApplication = async () => {
-        setIsSubmitting(true);
-        setApiError(null);
-        try {
-            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
-                id: k,
-                filename: v.name,
-                fileUrl: v.fileUrl,
-                type: k
-            }));
-
-            const finalPayload = {
-                submissionId: `ESIF-${Date.now()}`,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
-                esicCode: formData.esicCode,
-                plan: planType,
-                amountPaid: getTotalPrice(),
-                status: "PAYMENT_SUCCESSFUL",
-                formData: {
-                    filingMonth: formData.filingMonth,
-                    coveredEmployees: formData.coveredEmployees,
-                    totalWages: formData.totalWages
-                },
-                documents: docsList
-            };
-
-            await submitESIFiling(finalPayload);
-            setIsSuccess(true);
-
-        } catch (error) {
-            console.error(error);
-            setApiError(error.message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
     return (
-        <div className="min-h-screen bg-[#FFF0F5] pb-20 pt-24 px-4 md:px-8">
+        <div className={isModal ? "h-full overflow-hidden bg-white" : "min-h-screen bg-[#FFF0F5] pb-20 pt-24 px-4 md:px-8"}>
+            {isModal && (
+                <button onClick={onClose} className="absolute top-4 right-4 z-50 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-lg hover:bg-white transition text-navy border border-gray-200 group">
+                    <X size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+                </button>
+            )}
+
             {isSuccess ? (
                 <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
                     <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -255,15 +262,21 @@ const ApplyESIFiling = ({ isLoggedIn }) => {
                     <p className="text-gray-500 mb-8">
                         We have received your filing details for <b>{formData.filingMonth}</b>. Our team will process the return shortly.
                     </p>
-                    <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
+                    {isModal ? (
+                        <button onClick={onClose} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Close Window</button>
+                    ) : (
+                        <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
+                    )}
                 </div>
             ) : (
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition"><ArrowLeft size={14} /> Back</button>
-                        <h1 className="text-3xl font-black text-[#2B3446]">ESI Monthly Filing</h1>
-                        <p className="text-gray-500">Fast & Accurate ESI Contribution Filing</p>
-                    </div>
+                    {!isModal && (
+                        <div className="mb-8">
+                            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition"><ArrowLeft size={14} /> Back</button>
+                            <h1 className="text-3xl font-black text-[#2B3446]">ESI Monthly Filing</h1>
+                            <p className="text-gray-500">Fast & Accurate ESI Contribution Filing</p>
+                        </div>
+                    )}
 
                     <div className="flex flex-col lg:flex-row gap-8">
                         <div className="w-full lg:w-80 space-y-6">

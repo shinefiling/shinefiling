@@ -57,92 +57,92 @@ const ClientSupport = ({ setActiveTab }) => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-[#043E52] dark:text-white">Help & Support</h2>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1">We are here to help you 24/7.</p>
+                    <h2 className="text-xl font-bold text-[#043E52] dark:text-white">Help & Support</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">We are here to help you 24/7.</p>
                 </div>
             </div>
 
             {/* Quick Actions Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Live Chat Card */}
-                <div onClick={() => setIsChatOpen(true)} className="bg-[#043E52] rounded-3xl p-8 text-white relative overflow-hidden group cursor-pointer shadow-xl hover:scale-[1.02] transition-transform">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#ED6E3F]/20 rounded-full blur-[40px] translate-x-1/2 -translate-y-1/3"></div>
-                    <div className="relative z-10 flex flex-col h-full justify-between min-h-[160px]">
-                        <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md mb-4 border border-white/10">
-                            <MessageCircle size={24} className="text-[#ED6E3F]" />
+                <div onClick={() => setIsChatOpen(true)} className="bg-[#043E52] rounded-2xl p-4 text-white relative overflow-hidden group cursor-pointer shadow-lg hover:scale-[1.02] transition-transform">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-[#ED6E3F]/20 rounded-full blur-[30px] translate-x-1/2 -translate-y-1/3"></div>
+                    <div className="relative z-10 flex flex-col h-full justify-between min-h-[110px]">
+                        <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-md mb-2 border border-white/10">
+                            <MessageCircle size={16} className="text-[#ED6E3F]" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold mb-1">Live Chat</h3>
-                            <p className="text-white/60 text-xs mb-4">Connect with our support team instantly.</p>
-                            <span className="inline-flex items-center gap-2 text-[#ED6E3F] text-sm font-bold group-hover:gap-3 transition-all">Start Chat <ChevronRight size={16} /></span>
+                            <h3 className="text-sm font-bold mb-0.5">Live Chat</h3>
+                            <p className="text-white/60 text-[9px] mb-2 leading-tight">Connect with support instantly.</p>
+                            <span className="inline-flex items-center gap-1 text-[#ED6E3F] text-[10px] font-bold group-hover:gap-1.5 transition-all">Start Chat <ChevronRight size={12} /></span>
                         </div>
                     </div>
                 </div>
 
                 {/* Call Support */}
-                <div className="bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] rounded-3xl p-8 shadow-sm group hover:border-[#ED6E3F] transition-colors cursor-pointer">
-                    <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-6">
-                        <Phone size={24} />
+                <div className="bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] rounded-2xl p-4 shadow-sm group hover:border-[#ED6E3F] transition-colors cursor-pointer">
+                    <div className="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-lg flex items-center justify-center mb-3">
+                        <Phone size={16} />
                     </div>
-                    <h3 className="text-xl font-bold text-[#043E52] dark:text-white mb-1">Call Support</h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">Speak directly with your relationship manager.</p>
-                    <p className="text-lg font-mono font-bold text-slate-800 dark:text-white">+91 98765 43210</p>
+                    <h3 className="text-sm font-bold text-[#043E52] dark:text-white mb-0.5">Call Support</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-[9px] mb-2 leading-tight">Speak with your manager.</p>
+                    <p className="text-sm font-mono font-bold text-slate-800 dark:text-white">+91 98765 43210</p>
                 </div>
 
                 {/* Email / Ticket */}
-                <div className="bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] rounded-3xl p-8 shadow-sm group hover:border-[#ED6E3F] transition-colors cursor-pointer">
-                    <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-6">
-                        <Mail size={24} />
+                <div className="bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] rounded-2xl p-4 shadow-sm group hover:border-[#ED6E3F] transition-colors cursor-pointer">
+                    <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center mb-3">
+                        <Mail size={16} />
                     </div>
-                    <h3 className="text-xl font-bold text-[#043E52] dark:text-white mb-1">Email Us</h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">Get a response within 24 hours.</p>
-                    <p className="text-sm font-bold text-slate-800 dark:text-white">support@shinefiling.com</p>
+                    <h3 className="text-sm font-bold text-[#043E52] dark:text-white mb-0.5">Email Us</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-[9px] mb-2 leading-tight">Response within 24 hours.</p>
+                    <p className="text-[10px] font-bold text-slate-800 dark:text-white">support@shinefiling.com</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* FAQs */}
-                <div className="space-y-6">
-                    <h3 className="font-bold text-xl text-[#043E52] dark:text-white">Frequently Asked Questions</h3>
-                    <div className="space-y-4">
+                <div className="space-y-4">
+                    <h3 className="font-bold text-lg text-[#043E52] dark:text-white">Frequently Asked Questions</h3>
+                    <div className="space-y-3">
                         {faqs.map((faq, i) => (
-                            <div key={i} className="bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] p-6 rounded-2xl shadow-sm hover:shadow-md transition">
-                                <h4 className="font-bold text-slate-800 dark:text-white text-sm mb-2 flex items-start gap-3">
-                                    <HelpCircle size={18} className="text-[#ED6E3F] shrink-0 mt-0.5" />
+                            <div key={i} className="bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] p-4 rounded-xl shadow-sm hover:shadow-md transition">
+                                <h4 className="font-bold text-slate-800 dark:text-white text-xs mb-1.5 flex items-start gap-2">
+                                    <HelpCircle size={16} className="text-[#ED6E3F] shrink-0 mt-0.5" />
                                     {faq.q}
                                 </h4>
-                                <p className="text-slate-500 dark:text-slate-400 text-sm pl-8 leading-relaxed">{faq.a}</p>
+                                <p className="text-slate-500 dark:text-slate-400 text-[10px] pl-6 leading-relaxed">{faq.a}</p>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Ticket Form */}
-                <div className="bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] p-8 rounded-3xl shadow-sm">
-                    <h3 className="font-bold text-xl text-[#043E52] dark:text-white mb-6">Raise a Ticket</h3>
-                    <form onSubmit={handleSubmitTicket} className="space-y-4">
+                <div className="bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] p-6 rounded-2xl shadow-sm">
+                    <h3 className="font-bold text-lg text-[#043E52] dark:text-white mb-4">Raise a Ticket</h3>
+                    <form onSubmit={handleSubmitTicket} className="space-y-3">
                         <div>
-                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1 mb-1 block">Subject</label>
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider pl-1 mb-1 block">Subject</label>
                             <input
                                 required
                                 value={ticket.subject}
                                 onChange={(e) => setTicket({ ...ticket, subject: e.target.value })}
-                                className="w-full bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#ED6E3F]"
+                                className="w-full bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#ED6E3F]"
                                 placeholder="E.g. Issue with payment"
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1 mb-1 block">Description</label>
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider pl-1 mb-1 block">Description</label>
                             <textarea
                                 required
-                                rows={4}
+                                rows={3}
                                 value={ticket.message}
                                 onChange={(e) => setTicket({ ...ticket, message: e.target.value })}
-                                className="w-full bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#ED6E3F]"
+                                className="w-full bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#ED6E3F]"
                                 placeholder="Describe your issue in detail..."
                             />
                         </div>
-                        <button disabled={loading} className="w-full py-3.5 bg-[#043E52] dark:bg-[#ED6E3F] text-white font-bold rounded-xl shadow-lg hover:bg-black dark:hover:bg-[#A57753] transition disabled:opacity-50">
+                        <button disabled={loading} className="w-full py-2.5 bg-[#043E52] dark:bg-[#ED6E3F] text-white font-bold text-xs rounded-xl shadow-lg hover:bg-black dark:hover:bg-[#A57753] transition disabled:opacity-50">
                             {loading ? 'Submitting...' : 'Submit Ticket'}
                         </button>
                     </form>
@@ -190,8 +190,8 @@ const ClientSupport = ({ setActiveTab }) => {
                                 {chatMessages.map((msg) => (
                                     <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                                         <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.sender === 'user'
-                                                ? 'bg-[#ED6E3F] text-white rounded-tr-none'
-                                                : 'bg-white dark:bg-[#1C3540] text-slate-700 dark:text-slate-200 rounded-tl-none'
+                                            ? 'bg-[#ED6E3F] text-white rounded-tr-none'
+                                            : 'bg-white dark:bg-[#1C3540] text-slate-700 dark:text-slate-200 rounded-tl-none'
                                             }`}>
                                             {msg.text}
                                         </div>

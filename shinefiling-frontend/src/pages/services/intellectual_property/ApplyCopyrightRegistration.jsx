@@ -6,15 +6,20 @@ import {
 } from 'lucide-react';
 import { uploadFile, submitCopyrightRegistration } from '../../../api';
 
-const ApplyCopyrightRegistration = ({ isLoggedIn }) => {
+const ApplyCopyrightRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [planType, setPlanType] = useState('standard');
+    const [planType, setPlanType] = useState(planProp || 'standard');
+    useEffect(() => {
+        if (planProp) setPlanType(planProp);
+    }, [planProp]);
+
 
     // Protect Route
     useEffect(() => {
+        if (isModal) return;
         const storedUser = localStorage.getItem('user');
         const isReallyLoggedIn = isLoggedIn || !!storedUser;
 
@@ -92,6 +97,39 @@ const ApplyCopyrightRegistration = ({ isLoggedIn }) => {
         } catch (error) {
             console.error("Upload failed", error);
             alert("File upload failed. Please try again.");
+        }
+    };
+
+    const submitApplication = async () => {
+        setIsSubmitting(true);
+        setApiError(null);
+        try {
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
+                id: k,
+                filename: v.name,
+                fileUrl: v.fileUrl,
+                type: k
+            }));
+
+            const finalPayload = {
+                submissionId: `CPR-${Date.now()}`,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                workTitle: formData.workTitle,
+                plan: planType,
+                amountPaid: getTotalPrice(),
+                status: "PAYMENT_SUCCESSFUL",
+                formData: formData,
+                documents: docsList
+            };
+
+            await submitCopyrightRegistration(finalPayload);
+            setIsSuccess(true);
+
+        } catch (error) {
+            console.error(error);
+            setApiError(error.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -211,41 +249,8 @@ const ApplyCopyrightRegistration = ({ isLoggedIn }) => {
         }
     };
 
-    const submitApplication = async () => {
-        setIsSubmitting(true);
-        setApiError(null);
-        try {
-            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
-                id: k,
-                filename: v.name,
-                fileUrl: v.fileUrl,
-                type: k
-            }));
-
-            const finalPayload = {
-                submissionId: `CPR-${Date.now()}`,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
-                workTitle: formData.workTitle,
-                plan: planType,
-                amountPaid: getTotalPrice(),
-                status: "PAYMENT_SUCCESSFUL",
-                formData: formData,
-                documents: docsList
-            };
-
-            await submitCopyrightRegistration(finalPayload);
-            setIsSuccess(true);
-
-        } catch (error) {
-            console.error(error);
-            setApiError(error.message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
     return (
-        <div className="min-h-screen bg-[#FFF7ED] pb-20 pt-24 px-4 md:px-8">
+        <div className={isModal ? "h-full overflow-hidden bg-white" : "min-h-screen bg-[#FFF7ED] pb-20 pt-24 px-4 md:px-8"}>
             {isSuccess ? (
                 <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
                     <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -255,18 +260,26 @@ const ApplyCopyrightRegistration = ({ isLoggedIn }) => {
                     <p className="text-gray-500 mb-8">
                         Your application for <b>{formData.workTitle}</b> has been received.
                     </p>
-                    <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
+                    {isModal ? (
+                        <button onClick={onClose} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Close</button>
+                    ) : (
+                        <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
+                    )}
                 </div>
             ) : (
-                <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition"><ArrowLeft size={14} /> Back</button>
+                <div className="max-w-7xl mx-auto h-full flex flex-col">
+                    <div className="mb-6 shrink-0">
+                        {!isModal && (
+                            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition">
+                                <ArrowLeft size={14} /> Back
+                            </button>
+                        )}
                         <h1 className="text-3xl font-black text-[#2B3446]">Copyright Registration</h1>
                         <p className="text-gray-500">Protect your Creative Works</p>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="w-full lg:w-80 space-y-6">
+                    <div className="flex flex-col lg:flex-row gap-8 h-full overflow-hidden">
+                        <div className={`w-full lg:w-80 space-y-6 ${isModal ? 'shrink-0' : ''}`}>
                             <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
                                 {['Work Details', 'Upload Files', 'Payment'].map((step, i) => (
                                     <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-orange-50 border-orange-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
@@ -287,7 +300,7 @@ const ApplyCopyrightRegistration = ({ isLoggedIn }) => {
                             </div>
                         </div>
 
-                        <div className="flex-1">
+                        <div className="flex-1 overflow-y-auto pb-8">
                             {renderStepContent()}
 
                             {apiError && (

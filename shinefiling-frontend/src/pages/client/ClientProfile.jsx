@@ -1,11 +1,16 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Save, Lock, Database, Camera, ShieldCheck, ChevronRight, Fingerprint, AlertTriangle } from 'lucide-react';
+import {
+    User, Mail, Phone, MapPin, Save, Lock, Camera, ShieldCheck,
+    ChevronRight, AlertTriangle, CreditCard, Bell, Key, Shield
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 import { updateUserProfile, uploadProfilePicture } from '../../api';
 
 const ClientProfile = () => {
     const [user, setUser] = useState({});
     const [loading, setLoading] = useState(false);
     const [msg, setMsg] = useState({ type: '', text: '' });
+    const [activeTab, setActiveTab] = useState('personal');
 
     useEffect(() => {
         const stored = localStorage.getItem('user');
@@ -50,135 +55,250 @@ const ClientProfile = () => {
         }
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 10 },
+        visible: { opacity: 1, y: 0 }
+    };
+
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 pb-10">
-            {/* Header */}
-            <div>
-                <h2 className="text-3xl font-bold text-[#043E52] dark:text-white">Account Settings</h2>
-                <p className="text-slate-500 dark:text-slate-400 mt-1">Manage your personal information and security preferences.</p>
+        <div className="max-w-6xl mx-auto pb-12 animate-in fade-in duration-500">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-xl font-black text-[#043E52] tracking-tight">Account Settings</h1>
+                    <p className="text-xs text-slate-500 mt-1 font-medium">Manage your personal profile and security preferences.</p>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-100 shadow-sm">
+                    <ShieldCheck size={14} />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">KYC Verified Account</span>
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Main Profile Form */}
-                <div className="lg:col-span-2 bg-white dark:bg-[#043E52] rounded-3xl shadow-sm border border-slate-100 dark:border-[#1C3540] overflow-hidden">
-                    <div className="p-8 border-b border-slate-100 dark:border-[#1C3540] flex justify-between items-center bg-[#FDFBF7] dark:bg-[#043E52]">
-                        <h3 className="font-bold text-lg text-[#043E52] dark:text-white flex items-center gap-2">
-                            Profile Details
-                        </h3>
-                        <span className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-emerald-100 dark:border-emerald-800">
-                            <ShieldCheck size={12} /> KYC Verified
-                        </span>
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {/* Left Sidebar Navigation */}
+                <div className="lg:col-span-1 space-y-2">
+                    {[
+                        { id: 'personal', label: 'Personal Info', icon: User },
+                        { id: 'security', label: 'Login & Security', icon: Lock },
+                        { id: 'notifications', label: 'Notifications', icon: Bell },
+                        { id: 'billing', label: 'Billing Methods', icon: CreditCard },
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${activeTab === tab.id
+                                ? 'bg-[#043E52] text-white shadow-lg shadow-[#043E52]/20'
+                                : 'bg-white text-slate-500 hover:bg-slate-50 hover:text-[#043E52]'
+                                }`}
+                        >
+                            <tab.icon size={18} className={activeTab === tab.id ? 'text-[#ED6E3F]' : 'opacity-70'} />
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
 
-                    <div className="p-8">
-                        <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-10">
-                            <div className="relative group cursor-pointer">
-                                <div className="overflow-hidden rounded-full border-4 border-white shadow-2xl w-32 h-32 relative z-10">
-                                    {user.profileImage ? (
-                                        <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full bg-[#ED6E3F] flex items-center justify-center text-white">
-                                            {user.fullName ? <span className="text-4xl font-bold">{user.fullName.charAt(0)}</span> : <User size={48} />}
+                {/* Main Content Area */}
+                <div className="lg:col-span-3">
+                    <motion.div
+                        key={activeTab}
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden"
+                    >
+                        {activeTab === 'personal' && (
+                            <div className="p-8">
+                                {/* Profile Picture Section */}
+                                <motion.div variants={itemVariants} className="flex items-center gap-6 mb-8 pb-8 border-b border-slate-100">
+                                    <div className="relative group">
+                                        <div className="w-24 h-24 rounded-xl overflow-hidden ring-4 ring-slate-50 shadow-lg bg-slate-100 flex items-center justify-center">
+                                            {user.profileImage ? (
+                                                <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span className="text-3xl font-bold text-[#043E52]">{user.fullName?.charAt(0)}</span>
+                                            )}
                                         </div>
+                                        <label className="absolute -bottom-2 -right-2 w-8 h-8 bg-[#ED6E3F] text-white rounded-lg shadow-md flex items-center justify-center cursor-pointer hover:bg-[#d65a2e] transition-all hover:scale-110">
+                                            <Camera size={14} />
+                                            <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-[#043E52]">Profile Photo</h3>
+                                        <p className="text-xs text-slate-500 mt-1 mb-3">Upload a clear photo to help us identify you.</p>
+                                        <div className="flex gap-2">
+                                            <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded">JPG</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded">PNG</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded">Max 5MB</span>
+                                        </div>
+                                    </div>
+                                </motion.div>
+
+                                {/* Form Fields */}
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <motion.div variants={itemVariants} className="space-y-1.5">
+                                            <label className="text-[11px] font-bold text-[#043E52] uppercase tracking-wider flex items-center gap-1">
+                                                Full Name <span className="text-red-400">*</span>
+                                            </label>
+                                            <div className="relative group">
+                                                <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#ED6E3F] transition-colors" />
+                                                <input
+                                                    name="fullName"
+                                                    value={user.fullName || ''}
+                                                    onChange={handleChange}
+                                                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg font-bold text-sm text-slate-700 focus:outline-none focus:border-[#ED6E3F] focus:ring-2 focus:ring-[#ED6E3F]/10 transition-all"
+                                                />
+                                            </div>
+                                        </motion.div>
+
+                                        <motion.div variants={itemVariants} className="space-y-1.5">
+                                            <label className="text-[11px] font-bold text-[#043E52] uppercase tracking-wider flex items-center gap-1">
+                                                Email Address <Lock size={10} className="text-slate-400" />
+                                            </label>
+                                            <div className="relative group">
+                                                <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                                                <input
+                                                    disabled
+                                                    value={user.email || ''}
+                                                    className="w-full pl-9 pr-3 py-2.5 bg-slate-100 border border-slate-200 rounded-lg font-bold text-sm text-slate-500 cursor-not-allowed"
+                                                />
+                                            </div>
+                                        </motion.div>
+
+                                        <motion.div variants={itemVariants} className="space-y-1.5">
+                                            <label className="text-[11px] font-bold text-[#043E52] uppercase tracking-wider flex items-center gap-1">
+                                                Phone Number
+                                            </label>
+                                            <div className="relative group">
+                                                <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#ED6E3F] transition-colors" />
+                                                <input
+                                                    name="mobile"
+                                                    value={user.mobile || ''}
+                                                    onChange={handleChange}
+                                                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg font-bold text-sm text-slate-700 focus:outline-none focus:border-[#ED6E3F] focus:ring-2 focus:ring-[#ED6E3F]/10 transition-all"
+                                                />
+                                            </div>
+                                        </motion.div>
+
+                                        <motion.div variants={itemVariants} className="space-y-1.5">
+                                            <label className="text-[11px] font-bold text-[#043E52] uppercase tracking-wider flex items-center gap-1">
+                                                Location / City
+                                            </label>
+                                            <div className="relative group">
+                                                <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#ED6E3F] transition-colors" />
+                                                <input
+                                                    name="address"
+                                                    value={user.address || ''}
+                                                    onChange={handleChange}
+                                                    placeholder="Chennai, India"
+                                                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg font-bold text-sm text-slate-700 focus:outline-none focus:border-[#ED6E3F] focus:ring-2 focus:ring-[#ED6E3F]/10 transition-all"
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    </div>
+
+                                    {/* Notifications */}
+                                    {msg.text && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className={`p-4 rounded-xl flex items-center gap-3 text-sm font-bold ${msg.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'}`}
+                                        >
+                                            {msg.type === 'success' ? <ShieldCheck size={18} /> : <AlertTriangle size={18} />}
+                                            {msg.text}
+                                        </motion.div>
                                     )}
+
+                                    {/* Actions */}
+                                    <motion.div variants={itemVariants} className="pt-6 mt-6 border-t border-slate-100 flex justify-end">
+                                        <button
+                                            onClick={handleSave}
+                                            disabled={loading}
+                                            className="px-6 py-3 bg-[#043E52] text-white font-bold rounded-lg shadow-md hover:bg-[#065a75] hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                                        >
+                                            {loading ? (
+                                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                            ) : (
+                                                <Save size={16} />
+                                            )}
+                                            {loading ? 'Saving Changes...' : 'Save Profile Changes'}
+                                        </button>
+                                    </motion.div>
                                 </div>
-                                <label className="absolute bottom-0 right-0 z-20 bg-[#043E52] text-white p-2.5 rounded-full shadow-lg cursor-pointer hover:bg-[#ED6E3F] transition hover:scale-110">
-                                    <Camera size={18} />
-                                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                                </label>
-                            </div>
-
-                            <div className="text-center md:text-left pt-2">
-                                <h2 className="text-2xl font-bold text-[#043E52] dark:text-white mb-1">{user.fullName || 'User Name'}</h2>
-                                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-3">Client Account • ID: <span className="font-mono text-xs bg-slate-100 dark:bg-[#1C3540] px-1.5 py-0.5 rounded">#{user.id || '---'}</span></p>
-                                <p className="text-xs text-slate-400 max-w-xs">Update your photo and personal details here.</p>
-                            </div>
-                        </div>
-
-                        {msg.text && (
-                            <div className={`mb-8 p-4 rounded-2xl text-sm font-bold flex items-center gap-2 ${msg.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
-                                {msg.type === 'success' ? <ShieldCheck size={18} /> : <AlertTriangle size={18} />} {msg.text}
                             </div>
                         )}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Full Name</label>
-                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#ED6E3F] focus-within:ring-4 focus-within:ring-[#ED6E3F]/10 transition">
-                                    <User size={18} className="text-slate-400" />
-                                    <input name="fullName" value={user.fullName || ''} onChange={handleChange} className="bg-transparent w-full text-slate-800 dark:text-white font-bold text-sm focus:outline-none" />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Email Address</label>
-                                <div className="flex items-center gap-3 p-4 bg-slate-100 dark:bg-[#152a33] border border-slate-200 dark:border-[#2A4550] rounded-xl cursor-not-allowed opacity-75">
-                                    <Mail size={18} className="text-slate-400" />
-                                    <input disabled value={user.email || ''} className="bg-transparent w-full text-slate-500 dark:text-slate-400 font-bold text-sm focus:outline-none cursor-not-allowed" />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Mobile Number</label>
-                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#ED6E3F] focus-within:ring-4 focus-within:ring-[#ED6E3F]/10 transition">
-                                    <Phone size={18} className="text-slate-400" />
-                                    <input name="mobile" value={user.mobile || ''} onChange={handleChange} type="tel" className="bg-transparent w-full text-slate-800 dark:text-white font-bold text-sm focus:outline-none" />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Location</label>
-                                <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#1C3540] border border-slate-200 dark:border-[#2A4550] rounded-xl focus-within:border-[#ED6E3F] focus-within:ring-4 focus-within:ring-[#ED6E3F]/10 transition">
-                                    <MapPin size={18} className="text-slate-400" />
-                                    <input name="address" value={user.address || ''} onChange={handleChange} placeholder="City, State" className="bg-transparent w-full text-slate-800 dark:text-white font-bold text-sm focus:outline-none" />
-                                </div>
-                            </div>
-                        </div>
+                        {activeTab === 'security' && (
+                            <div className="p-8">
+                                <motion.div variants={itemVariants} className="max-w-2xl">
+                                    <h3 className="text-xl font-bold text-[#043E52] mb-6">Login & Security</h3>
 
-                        <div className="mt-10 pt-8 border-t border-slate-100 dark:border-[#1C3540] flex justify-end">
-                            <button onClick={handleSave} disabled={loading} className="px-8 py-3.5 bg-[#043E52] dark:bg-[#ED6E3F] text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center gap-2 disabled:opacity-50 text-sm">
-                                <Save size={18} /> {loading ? 'Saving Changes...' : 'Save Changes'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                                    <div className="space-y-4">
+                                        <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between hover:border-[#ED6E3F]/30 hover:bg-[#ED6E3F]/5 transition-all group cursor-pointer">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#043E52] shadow-sm">
+                                                    <Key size={20} />
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-[#043E52]">Change Password</h4>
+                                                    <p className="text-sm text-slate-500">Update your password regularly to stay safe</p>
+                                                </div>
+                                            </div>
+                                            <ChevronRight size={20} className="text-slate-300 group-hover:text-[#ED6E3F] transition-colors" />
+                                        </div>
 
-                {/* Sidebar Boxes */}
-                <div className="space-y-6">
-                    {/* DigiLocker */}
-                    <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-[60px] translate-x-1/3 -translate-y-1/3"></div>
-                        <div className="relative z-10">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md border border-white/20">
-                                    <Database size={24} />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-xl leading-none">DigiLocker</h4>
-                                    <span className="text-[10px] opacity-70 uppercase tracking-wider font-bold">Connected India</span>
-                                </div>
+                                        <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between hover:border-[#ED6E3F]/30 hover:bg-[#ED6E3F]/5 transition-all group cursor-pointer">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#043E52] shadow-sm">
+                                                    <Shield size={20} />
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-[#043E52]">Two-Factor Authentication</h4>
+                                                    <p className="text-sm text-slate-500">Add an extra layer of security to your account</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] bg-slate-200 text-slate-600 px-2 py-1 rounded font-bold uppercase">Disabled</span>
+                                                <ChevronRight size={20} className="text-slate-300 group-hover:text-[#ED6E3F] transition-colors" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
                             </div>
-                            <p className="text-blue-100/80 text-sm mb-8 leading-relaxed font-medium">Auto-fetch Aadhaar, PAN, and other KYC documents securely from government servers.</p>
-                            <button className="w-full py-3.5 bg-white text-blue-700 rounded-xl text-sm font-bold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl">
-                                Connect Wallet
-                            </button>
-                        </div>
-                    </div>
+                        )}
 
-                    {/* Security */}
-                    <div className="bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] p-6 rounded-3xl shadow-sm">
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="p-3 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-xl border border-rose-100 dark:border-rose-900/30">
-                                <Lock size={20} />
-                            </div>
-                            <h4 className="font-bold text-[#043E52] dark:text-white text-lg">Login & Security</h4>
-                        </div>
-                        <div className="space-y-3">
-                            {['Change Password', 'Two-Factor Authentication', 'Active Sessions'].map((item, i) => (
-                                <button key={i} className="w-full text-left py-4 px-5 rounded-2xl text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-[#1C3540] hover:bg-slate-100 dark:hover:bg-[#2A4550] transition-all flex justify-between items-center group">
-                                    {item}
-                                    <ChevronRight size={16} className="text-slate-300 group-hover:text-[#ED6E3F] group-hover:translate-x-1 transition-all" />
+                        {activeTab === 'notifications' && (
+                            <div className="p-12 text-center">
+                                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
+                                    <Bell size={32} />
+                                </div>
+                                <h3 className="text-xl font-bold text-[#043E52] mb-2">Notification Preferences</h3>
+                                <p className="text-slate-500">Manage how you receive updates and alerts.</p>
+                                <button className="mt-6 px-6 py-2 border-2 border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors">
+                                    Configure Alerts
                                 </button>
-                            ))}
-                        </div>
-                    </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'billing' && (
+                            <div className="p-12 text-center">
+                                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
+                                    <CreditCard size={32} />
+                                </div>
+                                <h3 className="text-xl font-bold text-[#043E52] mb-2">Billing Methods</h3>
+                                <p className="text-slate-500">Securely manage your saved cards and payment details.</p>
+                                <button className="mt-6 px-6 py-2 border-2 border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors">
+                                    Add Payment Method
+                                </button>
+                            </div>
+                        )}
+                    </motion.div>
                 </div>
             </div>
         </div>

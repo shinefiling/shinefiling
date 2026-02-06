@@ -54,11 +54,11 @@ const ClientNotifications = () => {
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-[#043E52] dark:text-white flex items-center gap-3">
+                    <h2 className="text-xl font-bold text-[#043E52] dark:text-white flex items-center gap-3">
                         Notifications
-                        <span className="text-sm font-medium bg-[#ED6E3F]/10 text-[#ED6E3F] px-3 py-1 rounded-full border border-[#ED6E3F]/20">{unreadCount} New</span>
+                        <span className="text-xs font-medium bg-[#ED6E3F]/10 text-[#ED6E3F] px-2 py-0.5 rounded-full border border-[#ED6E3F]/20">{unreadCount} New</span>
                     </h2>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1">Stay updated with your application status and alerts.</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Stay updated with your application status and alerts.</p>
                 </div>
                 {unreadCount > 0 && (
                     <button
@@ -86,9 +86,9 @@ const ClientNotifications = () => {
                                     className={`p-6 transition-all group flex items-start gap-5 ${isRead ? 'bg-white dark:bg-[#043E52] hover:bg-slate-50 dark:hover:bg-[#152a30]' : 'bg-[#ED6E3F]/5 dark:bg-[#1C3540]/30 hover:bg-[#ED6E3F]/10 dark:hover:bg-[#1C3540]/50'}`}
                                 >
                                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${notification.type === 'SUCCESS' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' :
-                                            notification.type === 'WARNING' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' :
-                                                notification.type === 'ERROR' ? 'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400' :
-                                                    'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                        notification.type === 'WARNING' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' :
+                                            notification.type === 'ERROR' ? 'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400' :
+                                                'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
                                         }`}>
                                         {notification.type === 'SUCCESS' ? <CheckCircle2 size={18} /> :
                                             notification.type === 'WARNING' ? <AlertTriangle size={18} /> :

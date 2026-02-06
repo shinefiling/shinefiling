@@ -236,8 +236,8 @@ const MyOrders = () => {
             {/* Header & Filter */}
             <div className="flex flex-col md:flex-row justify-between items-end gap-6">
                 <div>
-                    <h2 className="text-3xl font-bold text-[#015A62] dark:text-white">My Applications</h2>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1">Track and manage your ongoing business services.</p>
+                    <h2 className="text-xl font-bold text-[#015A62] dark:text-white">My Applications</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Track and manage your ongoing business services.</p>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
@@ -430,6 +430,17 @@ const MyOrders = () => {
                                 }
                                 if (!normalized.uploadedDocuments) normalized.uploadedDocuments = {};
 
+                                // Parse Generated Documents (Deliverables)
+                                try {
+                                    if (typeof selectedOrder.generatedDocuments === 'string') {
+                                        normalized.generatedDocuments = JSON.parse(selectedOrder.generatedDocuments);
+                                    } else {
+                                        normalized.generatedDocuments = selectedOrder.generatedDocuments || {};
+                                    }
+                                } catch (e) {
+                                    normalized.generatedDocuments = {};
+                                }
+
                                 return (
                                     <div className="space-y-8">
                                         {/* 1. Status Stepper */}
@@ -566,13 +577,21 @@ const MyOrders = () => {
                                                         )}
                                                     </div>
 
-                                                    {(selectedOrder.generatedDocuments && (Array.isArray(selectedOrder.generatedDocuments) ? selectedOrder.generatedDocuments.length > 0 : Object.keys(selectedOrder.generatedDocuments).length > 0)) && (
+                                                    {(normalized.generatedDocuments && (Array.isArray(normalized.generatedDocuments) ? normalized.generatedDocuments.length > 0 : Object.keys(normalized.generatedDocuments).length > 0)) && (
                                                         <div className="mt-4 pt-4 border-t border-slate-100 dark:border-[#1C3540]">
                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Deliverables</p>
-                                                            {/* Render deliverables similar to docs but with emerald theme - condensed for brevity */}
-                                                            <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-900/30 flex items-center gap-3">
-                                                                <Download size={16} className="text-emerald-600" />
-                                                                <span className="text-xs font-bold text-emerald-800 dark:text-emerald-400">Download All Files</span>
+                                                            <div className="space-y-2">
+                                                                {Object.entries(normalized.generatedDocuments).map(([key, val]) => (
+                                                                    <a href={val.url || val} target="_blank" rel="noreferrer" key={key} className="flex items-center gap-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition border border-emerald-100 dark:border-emerald-900/30">
+                                                                        <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-800/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                                                                            <Download size={16} />
+                                                                        </div>
+                                                                        <div className="min-w-0">
+                                                                            <p className="text-xs font-bold text-emerald-900 dark:text-emerald-100 truncate capitalize">{key.replace(/_/g, ' ')}</p>
+                                                                            <span className="text-[9px] text-emerald-600 dark:text-emerald-400">Download File</span>
+                                                                        </div>
+                                                                    </a>
+                                                                ))}
                                                             </div>
                                                         </div>
                                                     )}

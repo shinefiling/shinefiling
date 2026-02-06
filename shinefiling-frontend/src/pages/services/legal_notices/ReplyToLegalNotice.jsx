@@ -1,20 +1,31 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     CheckCircle, Scale, ShieldAlert, FileText, Send, HelpCircle, Shield,
-    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, X, MessageSquare
+    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, X, MessageSquare, Handshake
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import LegalNoticeReplyRegistration from './LegalNoticeReplyRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const ReplyToLegalNotice = ({ isLoggedIn }) => {
     const navigate = useNavigate();
+    const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState('standard');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const handlePlanSelect = (plan) => {
-        const url = `/services/legal-notices/reply-to-legal-notice/apply?plan=${plan}`;
-        if (isLoggedIn) navigate(url);
-        else navigate('/login', { state: { from: url } });
+        setSelectedPlan(plan);
+        const storedUser = localStorage.getItem('user');
+        if (isLoggedIn || !!storedUser) {
+            setShowRegistrationModal(true);
+        } else {
+            setAuthMode('login');
+            setShowAuthModal(true);
+        }
     };
 
     const faqs = [
@@ -27,6 +38,36 @@ const ReplyToLegalNotice = ({ isLoggedIn }) => {
 
     return (
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
+
+            <AnimatePresence>
+                {showRegistrationModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6 animate-in fade-in duration-300">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <LegalNoticeReplyRegistration
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                planProp={selectedPlan}
+                                onClose={() => setShowRegistrationModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegistrationModal(true);
+                }}
+            />
 
             {/* HERO SECTION - PREMIUM DARK THEME */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -121,35 +162,85 @@ const ReplyToLegalNotice = ({ isLoggedIn }) => {
                             </div>
                         </div>
 
-                        {/* Pricing Card - Floating Glass Effect */}
+                        {/* Trust Card - Official - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Essential</div>
-                                <div className="text-center mb-6 mt-4">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Standard Reply</h3>
-                                    <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">?1,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ Notice</span>
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                                {/* Top Gold Line */}
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+
+                                {/* Header - COMPACT */}
+                                <div className="flex flex-col items-center justify-center text-center mb-5 mt-2">
+                                    <div className="mb-3 relative">
+                                        <div className="w-14 h-14 rounded-full bg-bronze/10 flex items-center justify-center">
+                                            <Shield size={28} className="text-bronze fill-bronze/20" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle size={14} className="text-green-500 fill-white" />
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Most Common</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">
+                                        Legal Reply <br />Notice Defense
+                                    </h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">Official Service</p>
                                 </div>
-                                <div className="space-y-4 mb-8 flex-1">
-                                    {["Analysis of Received Notice", "Point-by-Point Rebuttal", "Relevant Case Laws Citation", "Drafted by Senior Lawyer", "Sent via Regd. Post"].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                                            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
-                                            <span className="leading-snug">{item}</span>
+
+                                {/* Divider */}
+                                <div className="h-px w-full bg-slate-100 mb-5"></div>
+
+                                {/* Stats Grid - COMPACT */}
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    {/* Left Stat */}
+                                    <div className="text-center relative">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Handshake size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">100%</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Expert <br />Rebuttal</p>
+                                        <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
+                                    </div>
+
+                                    {/* Right Stat */}
+                                    <div className="text-center">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Shield size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Legal</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Defense <br />Assured</p>
+                                    </div>
+                                </div>
+
+                                {/* Check List - COMPACT */}
+                                <div className="space-y-3 mb-6 pl-2">
+                                    {[
+                                        "Case Analysis",
+                                        "Strong Response",
+                                        "Lawyer Verified"
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="bg-green-100 rounded-full p-1 shrink-0">
+                                                <CheckCircle size={12} className="text-green-600" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-xs tracking-wide">{item}</span>
                                         </div>
                                     ))}
                                 </div>
+
+                                {/* CTA Button - COMPACT */}
                                 <button
                                     onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
-                                    className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >View Plans <ArrowRight size={18} /></button>
+                                    className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                >
+                                    Draft Reply <ArrowRight size={16} />
+                                </button>
+
+                                <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
+                                    Compare all plans below
+                                </p>
                             </div>
                         </motion.div>
 
@@ -178,8 +269,8 @@ const ReplyToLegalNotice = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Notice Review</h3>
                             <p className="text-slate-500 text-sm mb-6">Expert opinion on notice.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?499</span>
-                                <span className="text-slate-400 line-through text-sm">?1,000</span>
+                                <span className="text-4xl font-black text-navy">₹499</span>
+                                <span className="text-slate-400 line-through text-sm">₹1,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -188,7 +279,7 @@ const ReplyToLegalNotice = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Suggest Next Steps</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> No Reply Drafting</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Review</button>
+                            <button onClick={() => handlePlanSelect('review')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Review</button>
                         </motion.div>
 
                         {/* PLAN 2: STANDARD - POPULAR */}
@@ -205,8 +296,8 @@ const ReplyToLegalNotice = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard Reply</h3>
                             <p className="text-gray-400 text-sm mb-6">Draft & Send Reply.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?1,999</span>
-                                <span className="text-gray-500 line-through text-sm">?3,000</span>
+                                <span className="text-5xl font-black text-white">₹1,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹3,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -215,7 +306,7 @@ const ReplyToLegalNotice = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Counter Allegations</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Sent via Regd. Post</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Standard</button>
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Standard</button>
                         </motion.div>
 
                         {/* PLAN 3: COMPLEX */}
@@ -229,8 +320,8 @@ const ReplyToLegalNotice = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Complex / Urgent</h3>
                             <p className="text-slate-500 text-sm mb-6">High Value Disputes.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?3,499</span>
-                                <span className="text-slate-400 line-through text-sm">?5,000</span>
+                                <span className="text-4xl font-black text-navy">₹3,499</span>
+                                <span className="text-slate-400 line-through text-sm">₹5,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -239,7 +330,7 @@ const ReplyToLegalNotice = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Detailed Case Law Research</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> 24hr Priority Service</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Complex</button>
+                            <button onClick={() => handlePlanSelect('urgent')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Complex</button>
                         </motion.div>
                     </div>
                 </div>
@@ -368,13 +459,13 @@ const ReplyToLegalNotice = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Notice from Court?</h4>
                             <p className="text-gray-300 text-sm mb-4">If you received a Court Summons instead of a Notice, the process is different.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
                     </div>
                 </div>
 
             </div>
-        </div>
+        </div >
     );
 };
 export default ReplyToLegalNotice;

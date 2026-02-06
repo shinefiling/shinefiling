@@ -6,16 +6,32 @@ import {
     Briefcase, Target, Layers, PieChart, Lightbulb, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import AuthModal from '../../../components/auth/AuthModal';
+import ApplyStartupIndia from './ApplyStartupIndia';
 
 const StartupIndia = ({ isLoggedIn }) => {
+    const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
+    const [selectedPlan, setSelectedPlan] = useState('startup');
+
     const navigate = useNavigate();
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const handlePlanSelect = (plan) => {
-        const url = `/services/business-certifications/startup-india/apply?plan=${plan}`;
-        if (isLoggedIn) navigate(url);
-        else navigate('/login', { state: { from: url } });
+        setSelectedPlan(plan);
+        if (isLoggedIn) {
+            setShowRegisterModal(true);
+        } else {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                setShowRegisterModal(true);
+            } else {
+                setAuthMode('login');
+                setShowAuthModal(true);
+            }
+        }
     };
 
     const faqs = [
@@ -437,7 +453,36 @@ const StartupIndia = ({ isLoggedIn }) => {
                 </div>
 
             </div>
-        </div>
+        
+            <AnimatePresence>
+                {showRegisterModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <ApplyStartupIndia
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                planProp={selectedPlan}
+                                onClose={() => setShowRegisterModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegisterModal(true);
+                }}
+            />
+</div>
     );
 };
 

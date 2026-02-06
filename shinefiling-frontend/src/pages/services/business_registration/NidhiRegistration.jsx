@@ -1,67 +1,21 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     CheckCircle, CreditCard, FileText,
-    User, MapPin, Plus, Trash2, ArrowLeft, ArrowRight, X, IndianRupee, Landmark, Building, Users
+    User, MapPin, Plus, Trash2, ArrowLeft, ArrowRight, X, Building, Users, Shield, Receipt, AlertCircle, Lock, Landmark
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { submitNidhiRegistration, uploadFile } from '../../../api';
 
+// CONSTANTS
+const validatePlan = (plan) => {
+    return ['basic', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'basic';
+};
+
+const PLATFORM_FEE = 0;
+const GST_RATE = 0.18;
+
 const NidhiRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
-    const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
-    const { user } = useAuth();
-
-    // Protect Route (Skip if in Modal)
-    useEffect(() => {
-        if (isModal) return;
-        const storedUser = localStorage.getItem('user');
-        const isReallyLoggedIn = isLoggedIn || !!storedUser;
-
-        if (!isReallyLoggedIn) {
-            const plan = searchParams.get('plan') || 'basic';
-            navigate('/login', { state: { from: `/services/nidhi-company-registration?plan=${plan}` } });
-        }
-    }, [isLoggedIn, navigate, searchParams, isModal]);
-
-    const [currentStep, setCurrentStep] = useState(1);
-
-    const validatePlan = (plan) => {
-        return ['basic', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'basic';
-    };
-
-    const [selectedPlan, setSelectedPlan] = useState(validatePlan(planProp || searchParams.get('plan')));
-
-    useEffect(() => {
-        if (planProp) {
-            setSelectedPlan(validatePlan(planProp));
-        } else {
-            const planParam = searchParams.get('plan');
-            if (planParam && ['basic', 'standard', 'premium'].includes(planParam.toLowerCase())) {
-                setSelectedPlan(planParam.toLowerCase());
-            }
-        }
-    }, [searchParams, planProp]);
-
-    const [formData, setFormData] = useState({
-        companyNameOption1: '',
-        companyNameOption2: '',
-        authorizedCapital: '10 Lakhs',
-        registeredAddress: '',
-        bankPreference: '',
-        directors: [
-            { id: 1, name: '', email: '', mobile: '', pan: '', aadhaar: '' },
-            { id: 2, name: '', email: '', mobile: '', pan: '', aadhaar: '' },
-            { id: 3, name: '', email: '', mobile: '', pan: '', aadhaar: '' }
-        ]
-    });
-
-    const [files, setFiles] = useState({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
-    const [automationPayload, setAutomationPayload] = useState(null);
-
-    // Plans Configuration
     const plans = {
         basic: {
             price: 12999,
@@ -83,8 +37,76 @@ const NidhiRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) =
         }
     };
 
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const planParam = searchParams.get('plan');
+
+    // Protect Route
+    useEffect(() => {
+        if (isModal) return;
+        const storedUser = localStorage.getItem('user');
+        const isReallyLoggedIn = isLoggedIn || !!storedUser;
+
+        if (!isReallyLoggedIn) {
+            const plan = planParam || 'basic';
+            navigate('/login', { state: { from: `/services/nidhi-company-registration?plan=${plan}` } });
+        }
+    }, [isLoggedIn, navigate, planParam, isModal]);
+
+    const [currentStep, setCurrentStep] = useState(1);
+
+    // Initialize state
+    const [selectedPlan, setSelectedPlan] = useState(() => validatePlan(planProp || planParam));
+
+    // Sync Plan
+    useEffect(() => {
+        const targetPlan = validatePlan(planProp || planParam);
+        if (targetPlan !== selectedPlan) {
+            setSelectedPlan(targetPlan);
+        }
+    }, [planParam, planProp, selectedPlan]);
+
+    const [formData, setFormData] = useState({
+        companyNameOption1: '',
+        companyNameOption2: '',
+        authorizedCapital: '10 Lakhs',
+        registeredAddress: '',
+        bankPreference: '',
+        directors: [
+            { id: 1, name: '', email: '', mobile: '', pan: '', aadhaar: '' },
+            { id: 2, name: '', email: '', mobile: '', pan: '', aadhaar: '' },
+            { id: 3, name: '', email: '', mobile: '', pan: '', aadhaar: '' }
+        ]
+    });
+
+    const [files, setFiles] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [automationPayload, setAutomationPayload] = useState(null);
+    const [errors, setErrors] = useState({});
+
+    // Memoize bill details
+    const billDetails = useMemo(() => {
+        const plan = plans[selectedPlan] || plans.basic;
+        const basePrice = plan.price;
+
+        const tax = Math.round(basePrice * GST_RATE);
+        const platformFee = PLATFORM_FEE;
+
+        return {
+            base: basePrice,
+            platformFn: platformFee,
+            tax: tax,
+            total: basePrice + platformFee + tax
+        };
+    }, [selectedPlan]);
+
     const handleInputChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
     };
 
     const handleDirectorChange = (index, e) => {
@@ -97,7 +119,7 @@ const NidhiRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) =
         if (formData.directors.length < 7) {
             setFormData({
                 ...formData,
-                directors: [...formData.directors, { id: formData.directors.length + 1, name: '', email: '', mobile: '', pan: '', aadhaar: '' }]
+                directors: [...formData.directors, { id: Date.now(), name: '', email: '', mobile: '', pan: '', aadhaar: '' }]
             });
         }
     };
@@ -111,6 +133,21 @@ const NidhiRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) =
         setFormData({ ...formData, directors: newDirectors });
     };
 
+    const validateStep = (step) => {
+        const newErrors = {};
+        let isValid = true;
+        if (step === 1) {
+            if (!formData.companyNameOption1) { newErrors.companyNameOption1 = "Required"; isValid = false; }
+            if (!formData.registeredAddress) { newErrors.registeredAddress = "Required"; isValid = false; }
+        }
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    const handleNext = () => {
+        if (validateStep(currentStep)) setCurrentStep(prev => Math.min(5, prev + 1));
+    };
+
     const handleFileUpload = async (e, key) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -118,15 +155,12 @@ const NidhiRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) =
         try {
             let category = 'nidhi_docs';
             if (key.includes('director')) category = 'director_docs';
-
             const response = await uploadFile(file, category);
-
             setFiles(prev => ({
                 ...prev,
                 [key]: {
                     originalFile: file,
                     name: response.originalName || file.name,
-                    preview: file.type.includes('image') ? URL.createObjectURL(file) : null,
                     fileUrl: response.fileUrl,
                     fileId: response.id
                 }
@@ -137,7 +171,7 @@ const NidhiRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) =
         }
     };
 
-    const handleSubmit = async () => {
+    const submitApplication = async () => {
         setIsSubmitting(true);
         try {
             const docsList = Object.entries(files).map(([k, v]) => ({
@@ -152,14 +186,11 @@ const NidhiRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) =
                 userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.directors[0].email,
                 formData: formData,
                 documents: docsList,
-                status: "PAYMENT_SUCCESSFUL"
+                status: "PAYMENT_SUCCESSFUL",
+                amount: billDetails.total
             };
 
-            const formDataObj = new FormData();
-            formDataObj.append('data', JSON.stringify(finalPayload));
-
-            const response = await submitNidhiRegistration(formDataObj);
-
+            const response = await submitNidhiRegistration(finalPayload);
             setAutomationPayload(response);
             setIsSuccess(true);
         } catch (error) {
@@ -172,217 +203,202 @@ const NidhiRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) =
 
     const renderStepContent = () => {
         switch (currentStep) {
-            case 1: // Company Details
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><Building size={20} className="text-amber-600" /> COMPANY DETAILS</h3>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <input name="companyNameOption1" placeholder="Proposed Company Name 1" className="p-3 rounded-lg border border-gray-200 w-full" onChange={handleInputChange} value={formData.companyNameOption1} />
-                                <input name="companyNameOption2" placeholder="Proposed Company Name 2" className="p-3 rounded-lg border border-gray-200 w-full" onChange={handleInputChange} value={formData.companyNameOption2} />
-
-                                <select name="authorizedCapital" className="p-3 rounded-lg border border-gray-200 w-full" onChange={handleInputChange} value={formData.authorizedCapital}>
-                                    <option value="5 Lakhs">5 Lakhs</option>
-                                    <option value="10 Lakhs">10 Lakhs</option>
-                                    <option value="15 Lakhs">15 Lakhs</option>
-                                </select>
-                                <input name="registeredAddress" placeholder="Registered Office Address" className="p-3 rounded-lg border border-gray-200 w-full" onChange={handleInputChange} value={formData.registeredAddress} />
-
-                                {selectedPlan !== 'basic' && (
-                                    <input name="bankPreference" placeholder="Bank Preference" className="p-3 rounded-lg border border-gray-200 w-full md:col-span-2" onChange={handleInputChange} value={formData.bankPreference} />
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                );
-            case 2: // Directors
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-navy flex items-center gap-2"><Users size={20} className="text-amber-600" /> DIRECTOR DETAILS</h2>
-                            {formData.directors.length < 7 && (
-                                <button onClick={addDirector} className="text-sm font-bold text-amber-600 hover:bg-amber-50 px-3 py-1 rounded-lg transition">+ Add Director</button>
+            case 1: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-navy mb-3 text-sm flex items-center gap-2"><Building size={16} /> COMPANY DETAILS</h3>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            <input name="companyNameOption1" value={formData.companyNameOption1} onChange={handleInputChange} placeholder="Proposed Name 1" className={`col-span-2 p-2 text-sm border rounded-lg ${errors.companyNameOption1 ? 'border-red-500' : ''}`} />
+                            <input name="companyNameOption2" value={formData.companyNameOption2} onChange={handleInputChange} placeholder="Proposed Name 2" className="col-span-2 p-2 text-sm border rounded-lg" />
+                            <select name="authorizedCapital" value={formData.authorizedCapital} onChange={handleInputChange} className="p-2 text-sm border rounded-lg">
+                                <option value="5 Lakhs">5 Lakhs</option>
+                                <option value="10 Lakhs">10 Lakhs</option>
+                                <option value="15 Lakhs">15 Lakhs</option>
+                            </select>
+                            <input name="registeredAddress" value={formData.registeredAddress} onChange={handleInputChange} placeholder="Registered Address" className={`p-2 text-sm border rounded-lg ${errors.registeredAddress ? 'border-red-500' : ''}`} />
+                            {selectedPlan !== 'basic' && (
+                                <input name="bankPreference" value={formData.bankPreference} onChange={handleInputChange} placeholder="Bank Preference" className="col-span-2 p-2 text-sm border rounded-lg" />
                             )}
                         </div>
-
+                    </div>
+                </div>
+            );
+            case 2: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    {formData.directors.map((dir, i) => (
+                        <div key={dir.id || i} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm relative">
+                            <div className="flex justify-between mb-2">
+                                <h4 className="font-bold text-xs uppercase text-gray-700">Director {i + 1}</h4>
+                                {formData.directors.length > 3 && <Trash2 size={14} onClick={() => removeDirector(i)} className="cursor-pointer text-red-500" />}
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-3">
+                                <input name="name" value={dir.name} onChange={(e) => handleDirectorChange(i, e)} placeholder="Full Name" className="p-2 text-sm border rounded-lg" />
+                                <input name="pan" value={dir.pan} onChange={(e) => handleDirectorChange(i, e)} placeholder="PAN" className="p-2 text-sm border rounded-lg" />
+                                <input name="email" value={dir.email} onChange={(e) => handleDirectorChange(i, e)} placeholder="Email" className="p-2 text-sm border rounded-lg" />
+                                <input name="mobile" value={dir.mobile} onChange={(e) => handleDirectorChange(i, e)} placeholder="Mobile" className="p-2 text-sm border rounded-lg" />
+                            </div>
+                        </div>
+                    ))}
+                    {formData.directors.length < 7 && <button onClick={addDirector} className="w-full py-3 border-2 border-dashed rounded-xl text-gray-400 font-bold text-xs">+ ADD DIRECTOR</button>}
+                </div>
+            );
+            case 3: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-navy mb-3 text-sm">KYC DOCUMENTS</h3>
                         <div className="space-y-4">
-                            {formData.directors.map((director, index) => (
-                                <div key={index} className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm relative">
-                                    <div className="flex justify-between items-center mb-4 bg-amber-50/50 p-2 rounded-lg">
-                                        <h3 className="font-bold text-sm text-navy">Director #{index + 1}</h3>
-                                        {formData.directors.length > 3 && <button onClick={() => removeDirector(index)} className="text-red-500 hover:bg-red-50 p-1 rounded transition"><Trash2 size={16} /></button>}
-                                    </div>
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        <input name="name" placeholder="Full Name" value={director.name} onChange={(e) => handleDirectorChange(index, e)} className="p-3 rounded-lg border border-gray-200 w-full" />
-                                        <input name="email" placeholder="Email" value={director.email} onChange={(e) => handleDirectorChange(index, e)} className="p-3 rounded-lg border border-gray-200 w-full" />
-                                        <input name="mobile" placeholder="Mobile" value={director.mobile} onChange={(e) => handleDirectorChange(index, e)} className="p-3 rounded-lg border border-gray-200 w-full" />
-                                        <input name="pan" placeholder="PAN Number" value={director.pan} onChange={(e) => handleDirectorChange(index, e)} className="p-3 rounded-lg border border-gray-200 w-full" />
+                            {formData.directors.map((dir, i) => (
+                                <div key={i} className="border border-dashed p-3 rounded-lg bg-gray-50">
+                                    <p className="text-xs font-bold mb-2 uppercase">{dir.name || `Director ${i + 1}`}</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        <div className="flex items-center gap-2 border p-2 rounded bg-white">
+                                            <span className="text-[10px]">PAN</span>
+                                            {files[`director_${i + 1}_pan`] ? <CheckCircle size={12} className="text-green-500" /> : <input type="file" onChange={(e) => handleFileUpload(e, `director_${i + 1}_pan`)} className="w-16 text-[8px]" />}
+                                        </div>
+                                        <div className="flex items-center gap-2 border p-2 rounded bg-white">
+                                            <span className="text-[10px]">Aadhaar</span>
+                                            {files[`director_${i + 1}_aadhaar`] ? <CheckCircle size={12} className="text-green-500" /> : <input type="file" onChange={(e) => handleFileUpload(e, `director_${i + 1}_aadhaar`)} className="w-16 text-[8px]" />}
+                                        </div>
                                     </div>
                                 </div>
                             ))}
-                        </div>
-                    </div>
-                );
-            case 3: // Documents
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><FileText size={20} className="text-slate" /> UPLOAD DOCUMENTS</h3>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                {formData.directors.map((director, i) => (
-                                    <div key={i} className="space-y-3 p-4 bg-gray-50 rounded-xl">
-                                        <h4 className="font-bold text-xs text-gray-500 uppercase">{director.name || `Director ${i + 1}`}</h4>
-                                        <div className="flex justify-between items-center bg-white p-2 rounded border border-gray-200">
-                                            <span className="text-xs">PAN Card</span>
-                                            <div className="flex items-center gap-2">
-                                                <input type="file" className="text-[10px] w-20" onChange={(e) => handleFileUpload(e, `director_${i + 1}_pan`)} />
-                                                {files[`director_${i + 1}_pan`] && <CheckCircle size={12} className="text-green-500" />}
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-between items-center bg-white p-2 rounded border border-gray-200">
-                                            <span className="text-xs">Aadhaar Card</span>
-                                            <div className="flex items-center gap-2">
-                                                <input type="file" className="text-[10px] w-20" onChange={(e) => handleFileUpload(e, `director_${i + 1}_aadhaar`)} />
-                                                {files[`director_${i + 1}_aadhaar`] && <CheckCircle size={12} className="text-green-500" />}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                                <div className="p-4 border border-dashed rounded-xl flex flex-col justify-center items-center text-center">
-                                    <span className="text-sm text-gray-600 mb-2 font-bold">Office Address Proof (Bill/NoC)</span>
-                                    <input type="file" className="text-xs" onChange={(e) => handleFileUpload(e, `office_address_proof`)} />
-                                    {files['office_address_proof'] && <CheckCircle size={16} className="text-green-500 mt-2" />}
-                                </div>
+                            <div className="border border-dashed p-3 rounded-lg flex justify-between items-center bg-gray-50">
+                                <span className="text-xs font-bold">Office Address Proof</span>
+                                {files['office_address_proof'] ? <CheckCircle size={14} className="text-green-500" /> : <input type="file" onChange={(e) => handleFileUpload(e, 'office_address_proof')} className="text-[10px] w-20" />}
                             </div>
                         </div>
                     </div>
-                );
-            case 4: // Review
-                return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95">
-                        <h2 className="text-3xl font-bold text-navy mb-6">Review Application</h2>
-                        <div className="p-4 bg-amber-50/50 rounded-xl space-y-3 mb-6">
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Plan</span>
-                                <span className="font-bold font-mono uppercase text-amber-600">{plans[selectedPlan].title}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Amount</span>
-                                <span className="font-bold">₹{plans[selectedPlan].price.toLocaleString()}</span>
-                            </div>
-                        </div>
-                        <div className="space-y-2 text-sm">
-                            <p><span className="font-bold">Proposed Name:</span> {formData.companyNameOption1}</p>
-                            <p><span className="font-bold">Capital:</span> {formData.authorizedCapital}</p>
-                            <p><span className="font-bold">Directors Count:</span> {formData.directors.length}</p>
-                            <p><span className="font-bold">Registered Address:</span> {formData.registeredAddress}</p>
-                        </div>
+                </div>
+            );
+            case 4: return (
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                    <h2 className="text-xl font-bold text-navy mb-4">Review Application</h2>
+                    <div className="p-4 bg-gray-50 rounded-lg space-y-3 text-sm">
+                        <div className="flex justify-between border-b pb-2"><span>Plan</span><span className="font-bold text-navy">{plans[selectedPlan]?.title}</span></div>
+                        <div className="flex justify-between border-b pb-2"><span>Company</span><span className="font-bold">{formData.companyNameOption1}</span></div>
+                        <div className="flex justify-between border-b pb-2"><span>Directors</span><span className="font-bold">{formData.directors.length}</span></div>
+                        <div className="flex justify-between"><span>Capital</span><span className="font-bold">{formData.authorizedCapital}</span></div>
                     </div>
-                );
-            case 5: // Payment
-                return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
-                        <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-600">
-                            <IndianRupee size={32} />
-                        </div>
-                        <h2 className="text-3xl font-bold text-navy mb-2">Payment Summary</h2>
-                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="text-gray-500">Total Payable</span>
-                                <span className="text-3xl font-bold text-navy">₹{plans[selectedPlan].price.toLocaleString()}</span>
-                            </div>
-                            <p className="text-[10px] text-gray-400 text-right">+ Govt Fees (Later)</p>
-                        </div>
-                        <button onClick={handleSubmit} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
-                            {isSubmitting ? 'Processing...' : 'Pay & Submit'}
-                            {!isSubmitting && <ArrowRight size={18} />}
-                        </button>
+                </div>
+            );
+            case 5: return (
+                <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                    <Receipt size={32} className="mx-auto mb-4 text-green-600" />
+                    <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                    <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2">
+                        <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee</span><span className="font-bold">₹{billDetails.platformFn}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Tax (18%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
                     </div>
-                );
-            default: return null;
+                    <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center"><input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} /> I Accept Terms & Conditions</label>
+                    <button onClick={submitApplication} disabled={!isTermsAccepted || isSubmitting} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50">Pay & Submit</button>
+                </div>
+            );
         }
     }
 
-    return (
-        <div className={`bg-[#F8F9FA] ${isModal ? 'h-full overflow-y-auto p-6' : 'min-h-screen pb-20 pt-24 px-4 md:px-8'}`}>
-            {isSuccess ? (
-                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
-                    <div className="w-24 h-24 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle size={48} className="text-amber-600" />
+    if (isModal) {
+        return (
+            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK */}
+                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            Nidhi Registration
+                        </h1>
+                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
+                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
+                            <p className="font-bold text-white leading-tight">{plans[selectedPlan]?.title}</p>
+                            <p className="text-[#ED6E3F] font-bold mt-1">₹{plans[selectedPlan]?.price.toLocaleString()}</p>
+                        </div>
                     </div>
-                    <h1 className="text-3xl font-bold text-navy mb-4">Registration Successful!</h1>
-                    <p className="text-gray-500 mb-8">
-                        Your application for <span className="font-bold text-navy">{plans[selectedPlan].title}</span> has been submitted.
-                        Your Order ID is <span className="font-mono font-bold bg-gray-100 px-2 py-1 rounded">{automationPayload?.submissionId}</span>.
-                    </p>
-                    <button onClick={() => isModal ? onClose() : navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">{isModal ? 'Close' : 'Go to Dashboard'}</button>
+
+                    {/* VERTICAL STEPPER */}
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {['Company Details', 'Directors', 'Documents', 'Review', 'Payment'].map((step, i) => (
+                            <div key={i}
+                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                            >
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* BOTTOM TOTAL */}
+                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
+                        <div className="flex justify-between items-end">
+                            <div>
+                                <p className="text-[10px] text-blue-200 uppercase">Total Payable</p>
+                                <p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p>
+                            </div>
+                            <Receipt className="text-white/20" size={24} />
+                        </div>
+                    </div>
                 </div>
-            ) : (
-                <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 flex justify-between items-start">
-                        <div>
-                            <button onClick={() => isModal ? onClose() : navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-navy transition"><ArrowLeft size={14} /> {isModal ? 'Close' : 'Back'}</button>
-                            <h1 className="text-3xl font-bold text-navy">Nidhi Company Registration</h1>
-                            <p className="text-gray-500">Start your Nidhi Company with expert guidance.</p>
-                        </div>
-                        {isModal && <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full"><X size={24} className="text-gray-500" /></button>}
+
+                {/* RIGHT CONTENT: FORM */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    {/* Header Bar */}
+                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
+                        <h2 className="font-bold text-navy text-lg">
+                            {currentStep === 1 && "Company Information"}
+                            {currentStep === 2 && "Director Details"}
+                            {currentStep === 3 && "Upload Documents"}
+                            {currentStep === 4 && "Review Application"}
+                            {currentStep === 5 && "Complete Payment"}
+                        </h2>
+                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition">
+                            <X size={18} />
+                        </button>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        {/* SIDEBAR */}
-                        <div className="w-full lg:w-80 space-y-6">
-                            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                                {['Company Details', 'Directors', 'Documents', 'Review', 'Payment'].map((step, i) => (
-                                    <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-amber-50 border-amber-100 shadow-sm cursor-default' : 'bg-transparent border-transparent opacity-60 cursor-pointer hover:bg-gray-50'}`}
-                                        onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
-                                    >
-                                        <div>
-                                            <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
-                                            <span className={`font-bold text-sm ${currentStep === i + 1 ? 'text-amber-700' : 'text-gray-600'}`}>{step}</span>
-                                        </div>
-                                        {currentStep > i + 1 && <CheckCircle size={16} className="text-amber-500" />}
-                                    </div>
-                                ))}
+                    {/* Scrollable Area */}
+                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                        {isSuccess ? (
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                                <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
                             </div>
+                        ) : (
+                            renderStepContent()
+                        )}
+                    </div>
 
-                            <div className={`p-6 rounded-2xl border shadow-sm ${plans[selectedPlan].color} relative overflow-hidden transition-all sticky top-24`}>
-                                <div className="relative z-10">
-                                    <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Current Plan</div>
-                                    <div className="text-3xl font-bold text-gray-800 mb-2">{plans[selectedPlan].title}</div>
-                                    <div className="text-3xl font-bold text-navy mb-4">₹{plans[selectedPlan].price.toLocaleString()}</div>
-
-                                    <div className="space-y-3 mb-6">
-                                        {plans[selectedPlan].features.map((feat, i) => (
-                                            <div key={i} className="flex gap-2 text-xs font-medium text-gray-600">
-                                                <CheckCircle size={14} className="text-slate shrink-0 mt-0.5" />
-                                                <span className="leading-tight">{feat}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {!isModal && <button onClick={() => navigate('/services/nidhi-company-registration')} className="text-xs font-bold text-gray-500 hover:text-navy underline">Change Plan</button>}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* CONTENT */}
-                        <div className="flex-1">
-                            {renderStepContent()}
-
-                            {!isSuccess && currentStep < 5 && (
-                                <div className="mt-8 flex justify-between">
-                                    <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
-
-                                    <button onClick={() => setCurrentStep(p => Math.min(5, p + 1))} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
-                                        Next Step <ArrowRight size={18} />
-                                    </button>
-                                </div>
+                    {/* Sticky Footer */}
+                    {!isSuccess && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            {currentStep < 5 && (
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                                >
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
                             )}
                         </div>
-                    </div>
+                    )}
                 </div>
-            )}
-        </div>
-    );
+            </div>
+        );
+    }
+
+    return null;
 };
 
 export default NidhiRegistration;

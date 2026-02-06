@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle, Upload, AlertTriangle, FileText, ArrowRight, CreditCard, Lightbulb, Cpu } from 'lucide-react';
 import { uploadFile, submitPatentFiling } from '../../../api'; // ensure in api.js
 
-const ApplyPatentFiling = ({ isLoggedIn }) => {
+const ApplyPatentFiling = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(1);
@@ -29,6 +29,7 @@ const ApplyPatentFiling = ({ isLoggedIn }) => {
     });
 
     useEffect(() => {
+        if (isModal) return;
         const storedUser = localStorage.getItem('user');
         const isReallyLoggedIn = isLoggedIn || !!storedUser;
 
@@ -104,13 +105,13 @@ const ApplyPatentFiling = ({ isLoggedIn }) => {
     };
 
     return (
-        <div className="min-h-screen bg-[#F5F3FF] font-sans pt-24 pb-24">
+        <div className={isModal ? "h-full overflow-hidden bg-white" : "min-h-screen bg-[#F5F3FF] font-sans pt-24 pb-24"}>
             {/* Header */}
             <div className="bg-[#2E1065] text-white py-6 px-6 shadow-md fixed top-0 left-0 right-0 z-50">
                 <div className="max-w-4xl mx-auto flex items-center justify-between">
-                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-purple-200 hover:text-white transition">
+                    {!isModal && <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-purple-200 hover:text-white transition">
                         <ArrowLeft size={18} /> Back
-                    </button>
+                    </button>}
                     <h1 className="text-xl font-bold flex items-center gap-2"><Lightbulb size={20} className="text-purple-400" /> Patent Application</h1>
                 </div>
             </div>

@@ -2,26 +2,31 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     CheckCircle, Upload, FileText,
-    ArrowLeft, ArrowRight, IndianRupee, Gavel, Calendar, AlertTriangle
+    ArrowLeft, ArrowRight, IndianRupee, Gavel, Calendar, AlertTriangle, X
 } from 'lucide-react';
 import { uploadFile, submitTrademarkHearing } from '../../../api';
 
-const ApplyTrademarkHearing = ({ isLoggedIn }) => {
+const ApplyTrademarkHearing = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [planType, setPlanType] = useState('standard');
+    const [planType, setPlanType] = useState(planProp || 'standard');
+
+    useEffect(() => {
+        if (planProp) setPlanType(planProp);
+    }, [planProp]);
 
     // Protect Route
     useEffect(() => {
+        if (isModal) return;
         const storedUser = localStorage.getItem('user');
         const isReallyLoggedIn = isLoggedIn || !!storedUser;
 
         if (!isReallyLoggedIn) {
             navigate('/login', { state: { from: `/services/intellectual-property/trademark-hearing/apply` } });
         }
-    }, [isLoggedIn, navigate]);
+    }, [isLoggedIn, navigate, isModal]);
 
     const [formData, setFormData] = useState({
         applicationNumber: '',
@@ -38,11 +43,6 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
     const [apiError, setApiError] = useState(null);
     const [errors, setErrors] = useState({});
 
-    // Plans
-    const plans = {
-        standard: { title: "Hearing Representation", price: 4999 },
-    };
-
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
@@ -52,13 +52,11 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
     const validateStep = (step) => {
         const newErrors = {};
         let isValid = true;
-
-        if (step === 1) { // Notice Details
+        if (step === 1) {
             if (!formData.applicationNumber) { newErrors.applicationNumber = "App Number required"; isValid = false; }
             if (!formData.hearingDate) { newErrors.hearingDate = "Date required"; isValid = false; }
             if (!formData.hearingTime) { newErrors.hearingTime = "Time required"; isValid = false; }
         }
-
         setErrors(newErrors);
         return isValid;
     };
@@ -72,34 +70,51 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
     const handleFileUpload = async (e, key) => {
         const file = e.target.files[0];
         if (!file) return;
-
         try {
             const response = await uploadFile(file, 'trademark-hearing');
             setUploadedFiles(prev => ({
                 ...prev,
-                [key]: {
-                    originalFile: file,
-                    name: response.originalName || file.name,
-                    fileUrl: response.fileUrl,
-                    fileId: response.id
-                }
+                [key]: { originalFile: file, name: response.originalName || file.name, fileUrl: response.fileUrl, fileId: response.id }
             }));
         } catch (error) {
-            console.error("Upload failed", error);
-            alert("File upload failed. Please try again.");
+            alert("File upload failed.");
+        }
+    };
+
+    const submitApplication = async () => {
+        setIsSubmitting(true);
+        setApiError(null);
+        try {
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({ id: k, filename: v.name, fileUrl: v.fileUrl, type: k }));
+            const finalPayload = {
+                submissionId: `TMH-${Date.now()}`,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                applicationNumber: formData.applicationNumber,
+                hearingType: formData.hearingType,
+                plan: planType,
+                amountPaid: 4999.0,
+                status: "PAYMENT_SUCCESSFUL",
+                formData: formData,
+                documents: docsList
+            };
+            await submitTrademarkHearing(finalPayload);
+            setIsSuccess(true);
+        } catch (error) {
+            setApiError(error.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const renderStepContent = () => {
         switch (currentStep) {
-            case 1: // Notice Details
+            case 1:
                 return (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                             <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
                                 <Gavel size={20} className="text-amber-500" /> HEARING NOTICE DETAILS
                             </h3>
-
                             <div className="grid md:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label className="text-xs font-bold text-gray-500 block mb-1">Application Number</label>
@@ -113,7 +128,6 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
                                     </select>
                                 </div>
                             </div>
-
                             <div className="grid md:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label className="text-xs font-bold text-gray-500 block mb-1">Hearing Date</label>
@@ -124,7 +138,6 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
                                     <input type="time" name="hearingTime" value={formData.hearingTime} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.hearingTime ? 'border-red-500' : 'border-gray-200'}`} />
                                 </div>
                             </div>
-
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-xs font-bold text-gray-500 block mb-1">Notice Ref No.</label>
@@ -138,15 +151,13 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
                         </div>
                     </div>
                 );
-
-            case 2: // Documents
+            case 2:
                 return (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                             <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
                                 <Upload size={20} className="text-amber-500" /> UPLOAD DOCUMENTS
                             </h3>
-
                             <div className="grid md:grid-cols-2 gap-4">
                                 {[
                                     { id: 'HEARING_NOTICE', label: 'Hearing Notice (PDF)' },
@@ -171,8 +182,7 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
                         </div>
                     </div>
                 );
-
-            case 3: // Payment
+            case 3:
                 return (
                     <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
                         <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-600">
@@ -180,7 +190,6 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
                         </div>
                         <h2 className="text-2xl font-black text-[#2B3446] mb-2">Payment Summary</h2>
                         <p className="text-gray-500 mb-8">Professional Fee for Hearing Representation</p>
-
                         <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
                             <div className="flex justify-between items-end mb-2">
                                 <span className="text-gray-500">Service Fee</span>
@@ -191,54 +200,24 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
                                 <span className="text-3xl font-black text-amber-600">₹4,999</span>
                             </div>
                         </div>
-
                         <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
                             {isSubmitting ? 'Processing...' : 'Pay & Confirm'}
                             {!isSubmitting && <ArrowRight size={18} />}
                         </button>
                     </div>
                 );
-
             default: return null;
         }
     };
 
-    const submitApplication = async () => {
-        setIsSubmitting(true);
-        setApiError(null);
-        try {
-            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
-                id: k,
-                filename: v.name,
-                fileUrl: v.fileUrl,
-                type: k
-            }));
-
-            const finalPayload = {
-                submissionId: `TMH-${Date.now()}`,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
-                applicationNumber: formData.applicationNumber,
-                hearingType: formData.hearingType,
-                plan: planType,
-                amountPaid: 4999.0,
-                status: "PAYMENT_SUCCESSFUL",
-                formData: formData,
-                documents: docsList
-            };
-
-            await submitTrademarkHearing(finalPayload);
-            setIsSuccess(true);
-
-        } catch (error) {
-            console.error(error);
-            setApiError(error.message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
     return (
-        <div className="min-h-screen bg-[#FFFBF0] pb-20 pt-24 px-4 md:px-8">
+        <div className={isModal ? "h-full overflow-hidden bg-white" : "min-h-screen bg-[#FFFBF0] pb-20 pt-24 px-4 md:px-8"}>
+            {isModal && (
+                <button onClick={onClose} className="absolute top-4 right-4 z-50 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-lg hover:bg-white transition text-navy border border-gray-200 group">
+                    <X size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+                </button>
+            )}
+
             {isSuccess ? (
                 <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
                     <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -248,15 +227,21 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
                     <p className="text-gray-500 mb-8">
                         Our attorney will prepare for your hearing on <b>{formData.hearingDate}</b>.
                     </p>
-                    <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
+                    {isModal ? (
+                        <button onClick={onClose} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Close Window</button>
+                    ) : (
+                        <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
+                    )}
                 </div>
             ) : (
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition"><ArrowLeft size={14} /> Back</button>
-                        <h1 className="text-3xl font-black text-[#2B3446]">Trademark Hearing Representation</h1>
-                        <p className="text-gray-500">Expert Attorney Representation for TM Hearings</p>
-                    </div>
+                    {!isModal && (
+                        <div className="mb-8">
+                            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition"><ArrowLeft size={14} /> Back</button>
+                            <h1 className="text-3xl font-black text-[#2B3446]">Trademark Hearing Representation</h1>
+                            <p className="text-gray-500">Expert Attorney Representation for TM Hearings</p>
+                        </div>
+                    )}
 
                     <div className="flex flex-col lg:flex-row gap-8">
                         <div className="w-full lg:w-80 space-y-6">
@@ -271,7 +256,6 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
                                     </div>
                                 ))}
                             </div>
-
                             <div className="bg-amber-50 p-4 rounded-xl border border-amber-100 text-xs text-amber-800">
                                 <strong>Service Fee:</strong> <br />
                                 <span className="text-lg font-bold">Standard Hearing</span>
@@ -282,18 +266,15 @@ const ApplyTrademarkHearing = ({ isLoggedIn }) => {
 
                         <div className="flex-1">
                             {renderStepContent()}
-
                             {apiError && (
                                 <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 flex items-center gap-2">
                                     <AlertTriangle size={20} />
                                     <span>{apiError}</span>
                                 </div>
                             )}
-
                             {!isSuccess && currentStep < 3 && (
                                 <div className="mt-8 flex justify-between">
                                     <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
-
                                     <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
                                         Next Step <ArrowRight size={18} />
                                     </button>

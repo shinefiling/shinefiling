@@ -2,8 +2,15 @@
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Scale, Coins, AlertCircle, HelpCircle, FileText, BadgeIndianRupee, Calendar, BookOpen, ChevronRight, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import AuthModal from '../../../components/auth/AuthModal';
+import ApplyMinimumWages from './ApplyMinimumWages';
 
 const MinimumWages = ({ isLoggedIn }) => {
+    const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
+    const [selectedPlan, setSelectedPlan] = useState('startup');
+
     const navigate = useNavigate();
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -18,9 +25,18 @@ const MinimumWages = ({ isLoggedIn }) => {
     ];
 
     const handlePlanSelect = (plan) => {
-        const url = `/services/labour/minimum-wages/apply?plan=${plan}`;
-        if (isLoggedIn) navigate(url);
-        else navigate('/login', { state: { from: url } });
+        setSelectedPlan(plan);
+        if (isLoggedIn) {
+            setShowRegisterModal(true);
+        } else {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                setShowRegisterModal(true);
+            } else {
+                setAuthMode('login');
+                setShowAuthModal(true);
+            }
+        }
     };
 
     return (
@@ -257,7 +273,36 @@ const MinimumWages = ({ isLoggedIn }) => {
                 </div>
 
             </div>
-        </div>
+        
+            <AnimatePresence>
+                {showRegisterModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <ApplyMinimumWages
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                planProp={selectedPlan}
+                                onClose={() => setShowRegisterModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegisterModal(true);
+                }}
+            />
+</div>
     );
 };
 

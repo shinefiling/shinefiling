@@ -173,7 +173,7 @@ const GSTR3BPage = ({ isLoggedIn, onLogout }) => {
                                     <h3 className="text-navy font-bold text-2xl leading-tight">
                                         Official <br />Registration
                                     </h3>
-                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">G S T R3 B</p>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">GSTR-3B</p>
                                 </div>
 
                                 {/* Divider */}
@@ -219,7 +219,7 @@ const GSTR3BPage = ({ isLoggedIn, onLogout }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => handlePlanSelect('startup')}
+                                    onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
@@ -306,7 +306,7 @@ const GSTR3BPage = ({ isLoggedIn, onLogout }) => {
                                         </li>
                                     ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>

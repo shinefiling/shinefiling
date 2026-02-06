@@ -1,25 +1,36 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     CheckCircle, Key, UserCheck, FileText, Lock, HelpCircle, Shield,
-    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, X, Laptop
+    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, X, Laptop, Handshake, Banknote
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import DINDSCCorrectionRegistration from './DINDSCCorrectionRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const DINDSCCorrection = ({ isLoggedIn }) => {
     const navigate = useNavigate();
+    const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState('kyc');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const handlePlanSelect = (plan) => {
-        const url = `/services/corrections/din-dsc-correction/apply?plan=${plan}`;
-        if (isLoggedIn) navigate(url);
-        else navigate('/login', { state: { from: url } });
+        setSelectedPlan(plan);
+        const storedUser = localStorage.getItem('user');
+        if (isLoggedIn || !!storedUser) {
+            setShowRegisterModal(true);
+        } else {
+            setAuthMode('login');
+            setShowAuthModal(true);
+        }
     };
 
     const faqs = [
         { q: "What is DIR-3 KYC?", a: "It is an annual compliance mandatory for every Director holding a DIN. It must be filed by 30th September every year." },
-        { q: "What happens if I miss the due date?", a: "A flat penalty of ?5,000 is levied by the MCA for late filing of DIR-3 KYC." },
+        { q: "What happens if I miss the due date?", a: "A flat penalty of ₹5,000 is levied by the MCA for late filing of DIR-3 KYC." },
         { q: "Is Digital Signature (DSC) mandatory?", a: "Yes, for filing DIR-3 KYC and other company forms, the Director's active DSC is required." },
         { q: "How do I renew my DSC?", a: "DSC cannot be 'renewed' technically. You have to issue a new DSC with a fresh validity period (2 or 3 years)." },
         { q: "Can I update my email/mobile in DIN?", a: "Yes, you can update your personal email and mobile number while filing the DIR-3 KYC form." },
@@ -27,6 +38,35 @@ const DINDSCCorrection = ({ isLoggedIn }) => {
 
     return (
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
+            <AnimatePresence>
+                {showRegisterModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6 animate-in fade-in duration-300">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <DINDSCCorrectionRegistration
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                planProp={selectedPlan}
+                                onClose={() => setShowRegisterModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegisterModal(true);
+                }}
+            />
 
             {/* HERO SECTION - PREMIUM DARK THEME */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -121,35 +161,85 @@ const DINDSCCorrection = ({ isLoggedIn }) => {
                             </div>
                         </div>
 
-                        {/* Pricing Card - Floating Glass Effect */}
+                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Mandatory</div>
-                                <div className="text-center mb-6 mt-4">
-                                    <h3 className="text-navy font-bold text-xl mb-2">DIR-3 KYC</h3>
-                                    <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">?999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ DIN</span>
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                                {/* Top Gold Line (Matching other pages) */}
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+
+                                {/* Header - COMPACT */}
+                                <div className="flex flex-col items-center justify-center text-center mb-5 mt-2">
+                                    <div className="mb-3 relative">
+                                        <div className="w-14 h-14 rounded-full bg-bronze/10 flex items-center justify-center">
+                                            <Shield size={28} className="text-bronze fill-bronze/20" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle size={14} className="text-green-500 fill-white" />
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Due date 30th Sep</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">
+                                        Official <br />Director Services
+                                    </h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">DIN & DSC</p>
                                 </div>
-                                <div className="space-y-4 mb-8 flex-1">
-                                    {["Verification of Details", "OTP Certification", "Form Upload to MCA", "SRN Challan Sharing", "Penalty Avoidance"].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                                            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
-                                            <span className="leading-snug">{item}</span>
+
+                                {/* Divider */}
+                                <div className="h-px w-full bg-slate-100 mb-5"></div>
+
+                                {/* Stats Grid - COMPACT */}
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    {/* Left Stat */}
+                                    <div className="text-center relative">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Handshake size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">100%</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Director <br />Compliance</p>
+                                        <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
+                                    </div>
+
+                                    {/* Right Stat */}
+                                    <div className="text-center">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Shield size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Legal</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Secure <br />Process</p>
+                                    </div>
+                                </div>
+
+                                {/* Check List - COMPACT */}
+                                <div className="space-y-3 mb-6 pl-2">
+                                    {[
+                                        "DIR-3 KYC Filing",
+                                        "DSC Issuance",
+                                        "Expert Support"
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="bg-green-100 rounded-full p-1 shrink-0">
+                                                <CheckCircle size={12} className="text-green-600" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-xs tracking-wide">{item}</span>
                                         </div>
                                     ))}
                                 </div>
+
+                                {/* CTA Button - COMPACT */}
                                 <button
                                     onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
-                                    className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >View Plans <ArrowRight size={18} /></button>
+                                    className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                >
+                                    Update Now <ArrowRight size={16} />
+                                </button>
+
+                                <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
+                                    Compare all plans below
+                                </p>
                             </div>
                         </motion.div>
 
@@ -178,8 +268,8 @@ const DINDSCCorrection = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">DSC Renewal</h3>
                             <p className="text-slate-500 text-sm mb-6">Class 3 Signing.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?1,499</span>
-                                <span className="text-slate-400 line-through text-sm">?2,500</span>
+                                <span className="text-4xl font-black text-navy">₹1,499</span>
+                                <span className="text-slate-400 line-through text-sm">₹2,500</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -188,7 +278,7 @@ const DINDSCCorrection = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Video Verification</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Free Delivery</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select DSC</button>
+                            <button onClick={() => handlePlanSelect('dsc')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select DSC</button>
                         </motion.div>
 
                         {/* PLAN 2: KYC - POPULAR */}
@@ -205,8 +295,8 @@ const DINDSCCorrection = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">DIR-3 KYC</h3>
                             <p className="text-gray-400 text-sm mb-6">Annual Director Filing.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?999</span>
-                                <span className="text-gray-500 line-through text-sm">?2,000</span>
+                                <span className="text-5xl font-black text-white">₹999</span>
+                                <span className="text-gray-500 line-through text-sm">₹2,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -215,7 +305,7 @@ const DINDSCCorrection = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> CA Certification</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Avoid 5000 Penalty</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select KYC</button>
+                            <button onClick={() => handlePlanSelect('kyc')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select KYC</button>
                         </motion.div>
 
                         {/* PLAN 3: COMBO */}
@@ -229,8 +319,8 @@ const DINDSCCorrection = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Combo Pack</h3>
                             <p className="text-slate-500 text-sm mb-6">DSC + KYC Filing.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?2,299</span>
-                                <span className="text-slate-400 line-through text-sm">?4,500</span>
+                                <span className="text-4xl font-black text-navy">₹2,299</span>
+                                <span className="text-slate-400 line-through text-sm">₹4,500</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -239,7 +329,7 @@ const DINDSCCorrection = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Priority Processing</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Best Value Deal</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Combo</button>
+                            <button onClick={() => handlePlanSelect('combo')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Combo</button>
                         </motion.div>
                     </div>
                 </div>

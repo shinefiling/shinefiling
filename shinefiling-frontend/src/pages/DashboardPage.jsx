@@ -232,12 +232,12 @@ const DashboardPage = ({ onLogout }) => {
                                 <div className="px-6 mb-6">
                                     <button
                                         onClick={() => { setActiveTab('new-filing'); setIsSidebarOpen(false); }}
-                                        className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-[#ED6E3F]/20 group ${activeTab === 'new-filing'
+                                        className={`w-[85%] mx-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-lg shadow-[#ED6E3F]/20 group ${activeTab === 'new-filing'
                                             ? 'bg-[#ED6E3F] text-white scale-[1.02]'
                                             : 'bg-gradient-to-r from-[#ED6E3F] to-[#f28b65] text-white hover:brightness-110'
                                             }`}
                                     >
-                                        <Plus size={18} /> New Filing
+                                        <Plus size={16} /> New Filing
                                     </button>
                                 </div>
                             )}
@@ -252,7 +252,7 @@ const DashboardPage = ({ onLogout }) => {
                                     <>
                                         <SidebarItem icon={Package} label="My Applications" id="orders" />
                                         <SidebarItem icon={Folder} label="Document Wallet" id="documents" />
-                                        <SidebarItem icon={Calendar} label="Compliance Calendar" id="compliance" />
+                                        <SidebarItem icon={Calendar} label="Calendar" id="compliance" />
                                         <SidebarItem icon={CreditCard} label="Billing & Invoices" id="payments" />
                                     </>
                                 )}
@@ -287,12 +287,11 @@ const DashboardPage = ({ onLogout }) => {
                         <h1 className="text-lg font-bold text-[#015A62] dark:text-white tracking-tight hidden md:block">
                             {activeTab === 'overview' ? 'Overview' :
                                 activeTab === 'new-filing' ? 'New Service' :
-                                    activeTab === 'orders' ? 'My Applications' :
-                                        activeTab === 'documents' ? 'Document Vault' :
-                                            activeTab === 'compliance' ? 'Compliance Calendar' :
-                                                activeTab === 'payments' ? 'Billing' :
-                                                    activeTab === 'profile' ? 'Profile' :
-                                                        activeTab === 'notifications' ? 'Notifications' : 'Support'}
+                                    activeTab === 'documents' ? 'Document Vault' :
+                                        activeTab === 'compliance' ? 'Calendar' :
+                                            activeTab === 'payments' ? 'Billing' :
+                                                activeTab === 'profile' ? 'Profile' :
+                                                    activeTab === 'notifications' ? 'Notifications' : 'Support'}
                         </h1>
                     </div>
                     <div className="flex items-center gap-4">

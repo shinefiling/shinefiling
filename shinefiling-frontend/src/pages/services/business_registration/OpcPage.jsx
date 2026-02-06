@@ -4,9 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, User, Banknote, Handshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import OnePersonCompanyRegistration from './OnePersonCompanyRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const OpcPage = ({ isLoggedIn, onLogout }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
     const [selectedPlan, setSelectedPlan] = useState('startup');
     const navigate = useNavigate();
 
@@ -22,18 +25,25 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
     const faqs = [
         { q: "What is difference between OPC and Sole Proprietorship?", a: "The main difference is Liability. In Proprietorship, liability is unlimited (personal assets risk). In OPC, liability is LIMITED to company assets. Also, OPC is a separate legal entity." },
         { q: "Who can be a Nominee?", a: "Nominee must be an Indian Citizen, Resident in India, and not a minor. A person can be a nominee in only one OPC at a time." },
-        { q: "Can I convert OPC to Pvt Ltd later?", a: "Yes! Can convert voluntarily after 2 years. Mandatory if paid-up capital > ?50 Lakhs OR turnover > ?2 Crores." },
+        { q: "Can I convert OPC to Pvt Ltd later?", a: "Yes! Can convert voluntarily after 2 years. Mandatory if paid-up capital > ₹50 Lakhs OR turnover > ₹2 Crores." },
         { q: "Is Audit mandatory?", a: "Yes. Like Pvt Ltd, an OPC must get accounts audited by a CA every year and file AOC-4 and MGT-7." },
         { q: "Can I raise VC funding?", a: "VCs prefer Pvt Ltd with multiple shareholders. However, you can convert OPC to Pvt Ltd to accept funding." },
         { q: "What if the Director dies?", a: "The Nominee automatically becomes the sole member and appoints a new nominee within 15 days, ensuring perpetual succession." }
     ];
 
     const handlePlanSelect = (plan) => {
+        setSelectedPlan(plan);
         if (isLoggedIn) {
-            setSelectedPlan(plan);
             setShowRegisterModal(true);
         } else {
-            navigate('/login', { state: { from: window.location.pathname } });
+            // Check if user is logged in via localStorage as a fallback
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                setShowRegisterModal(true);
+            } else {
+                setAuthMode('login');
+                setShowAuthModal(true);
+            }
         }
     };
 
@@ -245,29 +255,24 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Startup</h3>
                             <p className="text-slate-500 text-sm mb-6">Foundational setup for solo founders.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?4,999</span>
-                                <span className="text-slate-400 line-through text-sm">?8,000</span>
+                                <span className="text-4xl font-black text-navy">₹4,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
                                 {[
-                                    "1 DSC & 1 DIN",
-                                    "Name Approval",
+                                    "1 Digital Signature (DSC)",
+                                    "1 Director PIN (DIN)",
+                                    "Name Approval Application",
                                     "MOA & AOA Drafting",
                                     "Certificate of Incorporation",
-                                    "PAN & TAN Allotment",
-                                    "Nominee Consent Filing"
+                                    "PAN & TAN Allocation",
+                                    "Nominee Consent Filing (INC-3)"
                                 ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
                                         <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
-                                <li className="flex items-center gap-3 text-sm text-slate-400">
-                                    <X size={16} className="shrink-0" /> GST Registration
-                                </li>
-                                <li className="flex items-center gap-3 text-sm text-slate-400">
-                                    <X size={16} className="shrink-0" /> MSME Registration
-                                </li>
                             </ul>
                             <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Startup
@@ -293,20 +298,23 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Opc</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?6,999</span>
-                                <span className="text-gray-500 line-through text-sm">?12k</span>
+                                <span className="text-5xl font-black text-white">₹6,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹12,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
-                                {["Everything in Startup",
-                                    "Nominee Consent Filing",
-                                    "Digital Share Certificate"].map((feat, i) => (
+                                <li className="text-sm font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Startup +</li>
+                                {["GST Registration",
+                                    "MSME (Udyam) Registration",
+                                    "Share Certificates Issue",
+                                    "Bank Account Opening Support",
+                                    "Rubber Stamp (Digital Copy)"].map((feat, i) => (
                                         <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
                                             <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
                                         </li>
                                     ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => handlePlanSelect('growth')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -322,18 +330,18 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Elite</h3>
                             <p className="text-slate-500 text-sm mb-6">Full business readiness & compliance.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?12,999</span>
-                                <span className="text-slate-400 line-through text-sm">?20,000</span>
+                                <span className="text-4xl font-black text-navy">₹12,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹20,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
+                                <li className="text-sm font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">Everything in Standard +</li>
                                 {[
-                                    "Everything in Growth",
-                                    "GST Registration",
-                                    "MSME/Udyam Registration",
-                                    "First Board Resolutions",
-                                    "Domain + Email (1 Yr)",
-                                    "Zero Balance Current A/c"
+                                    "1st Year ROC Compliance",
+                                    "Auditor Appointment (ADT-1)",
+                                    "Commencement of Business (INC-20A)",
+                                    "Income Tax Filing (1 Year)",
+                                    "Business Domain & Email (1 Year)"
                                 ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
                                         <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
@@ -600,13 +608,33 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
 
                 <AnimatePresence>
                     {showRegisterModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                            <div className="relative w-full max-w-6xl max-h-[95vh] rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 bg-white ring-1 ring-white/20 overflow-y-auto">
-                                <OnePersonCompanyRegistration isLoggedIn={isLoggedIn} isModal={true} planProp={selectedPlan} onClose={() => setShowRegisterModal(false)} />
-                            </div>
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                            >
+                                <OnePersonCompanyRegistration
+                                    isLoggedIn={isLoggedIn}
+                                    isModal={true}
+                                    planProp={selectedPlan}
+                                    onClose={() => setShowRegisterModal(false)}
+                                />
+                            </motion.div>
                         </div>
                     )}
                 </AnimatePresence>
+                <AuthModal
+                    isOpen={showAuthModal}
+                    onClose={() => setShowAuthModal(false)}
+                    initialMode={authMode}
+                    onAuthSuccess={() => {
+                        setShowAuthModal(false);
+                        setShowRegisterModal(true);
+                    }}
+                />
+
             </div>
         </div >
     );

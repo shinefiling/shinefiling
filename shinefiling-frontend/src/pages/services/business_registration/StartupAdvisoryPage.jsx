@@ -4,9 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, Lightbulb, Target, X, Banknote, Handshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import StartupAdvisoryRegistration from './StartupAdvisoryRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const StartupAdvisoryPage = ({ isLoggedIn, onLogout }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
     const [selectedPlan, setSelectedPlan] = useState('funded');
     const navigate = useNavigate();
 
@@ -21,7 +24,7 @@ const StartupAdvisoryPage = ({ isLoggedIn, onLogout }) => {
 
     const faqs = [
         { q: "What is Startup India Recognition?", a: "It is an initiative by the Government of India to support startups. Recognized startups get tax exemptions, easier compliance, and patent filing benefits." },
-        { q: "Who is eligible for recognition?", a: "Private Limited Companies, LLPs, or Registered Partnerships less than 10 years old with an annual turnover under ?100 Cr." },
+        { q: "Who is eligible for recognition?", a: "Private Limited Companies, LLPs, or Registered Partnerships less than 10 years old with an annual turnover under ₹100 Cr." },
         { q: "What is Section 80IAC Tax Exemption?", a: "Eligible startups can get a 100% tax holiday for 3 consecutive financial years out of their first 10 years." },
         { q: "Do I need a pitch deck?", a: "Yes, to get recognized, you often need to submit a brief write-up or pitch deck explaining your innovation, scalability, and employment generation potential." },
         { q: "What is Angel Tax Exemption?", a: "Recognized startups can be exempted from tax on investments received above Fair Market Value (angel tax) by filing Form 2." },
@@ -29,11 +32,18 @@ const StartupAdvisoryPage = ({ isLoggedIn, onLogout }) => {
     ];
 
     const handlePlanSelect = (plan) => {
+        setSelectedPlan(plan);
         if (isLoggedIn) {
-            setSelectedPlan(plan);
             setShowRegisterModal(true);
         } else {
-            navigate('/login', { state: { from: window.location.pathname } });
+            // Check if user is logged in via localStorage as a fallback
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                setShowRegisterModal(true);
+            } else {
+                setAuthMode('login');
+                setShowAuthModal(true);
+            }
         }
     };
 
@@ -245,8 +255,8 @@ const StartupAdvisoryPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Bootstrapped</h3>
                             <p className="text-slate-500 text-sm mb-6">Lean setup for self-funded teams.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?14,999</span>
-                                <span className="text-slate-400 line-through text-sm">?25,000</span>
+                                <span className="text-4xl font-black text-navy">₹14,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹25,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -292,8 +302,8 @@ const StartupAdvisoryPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Startup Advisory</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?4,999</span>
-                                <span className="text-gray-500 line-through text-sm">?10k</span>
+                                <span className="text-5xl font-black text-white">₹24,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹35k</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -305,7 +315,7 @@ const StartupAdvisoryPage = ({ isLoggedIn, onLogout }) => {
                                         </li>
                                     ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -321,8 +331,8 @@ const StartupAdvisoryPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Unicorn</h3>
                             <p className="text-slate-500 text-sm mb-6">Complete IP & Legal protection.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?49,999</span>
-                                <span className="text-slate-400 line-through text-sm">?90,000</span>
+                                <span className="text-4xl font-black text-navy">₹49,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹90,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -585,6 +595,16 @@ const StartupAdvisoryPage = ({ isLoggedIn, onLogout }) => {
                         </div>
                     )}
                 </AnimatePresence>
+                <AuthModal
+                    isOpen={showAuthModal}
+                    onClose={() => setShowAuthModal(false)}
+                    initialMode={authMode}
+                    onAuthSuccess={() => {
+                        setShowAuthModal(false);
+                        setShowRegisterModal(true);
+                    }}
+                />
+
             </div>
         </div >
     );

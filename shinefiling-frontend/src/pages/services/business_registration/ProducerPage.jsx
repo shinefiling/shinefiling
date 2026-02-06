@@ -4,9 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Sprout, Tractor, Leaf, Droplet, Sun, Landmark, Banknote, Handshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProducerRegistration from './ProducerRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const ProducerPage = ({ isLoggedIn }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
     const [selectedPlan, setSelectedPlan] = useState('startup');
     const navigate = useNavigate();
 
@@ -22,18 +25,25 @@ const ProducerPage = ({ isLoggedIn }) => {
     const faqs = [
         { q: "What is a Producer Company?", a: "A Producer Company is a body corporate formed by farmers and producers (10+ individuals or 2+ institutions). It combines the goodness of a Cooperative Society with the vibrancy and efficiency of a Private Limited Company." },
         { q: "Who can be a member?", a: "Only 'Primary Producers' (farmers, artisans, etc.) or Producer Institutions can be members. It is designed to benefit the producing community." },
-        { q: "What is the minimum capital required?", a: "A minimum paid-up capital of ?5 Lakhs is required to incorporate a Producer Company." },
+        { q: "What is the minimum capital required?", a: "A minimum paid-up capital of ₹5 Lakhs is required to incorporate a Producer Company." },
         { q: "How many directors are needed?", a: "A minimum of 5 and a maximum of 15 directors are required. Also, a minimum of 10 members (shareholders) is needed." },
         { q: "Are there tax benefits?", a: "Yes, agricultural income is 100% exempt. Additionally, Producer Companies enjoy various deductions under the IT Act subject to specific conditions." },
         { q: "What is an FPO?", a: "FPO (Farmer Producer Organization) is a legal entity formed by primary producers. A Producer Company is the most popular legal structure for an FPO." }
     ];
 
     const handlePlanSelect = (plan) => {
+        setSelectedPlan(plan);
         if (isLoggedIn) {
-            setSelectedPlan(plan);
             setShowRegisterModal(true);
         } else {
-            navigate('/login', { state: { from: window.location.pathname } });
+            // Check if user is logged in via localStorage as a fallback
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                setShowRegisterModal(true);
+            } else {
+                setAuthMode('login');
+                setShowAuthModal(true);
+            }
         }
     };
 
@@ -245,8 +255,8 @@ const ProducerPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Seeds</h3>
                             <p className="text-slate-500 text-sm mb-6">Basic incorporation.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?14,999</span>
-                                <span className="text-slate-400 line-through text-sm">?25,000</span>
+                                <span className="text-4xl font-black text-navy">₹14,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹25,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -268,7 +278,7 @@ const ProducerPage = ({ isLoggedIn }) => {
                                     <X size={16} className="shrink-0" /> NABARD Docs
                                 </li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Seeds
                             </button>
                         </motion.div>
@@ -292,8 +302,8 @@ const ProducerPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Producer</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?14,999</span>
-                                <span className="text-gray-500 line-through text-sm">?25k</span>
+                                <span className="text-5xl font-black text-white">₹14,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹25,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -305,7 +315,7 @@ const ProducerPage = ({ isLoggedIn }) => {
                                         </li>
                                     ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -321,13 +331,13 @@ const ProducerPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Bounty</h3>
                             <p className="text-slate-500 text-sm mb-6">Compliance & Subsidy.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?39,999</span>
-                                <span className="text-slate-400 line-through text-sm">?55,000</span>
+                                <span className="text-4xl font-black text-navy">₹39,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹55,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
                                 {[
-                                    "Everything in Harvest",
+                                    "Everything in Standard",
                                     "MSME/Udyam Registration",
                                     "1-Year Compliance Radar",
                                     "NABARD Subsidy Guide",
@@ -339,7 +349,7 @@ const ProducerPage = ({ isLoggedIn }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Bounty
                             </button>
                         </motion.div>
@@ -466,7 +476,7 @@ const ProducerPage = ({ isLoggedIn }) => {
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-lg">Grant Expertise</h4>
-                                        <p className="text-gray-300 text-sm">Our consultants are experts in Equity Grant Schemes. We guide you on how to structure your FPO to be eligible for up to ?15 Lakhs grant.</p>
+                                        <p className="text-gray-300 text-sm">Our consultants are experts in Equity Grant Schemes. We guide you on how to structure your FPO to be eligible for up to ₹15 Lakhs grant.</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-4">
@@ -585,13 +595,33 @@ const ProducerPage = ({ isLoggedIn }) => {
 
                 <AnimatePresence>
                     {showRegisterModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                            <div className="relative w-full max-w-6xl max-h-[95vh] rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 bg-white ring-1 ring-white/20 overflow-y-auto">
-                                <ProducerRegistration isLoggedIn={isLoggedIn} isModal={true} planProp={selectedPlan} onClose={() => setShowRegisterModal(false)} />
-                            </div>
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                            >
+                                <ProducerRegistration
+                                    isLoggedIn={isLoggedIn}
+                                    isModal={true}
+                                    planProp={selectedPlan}
+                                    onClose={() => setShowRegisterModal(false)}
+                                />
+                            </motion.div>
                         </div>
                     )}
                 </AnimatePresence>
+                <AuthModal
+                    isOpen={showAuthModal}
+                    onClose={() => setShowAuthModal(false)}
+                    initialMode={authMode}
+                    onAuthSuccess={() => {
+                        setShowAuthModal(false);
+                        setShowRegisterModal(true);
+                    }}
+                />
+
             </div>
         </div >
     );

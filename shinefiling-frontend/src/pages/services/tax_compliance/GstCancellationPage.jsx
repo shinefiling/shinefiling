@@ -3,11 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, ArrowRight, X, Globe, Layers, Banknote, Handshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GstCancellationRegistration from './GstCancellationRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
     const navigate = useNavigate();
     const [showRegistrationModal, setShowRegistrationModal] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState('standard');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -19,12 +22,13 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
     ];
 
     const handlePlanSelect = (plan) => {
-        if (isLoggedIn) {
-            setSelectedPlan(plan);
+        setSelectedPlan(plan);
+        const storedUser = localStorage.getItem('user');
+        if (isLoggedIn || !!storedUser) {
             setShowRegistrationModal(true);
         } else {
-            const targetUrl = `/services/gst-cancellation/register?plan=${plan}`;
-            navigate('/login', { state: { from: targetUrl } });
+            setAuthMode('login');
+            setShowAuthModal(true);
         }
     };
 
@@ -49,6 +53,16 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                     </div>
                 )}
             </AnimatePresence>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegistrationModal(true);
+                }}
+            />
 
             {/* HERO */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -120,7 +134,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                             </motion.div>
 
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                                <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Start Cancellation
                                 </button>
                                 <button onClick={() => document.getElementById('details-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-6 py-4 text-white font-semibold hover:text-bronze transition-colors">
@@ -198,7 +212,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => handlePlanSelect('startup')}
+                                    onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
@@ -214,7 +228,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
             </div>
 
             {/* PRICING */}
-            <section id="pricing-section" className="py-20 px-6 lg:px-12 bg-white relative">
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16"><h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Cancellation Plans</h2></div>
                     <div className="grid md:grid-cols-3 gap-8 items-center">
@@ -245,7 +259,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Select Basic
                             </button>
                         </motion.div>
@@ -283,7 +297,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Select Standard
                             </button>
                         </motion.div>
@@ -316,7 +330,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('enterprise')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Select Premium
                             </button>
                         </motion.div>

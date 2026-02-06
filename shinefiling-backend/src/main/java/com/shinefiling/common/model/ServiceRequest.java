@@ -60,6 +60,9 @@ public class ServiceRequest {
 
     private String biddingStatus; // OPEN, CLOSED
 
+    @Column(columnDefinition = "TEXT")
+    private String generatedDocuments; // JSON string of final deliverables
+
     @PreUpdate
     public void onUpdate() {
         this.updatedAt = LocalDateTime.now();

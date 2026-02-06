@@ -1834,12 +1834,15 @@ export const getCaRequests = async (caId) => {
     return handleResponse(response);
 };
 
-export const respondToBoundAmount = async (requestId, status, comments) => {
+export const respondToBoundAmount = async (requestId, status, comments, files = null) => {
     // comments is technically optional in backend, but good to pass if needed
+    const body = { status, comments };
+    if (files) body.generatedDocuments = JSON.stringify(files);
+
     const response = await fetch(`${BASE_URL}/ca/requests/${requestId}/respond`, {
         method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ status, comments })
+        body: JSON.stringify(body)
     });
     return handleResponse(response);
 };

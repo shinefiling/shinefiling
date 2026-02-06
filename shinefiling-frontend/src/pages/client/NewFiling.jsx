@@ -189,8 +189,8 @@ const NewFiling = ({ setActiveTab, initialCategory }) => {
                     {/* Header Section */}
                     <div className="bg-white dark:bg-[#043E52] rounded-3xl p-8 border border-slate-100 dark:border-[#1C3540] shadow-sm text-center relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#ED6E3F]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                        <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-3 relative z-10">Start a New Service</h2>
-                        <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-xl mx-auto relative z-10">Select from our comprehensive list of legal, tax, and compliance services to get started.</p>
+                        <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-3 relative z-10">Start a New Service</h2>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-8 max-w-xl mx-auto relative z-10">Select from our comprehensive list of legal, tax, and compliance services to get started.</p>
 
                         <div className="max-w-2xl mx-auto relative z-10">
                             <div className="relative">

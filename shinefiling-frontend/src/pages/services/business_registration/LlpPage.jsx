@@ -4,9 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Handshake, Banknote } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LlpRegistration from './LlpRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const LlpPage = ({ isLoggedIn, onLogout }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
     const [selectedPlan, setSelectedPlan] = useState('startup');
     const navigate = useNavigate();
 
@@ -22,18 +25,25 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
     const faqs = [
         { q: "What is an LLP and how is it different from a company?", a: "An LLP is a hybrid structure combining partnership flexibility with corporate limited liability. Unlike a company, it has fewer compliance requirements and no dividend distribution tax." },
         { q: "How many partners are needed?", a: "Minimum 2 partners are required. There is no upper limit on the number of partners in an LLP." },
-        { q: "Is an audit mandatory for LLP?", a: "No, audit is only mandatory if turnover exceeds ?40 Lakhs or total contribution exceeds ?25 Lakhs in a financial year." },
+        { q: "Is an audit mandatory for LLP?", a: "No, audit is only mandatory if turnover exceeds ₹40 Lakhs or total contribution exceeds ₹25 Lakhs in a financial year." },
         { q: "Can a body corporate become a partner?", a: "Yes, another company or LLP can be a partner in an LLP, provided they nominate an individual as a Designated Partner." },
         { q: "What is the DPIN?", a: "DPIN (Designated Partner Identification Number) is a unique ID required by any individual who wants to be a designated partner in an LLP." },
         { q: "How long does it take to register?", a: "Typically, it takes 10-15 business days depending on name approval and government processing times." }
     ];
 
     const handlePlanSelect = (plan) => {
+        setSelectedPlan(plan);
         if (isLoggedIn) {
-            setSelectedPlan(plan);
             setShowRegisterModal(true);
         } else {
-            navigate('/login', { state: { from: window.location.pathname } });
+            // Check if user is logged in via localStorage as a fallback
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                setShowRegisterModal(true);
+            } else {
+                setAuthMode('login');
+                setShowAuthModal(true);
+            }
         }
     };
 
@@ -245,8 +255,8 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Startup</h3>
                             <p className="text-slate-500 text-sm mb-6">Basic incorporation for partners.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?4,999</span>
-                                <span className="text-slate-400 line-through text-sm">?8,000</span>
+                                <span className="text-4xl font-black text-navy">₹4,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -268,7 +278,7 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                                     <X size={16} className="shrink-0" /> GST Registration
                                 </li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Startup
                             </button>
                         </motion.div>
@@ -292,8 +302,8 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Llp</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?6,999</span>
-                                <span className="text-gray-500 line-through text-sm">?12k</span>
+                                <span className="text-5xl font-black text-white">₹8,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹16,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -305,7 +315,7 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                                         </li>
                                     ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Get Started
                             </button>
                         </motion.div>
@@ -321,8 +331,8 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Elite</h3>
                             <p className="text-slate-500 text-sm mb-6">Complete legal & tax setup.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?12,499</span>
-                                <span className="text-slate-400 line-through text-sm">?24,000</span>
+                                <span className="text-4xl font-black text-navy">₹12,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹24,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -339,7 +349,7 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('enterprise')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Enterprise
                             </button>
                         </motion.div>
@@ -376,7 +386,7 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
                             {[
                                 { title: "Limited Liability", desc: "Partners are not personally liable for the firm's debts. Your personal savings are safe.", icon: Shield },
                                 { title: "No Dividend Tax", desc: "Profits can be distributed to partners without paying any Dividend Distribution Tax (DDT).", icon: TrendingUp },
-                                { title: "Low Compliance", desc: "Audit is not required unless turnover exceeds ?40 Lakhs or contribution exceeds ?25 Lakhs.", icon: Zap },
+                                { title: "Low Compliance", desc: "Audit is not required unless turnover exceeds ₹40 Lakhs or contribution exceeds ₹25 Lakhs.", icon: Zap },
                                 { title: "Separate Legal Entity", desc: "The LLP can own assets, sue and be sued in its own name. It has a distinct identity from partners.", icon: Briefcase },
                                 { title: "Operational Flexibility", desc: "Management is defined by the LLP Agreement. Partners have freedom to run business their way.", icon: Handshake },
                                 { title: "Perpetual Succession", desc: "The LLP continues to exist even if partners leave or join. It has indefinite life.", icon: Clock },
@@ -599,13 +609,33 @@ const LlpPage = ({ isLoggedIn, onLogout }) => {
 
                 <AnimatePresence>
                     {showRegisterModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                            <div className="relative w-full max-w-6xl max-h-[95vh] rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 bg-white ring-1 ring-white/20 overflow-y-auto">
-                                <LlpRegistration isLoggedIn={isLoggedIn} isModal={true} planProp={selectedPlan} onClose={() => setShowRegisterModal(false)} />
-                            </div>
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                            >
+                                <LlpRegistration
+                                    isLoggedIn={isLoggedIn}
+                                    isModal={true}
+                                    planProp={selectedPlan}
+                                    onClose={() => setShowRegisterModal(false)}
+                                />
+                            </motion.div>
                         </div>
                     )}
                 </AnimatePresence>
+                <AuthModal
+                    isOpen={showAuthModal}
+                    onClose={() => setShowAuthModal(false)}
+                    initialMode={authMode}
+                    onAuthSuccess={() => {
+                        setShowAuthModal(false);
+                        setShowRegisterModal(true);
+                    }}
+                />
+
             </div>
         </div >
     );

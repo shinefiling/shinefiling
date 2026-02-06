@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { ChevronDown, Menu, X, Search, User, Bell, LogOut, ArrowRight, FileText, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SERVICE_DATA } from '../data/services';
@@ -28,6 +28,8 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
     const [notificationCount, setNotificationCount] = useState(0);
 
     const [searchParams, setSearchParams] = useSearchParams();
+    const location = useLocation();
+    const isHome = location.pathname === '/';
 
     useEffect(() => {
         if (searchParams.get('login') === 'true') {
@@ -301,7 +303,7 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
 
     return (
         <>
-            <div className={`fixed w-full z-50 top-0 left-0 transition-all duration-500 ease-in-out font-sans ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${scrolled ? 'bg-white/90 backdrop-blur-md shadow-lg py-1' : 'bg-transparent py-4'}`}>
+            <div className={`fixed w-full z-50 top-0 left-0 transition-all duration-500 ease-in-out font-sans ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${(scrolled || !isHome) ? 'bg-white/90 backdrop-blur-md shadow-lg py-1' : 'bg-transparent py-4'}`}>
                 {/* SINGLE ROW NAVBAR */}
                 <div className="w-full relative z-50">
                     <div className="max-w-[1600px] mx-auto px-4 lg:px-8 h-20 flex items-center justify-between">
@@ -320,13 +322,17 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                         {/* CENTER: NAVIGATION GROUPS (Desktop Only) */}
                         <div className="hidden xl:flex items-center justify-center flex-1 h-full px-2 gap-8">
                             {/* STATIC LINKS */}
-                            {['ABOUT', 'CAREERS', 'CONTACT'].map((item, idx) => (
+                            {[
+                                { label: 'ABOUT', path: '/about-us' },
+                                { label: 'CAREERS', path: '/careers' },
+                                { label: 'CONTACT', path: '/contact-us' }
+                            ].map((item, idx) => (
                                 <Link
                                     key={idx}
-                                    to={`/${item.toLowerCase()}`}
-                                    className={`text-[12px] font-bold uppercase tracking-wide transition-colors ${scrolled ? 'text-[#043E52] hover:text-[#ED6E3F]' : 'text-white/90 hover:text-[#ED6E3F]'}`}
+                                    to={item.path}
+                                    className={`text-[12px] font-bold uppercase tracking-wide transition-colors ${(scrolled || !isHome) ? 'text-[#043E52] hover:text-[#ED6E3F]' : 'text-white/90 hover:text-[#ED6E3F]'}`}
                                 >
-                                    {item}
+                                    {item.label}
                                 </Link>
                             ))}
 
@@ -336,7 +342,7 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                 onMouseEnter={() => setHoveredMenu('SERVICES')}
                                 onMouseLeave={() => setHoveredMenu(null)}
                             >
-                                <button className={`flex items-center gap-1 text-[12px] font-bold uppercase tracking-wide transition-all px-3 py-2 rounded-lg ${hoveredMenu === 'SERVICES' ? 'text-[#ED6E3F]' : (scrolled ? 'text-[#043E52] hover:bg-slate-50' : 'text-white/90 hover:bg-white/10')}`}>
+                                <button className={`flex items-center gap-1 text-[12px] font-bold uppercase tracking-wide transition-all px-3 py-2 rounded-lg ${hoveredMenu === 'SERVICES' ? 'text-[#ED6E3F]' : ((scrolled || !isHome) ? 'text-[#043E52] hover:bg-slate-50' : 'text-white/90 hover:bg-white/10')}`}>
                                     SERVICES
                                     <ChevronDown size={12} className={`transform transition-transform duration-300 opacity-50 ${hoveredMenu === 'SERVICES' ? 'rotate-180 text-[#ED6E3F] opacity-100' : ''}`} />
                                 </button>
@@ -449,7 +455,7 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                 <div className="hidden xl:flex items-center gap-4">
                                     <button
                                         onClick={() => { setAuthMode('login'); setShowAuthModal(true); }}
-                                        className={`text-xs font-bold hover:text-[#F9A65E] tracking-wider uppercase transition-colors cursor-pointer ${scrolled ? 'text-[#043E52]' : 'text-white'}`}
+                                        className={`text-xs font-bold hover:text-[#F9A65E] tracking-wider uppercase transition-colors cursor-pointer ${(scrolled || !isHome) ? 'text-[#043E52]' : 'text-white'}`}
                                     >
                                         LOGIN
                                     </button>
@@ -465,7 +471,7 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                     <div className="relative" ref={notificationRef}>
                                         <button
                                             onClick={() => setShowNotifications(!showNotifications)}
-                                            className={`relative transition p-1 ${scrolled ? 'text-slate-600 hover:text-[#043E52]' : 'text-white hover:text-[#F9A65E]'}`}
+                                            className={`relative transition p-1 ${(scrolled || !isHome) ? 'text-slate-600 hover:text-[#043E52]' : 'text-white hover:text-[#F9A65E]'}`}
                                         >
                                             <Bell size={20} />
                                             {notificationCount > 0 && <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-pulse border border-white"></span>}
@@ -540,9 +546,9 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                     <div className="flex items-center gap-3 cursor-pointer relative" ref={userMenuRef}>
                                         <div className="flex items-center gap-3" onClick={() => setShowUserMenu(!showUserMenu)}>
                                             <div className="text-right hidden xl:block">
-                                                <p className={`text-xs font-bold ${scrolled ? 'text-[#043E52]' : 'text-white'}`}>{user?.fullName}</p>
+                                                <p className={`text-xs font-bold ${(scrolled || !isHome) ? 'text-[#043E52]' : 'text-white'}`}>{user?.fullName}</p>
                                             </div>
-                                            <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm ring-2 transition-all overflow-hidden relative ${scrolled ? 'bg-slate-100 text-[#043E52] ring-slate-200' : 'bg-white/20 text-white ring-white/30'}`}>
+                                            <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm ring-2 transition-all overflow-hidden relative ${(scrolled || !isHome) ? 'bg-slate-100 text-[#043E52] ring-slate-200' : 'bg-white/20 text-white ring-white/30'}`}>
                                                 {user?.profileImage ? (
                                                     <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
                                                 ) : (
@@ -587,7 +593,7 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                 </div>
                             )}
 
-                            <button className={`xl:hidden p-2 rounded-lg transition-colors ${scrolled ? 'text-[#043E52] hover:bg-slate-100' : 'text-white hover:bg-white/10'}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                            <button className={`xl:hidden p-2 rounded-lg transition-colors ${(scrolled || !isHome) ? 'text-[#043E52] hover:bg-slate-100' : 'text-white hover:bg-white/10'}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                                 {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                             </button>
                         </div>
@@ -614,7 +620,6 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                 <X size={24} />
                             </button>
                         </div>
-
                         <div className="flex-1 overflow-y-auto bg-slate-50">
                             <div className="p-5 space-y-6">
                                 {/* Mobile Search */}
@@ -778,9 +783,23 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                         })}
                                     </div>
                                 </div>
-
                                 {/* Bottom Links */}
-
+                                <div className="pt-6 border-t border-slate-100 grid grid-cols-2 gap-4 pb-8">
+                                    {[
+                                        { label: 'About Us', path: '/about-us' },
+                                        { label: 'Careers', path: '/careers' },
+                                        { label: 'Contact Us', path: '/contact-us' },
+                                    ].map((link, idx) => (
+                                        <Link
+                                            key={idx}
+                                            to={link.path}
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className="text-sm font-bold text-slate-500 hover:text-[#043E52]"
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    ))}
+                                </div>
 
                             </div>
                         </div>

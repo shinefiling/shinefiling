@@ -1,16 +1,46 @@
 ﻿
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
     CheckCircle, Upload, CreditCard, FileText, User,
-    Building, ArrowLeft, ArrowRight, Shield, AlertCircle, X, Lock, IndianRupee, Users, Plus, Trash2
+    Building, ArrowLeft, ArrowRight, Shield, AlertCircle, X, Lock, IndianRupee, Users, Plus, Trash2, Receipt
 } from 'lucide-react';
-import { uploadFile, submitOnePersonCompanyRegistration } from '../../../api'; // Need to add this API manually later or now
+import { uploadFile, submitOnePersonCompanyRegistration } from '../../../api';
+
+// --- CONSTANTS MOVED OUTSIDE COMPONENT ---
+const plans = {
+    startup: {
+        price: 4999,
+        title: 'Startup Plan',
+        features: ["1 DSC & 1 DIN", "Name Approval", "Certificate of Incorporation", "MOA & AOA Drafting", "PAN & TAN"],
+        color: 'bg-white border-slate-200'
+    },
+    growth: { // Using 'growth' key to align with standard tiers, maps to 'OPC Standard'
+        price: 6999,
+        title: 'OPC Standard',
+        features: ["Everything in Startup", "Nominee Consent Filing", "Share Certificate", "PAN & TAN Allocation", "GST & Bank Account"],
+        recommended: true,
+        color: 'bg-indigo-50 border-indigo-200'
+    },
+    enterprise: {
+        price: 12999,
+        title: 'Elite Plan',
+        features: ["Everything in Standard", "GST Registration", "MSME (Udyam) Registration", "Bank Account (Full Support)", "First Board Resolution"],
+        color: 'bg-purple-50 border-purple-200'
+    }
+};
+
+const validatePlan = (plan) => {
+    return ['startup', 'growth', 'enterprise'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'startup';
+};
+
+const PLATFORM_FEE = 499;
+const GST_RATE = 0.18;
 
 const OnePersonCompanyRegistration = ({ isLoggedIn, isModal = false, onClose, planProp }) => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const planParam = searchParams.get('plan');
 
     // Protect Route
     useEffect(() => {
@@ -19,33 +49,26 @@ const OnePersonCompanyRegistration = ({ isLoggedIn, isModal = false, onClose, pl
         const isReallyLoggedIn = isLoggedIn || !!storedUser;
 
         if (!isReallyLoggedIn) {
-            const plan = searchParams.get('plan') || 'basic';
+            const plan = planParam || 'startup';
             navigate('/login', { state: { from: `/services/one-person-company/register?plan=${plan}` } });
         }
-    }, [isLoggedIn, navigate, searchParams, isModal]);
+    }, [isLoggedIn, navigate, planParam, isModal]);
 
     const [currentStep, setCurrentStep] = useState(1);
 
-    // Validate plan
-    const validatePlan = (plan) => {
-        return ['basic', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'basic';
-    };
+    // Initialize state with validation run once
+    const [selectedPlan, setSelectedPlan] = useState(() => validatePlan(planProp || planParam));
 
-    const [selectedPlan, setSelectedPlan] = useState(validatePlan(planProp || searchParams.get('plan')));
-
+    // Optimised Plan Sync: STRICT CHECK to prevent loops
     useEffect(() => {
-        if (planProp) {
-            setSelectedPlan(validatePlan(planProp));
-        } else {
-            const planParam = searchParams.get('plan');
-            if (planParam && ['basic', 'standard', 'premium'].includes(planParam.toLowerCase())) {
-                setSelectedPlan(planParam.toLowerCase());
-            }
+        const targetPlan = validatePlan(planProp || planParam);
+        if (targetPlan !== selectedPlan) {
+            setSelectedPlan(targetPlan);
         }
-    }, [searchParams, planProp]);
+    }, [planParam, planProp, selectedPlan]);
 
     const [formData, setFormData] = useState({
-        companyNames: ['', ''], // 2 options for OPC
+        companyNames: ['', ''],
         businessActivity: '',
         addressLine1: '',
         addressLine2: '',
@@ -55,14 +78,8 @@ const OnePersonCompanyRegistration = ({ isLoggedIn, isModal = false, onClose, pl
         ownershipStatus: 'rented',
         authorizedCapital: '100000',
         paidUpCapital: '100000',
-
-        // Single Director (Member)
         director: { name: '', fatherName: '', dob: '', pan: '', aadhaar: '', email: '', phone: '', address: '' },
-
-        // Nominee
         nominee: { name: '', relationship: '', dob: '', pan: '', aadhaar: '', email: '', phone: '' },
-
-        // Extra Fields
         bankPreference: '',
         turnoverEstimate: '',
         accountingStartDate: '',
@@ -70,44 +87,34 @@ const OnePersonCompanyRegistration = ({ isLoggedIn, isModal = false, onClose, pl
 
     const [uploadedFiles, setUploadedFiles] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [automationPayload, setAutomationPayload] = useState(null);
     const [errors, setErrors] = useState({});
 
-    // Plans Configuration
-    const plans = {
-        basic: {
-            price: 4999,
-            title: 'Basic Plan',
-            features: [
-                "1 DSC & 1 DIN", "Name Approval", "Certificate of Incorporation", "MOA & AOA Drafting", "PAN & TAN", "GST Support"
-            ],
-            color: 'bg-white border-slate-200'
-        },
-        standard: {
-            price: 8999,
-            title: 'Standard Plan',
-            features: [
-                "Everything in Basic", "Nominee Consent Filing", "Share Certificate", "PAN & TAN Allocation", "GST & Bank Account"
-            ],
-            recommended: true,
-            color: 'bg-indigo-50 border-indigo-200'
-        },
-        premium: {
-            price: 12999,
-            title: 'Premium Plan',
-            features: [
-                "Everything in Standard", "GST Registration", "MSME (Udyam) Registration", "Bank Account (Full Support)", "First Board Resolution"
-            ],
-            color: 'bg-purple-50 border-purple-200'
-        }
-    };
+    // Memoize bill details
+    const billDetails = useMemo(() => {
+        const plan = plans[selectedPlan] || plans.startup;
+        const basePrice = plan.price;
+
+        // Split 15% Markup: Platform Fee (3%), Tax (3%), GST (9%)
+        const platformFee = Math.round(basePrice * 0.03); // 3%
+        const tax = Math.round(basePrice * 0.03);         // 3%
+        const gst = Math.round(basePrice * 0.09);         // 9%
+
+        return {
+            base: basePrice,
+            platformFn: platformFee,
+            tax: tax,
+            gst: gst,
+            total: basePrice + platformFee + tax + gst
+        };
+    }, [selectedPlan]);
 
     const handleInputChange = (e, section = null) => {
         const { name, value } = e.target;
-
         if (section === 'companyNames') {
-            const index = parseInt(name); // 0 or 1 passed as name
+            const index = parseInt(name);
             const newNames = [...formData.companyNames];
             newNames[index] = value;
             setFormData({ ...formData, companyNames: newNames });
@@ -118,94 +125,61 @@ const OnePersonCompanyRegistration = ({ isLoggedIn, isModal = false, onClose, pl
         } else {
             setFormData({ ...formData, [name]: value });
         }
-
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
     };
 
     const validateStep = (step) => {
         const newErrors = {};
         let isValid = true;
-
-        if (step === 1) { // Director & Company
-            if (!formData.director.name) { newErrors.directorName = "Director Name Required"; isValid = false; }
-            if (!formData.director.email) { newErrors.directorEmail = "Email Required"; isValid = false; }
-            if (!formData.director.phone) { newErrors.directorPhone = "Phone Required"; isValid = false; }
-            if (!formData.director.pan) { newErrors.directorPan = "PAN Required"; isValid = false; }
-
-            if (!formData.companyNames[0]) { newErrors.companyName1 = "At least 1 name required"; isValid = false; }
-            if (!formData.businessActivity) { newErrors.businessActivity = "Activity required"; isValid = false; }
-            if (!formData.addressLine1) { newErrors.addressLine1 = "Address required"; isValid = false; }
+        if (step === 1) {
+            if (!formData.director.name) { newErrors.directorName = "Required"; isValid = false; }
+            if (!formData.director.email) { newErrors.directorEmail = "Required"; isValid = false; }
+            if (!formData.director.phone) { newErrors.directorPhone = "Required"; isValid = false; }
+            if (!formData.director.pan) { newErrors.directorPan = "Required"; isValid = false; }
+            if (!formData.companyNames[0]) { newErrors.companyName1 = "Required"; isValid = false; }
+            if (!formData.businessActivity) { newErrors.businessActivity = "Required"; isValid = false; }
         }
-
-        if (step === 2) { // Nominee & Extras
-            // Nominee Name required for all OPCs usually, but specifically for Standard/Premium forms
-            if (!formData.nominee.name) { newErrors.nomineeName = "Nominee Name required"; isValid = false; }
-
-            if (selectedPlan !== 'basic') {
-                if (!formData.nominee.pan) { newErrors.nomineePan = "Nominee PAN required"; isValid = false; }
-            }
+        if (step === 2) {
+            if (!formData.nominee.name) { newErrors.nomineeName = "Nominee Name Required"; isValid = false; }
         }
-
         setErrors(newErrors);
         return isValid;
     };
 
     const handleNext = () => {
-        if (validateStep(currentStep)) {
-            setCurrentStep(prev => Math.min(5, prev + 1));
-        }
+        if (validateStep(currentStep)) setCurrentStep(prev => Math.min(5, prev + 1));
     };
 
     const handleFileUpload = async (e, key) => {
         const file = e.target.files[0];
         if (!file) return;
-
         try {
             let category = 'opc_docs';
             const response = await uploadFile(file, category);
-
-            setUploadedFiles(prev => ({
-                ...prev,
-                [key]: {
-                    originalFile: file,
-                    name: response.originalName || file.name,
-                    preview: file.type.includes('image') ? URL.createObjectURL(file) : null,
-                    fileUrl: response.fileUrl,
-                    fileId: response.id
-                }
-            }));
+            setUploadedFiles(prev => ({ ...prev, [key]: { originalFile: file, name: response.originalName, fileUrl: response.fileUrl, fileId: response.id } }));
         } catch (error) {
-            console.error("Upload failed", error);
-            alert("File upload failed.");
+            alert("Upload failed.");
         }
     };
 
     const submitApplication = async () => {
         setIsSubmitting(true);
         try {
-            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
-                id: k,
-                filename: v.name,
-                fileUrl: v.fileUrl
-            }));
-
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({ id: k, filename: v.name, fileUrl: v.fileUrl }));
             const finalPayload = {
                 submissionId: `OPC-${Date.now()}`,
                 plan: selectedPlan,
                 userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.director.email,
                 formData: formData,
                 documents: docsList,
+                paymentDetails: billDetails,
                 status: "PAYMENT_SUCCESSFUL"
             };
-
-            // Call API
             const response = await submitOnePersonCompanyRegistration(finalPayload);
-
             setAutomationPayload(response);
             setIsSuccess(true);
         } catch (error) {
-            console.error(error);
-            alert("Submission error: " + error.message);
+            alert("Error: " + error.message);
         } finally {
             setIsSubmitting(false);
         }
@@ -213,227 +187,199 @@ const OnePersonCompanyRegistration = ({ isLoggedIn, isModal = false, onClose, pl
 
     const renderStepContent = () => {
         switch (currentStep) {
-            case 1: // Director & Company
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><User size={20} className="text-blue-600" /> DIRECTOR / OWNER DETAILS (Only 1)</h3>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <input type="text" name="name" value={formData.director.name} onChange={(e) => handleInputChange(e, 'director')} placeholder="Full Name" className={`w-full p-3 rounded-lg border ${errors.directorName ? 'border-red-500' : 'border-gray-200'}`} />
-                                <input type="email" name="email" value={formData.director.email} onChange={(e) => handleInputChange(e, 'director')} placeholder="Email" className={`w-full p-3 rounded-lg border ${errors.directorEmail ? 'border-red-500' : 'border-gray-200'}`} />
-                                <input type="tel" name="phone" value={formData.director.phone} onChange={(e) => handleInputChange(e, 'director')} placeholder="Mobile Number" className={`w-full p-3 rounded-lg border ${errors.directorPhone ? 'border-red-500' : 'border-gray-200'}`} />
-                                <input type="text" name="pan" value={formData.director.pan} onChange={(e) => handleInputChange(e, 'director')} placeholder="PAN Number" className={`w-full p-3 rounded-lg border ${errors.directorPan ? 'border-red-500' : 'border-gray-200'}`} />
-                                <input type="text" name="aadhaar" value={formData.director.aadhaar} onChange={(e) => handleInputChange(e, 'director')} placeholder="Aadhaar Number" className="w-full p-3 rounded-lg border border-gray-200" />
-                            </div>
-                        </div>
-
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><Building size={20} className="text-navy" /> COMPANY DETAILS</h3>
-                            <div className="grid gap-4">
-                                <input name="0" type="text" value={formData.companyNames[0]} onChange={(e) => handleInputChange(e, 'companyNames')} placeholder="Proposed OPC Name 1" className={`w-full p-3 rounded-lg border ${errors.companyName1 ? 'border-red-500' : 'border-gray-200'}`} />
-                                <input name="1" type="text" value={formData.companyNames[1]} onChange={(e) => handleInputChange(e, 'companyNames')} placeholder="Proposed OPC Name 2 (Optional)" className="w-full p-3 rounded-lg border border-gray-200" />
-
-                                <textarea name="businessActivity" value={formData.businessActivity} onChange={handleInputChange} placeholder="Main Business Activity" className="w-full p-3 rounded-lg border border-gray-200" rows="2"></textarea>
-
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <input type="text" name="authorizedCapital" value={formData.authorizedCapital} onChange={handleInputChange} placeholder="Authorized Capital" className="w-full p-3 rounded-lg border border-gray-200" />
-                                    <input type="text" name="addressLine1" value={formData.addressLine1} onChange={handleInputChange} placeholder="Registered Address Line 1" className={`w-full p-3 rounded-lg border ${errors.addressLine1 ? 'border-red-500' : 'border-gray-200'}`} />
-                                    <input type="text" name="state" value={formData.state} onChange={handleInputChange} placeholder="State" className="w-full p-3 rounded-lg border border-gray-200" />
-                                    <input type="text" name="pincode" value={formData.pincode} onChange={handleInputChange} placeholder="Pincode" className="w-full p-3 rounded-lg border border-gray-200" />
-                                </div>
-                            </div>
+            case 1: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-navy mb-3 text-sm flex items-center gap-2"><User size={16} /> DIRECTOR (OWNER) DETAILS</h3>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            <input name="name" value={formData.director.name} onChange={(e) => handleInputChange(e, 'director')} placeholder="Full Name" className={`p-2 text-sm border rounded-lg ${errors.directorName ? 'border-red-500' : ''}`} />
+                            <input name="email" value={formData.director.email} onChange={(e) => handleInputChange(e, 'director')} placeholder="Email" className={`p-2 text-sm border rounded-lg ${errors.directorEmail ? 'border-red-500' : ''}`} />
+                            <input name="phone" value={formData.director.phone} onChange={(e) => handleInputChange(e, 'director')} placeholder="Mobile" className={`p-2 text-sm border rounded-lg ${errors.directorPhone ? 'border-red-500' : ''}`} />
+                            <input name="pan" value={formData.director.pan} onChange={(e) => handleInputChange(e, 'director')} placeholder="PAN Number" className={`p-2 text-sm border rounded-lg ${errors.directorPan ? 'border-red-500' : ''}`} />
                         </div>
                     </div>
-                );
-
-            case 2: // Nominee & Extras
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><Users size={20} className="text-purple-600" /> NOMINEE DETAILS (Mandatory)</h3>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <input type="text" name="name" value={formData.nominee.name} onChange={(e) => handleInputChange(e, 'nominee')} placeholder="Nominee Full Name" className={`w-full p-3 rounded-lg border ${errors.nomineeName ? 'border-red-500' : 'border-gray-200'}`} />
-                                <input type="text" name="relationship" value={formData.nominee.relationship} onChange={(e) => handleInputChange(e, 'nominee')} placeholder="Relationship (e.g. Spouse/Brother)" className="w-full p-3 rounded-lg border border-gray-200" />
-
-                                {selectedPlan !== 'basic' && (
-                                    <>
-                                        <input type="text" name="pan" value={formData.nominee.pan} onChange={(e) => handleInputChange(e, 'nominee')} placeholder="Nominee PAN" className={`w-full p-3 rounded-lg border ${errors.nomineePan ? 'border-red-500' : 'border-gray-200'}`} />
-                                        <input type="text" name="aadhaar" value={formData.nominee.aadhaar} onChange={(e) => handleInputChange(e, 'nominee')} placeholder="Nominee Aadhaar" className="w-full p-3 rounded-lg border border-gray-200" />
-                                    </>
-                                )}
-                            </div>
-                            {selectedPlan === 'basic' && <p className="text-xs text-gray-500 mt-2">*Full nominee filing not included in Basic plan.</p>}
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-navy mb-3 text-sm flex items-center gap-2"><Building size={16} /> COMPANY DETAILS</h3>
+                        <div className="grid gap-3">
+                            <input name="0" value={formData.companyNames[0]} onChange={(e) => handleInputChange(e, 'companyNames')} placeholder="Proposed OPC Name 1" className={`w-full p-2 text-sm border rounded-lg ${errors.companyName1 ? 'border-red-500' : ''}`} />
+                            <input name="1" value={formData.companyNames[1]} onChange={(e) => handleInputChange(e, 'companyNames')} placeholder="Proposed OPC Name 2 (Optional)" className="w-full p-2 text-sm border rounded-lg" />
+                            <textarea name="businessActivity" value={formData.businessActivity} onChange={handleInputChange} placeholder="Main Business Activity..." className={`w-full p-2 text-sm border rounded-lg ${errors.businessActivity ? 'border-red-500' : ''}`} rows="2"></textarea>
+                            <input name="addressLine1" value={formData.addressLine1} onChange={handleInputChange} placeholder="Registered Address" className="w-full p-2 text-sm border rounded-lg" />
                         </div>
-
-                        {/* Premium Fields */}
-                        {selectedPlan === 'premium' && (
-                            <div className="bg-purple-50 p-6 rounded-2xl border border-purple-100 shadow-sm">
-                                <h3 className="font-bold text-purple-900 mb-4 flex items-center gap-2"><Shield size={20} className="text-purple-600" /> PREMIUM EXTRAS</h3>
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <input type="text" name="bankPreference" value={formData.bankPreference} onChange={handleInputChange} placeholder="Preferred Bank" className="w-full p-3 rounded-lg border border-purple-200 bg-white" />
-                                    <input type="text" name="turnoverEstimate" value={formData.turnoverEstimate} onChange={handleInputChange} placeholder="Est. Turnover" className="w-full p-3 rounded-lg border border-purple-200 bg-white" />
-                                    <input type="date" name="accountingStartDate" value={formData.accountingStartDate} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-purple-200 bg-white" />
-                                </div>
-                            </div>
-                        )}
                     </div>
-                );
-
-            case 3: // Documents
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4">Upload Documents</h3>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {['Director PAN', 'Director Aadhaar', 'Director Photo', 'Director Address Proof', 'Office Address Proof'].map((label, idx) => {
-                                    const key = label.toLowerCase().replace(/ /g, '_');
-                                    return (
-                                        <div key={idx} className="border border-dashed p-4 rounded-lg flex justify-between items-center group hover:border-blue-300 transition-colors">
-                                            <div className="flex items-center gap-2">
-                                                <Upload size={16} className="text-gray-400 group-hover:text-bronze" />
-                                                <span className="text-sm font-medium text-gray-600">{label}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                {uploadedFiles[key] && <CheckCircle size={16} className="text-bronze" />}
-                                                <input type="file" onChange={(e) => handleFileUpload(e, key)} className="text-xs w-24" />
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-
-                                {selectedPlan !== 'basic' && (
-                                    <div className="border border-dashed p-4 rounded-lg flex justify-between items-center group hover:border-blue-300 transition-colors">
+                </div>
+            );
+            case 2: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-navy mb-3 text-sm flex items-center gap-2"><Users size={16} /> NOMINEE DETAILS</h3>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            <input name="name" value={formData.nominee.name} onChange={(e) => handleInputChange(e, 'nominee')} placeholder="Nominee Name" className={`w-full p-2 text-sm border rounded-lg ${errors.nomineeName ? 'border-red-500' : ''}`} />
+                            <input name="relationship" value={formData.nominee.relationship} onChange={(e) => handleInputChange(e, 'nominee')} placeholder="Relationship" className="w-full p-2 text-sm border rounded-lg" />
+                            <input name="pan" value={formData.nominee.pan} onChange={(e) => handleInputChange(e, 'nominee')} placeholder="Nominee PAN" className="w-full p-2 text-sm border rounded-lg" />
+                        </div>
+                    </div>
+                </div>
+            );
+            case 3: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-navy mb-3 text-sm">UPLOAD DOCUMENTS</h3>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            {['Director PAN', 'Director Aadhaar', 'Director Photo', 'Address Proof'].map((doc, i) => {
+                                const key = doc.toLowerCase().replace(/ /g, '_');
+                                return (
+                                    <div key={i} className="border border-dashed p-3 rounded-lg flex justify-between items-center text-sm">
+                                        <span>{doc}</span>
                                         <div className="flex items-center gap-2">
-                                            <Upload size={16} className="text-gray-400 group-hover:text-bronze" />
-                                            <span className="text-sm font-medium text-gray-600">Nominee Consent Form (Signed)</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            {uploadedFiles['nominee_consent'] && <CheckCircle size={16} className="text-bronze" />}
-                                            <input type="file" onChange={(e) => handleFileUpload(e, 'nominee_consent')} className="text-xs w-24" />
+                                            {uploadedFiles[key] && <CheckCircle size={14} className="text-bronze" />}
+                                            <input type="file" onChange={(e) => handleFileUpload(e, key)} className="text-[10px] w-20" />
                                         </div>
                                     </div>
-                                )}
-                            </div>
+                                )
+                            })}
                         </div>
                     </div>
-                );
+                </div>
+            );
+            case 4: return (
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                    <h2 className="text-xl font-bold text-navy mb-4">Confirm Details</h2>
+                    <div className="p-4 bg-gray-50 rounded-lg space-y-2 text-sm">
+                        <div className="flex justify-between"><span>Plan</span><span className="font-bold text-navy">{plans[selectedPlan]?.title}</span></div>
+                        <div className="flex justify-between"><span>Director</span><span className="font-bold">{formData.director.name}</span></div>
+                        <div className="flex justify-between"><span>Nominee</span><span className="font-bold">{formData.nominee.name}</span></div>
+                    </div>
+                </div>
+            );
+            case 5: return (
+                <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                    <Receipt size={32} className="mx-auto mb-4 text-green-600" />
+                    <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                    <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2">
+                        <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
+                    </div>
+                    <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center"><input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} /> I Accept Terms & Conditions</label>
+                    <button onClick={submitApplication} disabled={!isTermsAccepted || isSubmitting} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50">Pay & Submit</button>
+                </div>
+            );
+        }
+    }
 
-            case 4: // Review
-                return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95">
-                        <h2 className="text-3xl font-bold text-navy mb-6">Review Application</h2>
-                        <div className="p-4 bg-gray-50 rounded-xl space-y-3 mb-6">
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Plan</span>
-                                <span className="font-bold font-mono uppercase text-navy">{plans[selectedPlan].title}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Amount</span>
-                                <span className="font-bold">₹{plans[selectedPlan].price.toLocaleString()}</span>
-                            </div>
-                        </div>
-                        <div className="space-y-2 text-sm">
-                            <p><span className="font-bold">Director:</span> {formData.director.name}</p>
-                            <p><span className="font-bold">Nominee:</span> {formData.nominee.name}</p>
-                            <p><span className="font-bold">Company:</span> {formData.companyNames[0]}</p>
+    // --- MODAL LAYOUT: SPLIT VIEW (Matches Private Limited) ---
+    if (isModal) {
+        return (
+            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK */}
+                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            OPC Registration
+                        </h1>
+                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
+                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
+                            <p className="font-bold text-white leading-tight">{plans[selectedPlan]?.title}</p>
+                            <p className="text-[#ED6E3F] font-bold mt-1">₹{plans[selectedPlan]?.price.toLocaleString()}</p>
                         </div>
                     </div>
-                );
 
-            case 5: // Payment
-                return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
-                        <div className="w-20 h-20 bg-beige/10 rounded-full flex items-center justify-center mx-auto mb-6 text-navy">
-                            <IndianRupee size={32} />
-                        </div>
-                        <h2 className="text-3xl font-bold text-navy mb-2">Payment Summary</h2>
-                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="text-gray-500">Total Payable</span>
-                                <span className="text-3xl font-bold text-navy">₹{plans[selectedPlan].price.toLocaleString()}</span>
+                    {/* VERTICAL STEPPER */}
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {['Director Details', 'Nominee Details', 'Documents', 'Review', 'Payment'].map((step, i) => (
+                            <div key={i}
+                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                            >
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
                             </div>
-                            <p className="text-[10px] text-gray-400 text-right">+ Govt Fees (Later)</p>
+                        ))}
+                    </div>
+
+                    {/* BOTTOM TOTAL */}
+                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
+                        <div className="flex justify-between items-end">
+                            <div>
+                                <p className="text-[10px] text-blue-200 uppercase">Total Payable</p>
+                                <p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p>
+                            </div>
+                            <Receipt className="text-white/20" size={24} />
                         </div>
-                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
-                            {isSubmitting ? 'Processing...' : 'Pay & Submit'}
-                            {!isSubmitting && <ArrowRight size={18} />}
+                    </div>
+                </div>
+
+                {/* RIGHT CONTENT: FORM */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    {/* Header Bar */}
+                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
+                        <h2 className="font-bold text-navy text-lg">
+                            Step {currentStep}: {['Director Info', 'Nominee Info', 'Documents', 'Review', 'Payment'][currentStep - 1]}
+                        </h2>
+                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition">
+                            <X size={18} />
                         </button>
                     </div>
-                );
 
-            default: return null;
-        }
-    };
-
-    return (
-        <div className={`bg-[#F8F9FA] ${isModal ? 'h-full overflow-y-auto p-6' : 'min-h-screen pb-20 pt-24 px-4 md:px-8'}`}>
-            {isSuccess ? (
-                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
-                    <div className="w-24 h-24 bg-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle size={48} className="text-slate" />
-                    </div>
-                    <h1 className="text-3xl font-bold text-navy mb-4">Registration Successful!</h1>
-                    <p className="text-gray-500 mb-8">
-                        Your application for <span className="font-bold text-navy">{plans[selectedPlan].title}</span> has been submitted.
-                        Your Order ID is <span className="font-mono bg-gray-100 px-2 rounded">{automationPayload?.id || "N/A"}</span>
-                    </p>
-                    <button onClick={() => isModal ? onClose() : navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">{isModal ? 'Close' : 'Go to Dashboard'}</button>
-                </div>
-            ) : (
-                <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 flex justify-between items-start">
-                        <div>
-                            <button onClick={() => isModal ? onClose() : navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-navy transition"><ArrowLeft size={14} /> {isModal ? 'Close' : 'Back'}</button>
-                            <h1 className="text-3xl font-bold text-navy">One Person Company Registration</h1>
-                            <p className="text-gray-500">Register your OPC with just one director and nominee.</p>
-                        </div>
-                        {isModal && <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full"><X size={24} className="text-gray-500" /></button>}
+                    {/* Scrollable Area */}
+                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                        {isSuccess ? (
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                                <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
+                            </div>
+                        ) : (
+                            renderStepContent()
+                        )}
                     </div>
 
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="w-full lg:w-80 space-y-6">
-                            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                                {['Director & Company', 'Nominee & Extras', 'Documents', 'Review', 'Payment'].map((step, i) => (
-                                    <div key={i} onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-beige/10 border-beige shadow-sm cursor-default' : 'bg-transparent border-transparent opacity-60 cursor-pointer hover:bg-gray-50'}`}>
-                                        <div>
-                                            <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
-                                            <span className={`font-bold text-sm ${currentStep === i + 1 ? 'text-bronze-dark' : 'text-gray-600'}`}>{step}</span>
-                                        </div>
-                                        {currentStep > i + 1 && <CheckCircle size={16} className="text-bronze" />}
-                                    </div>
-                                ))}
-                            </div>
-                            <div className={`p-6 rounded-2xl border shadow-sm ${plans[selectedPlan].color} relative overflow-hidden transition-all sticky top-24`}>
-                                <div className="relative z-10">
-                                    <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Current Plan</div>
-                                    <div className="text-3xl font-bold text-gray-800 mb-2">{plans[selectedPlan].title}</div>
-                                    <div className="text-3xl font-bold text-navy mb-4">₹{plans[selectedPlan].price.toLocaleString()}</div>
-
-                                    <div className="space-y-3 mb-6">
-                                        {plans[selectedPlan].features.map((feat, i) => (
-                                            <div key={i} className="flex gap-2 text-xs font-medium text-gray-600">
-                                                <CheckCircle size={14} className="text-slate shrink-0 mt-0.5" />
-                                                <span className="leading-tight">{feat}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {!isModal && <button onClick={() => navigate('/services/one-person-company')} className="text-xs font-bold text-gray-500 hover:text-navy underline">Change Plan</button>}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex-1">
-                            {renderStepContent()}
-                            {!isSuccess && currentStep < 5 && (
-                                <div className="mt-8 flex justify-between">
-                                    <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
-                                    <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">Next Step <ArrowRight size={18} /></button>
-                                </div>
+                    {/* Sticky Footer */}
+                    {!isSuccess && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            {currentStep < 5 && (
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                                >
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
                             )}
                         </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // --- FALLBACK FULL PAGE LAYOUT ---
+    return (
+        <div className="min-h-screen pb-20 pt-24 px-4 bg-[#F8F9FA]">
+            <div className="max-w-4xl mx-auto">
+                <button onClick={() => navigate(-1)} className="mb-4 text-xs font-bold text-gray-500 uppercase flex items-center gap-2"><ArrowLeft size={14} /> Back</button>
+                <div className="bg-white p-8 rounded-3xl shadow-xl">
+                    <h1 className="text-2xl font-bold text-navy mb-6">One Person Company Registration</h1>
+                    {renderStepContent()}
+                    <div className="mt-8 flex justify-between">
+                        <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-lg bg-gray-100 font-bold text-gray-600">Back</button>
+                        {currentStep < 5 && <button onClick={handleNext} className="px-6 py-3 rounded-lg bg-navy text-white font-bold">Next</button>}
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

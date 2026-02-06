@@ -167,8 +167,8 @@ const ClientDocuments = () => {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-[#043E52] dark:text-white">Document Vault</h2>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1">Secure, encrypted storage for your business files.</p>
+                    <h2 className="text-xl font-bold text-[#043E52] dark:text-white">Document Vault</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Secure, encrypted storage for your business files.</p>
                 </div>
                 <button onClick={() => setIsUploadModalOpen(true)} className="px-6 py-3 bg-[#ED6E3F] hover:bg-[#A57753] text-white font-bold rounded-xl shadow-lg transition flex items-center gap-2">
                     <Upload size={18} /> Upload New
@@ -183,19 +183,19 @@ const ClientDocuments = () => {
                     { title: 'Driving License', sub: 'Ministry of Road Transport', color: 'bg-green-50 text-green-600', border: 'border-green-100', icon: 'Car' },
                     { title: 'Voter ID', sub: 'Election Commission of India', color: 'bg-orange-50 text-orange-600', border: 'border-orange-100', icon: 'Vote' },
                 ].map((item, idx) => (
-                    <div key={idx} className={`bg-white dark:bg-[#043E52] p-5 rounded-2xl border ${item.border} dark:border-[#2A4550] shadow-sm hover:shadow-md transition-all cursor-pointer group`}>
-                        <div className="flex justify-between items-start mb-4">
-                            <div className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center`}>
+                    <div key={idx} className={`bg-white dark:bg-[#043E52] p-4 rounded-xl border ${item.border} dark:border-[#2A4550] shadow-sm hover:shadow-md transition-all cursor-pointer group`}>
+                        <div className="flex justify-between items-start mb-3">
+                            <div className={`w-10 h-10 rounded-xl ${item.color} flex items-center justify-center`}>
                                 {/* Simple Text Icon Fallback since generic icon logic is complex here without imports */}
-                                {idx === 0 ? <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" /></svg> :
-                                    idx === 1 ? <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg> :
-                                        idx === 2 ? <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg> :
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                                {idx === 0 ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" /></svg> :
+                                    idx === 1 ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg> :
+                                        idx === 2 ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg> :
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
                             </div>
-                            <span className="bg-gray-100 dark:bg-black/20 text-gray-500 text-[10px] font-bold px-2 py-1 rounded">ADD</span>
+                            <span className="bg-gray-100 dark:bg-black/20 text-gray-500 text-[10px] font-bold px-1.5 py-0.5 rounded">ADD</span>
                         </div>
                         <div>
-                            <h4 className="font-bold text-slate-800 dark:text-white">{item.title}</h4>
+                            <h4 className="font-bold text-slate-800 dark:text-white text-sm">{item.title}</h4>
                             <p className="text-[10px] text-slate-400 font-medium group-hover:text-[#ED6E3F] transition-colors">{item.sub}</p>
                         </div>
                     </div>
@@ -204,7 +204,7 @@ const ClientDocuments = () => {
 
             {/* Storage Stats (Static Visuals for now, can be made dynamic later) */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-[#043E52] rounded-2xl p-8 text-white shadow-lg relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                <div className="bg-[#043E52] rounded-2xl p-6 text-white shadow-lg relative overflow-hidden group hover:scale-[1.02] transition-transform">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-[#ED6E3F]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                     <div className="flex justify-between items-start mb-6">
                         <div className="p-3 bg-white/10 rounded-xl"><Folder size={24} className="text-[#ED6E3F]" /></div>
@@ -217,7 +217,7 @@ const ClientDocuments = () => {
                     </div>
                 </div>
 
-                <div className="col-span-2 bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] rounded-2xl p-8 shadow-sm flex flex-col justify-between">
+                <div className="col-span-2 bg-white dark:bg-[#043E52] border border-slate-100 dark:border-[#1C3540] rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-full text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30">
                             <Shield size={24} />

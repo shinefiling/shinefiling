@@ -162,6 +162,132 @@ const GSTR3BRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) 
         }
     };
 
+    if (isModal) {
+        return (
+            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR - DARK */}
+                <div className="w-72 bg-[#043E52] flex flex-col justify-between shrink-0 relative overflow-hidden">
+                    {/* Background Deco */}
+                    <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                        <div className="absolute right-0 top-0 w-48 h-48 bg-white blur-3xl rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                        <div className="absolute left-0 bottom-0 w-40 h-40 bg-bronze blur-3xl rounded-full translate-y-1/3 -translate-x-1/3"></div>
+                    </div>
+
+                    <div className="p-8 relative z-10 flex-1 overflow-y-auto custom-scrollbar">
+                        <div className="flex items-center gap-3 mb-8 text-white">
+                            <div className="p-2 bg-white/10 rounded-lg">
+                                <FileText size={24} className="text-bronze" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold leading-tight">GSTR-3B<br />Filing</h3>
+                                <p className="text-[10px] text-gray-400 uppercase tracking-widest">Compliance</p>
+                            </div>
+                        </div>
+
+                        {/* Steps Navigation */}
+                        <div className="space-y-6 relative">
+                            {/* Vertical Line */}
+                            <div className="absolute left-[15px] top-2 bottom-2 w-0.5 bg-white/10 z-0"></div>
+
+                            {['Business Info', 'Summary Data', 'Documents', 'Review', 'Payment'].map((step, i) => {
+                                const stepNum = i + 1;
+                                const isActive = currentStep === stepNum;
+                                const isCompleted = currentStep > stepNum;
+
+                                return (
+                                    <div
+                                        key={i}
+                                        className={`relative z-10 flex items-center gap-4 cursor-pointer group ${isActive ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`}
+                                        onClick={() => { if (isCompleted) setCurrentStep(stepNum) }}
+                                    >
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300
+                                            ${isActive ? 'bg-bronze border-bronze text-white scale-110 shadow-lg shadow-bronze/30' :
+                                                isCompleted ? 'bg-green-500 border-green-500 text-white' : 'bg-[#043E52] border-white/20 text-white/60'}`}
+                                        >
+                                            {isCompleted ? <CheckCircle size={14} /> : stepNum}
+                                        </div>
+                                        <span className={`text-sm font-medium transition-colors ${isActive ? 'text-white font-bold' : 'text-gray-400 group-hover:text-gray-200'}`}>
+                                            {step}
+                                        </span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Bottom Billing Card */}
+                    <div className="p-6 bg-black/20 backdrop-blur-sm border-t border-white/5 relative z-10 shrink-0">
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-xs text-gray-400">Total Payable</span>
+                            <span className="text-lg font-bold text-bronze">₹{plans[selectedPlan]?.price.toLocaleString()}</span>
+                        </div>
+                        <p className="text-[10px] text-gray-500">{plans[selectedPlan]?.title}</p>
+                    </div>
+                </div>
+
+                {/* RIGHT CONTENT AREA - LIGHT */}
+                <div className="flex-1 flex flex-col bg-[#F2F1EF] h-full overflow-hidden relative">
+                    {/* Header */}
+                    <div className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 shrink-0 z-20">
+                        <h2 className="font-bold text-navy text-lg">
+                            {currentStep === 1 && "Business & Period"}
+                            {currentStep === 2 && "Data Summary"}
+                            {currentStep === 3 && "Upload Documents"}
+                            {currentStep === 4 && "Confirm Details"}
+                            {currentStep === 5 && "Pay & File"}
+                        </h2>
+                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-red-500 transition">
+                            <X size={18} />
+                        </button>
+                    </div>
+
+                    {/* Scrollable Form Content */}
+                    <div className="flex-1 overflow-y-auto p-8">
+                        <div className="max-w-3xl mx-auto pb-12">
+                            {isSuccess ? (
+                                <div className="flex flex-col items-center justify-center h-full pt-12 text-center">
+                                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-in zoom-in spin-in-90 duration-500">
+                                        <CheckCircle size={48} className="text-green-600" />
+                                    </div>
+                                    <h2 className="text-3xl font-bold text-navy mb-2">Filing Submitted!</h2>
+                                    <p className="text-gray-500 max-w-md mb-8">
+                                        Your GSTR-3B request (Ref: {automationPayload?.submissionId}) has been received.
+                                    </p>
+                                    <button onClick={onClose} className="px-8 py-3 bg-navy text-white rounded-xl font-bold hover:bg-black transition">
+                                        Return to Dashboard
+                                    </button>
+                                </div>
+                            ) : (
+                                renderStepContent()
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Sticky Footer */}
+                    {!isSuccess && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            {currentStep < 5 && (
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                                >
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={`bg-[#F8F9FA] ${isModal ? 'h-full overflow-y-auto p-6' : 'min-h-screen pb-20 pt-24 px-4 md:px-8'}`}>
             {isSuccess ? (
