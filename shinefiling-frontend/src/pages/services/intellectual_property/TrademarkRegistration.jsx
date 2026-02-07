@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Copyright, ShieldCheck, Search, Globe, Award, FileText, CheckCircle, BookOpen, Clock, Zap, HelpCircle, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -496,7 +496,7 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                 </div>
 
             </div>
-        
+
             <AnimatePresence>
                 {showRegisterModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
@@ -525,7 +525,7 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                     setShowRegisterModal(true);
                 }}
             />
-</div>
+        </div>
     );
 };
 

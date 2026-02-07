@@ -1,15 +1,31 @@
-﻿import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../../../components/Navbar';
+﻿import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import {
+    ArrowLeft, Upload, CheckCircle, AlertCircle, FileText, ChevronRight, ArrowRight,
+    Save, Shield, CreditCard, Lock, Info, Award, User, X, Truck, Package, DollarSign
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { submitVendorAgreement } from '../../../api';
 import { uploadFile } from '../../../utils/uploadFile';
-import { ArrowLeft, Loader, CheckCircle, Upload } from 'lucide-react';
 
-const ApplyVendorAgreement = () => {
+// Pricing Configuration
+const pricing = {
+    basic: { serviceFee: 999, title: "Basic", subtitle: "Simple Terms" },
+    standard: { serviceFee: 1999, title: "Standard", subtitle: "Comprehensive Agreement" },
+    msa: { serviceFee: 3999, title: "MSA", subtitle: "Master Service Agreement" }
+};
+
+const ApplyVendorAgreement = ({ isLoggedIn, isModal = false, onClose, planProp }) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const initialPlan = planProp || queryParams.get('plan') || 'standard';
+
+    const [step, setStep] = useState(1);
+    const [plan, setPlan] = useState(initialPlan);
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
     const [error, setError] = useState(null);
+
     const [formData, setFormData] = useState({
         companyName: '',
         vendorName: '',
@@ -18,101 +34,431 @@ const ApplyVendorAgreement = () => {
         email: '',
         mobile: ''
     });
-    const [selectedFiles, setSelectedFiles] = useState([]);
 
+    const [documents, setDocuments] = useState({
+        scopeOfWork: null
+    });
+
+    // Load User Data
     useEffect(() => {
         const userStr = localStorage.getItem('user');
         if (userStr) {
-            const user = JSON.parse(userStr);
-            setFormData(prev => ({ ...prev, email: user.email, mobile: user.mobile || '' }));
-        } else { navigate('/login'); }
-    }, [navigate]);
+            try {
+                const user = JSON.parse(userStr);
+                setFormData(prev => ({
+                    ...prev,
+                    email: user.email || '',
+                    mobile: user.mobile || ''
+                }));
+            } catch (e) {
+                console.error("Error parsing user data", e);
+            }
+        }
+    }, []);
 
-    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+    useEffect(() => {
+        if (!isModal) window.scrollTo(0, 0);
+    }, [step, isModal]);
 
-    const handleFileChange = (e) => {
-        if (e.target.files) {
-            setSelectedFiles(Array.from(e.target.files));
+    // Bill Details
+    const billDetails = useMemo(() => {
+        const selectedPricing = pricing[plan] || pricing.standard;
+        const basePrice = selectedPricing.serviceFee;
+
+        const platformFee = Math.round(basePrice * 0.03); // 3%
+        const tax = Math.round(basePrice * 0.18);         // 18% GST
+        const total = basePrice + platformFee + tax;
+
+        return {
+            base: basePrice,
+            platformFn: platformFee,
+            tax: tax,
+            total: total,
+            planName: selectedPricing.title,
+            planSubtitle: selectedPricing.subtitle
+        };
+    }, [plan]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleFileChange = (e, docType) => {
+        if (e.target.files && e.target.files[0]) {
+            setDocuments(prev => ({ ...prev, [docType]: e.target.files[0] }));
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const validateStep = (currentStep) => {
+        setError(null);
+        switch (currentStep) {
+            case 1: // Plan Selection
+                return null;
+            case 2: // Details
+                if (!formData.companyName) return "Company Name is required.";
+                if (!formData.vendorName) return "Vendor Name is required.";
+                if (!formData.serviceDescription) return "Service Description is required.";
+                if (!formData.paymentTerms) return "Payment Terms are required.";
+                if (!formData.mobile || formData.mobile.length !== 10) return "Valid Mobile Number is required.";
+                return null;
+            case 3: // Documents (Optional)
+                return null;
+            default:
+                return null;
+        }
+    };
+
+    const handleNext = () => {
+        const validationError = validateStep(step);
+        if (validationError) {
+            setError(validationError);
+            return;
+        }
+        setStep(prev => Math.min(5, prev + 1));
+    };
+
+    const handleBack = () => {
+        setStep(prev => prev - 1);
+    };
+
+    const handleSubmit = async () => {
         setLoading(true);
+        setError(null);
         try {
+            const uploadedDocsList = [];
+
+            // Upload Documents
+            const uploadPromises = Object.entries(documents).map(async ([key, file]) => {
+                if (file) {
+                    try {
+                        const uploadRes = await uploadFile(file, 'vendor-agreement');
+                        return {
+                            id: key,
+                            filename: uploadRes.originalName || file.name,
+                            fileUrl: uploadRes.fileUrl,
+                            type: key
+                        };
+                    } catch (e) {
+                        console.error(`Failed to upload ${key}`, e);
+                        return null;
+                    }
+                }
+                return null;
+            });
+
+            const uploadedResults = await Promise.all(uploadPromises);
+            uploadedResults.forEach(doc => {
+                if (doc) uploadedDocsList.push(doc);
+            });
+
+            // Prepare Payload
             const finalPayload = {
                 submissionId: `VENDOR-${Date.now()}`,
                 userEmail: formData.email,
-                plan: "standard",
-                amountPaid: 1499,
+                plan: plan,
+                amountPaid: billDetails.total,
                 status: "INITIATED",
-                formData: formData,
-                documents: [],
+                formData: {
+                    ...formData,
+                    selectedPlan: billDetails.planName
+                },
+                documents: uploadedDocsList,
                 automationQueue: []
             };
 
-            const uploadedDocs = [];
-            for (const file of selectedFiles) {
-                const url = await uploadFile(file);
-                uploadedDocs.push({
-                    documentType: "User Upload",
-                    fileName: file.name,
-                    fileUrl: url
-                });
-            }
-            finalPayload.documents = uploadedDocs;
-
+            // API Call
             await submitVendorAgreement(finalPayload);
-            setSuccess(true);
-            setTimeout(() => navigate('/dashboard?tab=orders'), 2000);
-        } catch (err) { setError(err.message || 'Failed'); } finally { setLoading(false); }
+
+            // Redirect
+            if (isModal) {
+                onClose();
+                navigate('/dashboard?tab=orders');
+            } else {
+                navigate('/dashboard?tab=orders');
+            }
+
+        } catch (err) {
+            console.error("Submission Error", err);
+            setError(err.message || "Failed to submit application. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    return (
-        <div className="min-h-screen bg-gray-50 font-sans">
-            <Navbar isLoggedIn={true} />
-            <div className="pt-32 px-6 max-w-4xl mx-auto">
-                <button onClick={() => navigate('/services/vendor-agreement')} className="flex items-center text-gray-500 mb-6"><ArrowLeft size={20} className="mr-2" /> Back</button>
-                <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-6">Vendor Agreement Application</h1>
-                    {success ? (
-                        <div className="text-center py-12"><CheckCircle size={64} className="mx-auto text-green-500 mb-4" /><h2 className="text-2xl font-bold">Application Submitted!</h2></div>
-                    ) : (
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {error && <div className="text-red-500">{error}</div>}
-                            <div className="grid grid-cols-2 gap-6">
-                                <div><label className="block text-sm font-medium mb-2">Company Name (Client)</label><input type="text" name="companyName" value={formData.companyName} onChange={handleChange} required className="w-full border rounded-lg p-3" /></div>
-                                <div><label className="block text-sm font-medium mb-2">Vendor/Supplier Name</label><input type="text" name="vendorName" value={formData.vendorName} onChange={handleChange} required className="w-full border rounded-lg p-3" /></div>
-                            </div>
-                            <div><label className="block text-sm font-medium mb-2">Service Description / Products Supply</label><textarea name="serviceDescription" value={formData.serviceDescription} onChange={handleChange} required rows="3" className="w-full border rounded-lg p-3"></textarea></div>
-                            <div className="grid grid-cols-2 gap-6">
-                                <div><label className="block text-sm font-medium mb-2">Payment Terms (e.g. Net 30)</label><input type="text" name="paymentTerms" value={formData.paymentTerms} onChange={handleChange} required className="w-full border rounded-lg p-3" /></div>
+    const steps = ['Select Plan', 'Vendor Details', 'Documents', 'Review', 'Payment'];
+
+    const renderStepContent = () => {
+        switch (step) {
+            case 1: // Service Selection
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
+                                <Truck size={20} className="text-emerald-600" /> SELECT PLAN
+                            </h3>
+                            <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-100 flex items-start gap-3 mb-6">
+                                <Info className="text-emerald-600 mt-0.5 shrink-0" size={18} />
+                                <p className="text-sm text-emerald-800">
+                                    <strong>Basic</strong> for simple supply terms. <strong>Standard</strong> for detailed vendor agreements. <strong>MSA</strong> for long-term master service relationships.
+                                </p>
                             </div>
 
-                            <div className="border-t border-gray-100 pt-6">
-                                <h3 className="text-lg font-bold text-gray-800 mb-4">Upload Documents (Optional)</h3>
-                                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer relative">
-                                    <input type="file" multiple onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                                    <Upload className="mx-auto text-gray-400 mb-2" size={32} />
-                                    <p className="text-sm text-gray-600 font-medium">Click to upload drafts or notes</p>
-                                    <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG allowed</p>
-                                    {selectedFiles.length > 0 && (
-                                        <div className="mt-4 text-left">
-                                            <p className="text-sm font-bold text-green-600 mb-2">Selected Files:</p>
-                                            <ul className="text-xs text-gray-600 space-y-1">
-                                                {selectedFiles.map((f, i) => <li key={i} className="flex items-center gap-1"><CheckCircle size={10} /> {f.name}</li>)}
-                                            </ul>
+                            <div className="grid grid-cols-1 gap-3">
+                                {Object.entries(pricing).map(([key, val]) => (
+                                    <button
+                                        key={key}
+                                        onClick={() => setPlan(key)}
+                                        className={`p-4 rounded-xl border text-left transition-all flex items-center justify-between ${plan === key
+                                            ? 'border-emerald-600 bg-emerald-50 ring-1 ring-emerald-600'
+                                            : 'border-slate-200 hover:border-emerald-300 hover:bg-slate-50'}`}
+                                    >
+                                        <div>
+                                            <div className={`font-bold text-base ${plan === key ? 'text-navy' : 'text-slate-700'}`}>{val.title}</div>
+                                            <div className="text-xs text-slate-500 font-medium">{val.subtitle}</div>
                                         </div>
-                                    )}
+                                        <div className="text-right">
+                                            <div className="text-emerald-600 font-bold">₹{val.serviceFee}</div>
+                                            {plan === key && <CheckCircle size={16} className="text-emerald-600 ml-auto mt-1" />}
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            case 2: // Details
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        {error && (
+                            <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 text-red-700">
+                                <AlertCircle size={20} className="mt-0.5 shrink-0" />
+                                <p className="text-sm font-medium">{error}</p>
+                            </div>
+                        )}
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
+                                <Package size={20} className="text-bronze" /> VENDOR DETAILS
+                            </h3>
+                            <div className="grid grid-cols-1 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-gray-500">Your Company Name</label>
+                                    <input type="text" name="companyName" value={formData.companyName} onChange={handleChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white" placeholder="Client Name" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-gray-500">Vendor / Supplier Name</label>
+                                    <input type="text" name="vendorName" value={formData.vendorName} onChange={handleChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white" placeholder="Provider Name" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-gray-500">Service / Product Description</label>
+                                    <textarea name="serviceDescription" value={formData.serviceDescription} onChange={handleChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white resize-none" rows="3" placeholder="Describe the goods or services to be supplied..." />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-gray-500">Payment Terms</label>
+                                    <input type="text" name="paymentTerms" value={formData.paymentTerms} onChange={handleChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white" placeholder="e.g. Net 30, 50% Advance" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-gray-500">Mobile Number</label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-3.5 text-slate-400 font-bold">+91</span>
+                                        <input type="tel" name="mobile" value={formData.mobile} onChange={handleChange} maxLength={10} className="w-full pl-12 p-3 rounded-lg border border-gray-200 bg-white" />
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                );
 
-                            <button type="submit" disabled={loading} className="w-full bg-emerald-700 text-white font-bold py-4 rounded-xl hover:bg-emerald-800 transition flex justify-center">{loading ? <Loader className="animate-spin" /> : 'Submit'}</button>
-                        </form>
+            case 3: // Documents
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
+                                <Upload size={20} className="text-emerald-500" /> UPLOAD DOCUMENTS
+                            </h3>
+                            <p className="text-sm text-gray-500 mb-4">Optional: Upload any proposals or scope documents.</p>
+                            <div className="grid grid-cols-1 gap-4">
+                                {[
+                                    { id: 'scopeOfWork', label: 'Scope / Proposal (Optional)', icon: FileText }
+                                ].map((doc) => (
+                                    <div key={doc.id} className="border border-dashed p-4 rounded-lg flex justify-between items-center group hover:border-emerald-300 transition-colors bg-gray-50">
+                                        <div className="flex items-center gap-4">
+                                            <doc.icon size={20} className="text-gray-400 group-hover:text-emerald-500" />
+                                            <div>
+                                                <p className="text-sm font-bold text-navy">{doc.label}</p>
+                                                {documents[doc.id] ? (
+                                                    <p className="text-xs text-green-600 font-medium mt-0.5">{documents[doc.id].name.substring(0, 30)}...</p>
+                                                ) : (
+                                                    <p className="text-xs text-slate-400 mt-0.5">Upload File</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <label className="cursor-pointer px-4 py-2 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-100 transition shadow-sm">
+                                            {documents[doc.id] ? 'Change' : 'Select'}
+                                            <input type="file" className="hidden" onChange={(e) => handleFileChange(e, doc.id)} accept="image/*,application/pdf" />
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            case 4: // Review
+                return (
+                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
+                        <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 text-navy">
+                            <Shield size={32} />
+                        </div>
+                        <h2 className="text-3xl font-bold text-navy mb-2">Review Details</h2>
+                        <p className="text-gray-500 mb-8">Verify your information before payment.</p>
+
+                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200 text-left">
+                            <div className="space-y-3 text-sm">
+                                <div className="flex justify-between"><span>Plan</span><span className="font-bold">{billDetails.planName}</span></div>
+                                <div className="flex justify-between"><span>Client</span><span className="font-bold">{formData.companyName}</span></div>
+                                <div className="flex justify-between"><span>Vendor</span><span className="font-bold">{formData.vendorName}</span></div>
+                                <div className="flex justify-between"><span>Payment</span><span className="font-bold">{formData.paymentTerms}</span></div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <button onClick={handleBack} className="py-3 border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50">Edit</button>
+                            <button onClick={() => setStep(5)} className="py-3 bg-navy text-white rounded-xl font-bold hover:bg-black transition">Proceed to Pay</button>
+                        </div>
+                    </div>
+                );
+
+            case 5: // Payment
+                return (
+                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
+                        <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
+                            <Award size={32} />
+                        </div>
+                        <h2 className="text-3xl font-bold text-navy mb-2">Checkout</h2>
+                        <p className="text-gray-500 mb-8">Complete payment to start drafting.</p>
+
+                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
+                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Drafting Fee</span><span>₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Tax (18%)</span><span>₹{billDetails.tax}</span></div>
+                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Platform Fee</span><span>₹{billDetails.platformFn}</span></div>
+                            <div className="border-t pt-2 mt-2 flex justify-between items-end"><span className="text-gray-500 font-bold">Total</span><span className="text-3xl font-bold text-navy">₹{billDetails.total.toLocaleString()}</span></div>
+                        </div>
+
+                        <button onClick={handleSubmit} disabled={loading} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2">
+                            {loading ? 'Processing...' : `Pay ₹${billDetails.total} & Submit`}
+                            {!loading && <Lock size={18} />}
+                        </button>
+                    </div>
+                );
+
+            default: return null;
+        }
+    };
+
+    if (isModal) {
+        return (
+            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK */}
+                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
+                            <span className="text-[#ED6E3F]">Vendor</span> Agreement
+                        </h1>
+                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
+                            <p className="text-[10px] uppercase text-emerald-200 tracking-wider mb-1">Plan</p>
+                            <p className="font-bold text-white leading-tight">{billDetails.planName}</p>
+                            <p className="text-[#ED6E3F] font-bold mt-1">₹{billDetails.total.toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {steps.map((s, i) => (
+                            <div key={i} onClick={() => { if (step > i + 1) setStep(i + 1) }} className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${step === i + 1 ? 'bg-white/10 text-white' : 'text-emerald-200 hover:bg-white/5'}`}>
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${step === i + 1 ? 'bg-[#ED6E3F] text-white' : step > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-emerald-200'}`}>
+                                    {step > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${step === i + 1 ? 'text-white font-bold' : ''}`}>{s}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
+                        <div className="flex justify-between items-end">
+                            <div><p className="text-[10px] text-emerald-200 uppercase">Total Payable</p><p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p></div>
+                        </div>
+                    </div>
+                </div>
+                {/* RIGHT CONTENT */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
+                        <h2 className="font-bold text-navy text-lg">{steps[step - 1]}</h2>
+                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition"><X size={18} /></button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                        {renderStepContent()}
+                    </div>
+                    {step < 4 && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button onClick={() => setStep(p => Math.max(1, p - 1))} disabled={step === 1} className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30">Back</button>
+                            <button onClick={handleNext} className="px-6 py-2.5 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2 text-sm">Next Step <ArrowRight size={16} /></button>
+                        </div>
                     )}
                 </div>
             </div>
-        </div >
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-[#F8F9FA] pb-20 pt-24 px-4 md:px-8">
+            <div className="max-w-7xl mx-auto">
+                <div className="mb-8 pl-1">
+                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-navy transition">
+                        <ArrowLeft size={14} /> Back
+                    </button>
+                    <h1 className="text-3xl font-bold text-navy">Vendor Agreement</h1>
+                    <p className="text-gray-500">Secure your supply chain.</p>
+                </div>
+
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* LEFT SIDEBAR */}
+                    <div className="w-full lg:w-80 space-y-6">
+                        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
+                            {steps.map((s, i) => (
+                                <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${step === i + 1 ? 'bg-emerald-50 border-emerald-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
+                                    <div>
+                                        <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
+                                        <span className={`font-bold text-sm ${step === i + 1 ? 'text-emerald-800' : 'text-gray-600'}`}>{s}</span>
+                                    </div>
+                                    {step > i + 1 && <CheckCircle size={16} className="text-green-500" />}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="p-6 rounded-2xl border shadow-sm bg-[#043E52] text-white relative overflow-hidden transition-all sticky top-24">
+                            <div className="relative z-10">
+                                <div className="text-xs font-bold opacity-70 uppercase tracking-widest mb-1">Selected Plan</div>
+                                <div className="text-xl font-bold mb-2">{billDetails.planName}</div>
+                                <div className="text-3xl font-black mb-4">₹{billDetails.total?.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* RIGHT CONTENT */}
+                    <div className="flex-1">
+                        {renderStepContent()}
+
+                        {step < 4 && (
+                            <div className="mt-8 flex justify-between">
+                                <button onClick={() => setStep(p => Math.max(1, p - 1))} disabled={step === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
+                                <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">Next Step <ArrowRight size={18} /></button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
+
 export default ApplyVendorAgreement;

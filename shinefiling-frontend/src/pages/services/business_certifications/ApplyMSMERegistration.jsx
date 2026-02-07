@@ -1,190 +1,222 @@
-﻿import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, AlertCircle, FileText, ChevronRight, Save, Building, Users, CreditCard, Lock, RefreshCw, Smartphone } from 'lucide-react';
-import { submitMSMERegistration } from '../../../api';
+﻿import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import {
+    CheckCircle, Upload, ArrowLeft, ArrowRight, IndianRupee, User,
+    FileText, AlertCircle, RefreshCw, Smartphone, Building, BookOpen, MapPin, Briefcase,
+    Shield, Lock, ChevronRight, Menu, X, Layout, Monitor
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { uploadFile, submitMSMERegistration } from '../../../api';
 
-const ApplyMSMERegistration = () => {
+const ApplyMSMERegistration = ({ isLoggedIn, isModal = false, onClose, planProp }) => {
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const location = useLocation();
 
-    // Steps: 1-Service Selection, 2-Business Details, 3-OTP Auth, 4-Final Review
     const [step, setStep] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [otpSent, setOtpSent] = useState(false);
-    const [otpTimer, setOtpTimer] = useState(0);
-    const [enteredOtp, setEnteredOtp] = useState("");
+    const [plan, setPlan] = useState(planProp || 'basic');
+
+    // Protect Route
+    useEffect(() => {
+        if (isModal) return;
+        const storedUser = localStorage.getItem('user');
+        const isReallyLoggedIn = isLoggedIn || !!storedUser;
+
+        if (!isReallyLoggedIn) {
+            const planParam = searchParams.get('plan') || 'basic';
+            navigate('/login', { state: { from: `/services/business-certifications/msme-registration/apply?plan=${planParam}` } });
+        }
+    }, [isLoggedIn, navigate, searchParams, isModal]);
+
+    useEffect(() => {
+        if (!isModal) window.scrollTo(0, 0);
+    }, [step, isModal]);
+
+    useEffect(() => {
+        if (planProp) {
+            setPlan(planProp.toLowerCase());
+        } else {
+            const planParam = searchParams.get('plan');
+            if (planParam && ['basic', 'u_pro', 'growth'].includes(planParam.toLowerCase())) {
+                setPlan(planParam.toLowerCase());
+            }
+        }
+    }, [searchParams, planProp]);
 
     const [formData, setFormData] = useState({
-        // Step 1: Service Selection / Basic Info
-        businessName: '',
-        entityType: 'Proprietorship',
-        panNumber: '',
+        applicantName: '',
         aadhaarNumber: '',
-        mobile: '',
-        email: '',
-        businessAddress: '',
+        panNumber: '',
+        enterpriseName: '',
+        organisationType: 'Proprietorship',
+        plantAddress: '',
+        officialAddress: '',
         bankAccountNumber: '',
         ifscCode: '',
-        mainActivity: 'Services', // Manufacturing, Services, Both
-
-        // Step 2: Business Details
+        mobileNumber: '',
+        email: '',
         dateOfCommencement: '',
-        nicCodes: [], // Array of selected codes
-        numberOfEmployees: '',
+        majorActivity: 'Services',
+        nicCodes: [],
+        maleEmployees: '',
+        femaleEmployees: '',
         investmentPlantMachinery: '',
-        turnover: '', // Auto-fetched simulation
+        turnover: ''
     });
 
-    // Simulated NIC Codes for Auto-suggestion
+    const [uploadedFiles, setUploadedFiles] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [error, setError] = useState(null);
+    const [errors, setErrors] = useState({});
+
+    // NIC Options Simulation
     const nicOptions = [
         { code: "6201", desc: "Computer programming activities" },
-        { code: "6202", desc: "Computer consultancy and computer facilities management activities" },
-        { code: "6311", desc: "Data processing, hosting and related activities" },
-        { code: "4791", desc: "Retail sale via mail order houses or via Internet" },
-        { code: "5610", desc: "Restaurants and mobile food service activities" }
+        { code: "6202", desc: "Computer consultancy" },
+        { code: "6311", desc: "Data processing" },
+        { code: "4791", desc: "Retail sale via Internet" },
+        { code: "5610", desc: "Restaurants" }
     ];
     const [nicSearch, setNicSearch] = useState("");
 
+    const pricing = {
+        basic: { serviceFee: 999, title: "Basic Registration" },
+        u_pro: { serviceFee: 1499, title: "Udyam Pro" },
+        growth: { serviceFee: 2999, title: "Growth Package" }
+    };
+
+    // Memoize bill details
+    const billDetails = useMemo(() => {
+        const selectedPricing = pricing[plan] || pricing.basic;
+        const basePrice = selectedPricing.serviceFee;
+
+        const platformFee = Math.round(basePrice * 0.03); // 3%
+        const tax = Math.round(basePrice * 0.03);         // 3% 
+        const gst = Math.round(basePrice * 0.09);         // 9%
+
+        return {
+            base: basePrice,
+            platformFn: platformFee,
+            tax: tax,
+            gst: gst,
+            total: basePrice + platformFee + tax + gst,
+            planName: selectedPricing.title
+        };
+    }, [plan]);
+
+    // Load User Data
     useEffect(() => {
         const userStr = localStorage.getItem('user');
         if (userStr) {
-            const user = JSON.parse(userStr);
-            setFormData(prev => ({
-                ...prev,
-                email: user.email || '',
-                mobile: user.mobile || ''
-            }));
+            try {
+                const user = JSON.parse(userStr);
+                setFormData(prev => ({
+                    ...prev,
+                    email: user.email || '',
+                    mobileNumber: user.mobile || ''
+                }));
+            } catch (e) {
+                console.error("Error parsing user data", e);
+            }
         }
-        // Scroll to top on step change
-        window.scrollTo(0, 0);
-    }, [step]);
+    }, []);
 
-    useEffect(() => {
-        let interval;
-        if (otpTimer > 0) {
-            interval = setInterval(() => setOtpTimer(t => t - 1), 1000);
-        }
-        return () => clearInterval(interval);
-    }, [otpTimer]);
-
-    const handleChange = (e) => {
+    const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
     };
 
-    // Step 1: Validation & Proceed
-    const handleStep1Submit = () => {
-        if (!formData.businessName || !formData.panNumber || !formData.aadhaarNumber || !formData.businessAddress) {
-            setError("Please fill all mandatory fields.");
-            return;
-        }
-        if (formData.panNumber.length !== 10) {
-            setError("Invalid PAN Number.");
-            return;
-        }
-        if (formData.aadhaarNumber.length !== 12) {
-            setError("Invalid Aadhaar Number.");
-            return;
-        }
-
-        // Simulate Aadhaar-PAN Validation
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            setError(null);
-            // Auto-fetch turnover if not set (simulation)
-            if (!formData.turnover) {
-                setFormData(prev => ({ ...prev, turnover: '1500000' })); // Expecting PAN linked turnover
-            }
-            setStep(2);
-        }, 1500);
-    };
-
-    // Step 2: Validation & Proceed
-    const handleStep2Submit = () => {
-        if (!formData.dateOfCommencement || formData.nicCodes.length === 0 || !formData.investmentPlantMachinery) {
-            setError("Please complete all business details.");
-            return;
-        }
+    const validateStep = (currentStep) => {
+        const newErrors = {};
+        let isValid = true;
         setError(null);
-        setStep(3);
-        // Auto send OTP when reaching step 3
-        handleSendOtp();
-    };
 
-    // Step 3: OTP Logic
-    const handleSendOtp = () => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            setOtpSent(true);
-            setOtpTimer(30); // 30 seconds timer
-            // In a real app, this would trigger backend to send OTP to Aadhaar linked mobile
-        }, 1000);
-    };
-
-    const handleVerifyOtp = () => {
-        if (enteredOtp.length !== 6) {
-            setError("Please enter a valid 6-digit OTP.");
-            return;
+        if (currentStep === 1) { // Primary Details
+            if (!formData.enterpriseName) { newErrors.enterpriseName = "Enterprise Name required"; isValid = false; }
+            if (!formData.aadhaarNumber) { newErrors.aadhaarNumber = "Aadhaar required"; isValid = false; }
+            if (!formData.panNumber) { newErrors.panNumber = "PAN required"; isValid = false; }
+            if (!formData.mobileNumber) { newErrors.mobileNumber = "Mobile required"; isValid = false; }
+        } else if (currentStep === 2) { // Business Details
+            if (!formData.dateOfCommencement) { newErrors.dateOfCommencement = "Start Date required"; isValid = false; }
+            if (!formData.investmentPlantMachinery) { newErrors.investmentPlantMachinery = "Investment details required"; isValid = false; }
         }
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            setError(null);
-            setStep(4);
-        }, 1500);
+
+        setErrors(newErrors);
+        if (!isValid) setError("Please fill all required fields correctly.");
+        return isValid;
     };
 
-    // Step 4: Final Submission
-    const handleSubmit = async () => {
-        setLoading(true);
+    const handleNext = () => {
+        if (validateStep(step)) {
+            setStep(prev => Math.min(5, prev + 1));
+        }
+    };
+
+    const handleBack = () => {
+        setStep(prev => prev - 1);
+    };
+
+    const handleFileUpload = async (e, key) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            const response = await uploadFile(file, 'msme_docs');
+            setUploadedFiles(prev => ({
+                ...prev,
+                [key]: {
+                    originalFile: file,
+                    name: response.originalName || file.name,
+                    fileUrl: response.fileUrl,
+                    fileId: response.id
+                }
+            }));
+        } catch (error) {
+            console.error("Upload failed", error);
+            setError("File upload failed. Please try again.");
+        }
+    };
+
+    const submitApplication = async () => {
+        setIsSubmitting(true);
         setError(null);
         try {
-            const userStr = localStorage.getItem('user');
-            const user = userStr ? JSON.parse(userStr) : {};
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
+                id: k,
+                filename: v.name,
+                fileUrl: v.fileUrl
+            }));
 
-            const msmeFormData = {
-                applicantName: user.fullName || formData.businessName,
-                aadhaarNumber: formData.aadhaarNumber,
-                panNumber: formData.panNumber,
-                enterpriseName: formData.businessName,
-                organisationType: formData.entityType,
-                plantAddress: formData.businessAddress,
-                officialAddress: formData.businessAddress,
-                bankAccountNumber: formData.bankAccountNumber,
-                ifscCode: formData.ifscCode,
-                mobileNumber: formData.mobile,
-                email: formData.email,
-                dateOfCommencement: formData.dateOfCommencement,
-                majorActivity: formData.mainActivity,
-                nicCodes: JSON.stringify(formData.nicCodes),
-                maleEmployees: parseInt(formData.numberOfEmployees) || 0,
-                femaleEmployees: 0,
-                otherEmployees: 0,
+            // Prepare MSME Specific Form Data Structure
+            const msmeSpecificData = {
+                ...formData,
+                maleEmployees: parseInt(formData.maleEmployees) || 0,
+                femaleEmployees: parseInt(formData.femaleEmployees) || 0,
                 investmentPlantMachinery: parseFloat(formData.investmentPlantMachinery) || 0,
-                investmentEquipment: 0,
-                turnover: parseFloat(formData.turnover) || 0
+                turnover: parseFloat(formData.turnover) || 0,
+                nicCodes: JSON.stringify(formData.nicCodes),
+                selectedPlan: billDetails.planName
             };
 
             const finalPayload = {
                 submissionId: `MSME-${Date.now()}`,
-                userEmail: user.email || formData.email || 'guest@example.com',
-                plan: 'standard',
-                amountPaid: 1499, // Standard Fee
-                status: "INITIATED",
-                formData: msmeFormData,
-                documents: []
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.email || 'guest@example.com',
+                plan: plan,
+                amountPaid: billDetails.total,
+                status: "PAYMENT_SUCCESSFUL",
+                formData: msmeSpecificData,
+                documents: docsList,
+                paymentDetails: billDetails
             };
 
             await submitMSMERegistration(finalPayload);
-            navigate('/dashboard?tab=orders');
-        } catch (err) {
-            setError(err.message || "Submission failed");
+            setIsSuccess(true);
+        } catch (error) {
+            console.error(error);
+            setError("Submission error: " + error.message);
         } finally {
-            setLoading(false);
+            setIsSubmitting(false);
         }
     };
 
@@ -195,437 +227,359 @@ const ApplyMSMERegistration = () => {
         }
         setNicSearch("");
     };
-
     const removeNicCode = (codeToRemove) => {
         setFormData(prev => ({ ...prev, nicCodes: prev.nicCodes.filter(c => c.code !== codeToRemove) }));
     };
 
-    // Progress Bar
-    const progress = (step / 4) * 100;
+    const steps = ['Basic Info', 'Business Details', 'Documents', 'Review', 'Payment'];
 
-    return (
-        <div className="min-h-screen bg-slate-50 pb-12 font-sans text-slate-800">
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition">
-                            <ArrowLeft size={20} />
+    const renderStepContent = () => {
+        switch (step) {
+            case 1:
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        {error && (
+                            <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 text-red-700">
+                                <AlertCircle size={20} className="mt-0.5 shrink-0" />
+                                <p className="text-sm font-medium">{error}</p>
+                            </div>
+                        )}
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
+                                <User size={20} className="text-blue-600" /> APPLICANT DETAILS
+                            </h3>
+                            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex items-start gap-3 mb-6">
+                                <AlertCircle className="text-blue-600 mt-0.5 shrink-0" size={18} />
+                                <p className="text-sm text-blue-800">
+                                    Please ensure details match your <strong>Aadhaar Card</strong> exactly to avoid rejection.
+                                </p>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="md:col-span-2">
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Enterprise Name</label>
+                                    <input type="text" name="enterpriseName" value={formData.enterpriseName} onChange={handleInputChange} placeholder="e.g. ABC Trading Co." className={`w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 transition ${errors.enterpriseName ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-gray-50'}`} />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Applicant Name</label>
+                                    <input type="text" name="applicantName" value={formData.applicantName} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white" />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Entity Type</label>
+                                    <select name="organisationType" value={formData.organisationType} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white">
+                                        <option>Proprietorship</option>
+                                        <option>Partnership</option>
+                                        <option>Private Limited</option>
+                                        <option>LLP</option>
+                                        <option>Trust/Society</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Aadhaar Number</label>
+                                    <input type="text" name="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleInputChange} maxLength={12} className={`w-full p-3 rounded-lg border ${errors.aadhaarNumber ? 'border-red-500' : 'border-gray-200'} bg-white`} />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">PAN Number</label>
+                                    <input type="text" name="panNumber" value={formData.panNumber} onChange={handleInputChange} maxLength={10} className={`w-full p-3 rounded-lg border ${errors.panNumber ? 'border-red-500' : 'border-gray-200'} bg-white uppercase`} />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Mobile (Aadhaar Linked)</label>
+                                    <input type="tel" name="mobileNumber" value={formData.mobileNumber} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.mobileNumber ? 'border-red-500' : 'border-gray-200'} bg-white`} />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Email ID</label>
+                                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            case 2:
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        {error && (
+                            <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 text-red-700">
+                                <AlertCircle size={20} className="mt-0.5 shrink-0" />
+                                <p className="text-sm font-medium">{error}</p>
+                            </div>
+                        )}
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
+                                <Briefcase size={20} className="text-orange-600" /> BUSINESS DETAILS
+                            </h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Date of Commencement</label>
+                                    <input type="date" name="dateOfCommencement" value={formData.dateOfCommencement} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.dateOfCommencement ? 'border-red-500' : 'border-gray-200'} bg-white`} />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Main Activity</label>
+                                    <select name="majorActivity" value={formData.majorActivity} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white">
+                                        <option>Manufacturing</option>
+                                        <option>Services</option>
+                                        <option>Trading</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Investment (Msg/Plant) ₹</label>
+                                    <input type="number" name="investmentPlantMachinery" value={formData.investmentPlantMachinery} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.investmentPlantMachinery ? 'border-red-500' : 'border-gray-200'} bg-white`} placeholder="0.00" />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Turnover (Annual) ₹</label>
+                                    <input type="number" name="turnover" value={formData.turnover} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white" placeholder="0.00" />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Male Employees</label>
+                                    <input type="number" name="maleEmployees" value={formData.maleEmployees} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white" />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Female Employees</label>
+                                    <input type="number" name="femaleEmployees" value={formData.femaleEmployees} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white" />
+                                </div>
+                                <div className="md:col-span-2 space-y-2 pt-2 border-t border-dashed">
+                                    <label className="text-xs font-bold text-gray-500 block uppercase">NIC Search</label>
+                                    <div className="relative">
+                                        <input type="text" value={nicSearch} onChange={(e) => setNicSearch(e.target.value)} placeholder="Type activity (e.g. Software, Retail)" className="w-full p-3 rounded-lg border border-gray-200 bg-gray-50" />
+                                        {nicSearch.length > 2 && (
+                                            <div className="absolute top-full left-0 right-0 bg-white border border-gray-100 shadow-xl rounded-xl mt-1 z-10 max-h-40 overflow-y-auto">
+                                                {nicOptions.filter(n => n.desc.toLowerCase().includes(nicSearch.toLowerCase())).map(n => (
+                                                    <div key={n.code} onClick={() => addNicCode(n)} className="p-3 hover:bg-orange-50 cursor-pointer text-sm border-b border-gray-50">
+                                                        <span className="font-bold text-orange-600">{n.code}</span> - {n.desc}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {formData.nicCodes.map(code => (
+                                            <span key={code.code} className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-800 rounded-lg text-xs font-bold">
+                                                {code.desc} <button onClick={() => removeNicCode(code.code)} className="hover:text-red-600">×</button>
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="md:col-span-2 mt-2">
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Business Address</label>
+                                    <textarea name="plantAddress" value={formData.plantAddress} onChange={handleInputChange} rows="2" className="w-full p-3 rounded-lg border border-gray-200 bg-white" placeholder="Full address with Pincode" />
+                                </div>
+                                <div className="md:col-span-2 grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 mb-1 block">Bank A/c No</label>
+                                        <input type="text" name="bankAccountNumber" value={formData.bankAccountNumber} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 mb-1 block">IFSC Code</label>
+                                        <input type="text" name="ifscCode" value={formData.ifscCode} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white uppercase" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            case 3:
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
+                                <Upload size={20} className="text-bronze" /> DOCUMENT UPLOAD
+                            </h3>
+                            <p className="text-sm text-gray-500 mb-4">Required formats: JPEG, PNG, or PDF</p>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                {[
+                                    { label: 'Aadhaar Card (F/B)', key: 'aadhaar_doc' },
+                                    { label: 'PAN Card Copy', key: 'pan_doc' },
+                                    { label: 'Bank Cheque/Passbook', key: 'bank_doc' },
+                                    { label: 'GST Certificate (Opt.)', key: 'gst_doc' }
+                                ].map((doc, idx) => {
+                                    return (
+                                        <div key={idx} className="border border-dashed p-4 rounded-lg flex justify-between items-center group hover:border-blue-300 transition-colors bg-gray-50">
+                                            <div className="flex items-center gap-2">
+                                                <FileText size={16} className="text-gray-400 group-hover:text-bronze" />
+                                                <span className="text-sm font-medium text-gray-600">{doc.label}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {uploadedFiles[doc.key] && <CheckCircle size={16} className="text-green-500" />}
+                                                <input type="file" onChange={(e) => handleFileUpload(e, doc.key)} className="text-xs w-24 text-slate-400" />
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                );
+            case 4:
+                return (
+                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
+                        <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-navy">
+                            <Shield size={32} />
+                        </div>
+                        <h2 className="text-3xl font-bold text-navy mb-2">Review Details</h2>
+                        <p className="text-gray-500 mb-6">Verify your information before submission.</p>
+
+                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200 text-left">
+                            <div className="space-y-3 text-sm">
+                                <div className="flex justify-between"><span>Plan</span><span className="font-bold">{billDetails.planName}</span></div>
+                                <div className="flex justify-between"><span>Applicant</span><span className="font-bold">{formData.applicantName}</span></div>
+                                <div className="flex justify-between"><span>Enterprise</span><span className="font-bold">{formData.enterpriseName}</span></div>
+                                <div className="flex justify-between"><span>PAN Details</span><span className="font-bold uppercase">{formData.panNumber}</span></div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <button onClick={handleBack} className="py-3 border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50">Edit</button>
+                            <button onClick={() => setStep(5)} className="py-3 bg-navy text-white rounded-xl font-bold hover:bg-black transition">Proceed to Pay</button>
+                        </div>
+                    </div>
+                );
+            case 5:
+                return (
+                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
+                        <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
+                            <IndianRupee size={32} />
+                        </div>
+                        <h2 className="text-3xl font-bold text-navy mb-2">Payment</h2>
+                        <p className="text-gray-500 mb-8">Secure payment gateway</p>
+
+                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
+                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Service Fee</span><span>₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Tax & GST</span><span>₹{billDetails.tax + billDetails.gst}</span></div>
+                            <div className="border-t pt-2 mt-2 flex justify-between items-end"><span className="text-gray-500 font-bold">Total</span><span className="text-3xl font-bold text-navy">₹{billDetails.total.toLocaleString()}</span></div>
+                        </div>
+
+                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2">
+                            {isSubmitting ? 'Processing...' : `Pay ₹${billDetails.total} & Submit`}
+                            {!isSubmitting && <Lock size={18} />}
                         </button>
-                        <div>
-                            <h1 className="text-lg font-bold text-slate-800">New Udyam Registration</h1>
-                            <p className="text-xs text-slate-500">Ministry of MSME, Govt. of India</p>
+                    </div>
+                );
+            default: return null;
+        }
+    };
+
+    if (isSuccess) {
+        return (
+            <div className={`fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm`}>
+                <div className="bg-white p-12 rounded-3xl shadow-2xl text-center max-w-lg w-full">
+                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle size={48} className="text-green-600" />
+                    </div>
+                    <h1 className="text-3xl font-bold text-navy mb-4">Application Submitted!</h1>
+                    <p className="text-gray-500 mb-8">
+                        Your Udyam Registration for <span className="font-bold text-navy">{formData.enterpriseName}</span> is under process. Reference ID: MSME-{Date.now().toString().substr(-6)}.
+                    </p>
+                    <button onClick={onClose || (() => navigate('/dashboard'))} className="bg-navy text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition w-full">
+                        Go to Dashboard
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (isModal) {
+        return (
+            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK */}
+                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
+                            <span className="text-[#ED6E3F]">MSME</span> Registration
+                        </h1>
+                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
+                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
+                            <p className="font-bold text-white leading-tight">{billDetails.planName}</p>
+                            <p className="text-[#ED6E3F] font-bold mt-1">₹{billDetails.total.toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {steps.map((s, i) => (
+                            <div key={i} onClick={() => { if (step > i + 1) setStep(i + 1) }} className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${step === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}>
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${step === i + 1 ? 'bg-[#ED6E3F] text-white' : step > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {step > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${step === i + 1 ? 'text-white font-bold' : ''}`}>{s}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
+                        <div className="flex justify-between items-end">
+                            <div><p className="text-[10px] text-blue-200 uppercase">Total Payable</p><p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p></div>
+                            <IndianRupee className="text-white/20" size={24} />
                         </div>
                     </div>
                 </div>
-                {/* Progress Bar */}
-                <div className="h-1 bg-slate-100 w-full">
-                    <div className="h-full bg-orange-500 transition-all duration-500 ease-out" style={{ width: `${progress}%` }}></div>
+                {/* RIGHT CONTENT */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
+                        <h2 className="font-bold text-navy text-lg">{steps[step - 1]}</h2>
+                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition"><X size={18} /></button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                        {renderStepContent()}
+                    </div>
+                    {step < 4 && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button onClick={() => setStep(p => Math.max(1, p - 1))} disabled={step === 1} className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30">Back</button>
+                            <button onClick={handleNext} className="px-6 py-2.5 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2 text-sm">Next Step <ArrowRight size={16} /></button>
+                        </div>
+                    )}
                 </div>
             </div>
+        );
+    }
 
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {error && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 text-red-700 shadow-sm"
-                    >
-                        <AlertCircle size={20} className="mt-0.5 shrink-0" />
-                        <p className="text-sm font-medium">{error}</p>
-                    </motion.div>
-                )}
+    return (
+        <div className="min-h-screen bg-[#F8F9FA] pb-20 pt-24 px-4 md:px-8">
+            <div className="max-w-7xl mx-auto">
+                <div className="mb-8 pl-1">
+                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-navy transition">
+                        <ArrowLeft size={14} /> Back
+                    </button>
+                    <h1 className="text-3xl font-bold text-navy">MSME Registration</h1>
+                    <p className="text-gray-500">Udyam Registration for Small Businesses.</p>
+                </div>
 
-                <AnimatePresence mode="wait">
-                    {/* STEP 1: SERVICE SELECTION */}
-                    {step === 1 && (
-                        <motion.div
-                            key="step1"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="space-y-6"
-                        >
-                            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-6 pb-4 border-b border-gray-100">
-                                    <Building size={20} className="text-orange-600" /> Basic Business Information
-                                </h2>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="md:col-span-2">
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Name of Enterprise / Business</label>
-                                        <input
-                                            type="text"
-                                            name="businessName"
-                                            value={formData.businessName}
-                                            onChange={handleChange}
-                                            placeholder="e.g. ABC Trading Co."
-                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800"
-                                        />
-                                    </div>
-
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* LEFT SIDEBAR */}
+                    <div className="w-full lg:w-80 space-y-6">
+                        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
+                            {steps.map((s, i) => (
+                                <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${step === i + 1 ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
                                     <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Type of Entity</label>
-                                        <select
-                                            name="entityType"
-                                            value={formData.entityType}
-                                            onChange={handleChange}
-                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800"
-                                        >
-                                            <option>Proprietorship</option>
-                                            <option>Partnership Firm</option>
-                                            <option>Private Limited Company</option>
-                                            <option>Limited Liability Partnership (LLP)</option>
-                                            <option>One Person Company (OPC)</option>
-                                            <option>Hindu Undivided Family (HUF)</option>
-                                            <option>Society / Trust</option>
-                                        </select>
+                                        <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
+                                        <span className={`font-bold text-sm ${step === i + 1 ? 'text-blue-800' : 'text-gray-600'}`}>{s}</span>
                                     </div>
+                                    {step > i + 1 && <CheckCircle size={16} className="text-green-500" />}
+                                </div>
+                            ))}
+                        </div>
 
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Main Activity</label>
-                                        <select
-                                            name="mainActivity"
-                                            value={formData.mainActivity}
-                                            onChange={handleChange}
-                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800"
-                                        >
-                                            <option>Manufacturing</option>
-                                            <option>Services</option>
-                                            <option>Both</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">PAN Number</label>
-                                        <input
-                                            type="text"
-                                            name="panNumber"
-                                            value={formData.panNumber}
-                                            onChange={handleChange}
-                                            maxLength={10}
-                                            placeholder="ABCDE1234F"
-                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800 uppercase"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Aadhaar Number</label>
-                                        <input
-                                            type="text"
-                                            name="aadhaarNumber"
-                                            value={formData.aadhaarNumber}
-                                            onChange={handleChange}
-                                            maxLength={12}
-                                            placeholder="0000 0000 0000"
-                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800"
-                                        />
-                                    </div>
-
-                                    <div className="md:col-span-2">
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Business Address</label>
-                                        <textarea
-                                            name="businessAddress"
-                                            value={formData.businessAddress}
-                                            onChange={handleChange}
-                                            rows={2}
-                                            placeholder="Complete address with PIN code"
-                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800 resize-none"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Bank Account Number</label>
-                                        <input
-                                            type="text"
-                                            name="bankAccountNumber"
-                                            value={formData.bankAccountNumber}
-                                            onChange={handleChange}
-                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">IFSC Code</label>
-                                        <input
-                                            type="text"
-                                            name="ifscCode"
-                                            value={formData.ifscCode}
-                                            onChange={handleChange}
-                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800 uppercase"
-                                        />
-                                    </div>
+                        <div className="p-6 rounded-2xl border shadow-sm bg-[#043E52] text-white relative overflow-hidden transition-all sticky top-24">
+                            <div className="relative z-10">
+                                <div className="text-xs font-bold opacity-70 uppercase tracking-widest mb-1">Current Plan</div>
+                                <div className="text-2xl font-bold mb-2">{billDetails.planName}</div>
+                                <div className="text-3xl font-black mb-4">₹{billDetails.total?.toLocaleString()}</div>
+                                <div className="space-y-3 mb-6">
+                                    <div className="flex gap-2 text-xs font-medium opacity-80"><CheckCircle size={14} /> Lifetime Validity</div>
+                                    <div className="flex gap-2 text-xs font-medium opacity-80"><CheckCircle size={14} /> Digital Certificate</div>
                                 </div>
                             </div>
+                            <Building className="absolute -bottom-8 -right-8 w-32 h-32 opacity-10 rotate-12" />
+                        </div>
+                    </div>
 
-                            <div className="flex justify-end">
-                                <button
-                                    onClick={handleStep1Submit}
-                                    disabled={loading}
-                                    className="flex items-center gap-2 px-8 py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition disabled:opacity-50 shadow-lg shadow-orange-500/20"
-                                >
-                                    {loading ? (
-                                        <><RefreshCw className="animate-spin" size={18} /> Validating...</>
-                                    ) : (
-                                        <>Proceed to Business Details <ChevronRight size={18} /></>
-                                    )}
-                                </button>
+                    {/* RIGHT CONTENT */}
+                    <div className="flex-1">
+                        {renderStepContent()}
+
+                        {step < 4 && (
+                            <div className="mt-8 flex justify-between">
+                                <button onClick={() => setStep(p => Math.max(1, p - 1))} disabled={step === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
+                                <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">Next Step <ArrowRight size={18} /></button>
                             </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 2: BUSINESS DETAILS */}
-                    {step === 2 && (
-                        <motion.div
-                            key="step2"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="space-y-6"
-                        >
-                            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-6 pb-4 border-b border-gray-100">
-                                    <FileText size={20} className="text-orange-600" /> Additional Details
-                                </h2>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Date of Commencement</label>
-                                        <input
-                                            type="date"
-                                            name="dateOfCommencement"
-                                            value={formData.dateOfCommencement}
-                                            onChange={handleChange}
-                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Number of Employees</label>
-                                        <input
-                                            type="number"
-                                            name="numberOfEmployees"
-                                            value={formData.numberOfEmployees}
-                                            onChange={handleChange}
-                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Investment in Plant & Machinery (₹)</label>
-                                        <input
-                                            type="number"
-                                            name="investmentPlantMachinery"
-                                            value={formData.investmentPlantMachinery}
-                                            onChange={handleChange}
-                                            placeholder="Excluding Land & Building"
-                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Turnover (₹) {formData.turnover && <span className="text-green-600 ml-2 text-[10px] bg-green-50 px-2 py-0.5 rounded-full">Auto-fetched from PAN</span>}</label>
-                                        <input
-                                            type="number"
-                                            name="turnover"
-                                            value={formData.turnover}
-                                            onChange={handleChange}
-                                            readOnly={!!formData.turnover} // Read only if fetched
-                                            className={`w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none transition font-medium text-slate-800 ${formData.turnover ? 'bg-green-50/50 text-green-800' : 'focus:ring-2 focus:ring-orange-500'}`}
-                                        />
-                                    </div>
-
-                                    <div className="md:col-span-2">
-                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">NIC Codes (Business Activities)</label>
-                                        <div className="relative mb-2">
-                                            <input
-                                                type="text"
-                                                placeholder="Search activity (e.g. Retail, Computer, Manufacturing)"
-                                                value={nicSearch}
-                                                onChange={(e) => setNicSearch(e.target.value)}
-                                                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition font-medium text-slate-800"
-                                            />
-                                            {nicSearch.length > 2 && (
-                                                <div className="absolute top-full left-0 right-0 bg-white border border-gray-100 shadow-xl rounded-xl mt-1 z-10 max-h-60 overflow-y-auto">
-                                                    {nicOptions.filter(n => n.desc.toLowerCase().includes(nicSearch.toLowerCase())).map(n => (
-                                                        <div
-                                                            key={n.code}
-                                                            onClick={() => addNicCode(n)}
-                                                            className="p-3 hover:bg-orange-50 cursor-pointer text-sm border-b border-gray-50 last:border-0"
-                                                        >
-                                                            <span className="font-bold text-orange-600">{n.code}</span> - {n.desc}
-                                                        </div>
-                                                    ))}
-                                                    {nicOptions.filter(n => n.desc.toLowerCase().includes(nicSearch.toLowerCase())).length === 0 && (
-                                                        <div className="p-3 text-sm text-slate-400">No matching activities found</div>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="flex flex-wrap gap-2 mt-2">
-                                            {formData.nicCodes.map(code => (
-                                                <div key={code.code} className="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-800 rounded-lg text-xs font-bold">
-                                                    <span>{code.code} - {code.desc}</span>
-                                                    <button onClick={() => removeNicCode(code.code)} className="hover:text-red-600">Ã—</button>
-                                                </div>
-                                            ))}
-                                            {formData.nicCodes.length === 0 && <span className="text-sm text-slate-400 italic">No activities selected</span>}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-between">
-                                <button
-                                    onClick={() => setStep(1)}
-                                    className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition"
-                                >
-                                    Back
-                                </button>
-                                <button
-                                    onClick={handleStep2Submit}
-                                    className="flex items-center gap-2 px-8 py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition shadow-lg shadow-orange-500/20"
-                                >
-                                    Next: Authentication <ChevronRight size={18} />
-                                </button>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 3: OTP AUTHENTICATION */}
-                    {step === 3 && (
-                        <motion.div
-                            key="step3"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="space-y-6"
-                        >
-                            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm text-center py-12">
-                                <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6 text-orange-600">
-                                    <Smartphone size={32} />
-                                </div>
-                                <h2 className="text-xl font-bold text-slate-800 mb-2">Aadhaar Authentication</h2>
-                                <p className="text-slate-500 text-sm max-w-sm mx-auto mb-8">
-                                    An OTP has been sent to the mobile number linked with Aadhaar <strong>XXXX-XXXX-{formData.aadhaarNumber.slice(-4)}</strong>
-                                </p>
-
-                                <div className="max-w-xs mx-auto space-y-4">
-                                    <div>
-                                        <input
-                                            type="text"
-                                            maxLength={6}
-                                            value={enteredOtp}
-                                            onChange={(e) => setEnteredOtp(e.target.value.replace(/[^0-9]/g, ''))}
-                                            placeholder="Enter 6-digit OTP"
-                                            className="w-full text-center text-2xl tracking-[0.5em] font-bold p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition text-slate-800"
-                                        />
-                                    </div>
-
-                                    <div className="flex justify-between items-center text-xs font-bold px-1">
-                                        <span className={otpTimer > 0 ? "text-orange-600" : "text-slate-400"}>
-                                            {otpTimer > 0 ? `Expires in 00:${otpTimer < 10 ? `0${otpTimer}` : otpTimer}` : "OTP Expired"}
-                                        </span>
-                                        <button
-                                            onClick={handleSendOtp}
-                                            disabled={loading || otpTimer > 0}
-                                            className="text-orange-600 hover:text-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            Resend OTP
-                                        </button>
-                                    </div>
-
-                                    <button
-                                        onClick={handleVerifyOtp}
-                                        disabled={loading}
-                                        className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition shadow-lg shadow-orange-500/20 mt-4 flex justify-center items-center gap-2"
-                                    >
-                                        {loading ? <RefreshCw className="animate-spin" size={18} /> : "Verify & Proceed"}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-start">
-                                <button
-                                    onClick={() => setStep(2)}
-                                    className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition"
-                                >
-                                    Back
-                                </button>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 4: FINAL REVIEW */}
-                    {step === 4 && (
-                        <motion.div
-                            key="step4"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="space-y-6"
-                        >
-                            <div className="bg-green-50 p-4 rounded-xl border border-green-200 flex items-center gap-3 text-green-800">
-                                <CheckCircle className="shrink-0" size={20} />
-                                <p className="text-sm font-medium">Aadhaar authentication successful! Please review details before final submission.</p>
-                            </div>
-
-                            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-                                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2 pb-4 border-b border-gray-100">
-                                    <FileText size={20} className="text-orange-600" /> Application Summary
-                                </h2>
-
-                                <div className="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
-                                    <div className="space-y-1">
-                                        <span className="text-xs font-bold text-slate-400 uppercase">Enterprise Name</span>
-                                        <p className="font-bold text-slate-800">{formData.businessName}</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-xs font-bold text-slate-400 uppercase">Organization Type</span>
-                                        <p className="font-bold text-slate-800">{formData.entityType}</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-xs font-bold text-slate-400 uppercase">PAN Number</span>
-                                        <p className="font-bold text-slate-800">{formData.panNumber}</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <span className="text-xs font-bold text-slate-400 uppercase">Invested Amount</span>
-                                        <p className="font-bold text-slate-800">₹{formData.investmentPlantMachinery}</p>
-                                    </div>
-                                    <div className="col-span-2 space-y-1">
-                                        <span className="text-xs font-bold text-slate-400 uppercase">Selected Activities (NIC)</span>
-                                        <div className="flex gap-2 flex-wrap">
-                                            {formData.nicCodes.map(c => (
-                                                <span key={c.code} className="bg-slate-100 px-2 py-1 rounded-md text-slate-600 text-xs">{c.code} - {c.desc}</span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-orange-50/50 p-4 rounded-xl border border-orange-100 text-xs text-orange-800 leading-relaxed">
-                                    <strong>Declaration:</strong> I hereby declare that the information given above and in the enclosed documents is true to the best of my knowledge and belief and nothing has been concealed therein. I am aware that if any information is incorrect, my registration may be cancelled.
-                                </div>
-                            </div>
-
-                            <div className="flex justify-between">
-                                <button
-                                    onClick={() => setStep(3)}
-                                    className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition"
-                                >
-                                    Back
-                                </button>
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={loading}
-                                    className="flex items-center gap-2 px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition shadow-lg shadow-green-600/20"
-                                >
-                                    {loading ? 'Submitting...' : 'Confirm & Submit'} {!loading && <Save size={18} />}
-                                </button>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
