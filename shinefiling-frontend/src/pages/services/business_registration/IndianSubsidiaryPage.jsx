@@ -1,7 +1,7 @@
 ﻿
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Plane, Landmark, Anchor, X, Banknote, Handshake } from 'lucide-react';
+import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Plane, Landmark, Anchor, X, Banknote, Handshake, FileCheck, PieChart, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import IndianSubsidiaryRegistration from './IndianSubsidiaryRegistration';
 import AuthModal from '../../../components/auth/AuthModal';
@@ -63,27 +63,7 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
                     <div className="absolute inset-0 bg-gradient-to-t from-navy to-transparent"></div>
                 </div>
 
-                {/* Animated Background Elements */}
-                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                    <motion.div
-                        animate={{
-                            scale: [1, 1.2, 1],
-                            opacity: [0.1, 0.2, 0.1],
-                            rotate: [0, 45, 0]
-                        }}
-                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-bronze/20 rounded-full blur-[120px]"
-                    />
-                    <motion.div
-                        animate={{
-                            scale: [1, 1.1, 1],
-                            opacity: [0.1, 0.15, 0.1],
-                            x: [0, -50, 0]
-                        }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/20 rounded-full blur-[100px]"
-                    />
-                </div>
+
 
                 <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
@@ -236,30 +216,29 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
 
             {/* --- PRICING SECTION (3 PLANS) --- */}
             <section id="pricing-section" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
-                <div className="max-w-7xl mx-auto relative z-10">
+                <div className="max-w-5xl mx-auto relative z-10">
                     <div className="text-center mb-16">
                         <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Strategy</span>
                         <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Subsidiary Packages</h2>
                         <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                    <div className="grid md:grid-cols-3 gap-8">
                         {/* PLAN 1: BASIC */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Entry</h3>
-                            <p className="text-slate-500 text-sm mb-6">Basic incorporation setup.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹19,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹35,000</span>
+                            <h3 className="text-lg font-bold text-navy mb-2">Entry</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹19,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">₹35,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 {[
                                     "2 DSC & 2 DIN",
                                     "Name Approval",
@@ -268,55 +247,54 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
                                     "PAN & TAN Allotment",
                                     "Resident Director Finding Assistance"
                                 ].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                                 <li className="flex items-center gap-3 text-sm text-slate-400">
-                                    <X size={16} className="shrink-0" /> FEMA / RBI Compliance
+                                    <X size={14} className="shrink-0" /> FEMA / RBI Compliance
                                 </li>
                                 <li className="flex items-center gap-3 text-sm text-slate-400">
-                                    <X size={16} className="shrink-0" /> GST Registration
+                                    <X size={14} className="shrink-0" /> GST Registration
                                 </li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
                                 Choose Entry
                             </button>
                         </motion.div>
 
                         {/* PLAN 2: STANDARD (POPULAR) */}
-                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
-                            {/* Top Gold Line */}
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
-                                Most Popular
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Indian Subsidiary</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹29,999</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹45,000</span>
                             </div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Indian Subsidiary</h3>
-                            <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹14,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹25k</span>
-                            </div>
-
-                            <ul className="space-y-4 mb-8 flex-1">
-                                {["Everything in Entry",
-                                    "GST Registration",
-                                    "Business Bank Account Support"].map((feat, i) => (
-                                        <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
-                                        </li>
-                                    ))}
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                <li className="text-xs font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Entry +</li>
+                                {[
+                                    "FEMA Reporting (FC-GPR) Assistance",
+                                    "Drafting 1st Board Meeting Minutes",
+                                    "Apostille Documentation Guidance",
+                                    "Professional Business Bank Opening",
+                                    "Priority Cross-Border Advisory"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">
                                 Get Started
                             </button>
                         </motion.div>
@@ -327,30 +305,29 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Global</h3>
-                            <p className="text-slate-500 text-sm mb-6">Full market entry solution.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹49,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹80,000</span>
+                            <h3 className="text-lg font-bold text-navy mb-2">Global</h3>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy">₹49,999</span>
+                                <span className="text-slate-400 line-through text-xs">₹80,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
+                                <li className="text-xs font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">Everything in Business +</li>
                                 {[
-                                    "Everything in Business",
                                     "RBI Reporting (FC-GPR)",
                                     "Trademark Filing (1 Class)",
                                     "Resident Director Service (1 Yr)",
                                     "Virtual Office (1 Yr)",
                                     "First Board Meeting Minutes"
                                 ].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
                                 Choose Global
                             </button>
                         </motion.div>
@@ -515,6 +492,55 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
                         </div>
                     </section>
 
+                    {/* POST INCORPORATION COMPLIANCE - NEW SECTION */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Post-FDI Incorporation Roadmap</h2>
+                        <div className="grid md:grid-cols-3 gap-6">
+                            {[
+                                { title: "FC-GPR Filing", desc: "Mandatory reporting to RBI via FIRMS portal within 30 days of share allotment.", icon: Landmark },
+                                { title: "DPIIT Registration", desc: "Ideal for foreign startups to avail tax holidays and easier FDI norms in India.", icon: FileCheck },
+                                { title: "Transfer Pricing", desc: "Mandatory compliance if international transactions exceed specified limits.", icon: PieChart },
+                            ].map((item, i) => (
+                                <div key={i} className="p-6 bg-slate-50 rounded-2xl border border-dashed border-gray-300 group hover:border-bronze hover:bg-white transition-all">
+                                    <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-navy mb-4 shadow-sm group-hover:bg-navy group-hover:text-white transition-colors">
+                                        <item.icon size={24} />
+                                    </div>
+                                    <h4 className="font-bold text-navy mb-2">{item.title}</h4>
+                                    <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* DOCUMENT GUIDE - NEW SECTION */}
+                    <section className="bg-beige/5 p-8 rounded-3xl border border-beige/20 shadow-inner">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                            <div>
+                                <h2 className="text-3xl font-bold text-navy">Global Compliance Kit</h2>
+                                <p className="text-gray-500 text-sm">Vital legal records for your Indian Subsidiary.</p>
+                            </div>
+                            <span className="px-4 py-1.5 bg-bronze/10 text-bronze text-xs font-bold rounded-full border border-bronze/20 uppercase tracking-widest">ShineFiling Standards</span>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-8">
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex gap-4">
+                                <div className="p-3 bg-red-50 text-red-500 rounded-lg h-fit"><FileText size={24} /></div>
+                                <div>
+                                    <h4 className="font-bold text-navy mb-1 uppercase text-xs tracking-tight">Apostilled MoA/AoA</h4>
+                                    <p className="text-sm text-gray-500 italic mb-2">"International Validity"</p>
+                                    <p className="text-xs text-gray-600 leading-relaxed">Proof of legal setup in India, essential for the parent company's global audits and consolidating financial statements.</p>
+                                </div>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex gap-4">
+                                <div className="p-3 bg-blue-50 text-blue-500 rounded-lg h-fit"><ShieldCheck size={24} /></div>
+                                <div>
+                                    <h4 className="font-bold text-navy mb-1 uppercase text-xs tracking-tight">FIRC Documents</h4>
+                                    <p className="text-sm text-gray-500 italic mb-2">"Proof of Investment"</p>
+                                    <p className="text-xs text-gray-600 leading-relaxed">Foreign Inward Remittance Certificate. The most important document to prove that foreign capital entered India via legal routes.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* FAQs */}
                     <section>
                         <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
@@ -576,20 +602,16 @@ const IndianSubsidiaryPage = ({ isLoggedIn, onLogout }) => {
                             <button className="w-full mt-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
 
-                        {/* Support Card */}
-                        <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">Foreign Entry Desk</h4>
-                            <p className="text-gray-300 text-sm mb-4">Our dedicated team for FEMA and Cross-border setup is here to help.</p>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                                    <Users size={20} className="text-yellow-400" />
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-400 uppercase">Call Us</p>
-                                    <p className="font-bold">+91 98765 43210</p>
-                                </div>
+                        {/* Support Card - PREMIUM */}
+                        <div className="bg-[#043E52] text-white p-6 rounded-3xl shadow-xl border border-white/5 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-bronze/10 rounded-full -mr-12 -mt-12 transition-transform duration-500 group-hover:scale-150"></div>
+                            <h4 className="font-bold text-lg text-bronze mb-2 relative z-10">Foreign Desk</h4>
+                            <p className="text-gray-400 text-xs mb-6 font-medium relative z-10">Dedicated experts for FEMA and Cross-border setup in India.</p>
+                            <div className="flex items-center gap-3 mb-6 relative z-10">
+                                <div className="w-10 h-10 rounded-full bg-bronze/20 flex items-center justify-center text-bronze shadow-inner"><Users size={20} /></div>
+                                <div><p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">India Entry Support</p><p className="font-black text-white">+91 7639227019</p></div>
                             </div>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
+                            <button className="w-full py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-[10px] uppercase tracking-widest transition">WhatsApp Now</button>
                         </div>
                     </div>
                 </div>

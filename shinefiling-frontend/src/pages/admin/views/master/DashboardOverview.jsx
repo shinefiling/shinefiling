@@ -1,6 +1,6 @@
 ﻿import React, { useMemo } from 'react';
 import {
-    Users, Briefcase, Calendar, CheckSquare, DollarSign,
+    Users, Briefcase, Calendar, CheckSquare, IndianRupee,
     TrendingUp, UserPlus, Clock, MoreVertical, Plus,
     FileText, Settings, CreditCard, Activity, AlertCircle, Phone, Mail
 } from 'lucide-react';
@@ -104,7 +104,7 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 transition-colors duration-200">
                 <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-full bg-orange-100 dark:bg-slate-700 flex items-center justify-center border-2 border-white dark:border-slate-600 shadow-sm overflow-hidden">
-                        <img src={user?.profileImage || "https://avatar.iran.liara.run/public/boy"} alt="Profile" className="w-full h-full object-cover" />
+                        <img src={user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || 'User')}&background=random`} alt="Profile" className="w-full h-full object-cover" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{greeting}, {user?.fullName || 'Master Admin'}! 👋</h1>
@@ -165,7 +165,7 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
                     title="Total Revenue"
                     value={`₹${stats.totalRevenue.toLocaleString()}`}
                     trend={10.2}
-                    icon={DollarSign}
+                    icon={IndianRupee}
                     colorClass="text-purple-500 bg-purple-500"
                     subtext="Gross earnings"
                 />
@@ -231,8 +231,8 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
                         <h3 className="font-bold text-slate-800 dark:text-slate-100">Order Overview</h3>
                         <button className="text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded font-bold text-slate-500 dark:text-slate-400">Today</button>
                     </div>
-                    <div className="h-64 relative">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <div className="h-64 relative min-w-[0] min-h-[0]">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                             <PieChart>
                                 <Pie data={stats.pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
                                     {stats.pieData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
@@ -252,8 +252,8 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
                         <h3 className="font-bold text-slate-800 dark:text-slate-100">Top Services</h3>
                         <button className="text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded font-bold text-slate-500 dark:text-slate-400">Popular</button>
                     </div>
-                    <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <div className="h-80 min-w-[0] min-h-[0]">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                             <BarChart data={stats.barData} layout="vertical" margin={{ left: -20 }}>
                                 <XAxis type="number" hide />
                                 <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} fontSize={11} fontWeight={600} width={70} />
@@ -303,7 +303,7 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
                             <div key={i} className="flex justify-between items-center">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
-                                        <img src={u.profileImage || `https://avatar.iran.liara.run/public/${i + 15}`} alt={u.fullName} />
+                                        <img src={u.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.fullName || 'User')}&background=random`} alt={u.fullName} />
                                     </div>
                                     <div>
                                         <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{u.fullName}</p>
@@ -380,7 +380,7 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
                             <div key={i} className="flex justify-between items-center">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
-                                        <img src={u.profileImage || `https://avatar.iran.liara.run/public/${i + 40}`} alt={u.fullName} />
+                                        <img src={u.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.fullName || 'User')}&background=random`} alt={u.fullName} />
                                     </div>
                                     <div>
                                         <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{u.fullName}</p>

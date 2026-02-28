@@ -132,7 +132,7 @@ const AgentNewApplication = ({ setActiveTab }) => {
                             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Phone Number</label>
                             <div className="relative">
                                 <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                                <input name="phone" required value={clientDetails.phone} onChange={handleClientChange} className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1C3540] rounded-xl outline-none focus:ring-2 focus:ring-[#ED6E3F] text-sm dark:text-white" placeholder="9876543210" />
+                                <input name="phone" required value={clientDetails.phone} onChange={handleClientChange} className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1C3540] rounded-xl outline-none focus:ring-2 focus:ring-[#ED6E3F] text-sm dark:text-white" placeholder="7639227019" />
                             </div>
                         </div>
                         <div>

@@ -94,3 +94,22 @@ export const resetPermissions = () => {
     savePermissions(DEFAULT_PERMISSIONS);
     return DEFAULT_PERMISSIONS;
 };
+
+/**
+ * Get dashboard path based on user role
+ * @param {String} role 
+ */
+export const getDashboardPath = (role) => {
+    if (!role) return '/';
+    const upperRole = role.toUpperCase();
+
+    if (upperRole === 'MASTER_ADMIN' || upperRole === 'SUB_ADMIN' || upperRole === 'AGENT_ADMIN' || upperRole.includes('ADMIN')) {
+        return '/admin-dashboard';
+    }
+    if (upperRole === 'AGENT') return '/agent-dashboard';
+    if (upperRole === 'CA') return '/ca-dashboard';
+    if (upperRole === 'EMPLOYEE') return '/employee-dashboard';
+
+    return '/dashboard';
+};
+

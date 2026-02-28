@@ -1,4 +1,4 @@
-﻿
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
@@ -44,17 +44,10 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
     const navigate = useNavigate();
     const planParam = searchParams.get('plan');
 
-    // Protect Route (Only runs once on mount unless dependencies change)
+    // Protect Route (Removed)
     useEffect(() => {
-        if (isModal) return;
-        const storedUser = localStorage.getItem('user');
-        const isReallyLoggedIn = isLoggedIn || !!storedUser;
-
-        if (!isReallyLoggedIn) {
-            const plan = planParam || 'startup';
-            navigate('/login', { state: { from: `/services/private-limited-company/register?plan=${plan}` } });
-        }
-    }, [isLoggedIn, navigate, planParam, isModal]);
+        // Login check removed to allow manual entry
+    }, []);
 
     const [currentStep, setCurrentStep] = useState(1);
 
@@ -70,6 +63,8 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
     }, [planParam, planProp, selectedPlan]);
 
     const [formData, setFormData] = useState({
+        userEmail: '',
+        userPhone: '',
         companyNames: ['', '', ''],
         businessActivity: '',
         addressLine1: '',
@@ -167,6 +162,12 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
         const newErrors = {};
         let isValid = true;
         if (step === 1) {
+            const storedUser = localStorage.getItem('user');
+            const isReallyLoggedIn = isLoggedIn || !!storedUser;
+            if (!isReallyLoggedIn) {
+                if (!formData.userEmail) { newErrors.userEmail = "Required"; isValid = false; }
+                if (!formData.userPhone) { newErrors.userPhone = "Required"; isValid = false; }
+            }
             if (!formData.companyNames[0]) { newErrors.companyNames = "Required"; isValid = false; }
             if (!formData.businessActivity) { newErrors.businessActivity = "Required"; isValid = false; }
             if (!formData.addressLine1) { newErrors.addressLine1 = "Required"; isValid = false; }
@@ -208,7 +209,8 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
             const finalPayload = {
                 submissionId: `PVT-${Date.now()}`,
                 plan: selectedPlan,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.userEmail,
+                userPhone: JSON.parse(localStorage.getItem('user'))?.phone || formData.userPhone,
                 formData: formData,
                 documents: docsList,
                 paymentDetails: billDetails,
@@ -229,11 +231,18 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
             case 1: return (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
                     <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                        <h3 className="font-bold text-navy mb-3 text-sm flex items-center gap-2"><Building size={16} /> COMPANY DETAILS</h3>
-                        <div className="grid md:grid-cols-2 gap-3">
-                            <input value={formData.companyNames[0]} onChange={(e) => handleInputChange(e, 'companyNames', 0)} placeholder="Proposed Name 1" className={`col-span-2 p-2 text-sm border rounded-lg ${errors.companyNames ? 'border-red-500' : ''}`} />
-                            <input value={formData.companyNames[1]} onChange={(e) => handleInputChange(e, 'companyNames', 1)} placeholder="Proposed Name 2 (Optional)" className="col-span-2 p-2 text-sm border rounded-lg" />
-                            <textarea name="businessActivity" value={formData.businessActivity} onChange={handleInputChange} placeholder="Main Business Object..." className={`col-span-2 p-2 text-sm border rounded-lg ${errors.businessActivity ? 'border-red-500' : ''}`} rows="2" />
+                        {(!isLoggedIn && !localStorage.getItem('user')) && (
+                            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3 pb-6 border-b border-gray-100">
+                                <h3 className="md:col-span-2 font-bold text-slate-800 mb-1 text-sm flex items-center gap-2"><User size={16} /> CONTACT DETAILS</h3>
+                                <input name="userEmail" value={formData.userEmail} onChange={handleInputChange} placeholder="Your Email Address" className={`p-2 text-sm border rounded-lg ${errors.userEmail ? 'border-red-500' : ''}`} />
+                                <input name="userPhone" value={formData.userPhone} onChange={handleInputChange} placeholder="Your Phone Number" className={`p-2 text-sm border rounded-lg ${errors.userPhone ? 'border-red-500' : ''}`} />
+                            </div>
+                        )}
+                        <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><Building size={16} /> COMPANY DETAILS</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input value={formData.companyNames[0]} onChange={(e) => handleInputChange(e, 'companyNames', 0)} placeholder="Proposed Name 1" className={`md:col-span-2 p-2 text-sm border rounded-lg ${errors.companyNames ? 'border-red-500' : ''}`} />
+                            <input value={formData.companyNames[1]} onChange={(e) => handleInputChange(e, 'companyNames', 1)} placeholder="Proposed Name 2 (Optional)" className="md:col-span-2 p-2 text-sm border rounded-lg" />
+                            <textarea name="businessActivity" value={formData.businessActivity} onChange={handleInputChange} placeholder="Main Business Object..." className={`md:col-span-2 p-2 text-sm border rounded-lg ${errors.businessActivity ? 'border-red-500' : ''}`} rows="2" />
                             <input name="addressLine1" value={formData.addressLine1} onChange={handleInputChange} placeholder="Reg. Address Line 1" className={`p-2 text-sm border rounded-lg ${errors.addressLine1 ? 'border-red-500' : ''}`} />
                             <input name="pincode" value={formData.pincode} onChange={handleInputChange} placeholder="Pincode" className={`p-2 text-sm border rounded-lg ${errors.pincode ? 'border-red-500' : ''}`} />
                             <input name="authorizedCapital" value={formData.authorizedCapital} onChange={handleInputChange} placeholder="Auth. Capital (₹)" className="p-2 text-sm border rounded-lg" />
@@ -246,7 +255,7 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
                     {formData.directors.map((dir, i) => (
                         <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
                             <div className="flex justify-between mb-2"><h4 className="font-bold text-xs uppercase text-gray-700">Director {i + 1}</h4> {formData.directors.length > 2 && <Trash2 size={14} onClick={() => removeDirector(i)} className="cursor-pointer text-red-500" />}</div>
-                            <div className="grid md:grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <input name="name" value={dir.name} onChange={(e) => handleInputChange(e, 'directors', i)} placeholder="Full Name" className={`p-2 text-sm border rounded-lg ${errors[`director_${i}_name`] ? 'border-red-500' : ''}`} />
                                 <input name="pan" value={dir.pan} onChange={(e) => handleInputChange(e, 'directors', i)} placeholder="PAN" className={`p-2 text-sm border rounded-lg ${errors[`director_${i}_pan`] ? 'border-red-500' : ''}`} />
                                 <input name="email" value={dir.email} onChange={(e) => handleInputChange(e, 'directors', i)} placeholder="Email" className="p-2 text-sm border rounded-lg" />
@@ -260,8 +269,8 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
             case 3: return (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
                     <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                        <h3 className="font-bold text-navy mb-3 text-sm">COMPANY & ID PROOFS</h3>
-                        <div className="grid md:grid-cols-2 gap-3">
+                        <h3 className="font-bold text-slate-800 mb-3 text-sm">COMPANY & ID PROOFS</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {['Electricity Bill', 'NOC'].map((doc, i) => (
                                 <div key={i} className="border border-dashed p-3 rounded-lg flex justify-between items-center"><span className="text-xs text-gray-600">{doc}</span><input type="file" onChange={(e) => handleFileUpload(e, `company_${i}`)} className="text-[10px] w-20" /></div>
                             ))}
@@ -281,7 +290,7 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
             );
             case 5: return (
                 <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
-                    <Receipt size={32} className="mx-auto mb-4 text-green-600" />
+                    <IndianRupee size={32} className="mx-auto mb-4 text-green-600" />
                     <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
                     <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2">
                         <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
@@ -300,21 +309,42 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
     // --- MODAL LAYOUT: SPLIT VIEW (Left Sidebar + Right Content) ---
     if (isModal) {
         return (
-            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
-                {/* LEFT SIDEBAR: DARK */}
-                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
                     {/* Background Pattern */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
 
                     <div className="relative z-10 mb-8">
-                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
                             <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
-                            Registration
+                            Private Limited
                         </h1>
-                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
-                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
-                            <p className="font-bold text-white leading-tight">{plans[selectedPlan]?.title}</p>
-                            <p className="text-[#ED6E3F] font-bold mt-1">₹{plans[selectedPlan]?.price.toLocaleString()}</p>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
                         </div>
                     </div>
 
@@ -333,36 +363,56 @@ const PrivateLimitedRegistration = ({ isLoggedIn, isModal = false, planProp, onC
                         ))}
                     </div>
 
-                    {/* BOTTOM TOTAL */}
-                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
-                        <div className="flex justify-between items-end">
-                            <div>
-                                <p className="text-[10px] text-blue-200 uppercase">Total Payable</p>
-                                <p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p>
-                            </div>
-                            <Receipt className="text-white/20" size={24} />
-                        </div>
-                    </div>
+
                 </div>
 
                 {/* RIGHT CONTENT: FORM */}
                 <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
                     {/* Header Bar */}
-                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
-                        <h2 className="font-bold text-navy text-lg">
-                            {currentStep === 1 && "Company Information"}
-                            {currentStep === 2 && "Director Details"}
-                            {currentStep === 3 && "Upload Documents"}
-                            {currentStep === 4 && "Review Application"}
-                            {currentStep === 5 && "Complete Payment"}
-                        </h2>
-                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition">
-                            <X size={18} />
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            {/* Mobile: Detailed Service & Price Info */}
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">Private Limited</span>
+                                    {/* <span className="text-gray-300">|</span> */}
+                                    {/* <span className="text-slate-500 text-xs font-medium truncate">{plans[selectedPlan]?.title}</span> */}
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.base) / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: Step Title */}
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Company Information"}
+                                {currentStep === 2 && "Director Details"}
+                                {currentStep === 3 && "Upload Documents"}
+                                {currentStep === 4 && "Review Application"}
+                                {currentStep === 5 && "Complete Payment"}
+                            </h2>
+                        </div>
+
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                            <X size={20} />
                         </button>
                     </div>
 
                     {/* Scrollable Area */}
-                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
                         {isSuccess ? (
                             <div className="text-center py-10">
                                 <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />

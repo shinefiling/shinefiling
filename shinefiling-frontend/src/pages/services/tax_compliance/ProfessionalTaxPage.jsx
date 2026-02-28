@@ -243,14 +243,14 @@ const ProfessionalTaxPage = ({ isLoggedIn }) => {
                         {/* EXPERT ASSIST (Standard) */}
                         <div className="bg-[#043E52] text-white rounded-3xl p-10 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col">
                             {/* Top Gold Line */}
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-bronze via-yellow-400 to-bronze rounded-t-3xl"></div>
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
 
                             <div className="absolute top-6 right-6 bg-gradient-to-r from-bronze to-yellow-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg">Recommended</div>
 
                             <h3 className="text-2xl font-bold mb-2 text-white mt-4">Expert Assist</h3>
                             <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-8">Per Installment</p>
                             <div className="flex items-baseline gap-2 mb-8">
-                                <span className="text-5xl font-black text-white">₹499</span>
+                                <span className="text-3xl font-black text-white">₹499</span>
                                 <span className="text-white/20 line-through text-xl">₹999</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1 text-sm text-gray-300">
@@ -262,11 +262,11 @@ const ProfessionalTaxPage = ({ isLoggedIn }) => {
                         </div>
 
                         {/* YEARLY (Premium) */}
-                        <div className="bg-white rounded-3xl p-8 border border-gray-200 hover:border-bronze/30 hover:shadow-xl transition-all flex flex-col group">
-                            <h3 className="text-xl font-bold text-navy mb-2">Yearly Plan</h3>
+                        <div className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full">
+                            <h3 className="text-lg font-bold text-navy mb-2">Yearly Plan</h3>
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">All 4 Quarters</p>
                             <div className="flex items-baseline gap-2 mb-8">
-                                <span className="text-4xl font-black text-navy">₹1,499</span>
+                                <span className="text-3xl font-black text-navy">₹1,499</span>
                                 <span className="text-slate-300 line-through text-lg">₹2,999</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1 text-sm text-slate-600">
@@ -302,7 +302,7 @@ const ProfessionalTaxPage = ({ isLoggedIn }) => {
                                         <span className="text-navy font-bold text-sm">Action</span>
                                     </div>
                                     <div className="flex-1 flex flex-col justify-center">
-                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
                                             {item.title}
                                         </h3>
                                         <p className="text-slate-600 leading-relaxed text-sm">

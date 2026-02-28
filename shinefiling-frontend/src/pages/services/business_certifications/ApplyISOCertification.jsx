@@ -2,7 +2,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     ArrowLeft, Upload, CheckCircle, AlertCircle, FileText, ChevronRight,
-    Save, Shield, CreditCard, Lock, HelpCircle, Info, Award, Phone, Mail, MapPin, X
+    Save, Shield, CreditCard, Lock, HelpCircle, Info, Award, Phone, Mail, MapPin, X, ArrowRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { submitISOCertification } from '../../../api';
@@ -410,111 +410,99 @@ const ApplyISOCertification = ({ isLoggedIn, isModal = false, onClose, planProp 
         }
     };
 
-    if (isModal) {
-        return (
-            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
-                {/* LEFT SIDEBAR: DARK */}
-                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
-                    <div className="relative z-10 mb-8">
-                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
-                            <span className="text-[#ED6E3F]">ISO</span> Certification
-                        </h1>
-                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
-                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Standard</p>
-                            <p className="font-bold text-white leading-tight">{billDetails.planName}</p>
-                            <p className="text-[#ED6E3F] font-bold mt-1">₹{billDetails.total.toLocaleString()}</p>
+    return (
+        <div className={`flex flex-row overflow-hidden bg-white ${isModal ? 'h-[85vh]' : 'min-h-screen pt-20'}`}>
+            {/* LEFT SIDEBAR: DARK */}
+            <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+
+                <div className="relative z-10 mb-8">
+                    <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
+                        <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                        ISO Certification
+                    </h1>
+                    <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                        <div className="absolute -right-4 -bottom-4 opacity-10 blur-sm pointer-events-none">
+                            <Award size={100} />
                         </div>
-                    </div>
-                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
-                        {steps.map((s, i) => (
-                            <div key={i} onClick={() => { if (step > i + 1) setStep(i + 1) }} className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${step === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}>
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${step === i + 1 ? 'bg-[#ED6E3F] text-white' : step > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
-                                    {step > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                        <div className="relative z-10">
+                            <div className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</div>
+                            <div className="font-bold text-white text-lg tracking-tight mb-4">{billDetails.planName}</div>
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
                                 </div>
-                                <span className={`text-xs font-medium ${step === i + 1 ? 'text-white font-bold' : ''}`}>{s}</span>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
                             </div>
-                        ))}
-                    </div>
-                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
-                        <div className="flex justify-between items-end">
-                            <div><p className="text-[10px] text-blue-200 uppercase">Total Payable</p><p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p></div>
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
                         </div>
                     </div>
                 </div>
-                {/* RIGHT CONTENT */}
-                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
-                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
-                        <h2 className="font-bold text-navy text-lg">{steps[step - 1]}</h2>
-                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition"><X size={18} /></button>
-                    </div>
-                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
-                        {renderStepContent()}
-                    </div>
-                    {step < 4 && (
-                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
-                            <button onClick={() => setStep(p => Math.max(1, p - 1))} disabled={step === 1} className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30">Back</button>
-                            <button onClick={handleNext} className="px-6 py-2.5 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2 text-sm">Next Step <ArrowRight size={16} /></button>
+
+                <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                    {steps.map((s, i) => (
+                        <div key={i} onClick={() => { if (step > i + 1) setStep(i + 1) }} className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${step === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}>
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${step === i + 1 ? 'bg-[#ED6E3F] text-white' : step > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                {step > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                            </div>
+                            <span className={`text-xs font-medium ${step === i + 1 ? 'text-white font-bold' : ''}`}>{s}</span>
                         </div>
-                    )}
+                    ))}
                 </div>
             </div>
-        );
-    }
 
-    return (
-        <div className="min-h-screen bg-[#F8F9FA] pb-20 pt-24 px-4 md:px-8">
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-8 pl-1">
-                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-navy transition">
-                        <ArrowLeft size={14} /> Back
+            {/* RIGHT CONTENT */}
+            <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                    <div className="flex flex-col justify-center">
+                        <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                            <div className="flex items-center gap-2 truncate">
+                                <span className="font-bold text-slate-800 text-sm truncate">ISO Certification</span>
+                            </div>
+                            <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                    <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
+                                </div>
+                                <div className="w-px h-5 bg-gray-200"></div>
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                    <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.base) / 1000).toFixed(1)}k</span>
+                                </div>
+                                <div className="w-px h-5 bg-gray-200"></div>
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                    <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <h2 className="hidden md:block font-bold text-slate-800 text-lg">{steps[step - 1]}</h2>
+                    </div>
+
+                    <button onClick={isModal ? onClose : () => navigate(-1)} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                        {isModal ? <X size={20} /> : <ArrowLeft size={20} />}
                     </button>
-                    <h1 className="text-3xl font-bold text-navy">ISO Certification</h1>
-                    <p className="text-gray-500">Get your business ISO certified in 3 days.</p>
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-8">
-                    {/* LEFT SIDEBAR */}
-                    <div className="w-full lg:w-80 space-y-6">
-                        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                            {steps.map((s, i) => (
-                                <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${step === i + 1 ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
-                                    <div>
-                                        <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
-                                        <span className={`font-bold text-sm ${step === i + 1 ? 'text-blue-800' : 'text-gray-600'}`}>{s}</span>
-                                    </div>
-                                    {step > i + 1 && <CheckCircle size={16} className="text-green-500" />}
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="p-6 rounded-2xl border shadow-sm bg-[#043E52] text-white relative overflow-hidden transition-all sticky top-24">
-                            <div className="relative z-10">
-                                <div className="text-xs font-bold opacity-70 uppercase tracking-widest mb-1">Selected Standard</div>
-                                <div className="text-xl font-bold mb-2">{billDetails.planName}</div>
-                                <div className="text-3xl font-black mb-4">₹{billDetails.total?.toLocaleString()}</div>
-                                <div className="space-y-3 mb-6">
-                                    <div className="flex gap-2 text-xs font-medium opacity-80"><CheckCircle size={14} /> Global Recognition</div>
-                                    <div className="flex gap-2 text-xs font-medium opacity-80"><CheckCircle size={14} /> Audit Support</div>
-                                    <div className="flex gap-2 text-xs font-medium opacity-80"><CheckCircle size={14} /> 100% Online Process</div>
-                                </div>
-                            </div>
-                            <Award className="absolute -bottom-8 -right-8 w-32 h-32 opacity-10 rotate-12" />
-                        </div>
-                    </div>
-
-                    {/* RIGHT CONTENT */}
-                    <div className="flex-1">
-                        {renderStepContent()}
-
-                        {step < 4 && (
-                            <div className="mt-8 flex justify-between">
-                                <button onClick={() => setStep(p => Math.max(1, p - 1))} disabled={step === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
-                                <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">Next Step <ArrowRight size={18} /></button>
-                            </div>
-                        )}
-                    </div>
+                <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                    {renderStepContent()}
                 </div>
+
+                {step < 5 && (
+                    <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                        <button onClick={() => setStep(p => Math.max(1, p - 1))} disabled={step === 1} className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30">Back</button>
+                        <button onClick={handleNext} className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm">Save & Continue <ArrowRight size={16} /></button>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -1,58 +1,69 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     CheckCircle, Upload, Calendar, FileText,
-    ArrowLeft, ArrowRight, IndianRupee, Briefcase, User, Building2, TrendingUp, Users, BookOpen
+    ArrowLeft, ArrowRight, IndianRupee, Briefcase, User, Building2, TrendingUp, Users, BookOpen,
+    X, Info, Shield, Zap, Search, ClipboardList, Clock, CreditCard
 } from 'lucide-react';
-import { uploadFile, submitMoaAoaAmendment } from '../../../api'; // Need to add to api.js
+import { uploadFile, submitMoaAoaAmendment } from '../../../api';
 
-const MOAAmendmentRegistration = ({ isLoggedIn }) => {
+const validatePlan = (plan) => {
+    return ['basic', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'standard';
+};
+
+const MOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
+    const plans = {
+        basic: { price: 999, title: 'Consultation', icon: Info },
+        standard: { price: 2999, title: 'MOA Object Change', icon: BookOpen },
+        premium: { price: 3999, title: 'AOA Full Adoption', icon: Briefcase }
+    };
+
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const planParam = searchParams.get('plan');
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [planType, setPlanType] = useState('standard');
-
-    // Protect Route
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        const isReallyLoggedIn = isLoggedIn || !!storedUser;
-
-        if (!isReallyLoggedIn) {
-            const plan = searchParams.get('plan') || 'standard';
-            navigate('/login', { state: { from: `/services/roc-filing/moa-amendment/register?plan=${plan}` } });
-        }
-    }, [isLoggedIn, navigate, searchParams]);
+    const [selectedPlan, setSelectedPlan] = useState(() => validatePlan(planProp || planParam));
 
     useEffect(() => {
-        const planParam = searchParams.get('plan');
-        if (planParam && ['standard', 'premium', 'basic'].includes(planParam.toLowerCase())) {
-            setPlanType(planParam.toLowerCase());
+        const targetPlan = validatePlan(planProp || planParam);
+        if (targetPlan !== selectedPlan) {
+            setSelectedPlan(targetPlan);
         }
-    }, [searchParams]);
+    }, [planParam, planProp, selectedPlan]);
 
     const [formData, setFormData] = useState({
         companyName: '',
         cin: '',
-        amendmentType: 'MOA', // MOA, AOA, BOTH
-        reasonForAmendment: '', // e.g., "Change Main Object"
+        amendmentType: 'MOA',
+        reasonForAmendment: '',
         existingClause: '',
         proposedClause: '',
-        meetingDate: '', // EGM Date
+        meetingDate: ''
     });
 
     const [uploadedFiles, setUploadedFiles] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [automationPayload, setAutomationPayload] = useState(null);
     const [errors, setErrors] = useState({});
 
-    const plans = {
-        standard: { price: 2999, title: 'Object Change (MOA)' },
-        premium: { price: 3999, title: 'AOA Adoption' },
-        basic: { price: 999, title: 'Consultation' }
-    };
+    const billDetails = useMemo(() => {
+        const plan = plans[selectedPlan] || plans.standard;
+        const basePrice = plan.price;
+        const platformFee = Math.round(basePrice * 0.03);
+        const tax = Math.round(basePrice * 0.03);
+        const gst = Math.round(basePrice * 0.09);
+
+        return {
+            base: basePrice,
+            platformFee,
+            tax,
+            gst,
+            total: basePrice + platformFee + tax + gst
+        };
+    }, [selectedPlan]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -63,17 +74,14 @@ const MOAAmendmentRegistration = ({ isLoggedIn }) => {
     const validateStep = (step) => {
         const newErrors = {};
         let isValid = true;
-
-        if (step === 1) { // Amendment Basics
-            if (!formData.companyName) { newErrors.companyName = "Company required"; isValid = false; }
-            if (!formData.cin) { newErrors.cin = "CIN required"; isValid = false; }
-            if (!formData.reasonForAmendment) { newErrors.reasonForAmendment = "Reason required"; isValid = false; }
+        if (step === 1) {
+            if (!formData.companyName) { newErrors.companyName = "Required"; isValid = false; }
+            if (!formData.cin) { newErrors.cin = "Required"; isValid = false; }
+            if (!formData.reasonForAmendment) { newErrors.reasonForAmendment = "Required"; isValid = false; }
+        } else if (step === 2) {
+            if (!formData.existingClause) { newErrors.existingClause = "Required"; isValid = false; }
+            if (!formData.proposedClause) { newErrors.proposedClause = "Required"; isValid = false; }
         }
-        else if (step === 2) { // Clauses
-            if (!formData.existingClause) { newErrors.existingClause = "Existing Clause required"; isValid = false; }
-            if (!formData.proposedClause) { newErrors.proposedClause = "Proposed Clause required"; isValid = false; }
-        }
-
         setErrors(newErrors);
         return isValid;
     };
@@ -87,21 +95,36 @@ const MOAAmendmentRegistration = ({ isLoggedIn }) => {
     const handleFileUpload = async (e, key) => {
         const file = e.target.files[0];
         if (!file) return;
-
         try {
             const response = await uploadFile(file, 'moa_amendment_docs');
             setUploadedFiles(prev => ({
                 ...prev,
-                [key]: {
-                    originalFile: file,
-                    name: response.originalName || file.name,
-                    fileUrl: response.fileUrl,
-                    fileId: response.id
-                }
+                [key]: { originalFile: file, name: response.originalName || file.name, fileUrl: response.fileUrl, fileId: response.id }
             }));
         } catch (error) {
-            console.error("Upload failed", error);
-            alert("File upload failed. Please try again.");
+            alert("Upload failed.");
+        }
+    };
+
+    const submitApplication = async () => {
+        setIsSubmitting(true);
+        try {
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({ id: k, filename: v.name, fileUrl: v.fileUrl }));
+            const finalPayload = {
+                submissionId: `ROC-AMEND-${Date.now()}`,
+                plan: selectedPlan,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                formData: formData,
+                documents: docsList,
+                amountPaid: billDetails.total,
+                status: "PAYMENT_SUCCESSFUL"
+            };
+            await submitMoaAoaAmendment(finalPayload);
+            setIsSuccess(true);
+        } catch (error) {
+            alert("Submission error: " + error.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -109,77 +132,58 @@ const MOAAmendmentRegistration = ({ isLoggedIn }) => {
         switch (currentStep) {
             case 1: // Company & Intent
                 return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
-                                <Building2 size={20} className="text-yellow-600" /> COMPANY & AMENDMENT TYPE
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
+                                <Building2 size={16} className="text-[#ED6E3F]" /> ENTITY CALIBRATION
                             </h3>
-
-                            <div className="grid md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">Company Name</label>
-                                    <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.companyName ? 'border-red-500' : 'border-gray-200'}`} placeholder="e.g. ABC Pvt Ltd" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1 md:col-span-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Company CIN</label>
+                                    <input type="text" name="cin" value={formData.cin} onChange={handleInputChange} placeholder="U12345MH..." maxLength={21} className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl font-mono uppercase text-sm" />
                                 </div>
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">CIN</label>
-                                    <input type="text" name="cin" value={formData.cin} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.cin ? 'border-red-500' : 'border-gray-200'}`} placeholder="U12345MH..." maxLength={21} style={{ textTransform: 'uppercase' }} />
+                                <div className="space-y-1 md:col-span-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Filing Company</label>
+                                    <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} placeholder="Full Registered Name" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl font-bold text-sm" />
                                 </div>
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="text-xs font-bold text-gray-500 block mb-1">Amendment Type</label>
-                                <div className="grid grid-cols-3 gap-3">
-                                    {['MOA', 'AOA', 'BOTH'].map(type => (
-                                        <button
-                                            key={type}
-                                            onClick={() => setFormData({ ...formData, amendmentType: type })}
-                                            className={`py-3 rounded-xl border font-bold text-sm ${formData.amendmentType === type ? 'bg-yellow-50 border-yellow-500 text-yellow-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                                        >
-                                            {type}
-                                        </button>
-                                    ))}
+                                <div className="space-y-1 md:col-span-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Amendment Focus</label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {['MOA', 'AOA', 'BOTH'].map(t => (
+                                            <button key={t} onClick={() => setFormData({ ...formData, amendmentType: t })} className={`py-3 rounded-xl border text-[10px] font-black tracking-widest transition-all ${formData.amendmentType === t ? 'bg-navy text-white border-navy shadow-lg shadow-navy/20' : 'bg-white text-slate-400 border-slate-100 hover:border-orange-500 hover:text-orange-500'}`}>{t}</button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div>
-                                <label className="text-xs font-bold text-gray-500 block mb-1">Reason for Amendment</label>
-                                <select name="reasonForAmendment" value={formData.reasonForAmendment} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.reasonForAmendment ? 'border-red-500' : 'border-gray-200'}`}>
-                                    <option value="">Select Reason</option>
-                                    <option value="Change Main Object">Change Main Object (Business Activity)</option>
-                                    <option value="Name Change">Company Name Change</option>
-                                    <option value="Capital Increase">Increase Authorized Capital</option>
-                                    <option value="Shift Registered Office">Shift Registered Office (State Change)</option>
-                                    <option value="Adopt New AOA">Adopt New AOA (2013 Act)</option>
-                                    <option value="Other">Other</option>
-                                </select>
+                                <div className="space-y-1 md:col-span-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Reason for Amendment</label>
+                                    <select name="reasonForAmendment" value={formData.reasonForAmendment} onChange={handleInputChange} className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-sm font-bold">
+                                        <option value="">-- SELECT RATIONALE --</option>
+                                        <option value="Change Main Object">Main Object Alteration</option>
+                                        <option value="Adopt New AOA">2013 Act Adoption</option>
+                                        <option value="Capital Revision">Capital Clause Logic</option>
+                                        <option value="Entity Rename">Company Name Evolution</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
                 );
 
-            case 2: // Clauses
+            case 2: // Clause Details
                 return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
-                                <FileText size={20} className="text-yellow-600" /> CLAUSE DETAILS
+                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
+                                <BookOpen size={16} className="text-[#ED6E3F]" /> COMPOSITION REVISION
                             </h3>
-
-                            <div className="mb-4">
-                                <label className="text-xs font-bold text-gray-500 block mb-1">Existing Clause (As per current MOA/AOA)</label>
-                                <textarea name="existingClause" value={formData.existingClause} onChange={handleInputChange} rows={4} className={`w-full p-3 rounded-lg border ${errors.existingClause ? 'border-red-500' : 'border-gray-200'}`} placeholder="Copy paste the existing clause here..." />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="text-xs font-bold text-gray-500 block mb-1">Proposed New Clause</label>
-                                <textarea name="proposedClause" value={formData.proposedClause} onChange={handleInputChange} rows={6} className={`w-full p-3 rounded-lg border ${errors.proposedClause ? 'border-red-500' : 'border-gray-200'}`} placeholder="Draft the new clause..." />
-                            </div>
-
-                            <div className="p-4 bg-blue-50 text-blue-800 text-sm rounded-xl border border-blue-100 flex items-start gap-3">
-                                <BookOpen size={20} className="shrink-0 mt-0.5" />
-                                <div>
-                                    <strong>Legal Tip:</strong> <br />
-                                    Ensure the proposed clause is not 'Ultra Vires' (beyond the powers) of the Companies Act, 2013.
+                            <div className="space-y-4">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Current Active Clause</label>
+                                    <textarea name="existingClause" value={formData.existingClause} onChange={handleInputChange} rows={3} placeholder="Copy from current constitution..." className="w-full p-4 bg-slate-50 border border-gray-200 rounded-2xl text-[11px] font-medium leading-relaxed italic" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Proposed Statutory Clause</label>
+                                    <textarea name="proposedClause" value={formData.proposedClause} onChange={handleInputChange} rows={4} placeholder="Draft the new provision..." className="w-full p-4 bg-navy/5 border border-navy/10 rounded-2xl text-[11px] font-black text-navy leading-relaxed" />
                                 </div>
                             </div>
                         </div>
@@ -188,43 +192,30 @@ const MOAAmendmentRegistration = ({ isLoggedIn }) => {
 
             case 3: // Uploads
                 return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2"><Upload size={20} className="text-yellow-600" /> DOCUMENTS</h3>
-
-                            <div className="mb-4">
-                                <label className="text-xs font-bold text-gray-500 block mb-1">Date of EGM</label>
-                                <input type="date" name="meetingDate" value={formData.meetingDate} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200" />
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div className="border border-dashed p-6 rounded-xl text-center group hover:border-yellow-300 transition">
-                                    <label className="cursor-pointer block">
-                                        <div className="mb-2 mx-auto w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center text-yellow-500 group-hover:scale-110 transition">
-                                            <FileText size={24} />
-                                        </div>
-                                        <span className="font-bold text-gray-700 block mb-1">Special Resolution</span>
-                                        <span className="text-xs text-gray-400 block mb-4">Signed Copy (MGT-14 Requirement)</span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'special_resolution')} accept=".pdf,.jpg" />
-                                        {uploadedFiles['special_resolution'] ?
-                                            <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">{uploadedFiles['special_resolution'].name}</span> :
-                                            <span className="inline-block px-4 py-2 bg-gray-900 text-white rounded-lg text-xs font-bold">Choose File</span>
-                                        }
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm font-poppins">
+                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
+                                <ClipboardList size={16} className="text-[#ED6E3F]" /> EVIDENCE REPOSITORY
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.resolution ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
+                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><FileText size={24} /></div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">Special Resolution</p>
+                                    <label className="cursor-pointer">
+                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${uploadedFiles.resolution ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
+                                            {uploadedFiles.resolution ? 'Swap File' : 'Upload CTC'}
+                                        </span>
+                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'resolution')} />
                                     </label>
                                 </div>
-
-                                <div className="border border-dashed p-6 rounded-xl text-center group hover:border-yellow-300 transition">
-                                    <label className="cursor-pointer block">
-                                        <div className="mb-2 mx-auto w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 group-hover:text-yellow-500 transition">
-                                            <Briefcase size={24} />
-                                        </div>
-                                        <span className="font-bold text-gray-700 block mb-1">Existing MOA/AOA</span>
-                                        <span className="text-xs text-gray-400 block mb-4">For Reference</span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'existing_moa')} accept=".pdf,.jpg" />
-                                        {uploadedFiles['existing_moa'] ?
-                                            <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">{uploadedFiles['existing_moa'].name}</span> :
-                                            <span className="inline-block px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs font-bold">Choose File</span>
-                                        }
+                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.moa ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
+                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><Briefcase size={24} /></div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">Existing Constitution</p>
+                                    <label className="cursor-pointer">
+                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${uploadedFiles.moa ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
+                                            {uploadedFiles.moa ? 'Swap File' : 'Upload Copy'}
+                                        </span>
+                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'moa')} />
                                     </label>
                                 </div>
                             </div>
@@ -234,126 +225,177 @@ const MOAAmendmentRegistration = ({ isLoggedIn }) => {
 
             case 4: // Payment
                 return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
-                        <div className="w-20 h-20 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-6 text-yellow-600">
-                            <IndianRupee size={32} />
-                        </div>
-                        <h2 className="text-2xl font-black text-[#2B3446] mb-2">Payment Summary</h2>
-                        <p className="text-gray-500 mb-8">Pay professional fee for {plans[planType].title}.</p>
-
-                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="text-gray-500">Service Fee</span>
-                                <span className="text-3xl font-black text-[#2B3446]">₹{plans[planType].price.toLocaleString()}</span>
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
+                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 text-center relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                            <div className="w-20 h-20 bg-orange-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-orange-600 shadow-3xl shadow-orange-500/10 rotate-3">
+                                <CreditCard size={32} />
                             </div>
-                            <div className="flex justify-between items-end text-xs text-gray-400">
-                                <span>Govt Fee</span>
-                                <span>Actuals Extra</span>
-                            </div>
-                        </div>
+                            <h2 className="text-2xl font-black text-navy mb-2 tracking-tight uppercase italic">Compliance Finalize</h2>
+                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-8 opacity-60 italic underline decoration-orange-500 underline-offset-4">Filing & Execution Assessment</p>
 
-                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
-                            {isSubmitting ? 'Processing...' : 'Pay & File'}
-                            {!isSubmitting && <ArrowRight size={18} />}
-                        </button>
+                            <div className="bg-slate-50 p-8 rounded-3xl mb-8 space-y-4 text-sm border-2 border-white shadow-inner">
+                                <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                    <span>Plan Category</span>
+                                    <span className="px-4 py-1.5 bg-navy text-white rounded-full italic">{plans[selectedPlan].title}</span>
+                                </div>
+                                <div className="h-px bg-slate-200"></div>
+                                <div className="flex justify-between text-2xl font-black text-navy italic underline decoration-[#ED6E3F] decoration-4 underline-offset-8">
+                                    <span className="text-[10px] self-end mb-1 text-slate-400 not-italic font-bold">TOTAL PAYABLE</span>
+                                    <span>₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={submitApplication}
+                                disabled={isSubmitting}
+                                className="w-full py-5 bg-navy text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-3xl shadow-navy/30 hover:bg-black transition-all flex items-center justify-center gap-3 italic"
+                            >
+                                {isSubmitting ? 'PROCESSING AMENDMENT...' : 'AUTHORIZE CONSTITUTION CHANGE'}
+                                {!isSubmitting && <ArrowRight size={20} />}
+                            </button>
+                        </div>
                     </div>
                 );
 
             default: return null;
         }
-    };
+    }
 
-    const submitApplication = async () => {
-        setIsSubmitting(true);
-        try {
-            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
-                id: k,
-                filename: v.name,
-                fileUrl: v.fileUrl
-            }));
-
-            const finalPayload = {
-                submissionId: `ROC-AMEND-${Date.now()}`,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
-                plan: planType,
-                amountPaid: plans[planType]?.price,
-                amendmentType: formData.amendmentType,
-                reasonForAmendment: formData.reasonForAmendment,
-                formData: formData,
-                documents: docsList,
-                status: "PAYMENT_SUCCESSFUL"
-            };
-
-            const response = await submitMoaAoaAmendment(finalPayload);
-            setAutomationPayload(response);
-            setIsSuccess(true);
-
-        } catch (error) {
-            console.error(error);
-            alert("Submission error: " + error.message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
+    // --- MODAL LAYOUT: SPLIT VIEW (Left Sidebar + Right Content) ---
     return (
-        <div className="min-h-screen bg-[#F8F9FA] pb-20 pt-24 px-4 md:px-8">
-            {isSuccess ? (
-                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
-                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle size={48} className="text-green-600" />
-                    </div>
-                    <h1 className="text-3xl font-black text-[#2B3446] mb-4">Amendment Initiated!</h1>
-                    <p className="text-gray-500 mb-8">
-                        Your request to amend <b>{formData.amendmentType}</b> of <b>{formData.companyName}</b> has been received.
-                        <br />We will vet your clauses and prepare MGT-14.
-                    </p>
-                    <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
-                </div>
-            ) : (
-                <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition"><ArrowLeft size={14} /> Back</button>
-                        <h1 className="text-3xl font-black text-[#2B3446]">MOA / AOA Amendment</h1>
-                        <p className="text-gray-500">Alteration of Constitution</p>
-                    </div>
+        <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+            {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+            <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                {/* Background Pattern */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
 
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="w-full lg:w-80 space-y-6">
-                            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                                {['Company Info', 'Clause Details', 'Documents', 'Payment'].map((step, i) => (
-                                    <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-yellow-50 border-yellow-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
-                                        <div>
-                                            <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
-                                            <span className={`font-bold text-sm ${currentStep === i + 1 ? 'text-yellow-700' : 'text-gray-600'}`}>{step}</span>
-                                        </div>
-                                        {currentStep > i + 1 && <CheckCircle size={16} className="text-green-500" />}
-                                    </div>
-                                ))}
+                <div className="relative z-10 mb-8">
+                    <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
+                        <BookOpen className="text-[#ED6E3F]" size={20} />
+                        Amendment
+                    </h1>
+                    <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                        <div className="relative z-10">
+                            <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                            <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                        </div>
+
+                        <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                            <div className="flex justify-between items-center text-xs group">
+                                <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
                             </div>
-
-                            <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-100 text-xs text-yellow-800">
-                                <strong>Selected Plan:</strong> <br />
-                                <span className="text-lg font-bold">{plans[planType].title}</span>
+                            <div className="flex justify-between items-center text-xs group">
+                                <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                <span className="text-white font-medium font-mono">₹{Math.max(0, billDetails.total - billDetails.base).toLocaleString()}</span>
+                            </div>
+                            <div className="h-px bg-white/10 my-2"></div>
+                            <div className="flex justify-between items-end">
+                                <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
                             </div>
                         </div>
 
-                        <div className="flex-1">
-                            {renderStepContent()}
+                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
+                    </div>
+                </div>
 
-                            {!isSuccess && currentStep < 4 && (
-                                <div className="mt-8 flex justify-between">
-                                    <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
+                {/* VERTICAL STEPPER */}
+                <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                    {['Entity Sync', 'Clause Mapping', 'Evidence Board', 'Payment'].map((step, i) => (
+                        <div key={i}
+                            onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                            className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                        >
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                            </div>
+                            <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
 
-                                    <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
-                                        Next Step <ArrowRight size={18} />
-                                    </button>
+            {/* RIGHT CONTENT: FORM */}
+            <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                {/* Header Bar */}
+                <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                    <div className="flex flex-col justify-center">
+                        {/* Mobile: Detailed Service & Price Info */}
+                        <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                            <div className="flex items-center gap-2 truncate">
+                                <span className="font-bold text-slate-800 text-sm truncate">MOA Amendment</span>
+                            </div>
+                            <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                    <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
                                 </div>
-                            )}
+                                <div className="w-px h-5 bg-gray-200"></div>
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                    <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.base) / 1000).toFixed(1)}k</span>
+                                </div>
+                                <div className="w-px h-5 bg-gray-200"></div>
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                    <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
                         </div>
+
+                        {/* Desktop: Step Title */}
+                        <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                            {currentStep === 1 && "Amendment Matrix"}
+                            {currentStep === 2 && "Textual Revision"}
+                            {currentStep === 3 && "Vetted Artifacts"}
+                            {currentStep === 4 && "Complete Payment"}
+                        </h2>
                     </div>
+
+                    <button onClick={onClose || (() => navigate(-1))} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                        <X size={20} />
+                    </button>
                 </div>
-            )}
+
+                {/* Scrollable Area */}
+                <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                    {isSuccess ? (
+                        <div className="text-center py-10">
+                            <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                            <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                            <p className="text-gray-500 mt-2">Check dashboard for status updates.</p>
+                            <button onClick={onClose || (() => navigate(-1))} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Proceed to Dashboard</button>
+                        </div>
+                    ) : (
+                        renderStepContent()
+                    )}
+                </div>
+
+                {/* Sticky Footer */}
+                {!isSuccess && (
+                    <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                        <button
+                            onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                            disabled={currentStep === 1}
+                            className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                        >
+                            Back
+                        </button>
+                        {currentStep < 4 && (
+                            <button
+                                onClick={handleNext}
+                                className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                            >
+                                Save & Continue <ArrowRight size={16} />
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

@@ -4,7 +4,7 @@
 
 const BUSINESS_HOURS = "9:00 AM - 7:00 PM (Mon-Sat)";
 const SUPPORT_EMAIL = "support@shinefiling.com";
-const SUPPORT_PHONE = "+91-9876543210";
+const SUPPORT_PHONE = "+91-7639227019";
 
 // --- Helper for Dynamic Links ---
 const getLink = (path, text) => `<a href="${path}" style="color: #4da6ff; text-decoration: underline;">${text}</a>`;

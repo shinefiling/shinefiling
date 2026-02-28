@@ -48,7 +48,7 @@ const AgentClients = ({ tasks }) => {
                                     </div>
                                     <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
                                         <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-[#1C3540] flex items-center justify-center text-slate-400"><Phone size={14} /></div>
-                                        <span>{client.phone || '+91 98765 43210'}</span>
+                                        <span>{client.phone || '+91 7639227019'}</span>
                                     </div>
                                     <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
                                         <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-[#1C3540] flex items-center justify-center text-slate-400"><MapPin size={14} /></div>

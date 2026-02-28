@@ -329,7 +329,7 @@ const CompanyLLPDetailCorrection = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> EGM Documentation</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> New Certificate</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('name_change')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Name Change</button>
+                            <button onClick={() => handlePlanSelect('name')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Name Change</button>
                         </motion.div>
                     </div>
                 </div>

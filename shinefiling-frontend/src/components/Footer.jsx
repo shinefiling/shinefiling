@@ -210,7 +210,7 @@ const Footer = () => {
                                 <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-[#ED6E3F]/10 group-hover:text-[#ED6E3F] transition-all">
                                     <Phone size={14} />
                                 </div>
-                                <span className="text-xs">+91 98765 43210</span>
+                                <span className="text-xs">+91 7639227019</span>
                             </div>
                         </div>
                     </div>
@@ -267,23 +267,13 @@ const Footer = () => {
 
             {/* Bottom Bar */}
             <div className="max-w-[1600px] mx-auto px-6">
-                <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-slate-500 font-medium">
+                <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-center items-center gap-6 text-xs text-slate-500 font-medium">
                     <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8">
-                        <p>&copy; {currentYear} ShineFiling Private Limited.</p>
+                        <p>&copy; {currentYear} Newfu Technology Private Limited.</p>
                         <div className="flex gap-6">
                             <Link to="/terms" className="hover:text-[#ED6E3F] transition-colors">Terms</Link>
                             <Link to="/privacy" className="hover:text-[#ED6E3F] transition-colors">Privacy</Link>
                             <Link to="/refund" className="hover:text-[#ED6E3F] transition-colors">Refunds</Link>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 py-2 px-4 rounded-full bg-slate-50 border border-slate-100">
-                        <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Awarded Compliance Partner</p>
-                        <div className="flex gap-3 opacity-30 grayscale">
-                            {/* Placeholder for payment icons */}
-                            <div className="w-6 h-4 bg-slate-400 rounded-sm"></div>
-                            <div className="w-6 h-4 bg-slate-400 rounded-sm"></div>
-                            <div className="w-6 h-4 bg-slate-400 rounded-sm"></div>
                         </div>
                     </div>
                 </div>

@@ -1,300 +1,391 @@
-﻿
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+﻿import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
-    CheckCircle, CreditCard, FileText,
-    User, Upload, Calendar, Trash2, Check, FileCheck,
-    ArrowLeft, ArrowRight, Zap, Building, Clock,
-    Sparkles, AlertCircle, Edit3, RefreshCw, Layers
+    CheckCircle, Upload, CreditCard, FileText, User,
+    Building, ArrowLeft, ArrowRight, Shield, AlertCircle, Lock, IndianRupee, Users, Plus, Trash2, X, Briefcase, MapPin, RefreshCw
 } from 'lucide-react';
-import { useAuth } from '../../../context/AuthContext';
-import { submitGstAmendment, uploadFile } from '../../../api';
-import { motion, AnimatePresence } from 'framer-motion';
+import { uploadFile, submitGstAmendment } from '../../../api';
 
-const GstAmendmentRegistration = ({ planProp = 'non-core', isModal, onClose }) => {
-    const { state } = useLocation();
+const GstAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
+
+    useEffect(() => {
+        if (isModal) return;
+        const storedUser = localStorage.getItem('user');
+        const isReallyLoggedIn = isLoggedIn || !!storedUser;
+
+        if (!isReallyLoggedIn) {
+            const plan = searchParams.get('plan') || 'standard';
+            navigate('/login', { state: { from: `/services/gst-amendment/apply?plan=${plan}` } });
+        }
+    }, [isLoggedIn, navigate, searchParams, isModal]);
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [selectedPlan, setSelectedPlan] = useState(state?.plan || planProp);
 
-    const [formData, setFormData] = useState({
-        gstin: '',
-        businessName: '',
-        amendmentType: 'Address Change',
-        details: '',
-        reason: 'Business Relocation'
-    });
-
-    const [files, setFiles] = useState({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const steps = [
-        { id: 1, title: 'Scope', icon: Zap },
-        { id: 2, title: 'Business', icon: Building },
-        { id: 3, title: 'Changes', icon: Edit3 },
-        { id: 4, title: 'Proof', icon: Upload },
-        { id: 5, title: 'Submit', icon: CreditCard }
-    ];
-
-    const handleInputChange = (e) => {
-        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-        setFormData({ ...formData, [e.target.name]: value });
+    const validatePlan = (plan) => {
+        return ['startup', 'standard', 'enterprise'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'standard';
     };
 
-    const handleFileUpload = async (e, docName) => {
-        const file = e.target.files[0];
-        if (file) {
-            try {
-                const response = await uploadFile(file, 'gst_docs');
-                setFiles(prev => ({
-                    ...prev, [docName]: {
-                        originalFile: file,
-                        name: response.originalName || file.name,
-                        fileUrl: response.fileUrl,
-                        fileId: response.id
-                    }
-                }));
-            } catch (error) {
-                console.error("Upload failed", error);
-                alert("File upload failed. Please try again.");
-            }
+    const [selectedPlan, setSelectedPlan] = useState(() => validatePlan(planProp || searchParams.get('plan')));
+
+    useEffect(() => {
+        const targetPlan = validatePlan(planProp || searchParams.get('plan'));
+        if (targetPlan !== selectedPlan) {
+            setSelectedPlan(targetPlan);
+        }
+    }, [planProp, searchParams, selectedPlan]);
+
+    const [formData, setFormData] = useState({
+        userEmail: '',
+        userPhone: '',
+        gstin: '',
+        legalName: '',
+        tradeName: '',
+        amendmentType: 'Core', // Core or Non-Core
+        reason: '',
+        addressLine1: '',
+        addressLine2: '',
+        pincode: '',
+        state: '',
+        district: '',
+        partners: [
+            { name: '', pan: '', dob: '', status: 'Active' }
+        ]
+    });
+
+    const [uploadedFiles, setUploadedFiles] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+    const [automationPayload, setAutomationPayload] = useState(null);
+    const [errors, setErrors] = useState({});
+
+    const plans = {
+        startup: {
+            price: 499,
+            title: 'Non-Core Amendment',
+            features: ["Email & Mobile Update", "Bank Account Addition", "Instant Approval Support"],
+            color: 'bg-white border-slate-200'
+        },
+        standard: {
+            price: 999,
+            title: 'Core Amendment',
+            features: ["Address Change", "Business Name Change", "Partner/Director Update", "Office Liaison"],
+            recommended: true,
+            color: 'bg-indigo-50 border-indigo-200'
+        },
+        enterprise: {
+            price: 1499,
+            title: 'Management Update',
+            features: ["Add/Remove Directors", "Change in Constitution", "Board Resolution Drafting", "Priority Filing"],
+            color: 'bg-purple-50 border-purple-200'
         }
     };
 
-    const handleSubmit = async () => {
+    const billDetails = useMemo(() => {
+        const plan = plans[selectedPlan] || plans.standard;
+        const basePrice = plan.price;
+        const platformFee = Math.round(basePrice * 0.03);
+        const tax = Math.round(basePrice * 0.03);
+        const gst = Math.round(basePrice * 0.09);
+        const total = basePrice + platformFee + tax + gst;
+        return { basePrice, platformFee, tax, gst, total };
+    }, [selectedPlan]);
+
+    const handleInputChange = (e, section = null, index = null) => {
+        const { name, value } = e.target;
+        if (section === 'partners') {
+            const newPartners = [...formData.partners];
+            newPartners[index][name] = value;
+            setFormData({ ...formData, partners: newPartners });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
+    };
+
+    const addPartner = () => {
+        setFormData(prev => ({
+            ...prev,
+            partners: [...prev.partners, { name: '', pan: '', dob: '', status: 'Active' }]
+        }));
+    };
+
+    const removePartner = (index) => {
+        if (formData.partners.length > 1) {
+            const newPartners = formData.partners.filter((_, i) => i !== index);
+            setFormData(prev => ({ ...prev, partners: newPartners }));
+        }
+    };
+
+    const validateStep = (step) => {
+        const newErrors = {};
+        let isValid = true;
+
+        if (step === 1) {
+            const storedUser = localStorage.getItem('user');
+            const isReallyLoggedIn = isLoggedIn || !!storedUser;
+            if (!isReallyLoggedIn) {
+                if (!formData.userEmail) { newErrors.userEmail = "Required"; isValid = false; }
+                if (!formData.userPhone) { newErrors.userPhone = "Required"; isValid = false; }
+            }
+            if (!formData.gstin) { newErrors.gstin = "GSTIN Required"; isValid = false; }
+            if (!formData.legalName) { newErrors.legalName = "Legal Name Required"; isValid = false; }
+        }
+        if (step === 2) {
+            if (!formData.reason) { newErrors.reason = "Reason required"; isValid = false; }
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    const handleNext = () => {
+        if (validateStep(currentStep)) setCurrentStep(prev => Math.min(5, prev + 1));
+    };
+
+    const handleFileUpload = async (e, key) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+            const response = await uploadFile(file, 'gst_amend_docs');
+            setUploadedFiles(prev => ({
+                ...prev,
+                [key]: { originalFile: file, name: response.originalName || file.name, fileUrl: response.fileUrl, fileId: response.id }
+            }));
+        } catch (error) { alert("Upload failed"); }
+    };
+
+    const submitApplication = async () => {
         setIsSubmitting(true);
         try {
-            const docsList = Object.entries(files).map(([k, v]) => ({
-                id: k,
-                filename: v.name,
-                fileUrl: v.fileUrl
-            }));
-
-            const payload = {
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({ id: k, filename: v.name, fileUrl: v.fileUrl }));
+            const finalPayload = {
                 plan: selectedPlan,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.userEmail,
                 formData: formData,
                 documents: docsList,
                 status: "PAYMENT_SUCCESSFUL"
             };
+            const response = await submitGstAmendment(finalPayload);
+            setAutomationPayload(response);
+            setIsSuccess(true);
+        } catch (error) { alert("Submission error: " + error.message); } finally { setIsSubmitting(false); }
+    };
 
-            await submitGstAmendment(payload);
-            setCurrentStep(6);
-        } catch (error) {
-            console.error("Submission error", error);
-            alert("Submission failed: " + error.message);
-        } finally {
-            setIsSubmitting(false);
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 1: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        {(!isLoggedIn && !localStorage.getItem('user')) && (
+                            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3 pb-6 border-b border-gray-100">
+                                <h3 className="md:col-span-2 font-bold text-slate-800 mb-1 text-sm flex items-center gap-2"><User size={16} /> CONTACT DETAILS</h3>
+                                <input name="userEmail" value={formData.userEmail} onChange={handleInputChange} placeholder="Your Email Address" className={`p-2 text-sm border rounded-lg ${errors.userEmail ? 'border-red-500' : ''}`} />
+                                <input name="userPhone" value={formData.userPhone} onChange={handleInputChange} placeholder="Your Phone Number" className={`p-2 text-sm border rounded-lg ${errors.userPhone ? 'border-red-500' : ''}`} />
+                            </div>
+                        )}
+                        <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><Building size={16} /> ENTITY IDENTIFICATION</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input name="gstin" value={formData.gstin} onChange={handleInputChange} placeholder="Active GSTIN Number" className={`md:col-span-2 p-2 text-sm border rounded-lg uppercase ${errors.gstin ? 'border-red-500' : ''}`} />
+                            <input name="legalName" value={formData.legalName} onChange={handleInputChange} placeholder="Legal Name (As per Portal)" className={`md:col-span-2 p-2 text-sm border rounded-lg ${errors.legalName ? 'border-red-500' : ''}`} />
+                        </div>
+                    </div>
+                </div>
+            );
+            case 2: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><Briefcase size={16} /> AMENDMENT SCOPE</h3>
+                        <div className="grid grid-cols-1 gap-3">
+                            <select name="amendmentType" value={formData.amendmentType} onChange={handleInputChange} className="p-2 text-sm border rounded-lg w-full">
+                                <option value="Core">Core Field (Address, Legal Name, Directors)</option>
+                                <option value="Non-Core">Non-Core Field (Email, Mobile, Bank)</option>
+                                <option value="Full">Full Profile Update</option>
+                            </select>
+                            <textarea name="reason" value={formData.reason} onChange={handleInputChange} placeholder="Brief Reason for Correction..." className={`p-2 text-sm border rounded-lg w-full ${errors.reason ? 'border-red-500' : ''}`} rows="3" />
+                        </div>
+                    </div>
+                </div>
+            );
+            case 3: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-slate-800 mb-3 text-sm">EVIDENCE DOCUMENTS</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {['New Address Proof', 'Director ID (If change)', 'Current GST Cert'].map((doc, i) => (
+                                <div key={i} className="border border-dashed p-3 rounded-lg flex justify-between items-center"><span className="text-xs text-gray-600">{doc}</span><input type="file" onChange={(e) => handleFileUpload(e, `doc_${i}`)} className="text-[10px] w-20" /></div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+            case 4: return (
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                    <h2 className="text-xl font-bold text-navy mb-4">Confirm Details</h2>
+                    <div className="p-4 bg-gray-50 rounded-lg space-y-2 text-sm">
+                        <div className="flex justify-between"><span>Plan</span><span className="font-bold text-navy">{plans[selectedPlan]?.title}</span></div>
+                        <div className="flex justify-between"><span>GSTIN</span><span className="font-bold text-navy font-mono tracking-wider">{formData.gstin}</span></div>
+                        <div className="flex justify-between"><span>Amendment Type</span><span className="font-bold text-amber-600">{formData.amendmentType}</span></div>
+                    </div>
+                </div>
+            );
+            case 5: return (
+                <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                    <IndianRupee size={32} className="mx-auto mb-4 text-green-600" />
+                    <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                    <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2">
+                        <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.basePrice.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFee}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
+                    </div>
+                    <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center">
+                        <input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} />
+                        I Accept Terms & Conditions
+                    </label>
+                    <button onClick={submitApplication} disabled={!isTermsAccepted || isSubmitting} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50 transition">
+                        Pay & Submit
+                    </button>
+                </div>
+            );
+            default: return null;
         }
-    };
-
-    const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 5));
-    const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
-
-    const getPrice = () => {
-        if (selectedPlan === 'non-core') return 499;
-        if (selectedPlan === 'core') return 999;
-        return 1499;
-    };
+    }
 
     if (isModal) {
         return (
-            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
-                {/* LEFT SIDEBAR - DARK */}
-                <div className="w-72 bg-[#043E52] flex flex-col justify-between shrink-0 relative overflow-hidden">
-                    {/* Background Deco */}
-                    <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-                        <div className="absolute right-0 top-0 w-48 h-48 bg-white blur-3xl rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                        <div className="absolute left-0 bottom-0 w-40 h-40 bg-bronze blur-3xl rounded-full translate-y-1/3 -translate-x-1/3"></div>
-                    </div>
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
 
-                    <div className="p-8 relative z-10 flex-1 overflow-y-auto custom-scrollbar">
-                        <div className="flex items-center gap-3 mb-8 text-white">
-                            <div className="p-2 bg-white/10 rounded-lg">
-                                <RefreshCw size={24} className="text-bronze" />
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white mb-6">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            GST Amendment
+                        </h1>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
                             </div>
-                            <div>
-                                <h3 className="font-bold leading-tight">GST<br />Amendment</h3>
-                                <p className="text-[10px] text-gray-400 uppercase tracking-widest">Correction</p>
+
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.basePrice.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.basePrice).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Steps Navigation */}
-                        <div className="space-y-6 relative">
-                            {/* Vertical Line */}
-                            <div className="absolute left-[15px] top-2 bottom-2 w-0.5 bg-white/10 z-0"></div>
-
-                            {steps.map((s, i) => {
-                                const stepNum = s.id;
-                                const isActive = currentStep === stepNum;
-                                const isCompleted = currentStep > stepNum;
-
-                                return (
-                                    <div
-                                        key={s.id}
-                                        className={`relative z-10 flex items-center gap-4 cursor-pointer group ${isActive ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`}
-                                        onClick={() => { if (isCompleted) setCurrentStep(stepNum) }}
-                                    >
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300
-                                            ${isActive ? 'bg-bronze border-bronze text-white scale-110 shadow-lg shadow-bronze/30' :
-                                                isCompleted ? 'bg-green-500 border-green-500 text-white' : 'bg-[#043E52] border-white/20 text-white/60'}`}
-                                        >
-                                            {isCompleted ? <CheckCircle size={14} /> : stepNum}
-                                        </div>
-                                        <span className={`text-sm font-medium transition-colors ${isActive ? 'text-white font-bold' : 'text-gray-400 group-hover:text-gray-200'}`}>
-                                            {s.title}
-                                        </span>
-                                    </div>
-                                )
-                            })}
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
                         </div>
                     </div>
 
-                    {/* Bottom Billing Card */}
-                    <div className="p-6 bg-black/20 backdrop-blur-sm border-t border-white/5 relative z-10 shrink-0">
-                        <div className="flex justify-between items-center mb-1">
-                            <span className="text-xs text-gray-400">Total Payable</span>
-                            <span className="text-lg font-bold text-bronze">₹{getPrice().toLocaleString()}</span>
-                        </div>
-                        <p className="text-[10px] text-gray-500">{selectedPlan} Plan</p>
+                    {/* VERTICAL STEPPER */}
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {['Core Info', 'Amendment', 'Documents', 'Review', 'Payment'].map((step, i) => (
+                            <div key={i}
+                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                            >
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
-                {/* RIGHT CONTENT AREA - LIGHT */}
-                <div className="flex-1 flex flex-col bg-[#F2F1EF] h-full overflow-hidden relative">
-                    {/* Header */}
-                    <div className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 shrink-0 z-20">
-                        <h2 className="font-bold text-navy text-lg">
-                            {steps.find(s => s.id === currentStep)?.title || "Registration"}
-                        </h2>
-                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-red-500 transition">
-                            <X size={18} />
+                {/* RIGHT CONTENT: FORM */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    {/* Header Bar */}
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            {/* Mobile: Detailed Service & Price Info */}
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">GST Amendment</span>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.basePrice / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.basePrice) / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: Step Title */}
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Basic Identification"}
+                                {currentStep === 2 && "Amendment Scope"}
+                                {currentStep === 3 && "Upload Documents"}
+                                {currentStep === 4 && "Review Application"}
+                                {currentStep === 5 && "Complete Payment"}
+                            </h2>
+                        </div>
+
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                            <X size={20} />
                         </button>
                     </div>
 
-                    {/* Scrollable Form Content */}
-                    <div className="flex-1 overflow-y-auto p-8">
-                        <div className="max-w-3xl mx-auto pb-12">
-                            {/* Reuse existing steps logic but stripped of the top nav */}
-                            <AnimatePresence mode="wait">
-                                {currentStep === 1 && (
-                                    <motion.div key="step1" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
-                                        <div className="grid md:grid-cols-3 gap-6">
-                                            {[
-                                                { id: 'non-core', name: 'Non-Core Field', price: '499', features: ["Email/Mobile Change", "Bank Detail Update"] },
-                                                { id: 'core', name: 'Core Field', price: '999', features: ["Address Change", "Business Name Change"] },
-                                                { id: 'complex', name: 'Director Change', price: '1499', features: ["Add/Remove Partner", "Constitution Change"] }
-                                            ].map(p => (
-                                                <div
-                                                    key={p.id}
-                                                    onClick={() => setSelectedPlan(p.id)}
-                                                    className={`p-6 rounded-2xl border-2 transition-all cursor-pointer relative overflow-hidden group ${selectedPlan === p.id ? 'border-bronze bg-amber-50 shadow-lg' : 'border-slate-100 hover:border-amber-200 bg-white'}`}
-                                                >
-                                                    {selectedPlan === p.id && <div className="absolute top-2 right-2 text-bronze"><CheckCircle size={20} /></div>}
-                                                    <h4 className={`text-md font-bold mb-1 uppercase ${selectedPlan === p.id ? 'text-navy' : 'text-slate-400'}`}>{p.name}</h4>
-                                                    <div className="text-2xl font-black mb-4">₹{p.price}</div>
-                                                    <div className="space-y-2">
-                                                        {p.features.map((f, i) => (
-                                                            <div key={i} className="flex gap-2 text-[10px] font-bold uppercase text-slate-500"><Check size={12} className="text-bronze" /> {f}</div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </motion.div>
-                                )}
-
-                                {currentStep === 2 && (
-                                    <motion.div key="step2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                        <h3 className="font-bold text-navy flex items-center gap-2"><Building size={20} /> BUSINESS DETAILS</h3>
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="text-xs font-bold text-gray-500 mb-1 block">GSTIN</label>
-                                                <input name="gstin" value={formData.gstin} onChange={handleInputChange} className="w-full p-3 border rounded-lg" placeholder="22AAAAA0000A1Z5" />
-                                            </div>
-                                            <div>
-                                                <label className="text-xs font-bold text-gray-500 mb-1 block">Business Name</label>
-                                                <input name="businessName" value={formData.businessName} onChange={handleInputChange} className="w-full p-3 border rounded-lg" placeholder="StartUp India Pvt Ltd" />
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-
-                                {currentStep === 3 && (
-                                    <motion.div key="step3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                        <h3 className="font-bold text-navy flex items-center gap-2"><Edit3 size={20} /> AMENDMENT DETAILS</h3>
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="text-xs font-bold text-gray-500 mb-1 block">Change Type</label>
-                                                <select name="amendmentType" value={formData.amendmentType} onChange={handleInputChange} className="w-full p-3 border rounded-lg">
-                                                    <option value="Address Change">Principal Place of Business</option>
-                                                    <option value="Trade Name">Trade Name Correction</option>
-                                                    <option value="Directors">Directors / Partners</option>
-                                                    <option value="Contact">Contact Details</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label className="text-xs font-bold text-gray-500 mb-1 block">Description</label>
-                                                <textarea name="details" value={formData.details} onChange={handleInputChange} rows="4" className="w-full p-3 border rounded-lg" placeholder="Describe the change..."></textarea>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-
-                                {currentStep === 4 && (
-                                    <motion.div key="step4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                        <h3 className="font-bold text-navy mb-4">Supporting Evidence</h3>
-                                        <div className="border-2 border-dashed p-6 rounded-xl flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-gray-50 relative">
-                                            <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => handleFileUpload(e, 'supporting_doc')} />
-                                            <Upload size={32} className="text-gray-400" />
-                                            <div className="text-center">
-                                                <p className="font-bold text-sm text-navy">{files.supporting_doc ? files.supporting_doc.name : "Upload Document"}</p>
-                                                <p className="text-xs text-gray-400">PDF, JPG or PNG</p>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-
-                                {currentStep === 5 && (
-                                    <motion.div key="step5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white p-8 rounded-3xl shadow-lg text-center">
-                                        <h2 className="text-2xl font-bold text-navy mb-4">Confirm & Pay</h2>
-                                        <div className="text-4xl font-black text-navy mb-2">₹{getPrice()}</div>
-                                        <p className="text-gray-500 mb-6">Professional Fee for {formData.amendmentType}</p>
-                                        <button onClick={handleSubmit} disabled={isSubmitting} className="w-full py-4 bg-navy text-white rounded-xl font-bold hover:bg-black transition">
-                                            {isSubmitting ? 'Processing...' : 'Pay & Submit'}
-                                        </button>
-                                    </motion.div>
-                                )}
-
-                                {currentStep === 6 && (
-                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
-                                        <CheckCircle size={64} className="text-green-500 mx-auto mb-6" />
-                                        <h2 className="text-3xl font-bold text-navy mb-2">Success!</h2>
-                                        <p className="text-gray-500 mb-8">Amendment request submitted.</p>
-                                        <button onClick={onClose} className="px-8 py-3 bg-navy text-white rounded-xl font-bold">Close</button>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
+                    {/* Scrollable Area */}
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                        {isSuccess ? (
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                                <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg hover:bg-black transition">Close Window</button>
+                            </div>
+                        ) : (
+                            renderStepContent()
+                        )}
                     </div>
 
                     {/* Sticky Footer */}
-                    {currentStep < 5 && (
+                    {!isSuccess && (
                         <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
                             <button
-                                onClick={prevStep}
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
                                 disabled={currentStep === 1}
                                 className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
                             >
                                 Back
                             </button>
-                            <button
-                                onClick={nextStep}
-                                className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
-                            >
-                                {currentStep === 5 ? "Submit" : "Save & Continue"} <ArrowRight size={16} />
-                            </button>
+                            {currentStep < 5 && (
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                                >
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>
@@ -303,258 +394,36 @@ const GstAmendmentRegistration = ({ planProp = 'non-core', isModal, onClose }) =
     }
 
     return (
-        <div className="flex flex-col h-full bg-white font-sans text-navy">
-            {/* PROGRESS BAR */}
-            <div className="px-12 pt-10 pb-6 bg-slate-50/50 border-b border-slate-100 font-poppins">
-                <div className="flex justify-between items-center mb-10">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-amber-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-amber-500/20 rotate-3">
-                            <RefreshCw size={24} />
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-black italic tracking-tighter uppercase">GST Amendment</h2>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Data Correction Module</p>
+        <div className="min-h-screen pb-20 pt-24 px-4 bg-[#F8F9FA]">
+            <div className="max-w-6xl mx-auto">
+                <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-gray-500 font-bold text-xs uppercase"><ArrowLeft size={14} /> Back</button>
+                <div className="flex gap-8">
+                    <div className="w-72 hidden lg:block space-y-4">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
+                            {['Core Info', 'Amendment', 'Docs', 'Review', 'Payment'].map((s, i) => (
+                                <div key={i} className={`p-2 rounded font-bold text-sm ${currentStep === i + 1 ? 'bg-[#043E52] text-white' : 'text-gray-500'}`}>{s}</div>
+                            ))}
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-3 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors order-last">
-                        <Trash2 size={24} />
-                    </button>
-                </div>
-
-                <div className="flex justify-between relative px-4">
-                    <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -translate-y-1/2 z-0"></div>
-                    <motion.div
-                        className="absolute top-1/2 left-0 h-0.5 bg-amber-500 -translate-y-1/2 z-0"
-                        initial={{ width: '0%' }}
-                        animate={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
-                    ></motion.div>
-
-                    {steps.map((s) => (
-                        <div key={s.id} className="relative z-10 flex flex-col items-center gap-3">
-                            <motion.div
-                                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${currentStep >= s.id ? 'bg-amber-600 border-amber-600 text-white' : 'bg-white border-slate-200 text-slate-400 shadow-inner'}`}
-                            >
-                                {currentStep > s.id ? <Check size={18} /> : <s.icon size={18} />}
-                            </motion.div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest ${currentStep >= s.id ? 'text-amber-700' : 'text-slate-400'}`}>{s.title}</span>
-                        </div>
-                    ))}
+                    <div className="flex-1 bg-transparent">
+                        {isSuccess ? (
+                            <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                            </div>
+                        ) : (
+                            <div className="bg-transparent">
+                                {renderStepContent()}
+                                <div className="mt-6 flex justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                    <button onClick={() => setCurrentStep(p => p - 1)} disabled={currentStep === 1} className="px-6 py-2 text-gray-500 font-bold rounded hover:bg-gray-50 disabled:opacity-50">Back</button>
+                                    <button onClick={handleNext} className="bg-[#ED6E3F] text-white px-6 py-2 rounded font-bold hover:shadow-lg transition">Next Step</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-
-            {/* FORM AREA */}
-            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar font-poppins">
-                <AnimatePresence mode="wait">
-                    {/* STEP 1: PLAN */}
-                    {currentStep === 1 && (
-                        <motion.div key="step1" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-10">
-                            <div className="bg-amber-50 border border-amber-100 p-8 rounded-[40px] flex items-center justify-between">
-                                <div className="space-y-2">
-                                    <h3 className="text-3xl font-black text-amber-900 italic tracking-tighter uppercase">Modification Scope</h3>
-                                    <p className="text-amber-700/60 font-medium text-sm tracking-wide">Select the type of change required.</p>
-                                </div>
-                                <Sparkles className="text-amber-500 animate-pulse" size={40} />
-                            </div>
-
-                            <div className="grid md:grid-cols-3 gap-8">
-                                {[
-                                    { id: 'non-core', name: 'Non-Core Field', price: '499', features: ["Email/Mobile Change", "Bank Detail Update"] },
-                                    { id: 'core', name: 'Core Field', price: '999', features: ["Address Change", "Business Name Change"] },
-                                    { id: 'complex', name: 'Director Change', price: '1499', features: ["Add/Remove Partner", "Constitution Change"] }
-                                ].map(p => (
-                                    <div
-                                        key={p.id}
-                                        onClick={() => setSelectedPlan(p.id)}
-                                        className={`p-10 rounded-[45px] border-4 transition-all cursor-pointer relative overflow-hidden group ${selectedPlan === p.id ? 'border-amber-500 bg-amber-50 shadow-2xl scale-105' : 'border-slate-100 hover:border-amber-200'}`}
-                                    >
-                                        {selectedPlan === p.id && <div className="absolute top-0 right-0 bg-amber-500 text-white p-3 rounded-bl-3xl"><CheckCircle size={20} /></div>}
-                                        <h4 className={`text-xl font-black mb-1 uppercase italic ${selectedPlan === p.id ? 'text-amber-900' : 'text-slate-400'}`}>{p.name}</h4>
-                                        <div className="flex items-baseline gap-1 mb-8">
-                                            <span className="text-4xl font-black">₹{p.price}</span>
-                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">+ Govt Fees</span>
-                                        </div>
-                                        <div className="space-y-3 font-poppins">
-                                            {p.features.map((f, i) => (
-                                                <div key={i} className="flex gap-3 text-[10px] font-black uppercase text-slate-500 tracking-widest"><Check size={14} className="text-amber-500" /> {f}</div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 2: BUSINESS */}
-                    {currentStep === 2 && (
-                        <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-amber-500 pl-6">Entity Identification</h3>
-
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className="space-y-3 md:col-span-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">GSTIN</label>
-                                    <div className="relative">
-                                        <Building className="absolute left-6 top-1/2 -translate-y-1/2 text-amber-500" size={24} />
-                                        <input
-                                            name="gstin"
-                                            value={formData.gstin}
-                                            onChange={handleInputChange}
-                                            type="text"
-                                            placeholder="22AAAAA0000A1Z5"
-                                            className="w-full pl-16 pr-6 py-6 bg-slate-50 border-2 border-slate-100 rounded-[30px] font-black focus:border-amber-500 transition-all text-2xl tracking-widest uppercase font-mono italic shadow-inner"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-3 md:col-span-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Business Trade Name</label>
-                                    <div className="relative">
-                                        <Building className="absolute left-5 top-1/2 -translate-y-1/2 text-amber-500" size={20} />
-                                        <input
-                                            name="businessName"
-                                            value={formData.businessName}
-                                            onChange={handleInputChange}
-                                            type="text"
-                                            placeholder="Existing Trade Name"
-                                            className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold focus:border-amber-500 transition-all text-lg tracking-tight uppercase"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 3: CHANGES */}
-                    {currentStep === 3 && (
-                        <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-amber-500 pl-6">Amendment Details</h3>
-
-                            <div className="space-y-8">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Primary Change Type</label>
-                                    <div className="relative">
-                                        <Edit3 className="absolute left-5 top-1/2 -translate-y-1/2 text-amber-500" size={20} />
-                                        <select
-                                            name="amendmentType"
-                                            value={formData.amendmentType}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold focus:border-amber-500 transition-all text-lg tracking-tight uppercase appearance-none"
-                                        >
-                                            <option value="Address Change">Principal Place of Business (Address)</option>
-                                            <option value="Trade Name">Trade Name Correction</option>
-                                            <option value="Directors">Services / Partners / Directors</option>
-                                            <option value="Contact">Mobile / Email (Authorized Signatory)</option>
-                                            <option value="Other">Other Non-Core Fields</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">New Details / Description</label>
-                                    <textarea
-                                        name="details"
-                                        value={formData.details}
-                                        onChange={handleInputChange}
-                                        rows="4"
-                                        placeholder="Describe the change (e.g., New Address: Flat 101, ...)"
-                                        className="w-full p-6 bg-slate-50 border-2 border-slate-100 rounded-[30px] font-bold focus:border-amber-500 transition-all text-lg"
-                                    ></textarea>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 4: PROOF */}
-                    {currentStep === 4 && (
-                        <motion.div key="step4" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-amber-500 pl-6">Supporting Evidence</h3>
-
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className={`p-8 rounded-[40px] border-2 border-dashed transition-all relative md:col-span-2 ${files.supporting_doc ? 'border-amber-500 bg-amber-50' : 'border-slate-200 hover:border-amber-300'}`}>
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Main Proof (Rent Deed/Resolution/etc)</h4>
-                                        {files.supporting_doc && <CheckCircle className="text-amber-600 animate-bounce" size={20} />}
-                                    </div>
-                                    <input type="file" id="supporting_doc" className="hidden" onChange={(e) => handleFileUpload(e, 'supporting_doc')} />
-                                    <label htmlFor="supporting_doc" className="flex items-center gap-4 cursor-pointer text-navy font-black text-sm uppercase italic">
-                                        <Upload size={24} className="text-amber-500" />
-                                        {files.supporting_doc ? files.supporting_doc.name : 'Upload Document for Amendment'}
-                                    </label>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 5: SUBMIT */}
-                    {currentStep === 5 && (
-                        <motion.div key="step5" initial={{ opacity: 1 }} className="space-y-10">
-                            <div className="text-center space-y-4">
-                                <div className="w-24 h-24 bg-amber-100 text-amber-600 rounded-[40px] flex items-center justify-center mx-auto rotate-12 mb-8 shadow-xl">
-                                    <RefreshCw size={48} />
-                                </div>
-                                <h3 className="text-5xl font-black italic tracking-tighter uppercase">Initiate Change</h3>
-                                <p className="text-slate-400 font-bold uppercase tracking-[0.3em]">Ready to update GST Portal</p>
-                            </div>
-
-                            <div className="bg-navy rounded-[60px] p-12 text-white relative overflow-hidden group shadow-6xl">
-                                <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-150 transition-transform duration-1000">
-                                    <Edit3 size={200} />
-                                </div>
-
-                                <div className="grid md:grid-cols-2 gap-12 relative z-10 font-poppins">
-                                    <div className="space-y-8">
-                                        <div>
-                                            <p className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-2">Amendment Type</p>
-                                            <p className="text-3xl font-black italic tracking-tighter uppercase">{formData.amendmentType}</p>
-                                        </div>
-                                    </div>
-                                    <div className="bg-white/10 backdrop-blur-3xl rounded-[40px] p-10 flex flex-col justify-center border border-white/10">
-                                        <p className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-2">Professional Fee</p>
-                                        <div className="flex items-baseline gap-2 mb-6">
-                                            <span className="text-7xl font-black italic tracking-tighter">₹{selectedPlan === 'non-core' ? '499' : selectedPlan === 'core' ? '999' : '1,499'}</span>
-                                            <span className="text-amber-300 font-bold text-xl">+ GST</span>
-                                        </div>
-                                        <div className="w-full h-px bg-white/20 mb-6"></div>
-                                        <p className="text-[10px] font-medium text-white/60">Effecting within 7-15 days subject to approval.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* SUCCESS */}
-                    {currentStep === 6 && (
-                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-20 space-y-10">
-                            <div className="w-32 h-32 bg-amber-600 rounded-[50px] flex items-center justify-center mx-auto text-white shadow-3xl shadow-amber-500/40 -rotate-12">
-                                <Check size={64} strokeWidth={4} />
-                            </div>
-                            <div className="space-y-4 font-poppins">
-                                <h3 className="text-6xl font-black italic tracking-tighter uppercase text-navy">Update Queued</h3>
-                                <p className="text-slate-400 font-bold uppercase tracking-[0.5em] max-w-md mx-auto">Your amendment request has been logged.</p>
-                            </div>
-                            <button onClick={() => navigate('/dashboard')} className="px-12 py-6 bg-navy text-white font-black text-xs uppercase tracking-[0.5em] rounded-[2rem] hover:bg-amber-600 transition-all shadow-4xl">Finish</button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* ACTION FOOTER */}
-            {currentStep < 6 && (
-                <div className="px-12 py-10 bg-slate-50 flex justify-between items-center border-t border-slate-100 font-poppins">
-                    <button
-                        onClick={prevStep}
-                        disabled={currentStep === 1}
-                        className={`flex items-center gap-3 font-black text-xs uppercase tracking-widest transition-all ${currentStep === 1 ? 'opacity-0' : 'hover:translate-x-[-5px] text-slate-400 hover:text-navy'}`}
-                    >
-                        <ArrowLeft size={18} /> Prev
-                    </button>
-
-                    <button
-                        onClick={currentStep === 5 ? handleSubmit : nextStep}
-                        disabled={isSubmitting}
-                        className="flex items-center gap-6 px-12 py-6 bg-navy text-white font-black text-xs uppercase tracking-[0.5em] rounded-[2rem] hover:bg-amber-600 transition-all shadow-2xl group"
-                    >
-                        {currentStep === 5 ? (isSubmitting ? 'Processing...' : 'Pay & Submit') : 'Next'} <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
-                    </button>
-                </div>
-            )}
         </div>
     );
 };

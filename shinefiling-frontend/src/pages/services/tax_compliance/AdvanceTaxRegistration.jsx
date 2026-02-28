@@ -1,25 +1,37 @@
-﻿
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+﻿import React, { useState, useEffect, useMemo } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
     CheckCircle, CreditCard, FileText,
     User, Upload, Calendar, Trash2, Check, FileCheck,
     ArrowLeft, ArrowRight, Zap, Building, Clock,
     Sparkles, AlertCircle, TrendingUp, Calculator,
     ShieldCheck, Download, ReceiptText, PieChart,
-    IndianRupee, Briefcase, Wallet
+    IndianRupee, Briefcase, Wallet, Shield, X
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
-import { submitAdvanceTax } from '../../../api';
-import { motion, AnimatePresence } from 'framer-motion';
+import { submitAdvanceTax, uploadFile } from '../../../api';
 
-const AdvanceTaxRegistration = ({ initialPlan = 'standard', onClose }) => {
+const AdvanceTaxRegistration = ({ planProp, isModal = false, onClose }) => {
     const { state } = useLocation();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const [searchParams] = useSearchParams();
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [selectedPlan, setSelectedPlan] = useState(state?.plan || initialPlan);
+
+    const validatePlan = (plan) => {
+        return ['standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'standard';
+    };
+
+    const [selectedPlan, setSelectedPlan] = useState(() => validatePlan(planProp || state?.plan || searchParams.get('plan')));
+
+    useEffect(() => {
+        const targetPlan = validatePlan(planProp || state?.plan || searchParams.get('plan'));
+        if (targetPlan !== selectedPlan) {
+            setSelectedPlan(targetPlan);
+        }
+    }, [planProp, state, searchParams, selectedPlan]);
+
 
     const [formData, setFormData] = useState({
         pan: '',
@@ -31,385 +43,413 @@ const AdvanceTaxRegistration = ({ initialPlan = 'standard', onClose }) => {
         capitalGains: '',
         interestIncome: '',
         deduction80C: '',
-        deduction80D: ''
+        deduction80D: '',
+        userEmail: user?.email || '',
+        userPhone: user?.mobile || ''
     });
 
     const [files, setFiles] = useState({});
-    const [uploadProgress, setUploadProgress] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+    const [automationPayload, setAutomationPayload] = useState(null);
+    const [errors, setErrors] = useState({});
 
-    const steps = [
-        { id: 1, title: 'Scope', icon: Zap },
-        { id: 2, title: 'Identity', icon: User },
-        { id: 3, title: 'Income', icon: PieChart },
-        { id: 4, title: 'Vault', icon: Upload },
-        { id: 5, title: 'Finalize', icon: CreditCard }
-    ];
-
-    const handleInputChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleFileUpload = (e, docName) => {
-        const file = e.target.files[0];
-        if (file) {
-            setFiles(prev => ({ ...prev, [docName]: file }));
-            setUploadProgress(prev => ({ ...prev, [docName]: 100 }));
+    const plans = {
+        free: {
+            price: 0,
+            title: 'Self Pay',
+            features: ["DIY Calculator", "Portal Access"],
+            color: 'bg-white border-slate-200'
+        },
+        standard: {
+            price: 499,
+            title: 'Expert Assist',
+            features: ["Single installment", "CA Review Aid"],
+            recommended: true,
+            color: 'bg-indigo-50 border-indigo-200'
+        },
+        premium: {
+            price: 1499,
+            title: 'Yearly Plan',
+            features: ["All 4 Installments", "Tax Saving Plan"],
+            color: 'bg-purple-50 border-purple-200'
         }
     };
 
-    const handleSubmit = async () => {
+    const billDetails = useMemo(() => {
+        const plan = plans[selectedPlan] || plans.standard;
+        const basePrice = plan.price;
+        const platformFee = Math.round(basePrice * 0.03);
+        const tax = Math.round(basePrice * 0.03);
+        const gst = Math.round(basePrice * 0.09);
+        const total = basePrice + platformFee + tax + gst;
+        return { basePrice, platformFee, tax, gst, total };
+    }, [selectedPlan]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
+    };
+
+    const handleFileUpload = async (e, key) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+            const response = await uploadFile(file, 'advance_tax_docs');
+            setFiles(prev => ({
+                ...prev,
+                [key]: { originalFile: file, name: response.originalName || file.name, fileUrl: response.fileUrl, fileId: response.id }
+            }));
+        } catch (error) { alert("Upload failed"); }
+    };
+
+    const validateStep = (step) => {
+        const newErrors = {};
+        let isValid = true;
+
+        if (step === 1) {
+            const isReallyLoggedIn = !!user;
+            if (!isReallyLoggedIn) {
+                if (!formData.userEmail) { newErrors.userEmail = "Required"; isValid = false; }
+                if (!formData.userPhone) { newErrors.userPhone = "Required"; isValid = false; }
+            }
+            if (!formData.pan) { newErrors.pan = "PAN required"; isValid = false; }
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    const handleNext = () => {
+        if (validateStep(currentStep)) setCurrentStep(prev => Math.min(4, prev + 1));
+    };
+
+
+    const submitApplication = async () => {
+        setIsSubmitting(true);
         const payload = {
-            submissionId: `ADV-${Date.now()}`,
             plan: selectedPlan,
             formData: formData,
-            status: "PAYMENT_SUCCESSFUL"
+            documents: Object.entries(files).map(([k, v]) => ({ id: k, filename: v.name, fileUrl: v.fileUrl })),
+            status: "PAYMENT_SUCCESSFUL",
+            userEmail: formData.userEmail,
+            userPhone: formData.userPhone
         };
 
         try {
-            await submitAdvanceTax(payload);
-            setCurrentStep(6);
+            const response = await submitAdvanceTax(payload);
+            setAutomationPayload({ submissionId: response?.submissionId || `ADV-${Date.now()}` });
+            setIsSuccess(true);
         } catch (error) {
-            console.error("Submission failed", error);
-            alert("Transmission break. Please reconnect and retry.");
+            alert("Submission failed. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 5));
-    const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
-    return (
-        <div className="flex flex-col h-full bg-white font-sans text-navy">
-            {/* PROGRESS BAR */}
-            <div className="px-12 pt-10 pb-6 bg-slate-50/50 border-b border-slate-100 font-poppins">
-                <div className="flex justify-between items-center mb-10">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-amber-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-amber-500/20 rotate-3">
-                            <Calculator size={24} />
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-black italic tracking-tighter uppercase">Advance Tax Shield</h2>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Interest Guard v4.1</p>
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 1: return (
+                <div className="space-y-6">
+                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                        {(!user) && (
+                            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3 pb-6 border-b border-gray-100">
+                                <h3 className="md:col-span-2 font-bold text-navy mb-1 flex items-center gap-2"><User size={18} className="text-purple-500" /> Contact Details</h3>
+                                <input name="userEmail" value={formData.userEmail} onChange={handleInputChange} placeholder="Your Email Address" className={`p-3 text-sm border rounded-lg ${errors.userEmail ? 'border-red-500' : ''}`} />
+                                <input name="userPhone" value={formData.userPhone} onChange={handleInputChange} placeholder="Your Phone Number" className={`p-3 text-sm border rounded-lg ${errors.userPhone ? 'border-red-500' : ''}`} />
+                            </div>
+                        )}
+                        <h3 className="font-bold text-navy mb-3 flex items-center gap-2">Taxpayer Record</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase">PAN Card Number</label>
+                                <input name="pan" value={formData.pan} onChange={handleInputChange} placeholder="PAN Card Number" className={`w-full p-3 text-sm border rounded-lg uppercase ${errors.pan ? 'border-red-500' : ''}`} maxLength={10} />
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase">Taxpayer Type</label>
+                                <select name="taxpayerType" value={formData.taxpayerType} onChange={handleInputChange} className="w-full p-3 text-sm border rounded-lg">
+                                    <option value="Individual">Individual / Proprietor</option>
+                                    <option value="Company">Pvt Ltd / Public Ltd</option>
+                                    <option value="Firm">Partnership / LLP</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase">Installment</label>
+                                <select name="installment" value={formData.installment} onChange={handleInputChange} className="w-full p-3 text-sm border rounded-lg">
+                                    <option value="June">1st (June - 15%)</option>
+                                    <option value="September">2nd (Sept - 45%)</option>
+                                    <option value="December">3rd (Dec - 75%)</option>
+                                    <option value="March">4th (Mar - 100%)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase">Financial Year</label>
+                                <select name="financialYear" value={formData.financialYear} onChange={handleInputChange} className="w-full p-3 text-sm border rounded-lg">
+                                    <option value="2024-2025">FY 2024-2025</option>
+                                    <option value="2025-2026">FY 2025-2026</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-3 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors order-last">
-                        <Trash2 size={24} />
-                    </button>
                 </div>
-
-                <div className="flex justify-between relative px-4">
-                    <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -translate-y-1/2 z-0"></div>
-                    <motion.div
-                        className="absolute top-1/2 left-0 h-0.5 bg-amber-500 -translate-y-1/2 z-0"
-                        initial={{ width: '0%' }}
-                        animate={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
-                    ></motion.div>
-
-                    {steps.map((s) => (
-                        <div key={s.id} className="relative z-10 flex flex-col items-center gap-3">
-                            <motion.div
-                                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${currentStep >= s.id ? 'bg-amber-600 border-amber-600 text-white' : 'bg-white border-slate-200 text-slate-400 shadow-inner'}`}
-                            >
-                                {currentStep > s.id ? <Check size={18} /> : <s.icon size={18} />}
-                            </motion.div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest ${currentStep >= s.id ? 'text-amber-700' : 'text-slate-400'}`}>{s.title}</span>
+            );
+            case 2: return (
+                <div className="space-y-6">
+                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                        <h3 className="font-bold text-navy mb-3 flex items-center gap-2"><PieChart size={18} className="text-purple-500" /> Yield Projections</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase">Business / Profession Income</label>
+                                <input type="number" name="businessIncome" value={formData.businessIncome} onChange={handleInputChange} className="w-full p-3 text-sm border rounded-lg" />
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase">Salary Income (If any)</label>
+                                <input type="number" name="salaryIncome" value={formData.salaryIncome} onChange={handleInputChange} className="w-full p-3 text-sm border rounded-lg" />
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase">Capital Gains (Equity/Prop)</label>
+                                <input type="number" name="capitalGains" value={formData.capitalGains} onChange={handleInputChange} className="w-full p-3 text-sm border rounded-lg" />
+                            </div>
+                            <div className="md:col-span-2 p-4 bg-slate-50 border rounded-lg grid grid-cols-2 gap-4 mt-2">
+                                <div className="col-span-2 text-xs font-bold text-gray-500 uppercase">Expected Deductions (Ch-VIA)</div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 uppercase">80C Limit (₹)</label>
+                                    <input type="number" name="deduction80C" value={formData.deduction80C} onChange={handleInputChange} className="w-full p-3 text-sm border rounded-lg bg-white" />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 uppercase">80D Medical (₹)</label>
+                                    <input type="number" name="deduction80D" value={formData.deduction80D} onChange={handleInputChange} className="w-full p-3 text-sm border rounded-lg bg-white" />
+                                </div>
+                            </div>
                         </div>
-                    ))}
+                    </div>
                 </div>
-            </div>
-
-            {/* FORM AREA */}
-            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar font-poppins text-left">
-                <AnimatePresence mode="wait">
-                    {/* STEP 1: SCOPE */}
-                    {currentStep === 1 && (
-                        <motion.div key="step1" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-10">
-                            <div className="bg-amber-50 border border-amber-100 p-8 rounded-[40px] flex items-center justify-between">
-                                <div className="space-y-1">
-                                    <h3 className="text-3xl font-black text-amber-950 italic tracking-tighter uppercase">Compliance Scope</h3>
-                                    <p className="text-amber-700/60 font-medium text-sm tracking-wide">Select your service tier for income estimation.</p>
-                                </div>
-                                <Zap className="text-amber-500 animate-pulse" size={40} />
-                            </div>
-
-                            <div className="grid md:grid-cols-3 gap-8">
-                                {[
-                                    { id: 'free', name: 'Self Pay', price: '0', features: ["DIY Calculator", "Portal Access"], disabled: true },
-                                    { id: 'standard', name: 'Expert Assist', price: '499', features: ["Single installment", "CA Review Aid"] },
-                                    { id: 'premium', name: 'Yearly Plan', price: '1499', features: ["All 4 Installments", "Tax Saving Plan"] }
-                                ].map(p => (
-                                    <div
-                                        key={p.id}
-                                        onClick={() => !p.disabled && setSelectedPlan(p.id)}
-                                        className={`p-10 rounded-[45px] border-4 transition-all relative overflow-hidden group ${p.disabled ? 'opacity-40 cursor-not-allowed border-slate-100' : selectedPlan === p.id ? 'border-amber-500 bg-amber-50 shadow-2xl scale-105 cursor-pointer' : 'border-slate-100 hover:border-amber-200 cursor-pointer'}`}
-                                    >
-                                        {selectedPlan === p.id && !p.disabled && <div className="absolute top-0 right-0 bg-amber-500 text-white p-3 rounded-bl-3xl"><CheckCircle size={20} /></div>}
-                                        <h4 className={`text-xl font-black mb-1 uppercase italic ${selectedPlan === p.id ? 'text-amber-900' : 'text-slate-400'}`}>{p.name}</h4>
-                                        <div className="flex items-baseline gap-1 mb-8">
-                                            <span className="text-4xl font-black">₹{p.price}</span>
-                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{p.id === 'free' ? '' : '+ GST'}</span>
-                                        </div>
-                                        <div className="space-y-3">
-                                            {p.features.map((f, i) => (
-                                                <div key={i} className="flex gap-3 text-[10px] font-black uppercase text-slate-500 tracking-widest"><Check size={14} className="text-amber-500" /> {f}</div>
-                                            ))}
-                                        </div>
-                                        {p.disabled && <div className="mt-6 text-[8px] font-black uppercase text-amber-600 tracking-widest bg-amber-100/50 py-1 rounded-full text-center">Coming Soon</div>}
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 2: IDENTITY */}
-                    {currentStep === 2 && (
-                        <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-amber-500 pl-6">Core Identification</h3>
-
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className="space-y-3 md:col-span-1">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">PAN Card Number</label>
-                                    <div className="relative">
-                                        <ReceiptText className="absolute left-6 top-1/2 -translate-y-1/2 text-amber-500" size={24} />
-                                        <input
-                                            name="pan"
-                                            value={formData.pan}
-                                            onChange={handleInputChange}
-                                            type="text"
-                                            placeholder="ABCDE1234F"
-                                            className="w-full pl-16 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-[30px] font-black focus:border-amber-500 transition-all text-2xl uppercase italic tracking-widest font-mono shadow-inner"
-                                            maxLength={10}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">Taxpayer Category</label>
-                                    <div className="relative">
-                                        <User className="absolute left-5 top-1/2 -translate-y-1/2 text-amber-500" size={20} />
-                                        <select
-                                            name="taxpayerType"
-                                            value={formData.taxpayerType}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black focus:border-amber-500 transition-all text-lg tracking-tight uppercase appearance-none"
-                                        >
-                                            <option value="Individual">Individual / Proprietor</option>
-                                            <option value="Company">Pvt Ltd / Public Ltd</option>
-                                            <option value="Firm">Partnership / LLP</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">Financial Year</label>
-                                    <div className="relative">
-                                        <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-amber-500" size={20} />
-                                        <select
-                                            name="financialYear"
-                                            value={formData.financialYear}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black focus:border-amber-500 transition-all text-lg tracking-tight uppercase appearance-none"
-                                        >
-                                            <option value="2024-2025">FY 2024-2025</option>
-                                            <option value="2025-2026">FY 2025-2026</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">Target Installment</label>
-                                    <div className="relative">
-                                        <Clock className="absolute left-5 top-1/2 -translate-y-1/2 text-amber-500" size={20} />
-                                        <select
-                                            name="installment"
-                                            value={formData.installment}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black focus:border-amber-500 transition-all text-lg tracking-tight appearance-none italic"
-                                        >
-                                            <option value="June">1st (June - 15%)</option>
-                                            <option value="September">2nd (Sept - 45%)</option>
-                                            <option value="December">3rd (Dec - 75%)</option>
-                                            <option value="March">4th (Mar - 100%)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 3: YIELD */}
-                    {currentStep === 3 && (
-                        <motion.div key="step3" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-amber-500 pl-6">Yield Projections</h3>
-
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className="space-y-6">
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">Business / Profession Income</label>
-                                        <div className="relative">
-                                            <Building className="absolute left-5 top-1/2 -translate-y-1/2 text-amber-500" size={20} />
-                                            <input
-                                                name="businessIncome"
-                                                value={formData.businessIncome}
-                                                onChange={handleInputChange}
-                                                type="number"
-                                                placeholder="Yearly Estimate"
-                                                className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black focus:border-amber-500 transition-all text-xl italic"
-                                            />
+            );
+            case 3: return (
+                <div className="space-y-6">
+                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                        <h3 className="font-bold text-navy mb-4">Upload Documents (Optional)</h3>
+                        <div className="space-y-3">
+                            {['Form 26AS / AIS', 'Bank Interest Stmt', 'Capital Gain Report'].map((doc, i) => {
+                                const key = `doc_${i}`;
+                                return (
+                                    <div key={i} className="border border-dashed p-4 rounded-lg flex justify-between items-center bg-gray-50">
+                                        <span className="text-sm font-medium">{doc}</span>
+                                        <div className="flex items-center gap-3">
+                                            {files[key] && <CheckCircle className="text-green-500" size={16} />}
+                                            <input type="file" id={key} className="hidden" onChange={(e) => handleFileUpload(e, key)} />
+                                            <label htmlFor={key} className="text-xs font-bold px-3 py-1.5 bg-white border rounded cursor-pointer hover:bg-gray-50">
+                                                {files[key] ? 'Change File' : 'Upload'}
+                                            </label>
                                         </div>
                                     </div>
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">Salary Income (If any)</label>
-                                        <div className="relative">
-                                            <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 text-amber-500" size={20} />
-                                            <input
-                                                name="salaryIncome"
-                                                value={formData.salaryIncome}
-                                                onChange={handleInputChange}
-                                                type="number"
-                                                placeholder="Gross Annual"
-                                                className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black focus:border-amber-500 transition-all text-xl italic"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="space-y-6">
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">Capital Gains (Equity/Prop)</label>
-                                        <div className="relative">
-                                            <TrendingUp className="absolute left-5 top-1/2 -translate-y-1/2 text-amber-500" size={20} />
-                                            <input
-                                                name="capitalGains"
-                                                value={formData.capitalGains}
-                                                onChange={handleInputChange}
-                                                type="number"
-                                                placeholder="Stocks/Real Estate"
-                                                className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black focus:border-amber-500 transition-all text-xl italic"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="bg-navy p-6 rounded-[35px] text-white space-y-4">
-                                        <h4 className="text-[9px] font-black text-amber-400 uppercase tracking-widest italic flex items-center gap-2">
-                                            <ShieldCheck size={14} /> DEDUCTIONS (CHAPTER VI-A)
-                                        </h4>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <input name="deduction80C" value={formData.deduction80C} onChange={handleInputChange} type="number" placeholder="80C Limit" className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl outline-none text-xs font-black focus:border-amber-500 transition-all" />
-                                            <input name="deduction80D" value={formData.deduction80D} onChange={handleInputChange} type="number" placeholder="80D Medical" className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl outline-none text-xs font-black focus:border-amber-500 transition-all" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 4: VAULT */}
-                    {currentStep === 4 && (
-                        <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-amber-500 pl-6">Data Vault</h3>
-
-                            <div className="grid md:grid-cols-2 gap-8">
-                                {[
-                                    { label: 'Form 26AS / AIS Tax Credit', key: 'tax_credit' },
-                                    { label: 'Bank Interest Statement', key: 'bank_stmt' },
-                                    { label: 'Capital Gain Broker Report', key: 'gain_report' },
-                                    { label: 'Last Year ITR Receipt', key: 'prev_itr' }
-                                ].map((doc, i) => (
-                                    <div key={i} className={`p-8 rounded-[40px] border-2 border-dashed transition-all relative ${files[doc.key] ? 'border-amber-500 bg-amber-50' : 'border-slate-200 hover:border-amber-300'}`}>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest">{doc.label}</h4>
-                                            {files[doc.key] && <CheckCircle className="text-amber-600 animate-bounce" size={20} />}
-                                        </div>
-                                        <input type="file" id={doc.key} className="hidden" onChange={(e) => handleFileUpload(e, doc.key)} />
-                                        <label htmlFor={doc.key} className="flex items-center gap-4 cursor-pointer text-navy font-black text-sm uppercase italic">
-                                            <Upload size={20} className="text-amber-500" />
-                                            {files[doc.key] ? files[doc.key].name.substring(0, 20) + '...' : 'Upload Doc'}
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 5: REVIEW */}
-                    {currentStep === 5 && (
-                        <motion.div key="step5" initial={{ opacity: 1 }} className="space-y-10 text-center">
-                            <div className="space-y-4 font-poppins text-navy">
-                                <div className="w-24 h-24 bg-amber-100 text-amber-600 rounded-[40px] flex items-center justify-center mx-auto -rotate-12 mb-8 shadow-xl border border-amber-200">
-                                    <ShieldCheck size={48} />
-                                </div>
-                                <h3 className="text-5xl font-black italic tracking-tighter uppercase font-poppins">Compliance Authorization</h3>
-                                <p className="text-slate-400 font-bold uppercase tracking-[0.3em]">Projection Logic Validated</p>
-                            </div>
-
-                            <div className="bg-navy rounded-[60px] p-12 text-white relative overflow-hidden group shadow-6xl text-left">
-                                <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-150 transition-transform duration-1000">
-                                    <IndianRupee size={200} />
-                                </div>
-
-                                <div className="grid md:grid-cols-2 gap-12 relative z-10 font-poppins">
-                                    <div className="space-y-8">
-                                        <div>
-                                            <p className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-2 italic">Deductor PAN</p>
-                                            <p className="text-4xl font-black italic tracking-tighter uppercase font-mono">{formData.pan || 'XXXXXXXXXX'}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-2 italic">Target Quarter</p>
-                                            <p className="text-2xl font-black italic uppercase tracking-tighter">{formData.installment} | FY {formData.financialYear}</p>
-                                        </div>
-                                    </div>
-                                    <div className="bg-white/10 backdrop-blur-3xl rounded-[40px] p-10 flex flex-col justify-center border border-white/10">
-                                        <p className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-2 italic">Professional Fee</p>
-                                        <div className="flex items-baseline gap-2 mb-6">
-                                            <span className="text-7xl font-black italic tracking-tighter">₹{plans[selectedPlan].price}</span>
-                                            <span className="text-amber-300 font-bold text-xl">+ GST</span>
-                                        </div>
-                                        <div className="w-full h-px bg-white/20 mb-6"></div>
-                                        <p className="text-[10px] font-medium text-white/60 uppercase tracking-widest italic">Includes expert estimation roadmap.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* SUCCESS */}
-                    {currentStep === 6 && (
-                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-20 space-y-10">
-                            <div className="w-32 h-32 bg-amber-600 rounded-[50px] flex items-center justify-center mx-auto text-white shadow-3xl shadow-amber-500/40 rotate-12">
-                                <Check size={64} strokeWidth={4} />
-                            </div>
-                            <div className="space-y-4 font-poppins text-center">
-                                <h3 className="text-6xl font-black italic tracking-tighter uppercase text-navy">Calculation Sent</h3>
-                                <p className="text-slate-400 font-bold uppercase tracking-[0.5em] max-w-md mx-auto">Your income data has been successfully transmitted for expert tax projection.</p>
-                            </div>
-                            <button onClick={() => navigate('/dashboard')} className="px-12 py-6 bg-navy text-white font-black text-xs uppercase tracking-[0.5em] rounded-[2rem] hover:bg-amber-600 transition-all shadow-4xl">Enter Dashboard</button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* ACTION FOOTER */}
-            {currentStep < 6 && (
-                <div className="px-12 py-10 bg-slate-50 flex justify-between items-center border-t border-slate-100 font-poppins">
-                    <button
-                        onClick={prevStep}
-                        disabled={currentStep === 1}
-                        className={`flex items-center gap-3 font-black text-xs uppercase tracking-widest transition-all ${currentStep === 1 ? 'opacity-0' : 'hover:translate-x-[-5px] text-slate-400 hover:text-navy'}`}
-                    >
-                        <ArrowLeft size={18} /> Prev Stage
-                    </button>
-
-                    <button
-                        onClick={currentStep === 5 ? handleSubmit : nextStep}
-                        className="flex items-center gap-6 px-12 py-6 bg-navy text-white font-black text-xs uppercase tracking-[0.5em] rounded-[2rem] hover:bg-amber-600 transition-all shadow-2xl group"
-                    >
-                        {currentStep === 5 ? 'Authorize & Calculate' : 'Next Stage'} <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                                )
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+            case 4: return (
+                <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                    <IndianRupee size={32} className="mx-auto mb-4 text-green-600" />
+                    <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                    <div className="bg-slate-50 p-4 rounded-xl mb-6 text-left space-y-2">
+                        <div className="flex justify-between text-sm"><span>Deductor PAN</span><span className="font-bold font-mono tracking-wider">{formData.pan || 'N/A'}</span></div>
+                        <div className="flex justify-between text-sm"><span>Target Quarter</span><span className="font-bold">{formData.installment}</span></div>
+                        <div className="flex justify-between text-sm"><span>Year</span><span className="font-bold">{formData.financialYear}</span></div>
+                        <div className="my-2 border-t"></div>
+                        <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.basePrice.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFee}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
+                    </div>
+                    <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center">
+                        <input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} />
+                        I Accept Terms & Conditions
+                    </label>
+                    <button onClick={submitApplication} disabled={!isTermsAccepted || isSubmitting} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50 transition">
+                        Pay & Submit
                     </button>
                 </div>
-            )}
+            );
+            default: return null;
+        }
+    };
+
+    if (isModal) {
+        return (
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white mb-6">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            Advance Tax Payment
+                        </h1>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.basePrice.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.basePrice).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
+                        </div>
+                    </div>
+
+                    {/* VERTICAL STEPPER */}
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {['Identity Info', 'Yield Projection', 'Upload Data', 'Payment'].map((step, i) => (
+                            <div key={i}
+                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                            >
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* RIGHT CONTENT: FORM */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    {/* Header Bar */}
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            {/* Mobile: Detailed Service & Price Info */}
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">Advance Tax</span>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.basePrice / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.basePrice) / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: Step Title */}
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Start Calculation"}
+                                {currentStep === 2 && "Projection Details"}
+                                {currentStep === 3 && "Data Upload"}
+                                {currentStep === 4 && "Complete Payment"}
+                            </h2>
+                        </div>
+
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    {/* Scrollable Area */}
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                        {isSuccess ? (
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                                <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg hover:bg-black transition">Close Window</button>
+                            </div>
+                        ) : (
+                            renderStepContent()
+                        )}
+                    </div>
+
+                    {/* Sticky Footer */}
+                    {!isSuccess && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            {currentStep < 4 && (
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                                >
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen pb-20 pt-24 px-4 bg-[#F8F9FA]">
+            <div className="max-w-6xl mx-auto">
+                <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-gray-500 font-bold text-xs uppercase"><ArrowLeft size={14} /> Back</button>
+                <div className="flex gap-8">
+                    <div className="w-72 hidden lg:block space-y-4">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
+                            {['Identity Info', 'Yield Projection', 'Upload Data', 'Payment'].map((s, i) => (
+                                <div key={i} className={`p-2 rounded font-bold text-sm ${currentStep === i + 1 ? 'bg-[#043E52] text-white' : 'text-gray-500'}`}>{s}</div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex-1 bg-transparent">
+                        {isSuccess ? (
+                            <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                            </div>
+                        ) : (
+                            <div className="bg-transparent">
+                                {renderStepContent()}
+                                <div className="mt-6 flex justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                    <button onClick={() => setCurrentStep(p => p - 1)} disabled={currentStep === 1} className="px-6 py-2 text-gray-500 font-bold rounded hover:bg-gray-50 disabled:opacity-50">Back</button>
+                                    <button onClick={handleNext} className="bg-[#ED6E3F] text-white px-6 py-2 rounded font-bold hover:shadow-lg transition">Next Step</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
     );
-};
-
-const plans = {
-    free: { price: '0', title: 'Self Pay' },
-    standard: { price: '499', title: 'Expert Assist' },
-    premium: { price: '1499', title: 'Yearly Plan' }
 };
 
 export default AdvanceTaxRegistration;

@@ -53,11 +53,8 @@ public class StubController {
             "/service/nda/my-applications",
             "/service/vendor-agreement/my-applications",
 
-            "/service/cma-data-preparation/my-applications",
-            "/service/project-report/my-applications",
             "/service/bank-loan-documentation/my-applications",
             "/service/cash-flow-compliance/my-applications",
-            "/service/startup-pitch-deck/my-applications",
             "/service/business-valuation/my-applications",
 
             "/service/one-person-company/my-applications",

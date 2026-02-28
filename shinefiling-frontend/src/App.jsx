@@ -80,12 +80,12 @@ import GstAuditRegistration from './pages/services/tax_compliance/GstAuditRegist
 import IncomeTaxReturnPage from './pages/services/tax_compliance/IncomeTaxReturnPage';
 import IncomeTaxReturnRegistration from './pages/services/tax_compliance/IncomeTaxReturnRegistration';
 import TDSReturnFilingPage from './pages/services/tax_compliance/TDSReturnFilingPage';
-import TDSReturnFilingRegistration from './pages/services/tax_compliance/TDSReturnFilingRegistration';
+import TDSReturnFilingRegistration from './pages/services/tax_compliance/TdsReturnRegistration';
 import IncomeTaxRegistration from './pages/services/tax_compliance/IncomeTaxRegistration';
 import ProfessionalTaxPage from './pages/services/tax_compliance/ProfessionalTaxPage';
 import ProfessionalTaxRegistration from './pages/services/tax_compliance/ProfessionalTaxRegistration';
 import AdvanceTaxFilingPage from './pages/services/tax_compliance/AdvanceTaxFilingPage';
-import AdvanceTaxFilingRegistration from './pages/services/tax_compliance/AdvanceTaxFilingRegistration';
+import AdvanceTaxFilingRegistration from './pages/services/tax_compliance/AdvanceTaxRegistration';
 import TaxAuditFilingPage from './pages/services/tax_compliance/TaxAuditFilingPage';
 import TaxAuditRegistration from './pages/services/tax_compliance/TaxAuditRegistration';
 
@@ -373,6 +373,10 @@ const App = () => {
               <Route path="/about-us" element={<AboutUsPage />} />
               <Route path="/contact-us" element={<ContactUsPage />} />
               <Route path="/careers" element={<CareersPage />} />
+
+              {/* Auth Redirects */}
+              <Route path="/login" element={<Navigate to="/?login=true" replace />} />
+              <Route path="/signup" element={<Navigate to="/?signup=true" replace />} />
 
               {/* Protected Dashboard */}
               <Route path="/dashboard" element={isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/?login=true" replace />} />

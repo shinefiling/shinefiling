@@ -164,7 +164,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login', onAuthSuccess }) =>
                                     </div>
                                     <span className="font-bold text-xl tracking-wide">ShineFiling</span>
                                 </div>
-                                <h2 className="text-3xl font-bold leading-tight mb-3">
+                                <h2 className="text-3xl font-bold leading-tight mb-3 text-[#ED6E3F]">
                                     {mode === 'login' ? 'Welcome Back!' : 'Start Your Journey'}
                                 </h2>
                                 <p className="text-white/70 text-xs leading-relaxed max-w-xs">
@@ -263,7 +263,6 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login', onAuthSuccess }) =>
                                             </div>
                                         </>
                                     )}
-
                                     {step === 'details' ? (
                                         <>
                                             {loginMethod === 'email' ? (
@@ -273,6 +272,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login', onAuthSuccess }) =>
                                                         <input
                                                             type="email"
                                                             name="email"
+                                                            autoComplete="username"
                                                             value={formData.email}
                                                             onChange={handleChange}
                                                             className="w-full h-10 border-2 border-slate-100 rounded-lg px-3 text-xs font-semibold text-[#043E52] focus:outline-none focus:border-[#ED6E3F] transition-all bg-slate-50 focus:bg-white"
@@ -289,6 +289,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login', onAuthSuccess }) =>
                                                             <input
                                                                 type={showPassword ? "text" : "password"}
                                                                 name="password"
+                                                                autoComplete={mode === 'login' ? "current-password" : "new-password"}
                                                                 value={formData.password}
                                                                 onChange={handleChange}
                                                                 className="w-full h-10 border-2 border-slate-100 rounded-lg pl-3 pr-12 text-xs font-semibold text-[#043E52] focus:outline-none focus:border-[#ED6E3F] transition-all bg-slate-50 focus:bg-white"

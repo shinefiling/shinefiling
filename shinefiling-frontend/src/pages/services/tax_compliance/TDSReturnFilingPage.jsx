@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, ArrowRight, X, History, Globe, Banknote, Handshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import TDSReturnFilingRegistration from './TDSReturnFilingRegistration';
+import TDSReturnFilingRegistration from './TdsReturnRegistration';
 
 const TDSReturnFilingPage = ({ isLoggedIn, onLogout }) => {
     const navigate = useNavigate();
@@ -198,7 +198,7 @@ const TDSReturnFilingPage = ({ isLoggedIn, onLogout }) => {
 
                                 {/* CTA Button - COMPACT */}
                                 <button
-                                    onClick={() => handlePlanSelect('startup')}
+                                    onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
                                     Start Registration <ArrowRight size={16} />
@@ -215,7 +215,7 @@ const TDSReturnFilingPage = ({ isLoggedIn, onLogout }) => {
 
             {/* PRICING */}
             <section id="pricing-section" className="py-20 px-6 lg:px-12 bg-white relative">
-                <div className="max-w-7xl mx-auto">
+                <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-16">
                         <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Our Plans</span>
                         <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">TDS Filing Plans</h2>
@@ -228,16 +228,16 @@ const TDSReturnFilingPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Quarterly Return</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Quarterly Return</h3>
                             <p className="text-slate-500 text-sm mb-6">Per Quarter Filing.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹1,499</span>
+                                <span className="text-3xl font-black text-navy">₹1,499</span>
                                 <span className="text-slate-400 line-through text-sm">₹2,499</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 {[
                                     "Per Return Filing",
                                     "Challan Verification",
@@ -246,7 +246,7 @@ const TDSReturnFilingPage = ({ isLoggedIn, onLogout }) => {
                                     "Digital Receipt Sync"
                                 ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                             </ul>
@@ -261,21 +261,21 @@ const TDSReturnFilingPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-bronze via-yellow-400 to-bronze rounded-t-3xl"></div>
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-bronze to-yellow-600 text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
                                 Best Value
                             </div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Annual Package</h3>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-2">Annual Package</h3>
                             <p className="text-gray-400 text-sm mb-6">Full Year Compliance.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹4,999</span>
+                                <span className="text-3xl font-black text-white">₹4,999</span>
                                 <span className="text-gray-500 line-through text-sm">₹9,999</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 {[
                                     "All 4 Quarters Covered",
                                     "Form 16 Part A & B",
@@ -284,7 +284,7 @@ const TDSReturnFilingPage = ({ isLoggedIn, onLogout }) => {
                                     "Priority TRACES Support"
                                 ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
                                     </li>
                                 ))}
                             </ul>
@@ -299,16 +299,16 @@ const TDSReturnFilingPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">TDS Correction</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">TDS Correction</h3>
                             <p className="text-slate-500 text-sm mb-6">Fix Return Errors.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹2,499</span>
+                                <span className="text-3xl font-black text-navy">₹2,499</span>
                                 <span className="text-slate-400 line-through text-sm">₹4,999</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 {[
                                     "Revise Previous Return",
                                     "Fix Default Notices",
@@ -317,7 +317,7 @@ const TDSReturnFilingPage = ({ isLoggedIn, onLogout }) => {
                                     "Penalty Consultation"
                                 ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                             </ul>
@@ -391,7 +391,7 @@ const TDSReturnFilingPage = ({ isLoggedIn, onLogout }) => {
                                         <span className="text-navy font-bold text-sm">Step</span>
                                     </div>
                                     <div className="flex-1 flex flex-col justify-center">
-                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
                                             {item.title}
                                         </h3>
                                         <p className="text-slate-600 leading-relaxed text-sm">
@@ -561,7 +561,7 @@ const TDSReturnFilingPage = ({ isLoggedIn, onLogout }) => {
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400 uppercase">Consult Expert</p>
-                                    <p className="font-bold">+91 98765 43210</p>
+                                    <p className="font-bold">+91 7639227019</p>
                                 </div>
                             </div>
                         </div>

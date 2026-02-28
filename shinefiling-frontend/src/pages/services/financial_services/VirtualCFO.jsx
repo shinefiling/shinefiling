@@ -36,7 +36,7 @@ const VirtualCFO = ({ isLoggedIn }) => {
     const faqs = [
         { q: "What is a Virtual CFO?", a: "A Virtual CFO (Chief Financial Officer) provides expert financial planning, guidance, and strategic advice to startups and SMEs on a flexible, part-time basis without the cost of a full-time executive." },
         { q: "Is it different from a CA?", a: "Yes. A CA typically handles historical compliance (Audit, Tax). A CFO looks forward—planning growth, budgeting, cash flow management, and fundraising strategy." },
-        { q: "Who needs this service?", a: "Startups raising funds, SMEs with turnover > ?2 Cr, or any business facing cash flow issues or needing financial discipline." },
+        { q: "Who needs this service?", a: "Startups raising funds, SMEs with turnover > ₹2 Cr, or any business facing cash flow issues or needing financial discipline." },
         { q: "What is the commitment?", a: "Our plans are month-to-month. You can scale up or down based on your requirements." },
         { q: "Do you handle investor relations?", a: "Yes, we prepare monthly MIS reports for investors and can join board meetings to present financial health." },
     ];

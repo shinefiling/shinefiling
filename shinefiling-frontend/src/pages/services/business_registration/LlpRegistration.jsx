@@ -12,22 +12,22 @@ import { submitLlpRegistration, uploadFile } from '../../../api';
 
 const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
     const plans = {
-        basic: {
+        startup: {
             price: 4999,
             title: 'Startup Plan',
-            features: ["2 DSC & 2 DPIN", "Name Reservation", "Incorporation Filing", "PAN & TAN", "Basic Support"],
+            features: ["2 DSC & 2 DPIN", "Name Reservation", "Incorporation Filing", "PAN & TAN", "LLP Agreement Drafting"],
             color: 'bg-white border-slate-200'
         },
         standard: {
-            price: 8999,
-            title: 'Growth Plan',
-            features: ["Everything in Startup", "LLP Agreement (Form 3)", "Stamp Paper Assistance", "Bank Account Support", "Ded. Account Manager"],
+            price: 9999,
+            title: 'Standard Plan',
+            features: ["Everything in Startup", "GST Registration", "MSME (Udyam) Registration", "Stamp Paper Assistance", "Bank Account Support"],
             color: 'bg-[#F0F7FF] border-blue-200'
         },
         premium: {
-            price: 12999,
-            title: 'Elite Plan',
-            features: ["Everything in Growth", "GST Registration", "MSME/Udyam Reg.", "Trademark Filing (1 Class)", "Zero Balance Account"],
+            price: 19999,
+            title: 'Premium Plan',
+            features: ["Everything in Standard", "Trademark Filing (1 Class)", "Domain + Email (1 Yr)", "Zero Balance Current A/c", "Dedicated CA Support"],
             color: 'bg-[#FDF4FF] border-purple-200'
         }
     };
@@ -36,17 +36,10 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
     const navigate = useNavigate();
     const { user } = useAuth();
 
-    // Protect Route (Skip if in Modal)
+    // Protect Route (Removed)
     useEffect(() => {
-        if (isModal) return;
-        const storedUser = localStorage.getItem('user');
-        const isReallyLoggedIn = isLoggedIn || !!storedUser;
-
-        if (!isReallyLoggedIn) {
-            const plan = searchParams.get('plan') || 'basic';
-            navigate('/login', { state: { from: `/services/llp-registration/register?plan=${plan}` } });
-        }
-    }, [isLoggedIn, navigate, searchParams, isModal]);
+        // Login check removed to allow manual entry
+    }, []);
 
     // Steps: Plan -> Company -> Partners -> Docs -> Payment
     // Mapped to: 1: Company, 2: Partners, 3: Docs, 4: Review, 5: Payment (Plan selection moved to sidebar/initial state)
@@ -54,7 +47,7 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
 
     // Validate plan
     const validatePlan = (plan) => {
-        return ['basic', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'basic';
+        return ['startup', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'startup';
     };
 
     const [selectedPlan, setSelectedPlan] = useState(validatePlan(planProp || searchParams.get('plan')));
@@ -64,13 +57,15 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
             setSelectedPlan(validatePlan(planProp));
         } else {
             const planParam = searchParams.get('plan');
-            if (planParam && ['basic', 'standard', 'premium'].includes(planParam.toLowerCase())) {
+            if (planParam && ['startup', 'standard', 'premium'].includes(planParam.toLowerCase())) {
                 setSelectedPlan(planParam.toLowerCase());
             }
         }
     }, [searchParams, planProp]);
 
     const [formData, setFormData] = useState({
+        userEmail: '',
+        userPhone: '',
         llpNameOption1: '',
         llpNameOption2: '',
         businessActivity: '',
@@ -93,32 +88,65 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [automationPayload, setAutomationPayload] = useState(null);
+    const [errors, setErrors] = useState({});
 
     // Memoize bill details
     const billDetails = useMemo(() => {
-        const planKey = plans[selectedPlan] ? selectedPlan : 'basic';
+        const planKey = plans[selectedPlan] ? selectedPlan : 'startup';
         const plan = plans[planKey];
         const basePrice = plan.price;
 
-        // User Request: Total extra is 15% split into Platform Fee, Tax, and GST
-        const platformFee = Math.round(basePrice * 0.03); // 3%
-        const tax = Math.round(basePrice * 0.03);         // 3%
-        const gst = Math.round(basePrice * 0.09);         // 9%
+        const gstAmount = Math.round(basePrice * 0.18); // Standard 18% GST
 
         return {
             base: basePrice,
-            platformFn: platformFee,
-            tax: tax,
-            gst: gst,
-            total: basePrice + platformFee + tax + gst
+            gst: gstAmount,
+            total: basePrice + gstAmount
         };
     }, [selectedPlan]);
+
+    // Plans Configuration
 
     // Plans Configuration
 
 
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (errors[e.target.name]) setErrors(prev => ({ ...prev, [e.target.name]: null }));
+    };
+
+    const validateStep = (step) => {
+        const newErrors = {};
+        let isValid = true;
+
+        if (step === 1) {
+            const storedUser = localStorage.getItem('user');
+            const isReallyLoggedIn = isLoggedIn || !!storedUser;
+            if (!isReallyLoggedIn) {
+                if (!formData.userEmail) { newErrors.userEmail = "Required"; isValid = false; }
+                if (!formData.userPhone) { newErrors.userPhone = "Required"; isValid = false; }
+            }
+            if (!formData.llpNameOption1) { newErrors.llpNameOption1 = "Required"; isValid = false; }
+            if (!formData.businessActivity) { newErrors.businessActivity = "Required"; isValid = false; }
+            if (!formData.contributionAmount) { newErrors.contributionAmount = "Required"; isValid = false; }
+            if (!formData.registeredAddress) { newErrors.registeredAddress = "Required"; isValid = false; }
+        }
+
+        if (step === 2) {
+            formData.partners.forEach((partner, index) => {
+                if (!partner.name) { newErrors[`partner_${index}_name`] = "Required"; isValid = false; }
+                if (!partner.pan) { newErrors[`partner_${index}_pan`] = "Required"; isValid = false; }
+            });
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    const handleNext = () => {
+        if (validateStep(currentStep)) {
+            setCurrentStep(prev => Math.min(5, prev + 1));
+        }
     };
 
     const handlePartnerChange = (index, e) => {
@@ -179,9 +207,11 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
             const finalPayload = {
                 submissionId: `LLP-${Date.now()}`,
                 plan: selectedPlan,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.partners[0].email,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.userEmail,
+                userPhone: JSON.parse(localStorage.getItem('user'))?.phone || formData.userPhone,
                 formData: formData,
                 documents: docsList,
+                paymentDetails: billDetails,
                 status: "PAYMENT_SUCCESSFUL"
             };
 
@@ -207,13 +237,20 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
                 return (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            {(!isLoggedIn && !localStorage.getItem('user')) && (
+                                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 pb-6 border-b border-gray-100">
+                                    <h3 className="md:col-span-2 font-bold text-navy mb-1 text-sm flex items-center gap-2"><User size={16} /> CONTACT DETAILS</h3>
+                                    <input name="userEmail" value={formData.userEmail} onChange={handleInputChange} placeholder="Your Email Address" className={`p-3 rounded-lg border border-gray-200 w-full ${errors.userEmail ? 'border-red-500' : ''}`} />
+                                    <input name="userPhone" value={formData.userPhone} onChange={handleInputChange} placeholder="Your Phone Number" className={`p-3 rounded-lg border border-gray-200 w-full ${errors.userPhone ? 'border-red-500' : ''}`} />
+                                </div>
+                            )}
                             <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><Briefcase size={20} className="text-blue-600" /> LLP DETAILS</h3>
                             <div className="grid md:grid-cols-2 gap-4">
-                                <input name="llpNameOption1" placeholder="Proposed LLP Name Option 1" className="p-3 rounded-lg border border-gray-200 w-full" onChange={handleInputChange} value={formData.llpNameOption1} />
+                                <input name="llpNameOption1" placeholder="Proposed LLP Name Option 1" className={`p-3 rounded-lg border border-gray-200 w-full ${errors.llpNameOption1 ? 'border-red-500' : ''}`} onChange={handleInputChange} value={formData.llpNameOption1} />
                                 <input name="llpNameOption2" placeholder="Proposed LLP Name Option 2" className="p-3 rounded-lg border border-gray-200 w-full" onChange={handleInputChange} value={formData.llpNameOption2} />
-                                <textarea name="businessActivity" placeholder="Main Business Activity (e.g. Software Development)" className="p-3 rounded-lg border border-gray-200 w-full md:col-span-2" rows="2" onChange={handleInputChange} value={formData.businessActivity}></textarea>
-                                <input name="contributionAmount" placeholder="Total Contribution Amount (e.g. 100000)" className="p-3 rounded-lg border border-gray-200 w-full" onChange={handleInputChange} value={formData.contributionAmount} />
-                                <input name="registeredAddress" placeholder="Registered Office Address" className="p-3 rounded-lg border border-gray-200 w-full" onChange={handleInputChange} value={formData.registeredAddress} />
+                                <textarea name="businessActivity" placeholder="Main Business Activity (e.g. Software Development)" className={`p-3 rounded-lg border border-gray-200 w-full md:col-span-2 ${errors.businessActivity ? 'border-red-500' : ''}`} rows="2" onChange={handleInputChange} value={formData.businessActivity}></textarea>
+                                <input name="contributionAmount" placeholder="Total Contribution Amount (e.g. 100000)" className={`p-3 rounded-lg border border-gray-200 w-full ${errors.contributionAmount ? 'border-red-500' : ''}`} onChange={handleInputChange} value={formData.contributionAmount} />
+                                <input name="registeredAddress" placeholder="Registered Office Address" className={`p-3 rounded-lg border border-gray-200 w-full ${errors.registeredAddress ? 'border-red-500' : ''}`} onChange={handleInputChange} value={formData.registeredAddress} />
 
                                 {selectedPlan !== 'basic' && (
                                     <>
@@ -309,12 +346,10 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
                             <IndianRupee size={32} />
                         </div>
                         <h2 className="text-3xl font-bold text-navy mb-2">Payment Summary</h2>
-                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="text-gray-500">Total Payable</span>
-                                <span className="text-3xl font-bold text-navy">₹{plans[selectedPlan].price.toLocaleString()}</span>
-                            </div>
-                            <p className="text-[10px] text-gray-400 text-right">+ Govt Fees (Later)</p>
+                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200 space-y-2">
+                            <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>GST (18%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
                         </div>
                         <button onClick={handleSubmit} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
                             {isSubmitting ? 'Processing...' : 'Pay & Submit'}
@@ -329,21 +364,42 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
     // --- MODAL LAYOUT: SPLIT VIEW (Matches Private Limited) ---
     if (isModal) {
         return (
-            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
                 {/* LEFT SIDEBAR: DARK */}
-                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
                     {/* Background Pattern */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
 
                     <div className="relative z-10 mb-8">
-                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
+                        <h1 className="font-bold text-lg text-bronze flex items-center gap-2 tracking-tight">
                             <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
                             LLP Registration
                         </h1>
-                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
-                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
-                            <p className="font-bold text-white leading-tight">{plans[selectedPlan]?.title}</p>
-                            <p className="text-[#ED6E3F] font-bold mt-1">₹{plans[selectedPlan]?.price.toLocaleString()}</p>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">GST (18%)</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.gst.toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
                         </div>
                     </div>
 
@@ -361,32 +417,48 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
                             </div>
                         ))}
                     </div>
-
-                    {/* BOTTOM TOTAL */}
-                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
-                        <div className="flex justify-between items-end">
-                            <div>
-                                <p className="text-[10px] text-blue-200 uppercase">Total Payable</p>
-                                <p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p>
-                            </div>
-                            <Receipt className="text-white/20" size={24} />
-                        </div>
-                    </div>
                 </div>
 
                 {/* RIGHT CONTENT: FORM */}
                 <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
                     {/* Header Bar */}
-                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
-                        <h2 className="font-bold text-navy text-lg">
-                            {currentStep === 1 && "LLP Information"}
-                            {currentStep === 2 && "Partner Details"}
-                            {currentStep === 3 && "Upload Documents"}
-                            {currentStep === 4 && "Review Application"}
-                            {currentStep === 5 && "Complete Payment"}
-                        </h2>
-                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition">
-                            <X size={18} />
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            {/* Mobile: Detailed Service & Price Info */}
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">LLP Registration</span>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">GST (18%)</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.gst / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: Step Title */}
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "LLP Information"}
+                                {currentStep === 2 && "Partner Details"}
+                                {currentStep === 3 && "Upload Documents"}
+                                {currentStep === 4 && "Review Application"}
+                                {currentStep === 5 && "Complete Payment"}
+                            </h2>
+                        </div>
+
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                            <X size={20} />
                         </button>
                     </div>
 
@@ -414,14 +486,10 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
                             >
                                 Back
                             </button>
-                            {currentStep < 5 && (
-                                <button
-                                    onClick={() => setCurrentStep(prev => Math.min(5, prev + 1))}
-                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
-                                >
-                                    Save & Continue <ArrowRight size={16} />
-                                </button>
-                            )}
+                            {currentStep < 5 && <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
+                                Next Step <ArrowRight size={18} />
+                            </button>
+                            }
                         </div>
                     )}
                 </div>
@@ -498,7 +566,7 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
                                 <div className="mt-8 flex justify-between">
                                     <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
 
-                                    <button onClick={() => setCurrentStep(p => Math.min(5, p + 1))} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
+                                    <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
                                         Next Step <ArrowRight size={18} />
                                     </button>
                                 </div>

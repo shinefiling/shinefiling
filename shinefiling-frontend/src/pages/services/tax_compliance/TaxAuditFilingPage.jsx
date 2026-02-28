@@ -240,11 +240,11 @@ const TaxAuditFilingPage = ({ isLoggedIn }) => {
 
                     <div className="grid md:grid-cols-3 gap-8 items-stretch">
                         {/* PRESUMPTIVE */}
-                        <div className="bg-white rounded-3xl p-8 border border-gray-200 hover:border-bronze/30 hover:shadow-xl transition-all flex flex-col group">
-                            <h3 className="text-xl font-bold text-navy mb-2">Presumptive</h3>
+                        <div className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full">
+                            <h3 className="text-lg font-bold text-navy mb-2">Presumptive</h3>
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Review Only</p>
                             <div className="flex items-baseline gap-2 mb-8">
-                                <span className="text-4xl font-black text-navy">₹2,499</span>
+                                <span className="text-3xl font-black text-navy">₹2,499</span>
                                 <span className="text-slate-300 line-through text-lg">₹5k</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1 text-sm text-slate-600">
@@ -257,7 +257,7 @@ const TaxAuditFilingPage = ({ isLoggedIn }) => {
 
                         {/* STANDARD */}
                         {/* STANDARD */}
-                        <div className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
+                        <div className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full">
                             {/* Top Gold Line */}
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
 
@@ -265,17 +265,17 @@ const TaxAuditFilingPage = ({ isLoggedIn }) => {
                                 Most Popular
                             </div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Full Audit</h3>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-2">Full Audit</h3>
                             <p className="text-gray-400 text-sm mb-6">Comprehensive expert assisted registration.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹4,999</span>
+                                <span className="text-3xl font-black text-white">₹4,999</span>
                                 <span className="text-gray-500 line-through text-sm">₹8k</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 {["Detailed Book Scrutiny", "Stock Valuation Check", "Depreciation Schedule", "Form 3CB-3CD Filing", "Compliance Report"].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
                                     </li>
                                 ))}
                             </ul>
@@ -285,11 +285,11 @@ const TaxAuditFilingPage = ({ isLoggedIn }) => {
                         </div>
 
                         {/* CORPORATE */}
-                        <div className="bg-white rounded-3xl p-8 border border-gray-200 hover:border-bronze/30 hover:shadow-xl transition-all flex flex-col group">
-                            <h3 className="text-xl font-bold text-navy mb-2">Corporate</h3>
+                        <div className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full">
+                            <h3 className="text-lg font-bold text-navy mb-2">Corporate</h3>
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Complex Cases</p>
                             <div className="flex items-baseline gap-2 mb-8">
-                                <span className="text-4xl font-black text-navy">₹9,999</span>
+                                <span className="text-3xl font-black text-navy">₹9,999</span>
                                 <span className="text-slate-300 line-through text-lg">₹15k</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1 text-sm text-slate-600">
@@ -323,7 +323,7 @@ const TaxAuditFilingPage = ({ isLoggedIn }) => {
                                         <span className="text-navy font-bold text-sm">Phase</span>
                                     </div>
                                     <div className="flex-1 flex flex-col justify-center">
-                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
                                             {item.title}
                                         </h3>
                                         <p className="text-slate-600 leading-relaxed text-sm">

@@ -1,5 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getDashboardPath } from '../utils/permissions';
+
 import {
     LayoutDashboard, FileText, Bell, Plus,
     CreditCard, HelpCircle, Menu, X, User, Package, LogOut, Zap,
@@ -45,6 +47,18 @@ const DashboardPage = ({ onLogout }) => {
     const notificationRef = React.useRef(null); // Added Ref
 
     const location = useLocation();
+    const navigate = useNavigate();
+
+    // Redirect if not a client
+    useEffect(() => {
+        if (user && user.role) {
+            const path = getDashboardPath(user.role);
+            if (path !== '/dashboard') {
+                navigate(path, { replace: true });
+            }
+        }
+    }, [user, navigate]);
+
 
     // Theme Effect
     useEffect(() => {
@@ -408,30 +422,7 @@ const DashboardPage = ({ onLogout }) => {
                 </main>
             </div>
 
-            {/* Mobile Bottom Nav for quick access (Optional, keeping consistent with old design but updating style) */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#043E52] border-t border-slate-200 dark:border-white/10 h-[70px] z-[100] flex justify-between items-center px-6 shadow-lg pb-safe-bottom">
-                <button onClick={() => setActiveTab('overview')} className={`flex flex-col items-center gap-1 ${activeTab === 'overview' ? 'text-[#ED6E3F]' : 'text-slate-400'}`}>
-                    <LayoutDashboard size={20} />
-                    <span className="text-[10px] font-bold">Home</span>
-                </button>
-                <button onClick={() => setActiveTab('orders')} className={`flex flex-col items-center gap-1 ${activeTab === 'orders' ? 'text-[#ED6E3F]' : 'text-slate-400'}`}>
-                    <Package size={20} />
-                    <span className="text-[10px] font-bold">Apps</span>
-                </button>
-                <div className="relative -top-6">
-                    <button onClick={() => setActiveTab('new-filing')} className="w-14 h-14 rounded-full bg-[#043E52] dark:bg-[#ED6E3F] text-white flex items-center justify-center shadow-lg ring-4 ring-[#F3F4F6] dark:ring-[#0D1C22]">
-                        <Plus size={28} />
-                    </button>
-                </div>
-                <button onClick={() => setActiveTab('notifications')} className={`flex flex-col items-center gap-1 ${activeTab === 'notifications' ? 'text-[#ED6E3F]' : 'text-slate-400'}`}>
-                    <Bell size={20} />
-                    <span className="text-[10px] font-bold">Alerts</span>
-                </button>
-                <button onClick={() => setActiveTab('profile')} className={`flex flex-col items-center gap-1 ${activeTab === 'profile' ? 'text-[#ED6E3F]' : 'text-slate-400'}`}>
-                    <User size={20} />
-                    <span className="text-[10px] font-bold">Profile</span>
-                </button>
-            </div>
+            {/* Mobile Bottom Nav removed as per request */}
 
         </div>
     );

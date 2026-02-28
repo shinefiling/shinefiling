@@ -9,6 +9,14 @@ const ServicesPage = ({ isLoggedIn, onLogout }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeFilter, setActiveFilter] = useState('all');
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+
+    useEffect(() => {
+        const query = searchParams.get('search');
+        if (query) {
+            setSearchTerm(query);
+        }
+    }, [searchParams]);
 
     // Helper to verify if we have details for a service
     const getServiceSlug = (name) => {

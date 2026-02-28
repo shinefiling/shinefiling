@@ -2,7 +2,7 @@
 import {
     Users, Briefcase, FileText, CheckSquare, File, CreditCard, Bell, BarChart3, Lock,
     Plus, Search, Filter, Edit2, Trash2, ChevronRight, Phone, Mail, MapPin, Building,
-    Download, Upload, Clock, DollarSign, Calendar, MoreVertical, Folder, FileIcon,
+    Download, Upload, Clock, IndianRupee, Calendar, MoreVertical, Folder, FileIcon,
     AlertCircle, CheckCircle2, XCircle, TrendingUp, TrendingDown
 } from 'lucide-react';
 import {
@@ -384,7 +384,7 @@ const ReportsAnalytics = ({ analytics }) => {
                 <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
                     <div className="flex justify-between items-start">
                         <div><p className="text-slate-500 uppercase text-xs font-bold">Total Revenue</p><h3 className="text-2xl font-bold mt-1 text-slate-800 dark:text-white">₹{totalRevenue.toLocaleString()}</h3></div>
-                        <div className="p-2 rounded bg-green-50 text-green-500"><DollarSign size={20} /></div>
+                        <div className="p-2 rounded bg-green-50 text-green-500"><IndianRupee size={20} /></div>
                     </div>
                 </div>
             </div>

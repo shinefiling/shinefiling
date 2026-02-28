@@ -37,7 +37,7 @@ const StartupIndia = ({ isLoggedIn }) => {
     const faqs = [
         { q: "What is Startup India Recognition?", a: "It is an initiative by the Government of India to build a strong ecosystem for nurturing innovation and startups in the country. It offers tax benefits, easier compliance, and IPR fast-tracking." },
         { q: "Does Recognition grant Tax Holiday automatically?", a: "No. DPIIT Recognition is the first step. To avail the 3-year Income Tax Holiday (u/s 80-IAC), you must apply separately for Inter-Ministerial Board (IMB) approval." },
-        { q: "What is the turnover limit?", a: "The entity's turnover should not have exceeded ?100 Crores in any of the previous financial years since incorporation." },
+        { q: "What is the turnover limit?", a: "The entity's turnover should not have exceeded ₹100 Crores in any of the previous financial years since incorporation." },
         { q: "How old can the company be?", a: "The entity should be in existence for up to 10 years from the date of its incorporation/registration." },
         { q: "Is a Pitch Deck required?", a: "Yes, a detailed pitch deck or video describing your innovation, product, and revenue model is mandatory for the application." },
         { q: "Who is eligible?", a: "Private Limited Companies, Registered Partnership Firms, and Limited Liability Partnerships (LLPs) working towards innovation/improvement of products/services." },
@@ -247,8 +247,8 @@ const StartupIndia = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
                             <p className="text-slate-500 text-sm mb-6">DPIIT Recognition Only.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?4,999</span>
-                                <span className="text-slate-400 line-through text-sm">?8,000</span>
+                                <span className="text-4xl font-black text-navy">₹4,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -274,8 +274,8 @@ const StartupIndia = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
                             <p className="text-gray-400 text-sm mb-6">Recognition + Pitch Deck.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?9,999</span>
-                                <span className="text-gray-500 line-through text-sm">?15,000</span>
+                                <span className="text-5xl font-black text-white">₹9,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹15,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -298,8 +298,8 @@ const StartupIndia = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Premium</h3>
                             <p className="text-slate-500 text-sm mb-6">With 80-IAC Tax Exemption.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?14,999</span>
-                                <span className="text-slate-400 line-through text-sm">?25,000</span>
+                                <span className="text-4xl font-black text-navy">₹14,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹25,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -345,7 +345,7 @@ const StartupIndia = ({ isLoggedIn }) => {
                                 <h3 className="text-xl font-bold text-navy mb-3 relative z-10 flex items-center gap-2">
                                     <PieChart size={20} className="text-green-600" /> Turnover Limit
                                 </h3>
-                                <p className="text-gray-600 text-sm relative z-10">Annual turnover should not have exceeded ?100 Crore in any of the previous financial years.</p>
+                                <p className="text-gray-600 text-sm relative z-10">Annual turnover should not have exceeded ₹100 Crore in any of the previous financial years.</p>
                             </div>
                             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-lg transition">
                                 <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-500/5 rounded-bl-[100px] z-0"></div>

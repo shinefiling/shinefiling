@@ -245,8 +245,8 @@ const FoundersAgreement = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
                             <p className="text-slate-500 text-sm mb-6">Standard Founder Template.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?1,999</span>
-                                <span className="text-slate-400 line-through text-sm">?3,000</span>
+                                <span className="text-4xl font-black text-navy">₹1,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹3,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -272,8 +272,8 @@ const FoundersAgreement = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
                             <p className="text-gray-400 text-sm mb-6">Tailored for your Startup.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?3,999</span>
-                                <span className="text-gray-500 line-through text-sm">?6,000</span>
+                                <span className="text-5xl font-black text-white">₹3,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹6,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -296,8 +296,8 @@ const FoundersAgreement = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Premium</h3>
                             <p className="text-slate-500 text-sm mb-6">Consultation + Complex Terms.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?6,999</span>
-                                <span className="text-slate-400 line-through text-sm">?10,000</span>
+                                <span className="text-4xl font-black text-navy">₹6,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹10,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">

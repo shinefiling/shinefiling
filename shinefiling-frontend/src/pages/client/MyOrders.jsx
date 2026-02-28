@@ -457,8 +457,18 @@ const MyOrders = () => {
                                                 <div className="flex justify-between relative z-10">
                                                     {['Review', 'Processing', 'Approval', 'Download'].map((s, idx) => {
                                                         const stages = ['SUBMITTED', 'PROCESSING', 'APPROVED', 'COMPLETED'];
-                                                        const currentIdx = stages.findIndex(st => st === (selectedOrder.status === 'Action Required' ? 'PROCESSING' : selectedOrder.status)) || 0;
+
+                                                        // Map backend statuses to timeline stages
+                                                        const status = selectedOrder.status || 'SUBMITTED';
+                                                        let currentIdx = 0;
+
+                                                        if (['PENDING', 'SUBMITTED', 'INITIATED'].includes(status)) currentIdx = 0;
+                                                        else if (['ACCEPTED_BY_CA', 'READY_FOR_WORK', 'WORK_IN_PROGRESS', 'PROCESSING', 'Action Required'].includes(status)) currentIdx = 1;
+                                                        else if (['SUBMITTED_BY_CA', 'READY_FOR_DOWNLOAD', 'APPROVED'].includes(status)) currentIdx = 2;
+                                                        else if (['COMPLETED', 'COMPLETED_FINAL'].includes(status)) currentIdx = 3;
+
                                                         const isCompleted = currentIdx >= idx;
+
 
                                                         return (
                                                             <div key={s} className="flex flex-col items-center gap-4">

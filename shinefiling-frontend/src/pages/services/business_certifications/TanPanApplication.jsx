@@ -256,7 +256,7 @@ const TanPanApplication = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Lost Card Reprint</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> TAN Allotment</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select PAN</button>
+                            <button onClick={() => handlePlanSelect('pan_new')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select PAN</button>
                         </motion.div>
 
                         {/* PLAN 2: TAN - POPULAR */}
@@ -283,7 +283,7 @@ const TanPanApplication = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> TDS Return Compliance</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Business Validation</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select TAN</button>
+                            <button onClick={() => handlePlanSelect('tan_new')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select TAN</button>
                         </motion.div>
 
                         {/* PLAN 3: COMBO */}
@@ -307,7 +307,7 @@ const TanPanApplication = ({ isLoggedIn }) => {
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Priority Processing</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Document Support</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Combo</button>
+                            <button onClick={() => handlePlanSelect('combo')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Combo</button>
                         </motion.div>
                     </div>
                 </div>
@@ -455,7 +455,7 @@ const TanPanApplication = ({ isLoggedIn }) => {
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Correction?</h4>
                             <p className="text-gray-300 text-sm mb-4">Wrong name or DOB in PAN? We can fix it.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
+                            <button onClick={() => handlePlanSelect('correction')} className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm flex justify-center items-center gap-2 transition">Apply Correction <ArrowRight size={16} /></button>
                         </div>
                     </div>
                 </div>

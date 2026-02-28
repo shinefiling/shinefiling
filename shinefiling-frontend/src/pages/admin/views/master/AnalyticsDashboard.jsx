@@ -4,7 +4,7 @@ import {
     AreaChart, Area, PieChart, Pie, Cell, LineChart, Line, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
 import {
-    TrendingUp, Users, DollarSign, Activity, Calendar, Download, Filter,
+    TrendingUp, Users, IndianRupee, Activity, Calendar, Download, Filter,
     ArrowUpRight, ArrowDownRight, CreditCard, PieChart as PieIcon,
     BarChart as BarIcon, Target, ShoppingBag, MapPin, Smartphone,
     Clock, Monitor, Globe, CheckCircle, AlertCircle, Timer, Server,
@@ -83,7 +83,7 @@ const OverviewTab = ({ data, orders }) => (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* KPI Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <KPICard title="Total Revenue" value={formatCurrency(data.totalRevenue)} subtext="All-time earnings" trend="up" trendValue={14.2} icon={DollarSign} color="emerald" />
+            <KPICard title="Total Revenue" value={formatCurrency(data.totalRevenue)} subtext="All-time earnings" trend="up" trendValue={14.2} icon={IndianRupee} color="emerald" />
             <KPICard title="Total Orders" value={orders.length} subtext={`${data.pendingOrders} pending`} trend="up" trendValue={8.5} icon={ShoppingBag} color="blue" />
             <KPICard title="Avg Order Value" value={formatCurrency(data.avgOrderValue)} subtext="Per transaction" trend="down" trendValue={2.1} icon={CreditCard} color="violet" />
             <KPICard title="Active Users" value={data.usersCount} subtext="Registered accounts" trend="up" trendValue={12.4} icon={Users} color="amber" />

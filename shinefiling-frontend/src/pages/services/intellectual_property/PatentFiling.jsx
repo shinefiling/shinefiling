@@ -146,7 +146,7 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                                 <div className="text-center mb-6">
                                     <h3 className="text-navy font-bold text-xl mb-2">Provisional Filing</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">?9,999</h3>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹9,999</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ App</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Excl. Govt Fees</p>
@@ -190,8 +190,8 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Patent Search</h3>
                             <p className="text-slate-500 text-sm mb-6">Novelty Check.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?4,999</span>
-                                <span className="text-slate-400 line-through text-sm">?8,000</span>
+                                <span className="text-4xl font-black text-navy">₹4,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -230,8 +230,8 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Provisional App</h3>
                             <p className="text-gray-400 text-sm mb-6">Protect & Develop Later.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?9,999</span>
-                                <span className="text-gray-500 line-through text-sm">?15,000</span>
+                                <span className="text-5xl font-black text-white">₹9,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹15,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -240,7 +240,7 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                                     "Forms Filing (1, 2, 3)",
                                     "Priority Date Locked",
                                     "12-Month Grace Period",
-                                    "Govt Fee Extra (?1600)"
+                                    "Govt Fee Extra (₹1600)"
                                 ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
                                         <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
@@ -263,8 +263,8 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Complete Spec</h3>
                             <p className="text-slate-500 text-sm mb-6">Full Non-Provisional Filing.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?24,999</span>
-                                <span className="text-slate-400 line-through text-sm">?40,000</span>
+                                <span className="text-4xl font-black text-navy">₹24,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹40,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -273,7 +273,7 @@ const PatentFilingPage = ({ isLoggedIn }) => {
                                     "Detailed Claims Drafting",
                                     "Drawings (Formal)",
                                     "Abstract & Summary",
-                                    "Govt Fee Extra (?1600)"
+                                    "Govt Fee Extra (₹1600)"
                                 ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
                                         <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}

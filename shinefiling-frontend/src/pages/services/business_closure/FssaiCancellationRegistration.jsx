@@ -71,16 +71,11 @@ const FssaiCancellationRegistration = ({ isLoggedIn, isModal = false, onClose, p
     useEffect(() => {
         if (isModal) return;
         const storedUser = localStorage.getItem('user');
-        const isReallyLoggedIn = isLoggedIn || !!storedUser;
-
-        if (!isReallyLoggedIn) {
-            const planParam = searchParams.get('plan') || 'state';
-            navigate('/login', { state: { from: `/services/business-closure/fssai-cancellation/apply?plan=${planParam}` } });
-        } else {
+        if (storedUser) {
             const user = JSON.parse(storedUser);
             setFormData(prev => ({ ...prev, email: user.email, mobile: user.mobile || '' }));
         }
-    }, [isLoggedIn, navigate, searchParams, isModal]);
+    }, [isModal]);
 
     useEffect(() => {
         if (planProp) {
@@ -93,8 +88,30 @@ const FssaiCancellationRegistration = ({ isLoggedIn, isModal = false, onClose, p
         }
     }, [searchParams, planProp]);
 
+    const [errors, setErrors] = useState({});
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (errors[e.target.name]) setErrors(prev => ({ ...prev, [e.target.name]: null }));
+    };
+
+    const validateStep = (step) => {
+        const newErrors = {};
+        let isValid = true;
+        if (step === 1) {
+            if (!formData.businessName) { newErrors.businessName = "Business Name required"; isValid = false; }
+            if (!formData.fssaiNumber) { newErrors.fssaiNumber = "FSSAI Number required"; isValid = false; }
+            if (!formData.email) { newErrors.email = "Email required"; isValid = false; }
+            if (!formData.mobile) { newErrors.mobile = "Mobile required"; isValid = false; }
+        }
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    const handleNext = () => {
+        if (validateStep(currentStep)) {
+            setCurrentStep(prev => Math.min(4, prev + 1));
+        }
     };
 
     const handleFileUpload = async (e, key) => {
@@ -151,31 +168,39 @@ const FssaiCancellationRegistration = ({ isLoggedIn, isModal = false, onClose, p
                                 <X size={20} className="group-hover:rotate-90 transition-transform duration-300" />
                             </button>
                         )}
-
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                             <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
-                                <Coffee size={20} className="text-orange-600" /> FSSAI DETAILS
+                                <Coffee size={20} className="text-blue-600" /> FOOD BUSINESS DETAILS
                             </h3>
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div className="md:col-span-2">
-                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Entity Name (As on License)</label>
-                                    <input type="text" name="businessName" value={formData.businessName} onChange={handleChange} placeholder="Enter Restaurant/Unit Name" className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 bg-gray-50" />
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Food Business Name</label>
+                                    <input type="text" name="businessName" value={formData.businessName} onChange={handleChange} placeholder="As printed on license" className={`w-full p-3 rounded-lg border ${errors.businessName ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-blue-500 bg-gray-50`} />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">FSSAI License / Registration No.</label>
+                                    <input type="text" name="fssaiNumber" value={formData.fssaiNumber} onChange={handleChange} placeholder="14-digit Number" className={`w-full p-3 rounded-lg border ${errors.fssaiNumber ? 'border-red-500' : 'border-gray-200'} bg-white`} />
                                 </div>
                                 <div>
-                                    <label className="text-xs font-bold text-gray-500 mb-1 block">FSSAI License Number</label>
-                                    <input type="text" name="fssaiNumber" value={formData.fssaiNumber} onChange={handleChange} placeholder="14-digit number" className="w-full p-3 rounded-lg border border-gray-200 bg-white" />
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Email ID</label>
+                                    <input type="email" name="email" value={formData.email} onChange={handleChange} className={`w-full p-3 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-200'} bg-white`} />
                                 </div>
                                 <div>
-                                    <label className="text-xs font-bold text-gray-500 mb-1 block">License Category</label>
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Mobile Number</label>
+                                    <input type="tel" name="mobile" value={formData.mobile} onChange={handleChange} className={`w-full p-3 rounded-lg border ${errors.mobile ? 'border-red-500' : 'border-gray-200'} bg-white`} />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="text-xs font-bold text-gray-500 mb-1 block">License Type</label>
                                     <select name="licenseType" value={formData.licenseType} onChange={handleChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white">
-                                        <option value="Basic Registration">Basic Registration</option>
                                         <option value="State License">State License</option>
                                         <option value="Central License">Central License</option>
+                                        <option value="Basic Registration">Basic Registration</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 );
 
             case 2: // Reasoning
@@ -277,20 +302,40 @@ const FssaiCancellationRegistration = ({ isLoggedIn, isModal = false, onClose, p
     if (isModal) {
         return (
             <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
-                {/* LEFT SIDEBAR: DARK */}
-                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+                {/* LEFT SIDEBAR: DARK - Detailed View */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
                     {/* Background Pattern */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
 
                     <div className="relative z-10 mb-8">
-                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
-                            <span className="text-[#ED6E3F]">FSSAI</span>
-                            Cancellation
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white text-[#ED6E3F]">
+                            FSSAI Cancellation
                         </h1>
-                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
-                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
-                            <p className="font-bold text-white leading-tight">{plans[selectedPlan]?.title}</p>
-                            <p className="text-[#ED6E3F] font-bold mt-1">₹{billDetails.total.toLocaleString()}</p>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
                         </div>
                     </div>
 
@@ -308,31 +353,46 @@ const FssaiCancellationRegistration = ({ isLoggedIn, isModal = false, onClose, p
                             </div>
                         ))}
                     </div>
-
-                    {/* BOTTOM TOTAL */}
-                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
-                        <div className="flex justify-between items-end">
-                            <div>
-                                <p className="text-[10px] text-blue-200 uppercase">Total Payable</p>
-                                <p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p>
-                            </div>
-                            <IndianRupee className="text-white/20" size={24} />
-                        </div>
-                    </div>
                 </div>
 
                 {/* RIGHT CONTENT: FORM */}
                 <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
                     {/* Header Bar */}
-                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
-                        <h2 className="font-bold text-navy text-lg">
-                            {currentStep === 1 && "FSSAI Details"}
-                            {currentStep === 2 && "Cancellation Reason"}
-                            {currentStep === 3 && "Documents"}
-                            {currentStep === 4 && "Review & Submit"}
-                        </h2>
-                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition">
-                            <ArrowLeft size={18} className="rotate-180" />
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            {/* Mobile: Detailed Service & Price Info */}
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">FSSAI Cancellation</span>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.base) / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: Step Title */}
+                            <h2 className="hidden md:block font-bold text-[#ED6E3F] text-lg">
+                                {currentStep === 1 && "FSSAI Details"}
+                                {currentStep === 2 && "Cancellation Reason"}
+                                {currentStep === 3 && "Documents"}
+                                {currentStep === 4 && "Review & Submit"}
+                            </h2>
+                        </div>
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition shrink-0 ml-4">
+                            <X size={20} />
                         </button>
                     </div>
 
@@ -363,7 +423,7 @@ const FssaiCancellationRegistration = ({ isLoggedIn, isModal = false, onClose, p
                                 Back
                             </button>
                             <button
-                                onClick={() => setCurrentStep(p => Math.min(4, p + 1))}
+                                onClick={handleNext}
                                 className="px-6 py-2.5 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2 text-sm"
                             >
                                 Save & Continue <ArrowRight size={16} />

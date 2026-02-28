@@ -1,50 +1,62 @@
 ﻿import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
-    CheckCircle, Upload, CreditCard, FileText, User,
-    Building, ArrowLeft, ArrowRight, Shield, AlertCircle, Lock, IndianRupee, Users, Plus, Trash2, X, Globe
+    CheckCircle, CreditCard, FileText, User, Building, ArrowRight, X, Shield, Users as UsersIcon, Globe
 } from 'lucide-react';
 import { uploadFile, submitIndianSubsidiaryRegistration } from '../../../api';
 
+// --- CONSTANTS & HELPERS ---
+const validatePlan = (plan) => {
+    const p = plan?.toLowerCase();
+    if (['starter', 'basic', 'entry'].includes(p)) return 'starter';
+    if (['pro', 'standard', 'business'].includes(p)) return 'pro';
+    if (['elite', 'premium', 'global'].includes(p)) return 'elite';
+    return 'pro'; // Default to Pro/Standard
+};
+
 const IndianSubsidiaryRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
-    const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
-
-    // Protect Route
-    useEffect(() => {
-        if (isModal) return;
-        const storedUser = localStorage.getItem('user');
-        const isReallyLoggedIn = isLoggedIn || !!storedUser;
-
-        if (!isReallyLoggedIn) {
-            const plan = searchParams.get('plan') || 'standard';
-            navigate('/login', { state: { from: `/services/indian-subsidiary-registration?plan=${plan}` } });
+    const plans = {
+        starter: {
+            price: 19999,
+            title: 'Entry Plan',
+            features: ["2 DSC & 2 DIN", "Name Approval", "Incorporation Cert.", "PAN & TAN", "MOA & AOA Drafting"],
+            color: 'bg-white border-slate-200'
+        },
+        pro: {
+            price: 29999,
+            title: 'Business Plan',
+            features: ["Everything in Entry", "FEMA Compliance Filing", "GST Registration", "Bank Account Support"],
+            recommended: true,
+            color: 'bg-blue-50 border-blue-200'
+        },
+        elite: {
+            price: 49999,
+            title: 'Global Plan',
+            features: ["Everything in Business", "RBI Reporting (FC-GPR)", "Trademark Filing", "1 Year Compliance"],
+            color: 'bg-indigo-50 border-indigo-200'
         }
-    }, [isLoggedIn, navigate, searchParams, isModal]);
-
-    const [currentStep, setCurrentStep] = useState(1);
-
-    const validatePlan = (plan) => {
-        return ['basic', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'standard';
     };
 
-    const [selectedPlan, setSelectedPlan] = useState(validatePlan(planProp || searchParams.get('plan')));
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const planParam = searchParams.get('plan');
+
+    const [currentStep, setCurrentStep] = useState(1);
+    const [selectedPlan, setSelectedPlan] = useState(() => validatePlan(planProp || planParam));
 
     useEffect(() => {
-        if (planProp) {
-            setSelectedPlan(validatePlan(planProp));
-        } else {
-            const planParam = searchParams.get('plan');
-            if (planParam && ['basic', 'standard', 'premium'].includes(planParam.toLowerCase())) {
-                setSelectedPlan(planParam.toLowerCase());
-            }
+        const targetPlan = validatePlan(planProp || planParam);
+        if (targetPlan !== selectedPlan) {
+            setSelectedPlan(targetPlan);
         }
-    }, [searchParams, planProp]);
+    }, [planParam, planProp, selectedPlan]);
 
     const [formData, setFormData] = useState({
+        userEmail: '',
+        userPhone: '',
         companyNames: ['', '', ''],
         businessActivity: '',
-        holdingCompanyName: '', // Specific to Subsidiary
+        holdingCompanyName: '',
         holdingCompanyCountry: '',
         addressLine1: '',
         addressLine2: '',
@@ -65,41 +77,14 @@ const IndianSubsidiaryRegistration = ({ isLoggedIn, isModal = false, planProp, o
     const [automationPayload, setAutomationPayload] = useState(null);
     const [errors, setErrors] = useState({});
 
-    // Plans Configuration for Subsidiary
-    const plans = {
-        basic: {
-            price: 19999,
-            title: 'Entry Plan',
-            features: [
-                "2 DSC & 2 DIN", "Name Approval", "Incorporation Certificate", "PAN & TAN", "MOA & AOA Drafting"
-            ],
-            color: 'bg-white border-slate-200'
-        },
-        standard: {
-            price: 29999,
-            title: 'Business Plan',
-            features: [
-                "Everything in Entry", "FEMA Compliance Filing", "GST Registration", "Bank Account Support", "Foreign Director DSC"
-            ],
-            recommended: true,
-            color: 'bg-blue-50 border-blue-200'
-        },
-        premium: {
-            price: 49999,
-            title: 'Global Plan',
-            features: [
-                "Everything in Business", "RBI Reporting (FC-GPR)", "Trademark Filing", "1 Year Compliance", "Resident Director Service"
-            ],
-            color: 'bg-indigo-50 border-indigo-200'
-        }
-    };
-
     const billDetails = useMemo(() => {
-        const plan = plans[selectedPlan];
+        const plan = plans[selectedPlan] || plans.pro;
         const basePrice = plan.price;
-        const gst = Math.round(basePrice * 0.18);
-        const total = basePrice + gst;
-        return { basePrice, gst, total };
+        const platformFee = Math.round(basePrice * 0.03);
+        const tax = Math.round(basePrice * 0.03);
+        const gst = Math.round(basePrice * 0.09);
+        const total = basePrice + platformFee + tax + gst;
+        return { base: basePrice, platformFn: platformFee, tax, gst, total };
     }, [selectedPlan]);
 
     const handleInputChange = (e, section = null, index = null) => {
@@ -114,8 +99,8 @@ const IndianSubsidiaryRegistration = ({ isLoggedIn, isModal = false, planProp, o
             setFormData({ ...formData, directors: newDirectors });
         } else {
             setFormData({ ...formData, [name]: value });
+            if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
         }
-        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
     };
 
     const addDirector = () => {
@@ -140,6 +125,12 @@ const IndianSubsidiaryRegistration = ({ isLoggedIn, isModal = false, planProp, o
         const newErrors = {};
         let isValid = true;
         if (step === 1) {
+            const storedUser = localStorage.getItem('user');
+            const isReallyLoggedIn = isLoggedIn || !!storedUser;
+            if (!isReallyLoggedIn) {
+                if (!formData.userEmail) { newErrors.userEmail = "Required"; isValid = false; }
+                if (!formData.userPhone) { newErrors.userPhone = "Required"; isValid = false; }
+            }
             if (!formData.companyNames[0]) { newErrors.companyNames = "Company name required"; isValid = false; }
             if (!formData.holdingCompanyName) { newErrors.holdingCompanyName = "Holding company name required"; isValid = false; }
             if (!formData.holdingCompanyCountry) { newErrors.holdingCompanyCountry = "Country required"; isValid = false; }
@@ -162,43 +153,35 @@ const IndianSubsidiaryRegistration = ({ isLoggedIn, isModal = false, planProp, o
                 [key]: {
                     originalFile: file,
                     name: response.originalName || file.name,
-                    preview: file.type.includes('image') ? URL.createObjectURL(file) : null,
                     fileUrl: response.fileUrl,
                     fileId: response.id
                 }
             }));
         } catch (error) {
-            console.error("Upload failed", error);
-            alert("File upload failed. Please try again.");
+            alert("File upload failed.");
         }
     };
 
     const submitApplication = async () => {
         setIsSubmitting(true);
         try {
-            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
-                id: k,
-                filename: v.name,
-                fileUrl: v.fileUrl
-            }));
-
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({ id: k, filename: v.name, fileUrl: v.fileUrl }));
             const payload = {
                 ...formData,
                 plan: selectedPlan,
-                amount: plans[selectedPlan].price,
+                amount: billDetails.total,
                 documents: docsList,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.directors[0]?.email,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.userEmail || formData.directors[0]?.email,
+                userPhone: JSON.parse(localStorage.getItem('user'))?.phone || formData.userPhone,
                 submissionId: `SUB-${Date.now()}`
             };
 
             const response = await submitIndianSubsidiaryRegistration(payload);
-
             if (response) {
                 setAutomationPayload(response);
                 setIsSuccess(true);
             }
         } catch (error) {
-            console.error("Submission failed", error);
             alert("Submission failed: " + error.message);
         } finally {
             setIsSubmitting(false);
@@ -207,153 +190,158 @@ const IndianSubsidiaryRegistration = ({ isLoggedIn, isModal = false, planProp, o
 
     const renderStepContent = () => {
         switch (currentStep) {
-            case 1: // Company Details
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><Building size={20} className="text-navy" /> SUBSIDIARY DETAILS</h3>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div className="md:col-span-2">
-                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Proposed Indian Company Name</label>
-                                    <input type="text" value={formData.companyNames[0]} onChange={(e) => handleInputChange(e, 'companyNames', 0)} placeholder="e.g. Google India Pvt Ltd" className={`w-full p-3 rounded-lg border ${errors.companyNames ? 'border-red-500' : 'border-gray-200'}`} />
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Foreign Holding Company</label>
-                                    <input name="holdingCompanyName" value={formData.holdingCompanyName} onChange={handleInputChange} placeholder="Parent Company Name" className={`w-full p-3 rounded-lg border ${errors.holdingCompanyName ? 'border-red-500' : 'border-gray-200'}`} />
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Country of Origin</label>
-                                    <input name="holdingCompanyCountry" value={formData.holdingCompanyCountry} onChange={handleInputChange} placeholder="e.g. USA, UK" className={`w-full p-3 rounded-lg border ${errors.holdingCompanyCountry ? 'border-red-500' : 'border-gray-200'}`} />
-                                </div>
-                                <div className="md:col-span-2">
-                                    <label className="text-xs font-bold text-gray-500 mb-1 block">Proposed Business Activity in India</label>
-                                    <textarea name="businessActivity" value={formData.businessActivity} onChange={handleInputChange} placeholder="Brief description..." className="w-full p-3 rounded-lg border border-gray-200" rows="2"></textarea>
-                                </div>
+            case 1: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        {(!isLoggedIn && !localStorage.getItem('user')) && (
+                            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3 pb-6 border-b border-gray-100">
+                                <h3 className="md:col-span-2 font-bold text-slate-800 mb-1 text-sm flex items-center gap-2"><User size={16} /> CONTACT DETAILS</h3>
+                                <input name="userEmail" value={formData.userEmail} onChange={handleInputChange} placeholder="Your Email Address" className={`p-2 text-sm border rounded-lg ${errors.userEmail ? 'border-red-500' : ''}`} />
+                                <input name="userPhone" value={formData.userPhone} onChange={handleInputChange} placeholder="Your Phone Number" className={`p-2 text-sm border rounded-lg ${errors.userPhone ? 'border-red-500' : ''}`} />
                             </div>
-                        </div>
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4">Registered Office (India)</h3>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <input name="addressLine1" value={formData.addressLine1} onChange={handleInputChange} placeholder="Address Line 1" className="w-full p-3 rounded-lg border border-gray-200" />
-                                <input name="pincode" value={formData.pincode} onChange={handleInputChange} placeholder="Pincode" className="w-full p-3 rounded-lg border border-gray-200" />
-                                <input name="state" value={formData.state} onChange={handleInputChange} placeholder="State" className="w-full p-3 rounded-lg border border-gray-200" />
+                        )}
+                        <h3 className="font-bold text-navy mb-3 text-sm flex items-center gap-2"><Globe size={16} /> SUBSIDIARY DETAILS</h3>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            <div className="md:col-span-2">
+                                <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Proposed Indian Company Name</label>
+                                <input type="text" value={formData.companyNames[0]} onChange={(e) => handleInputChange(e, 'companyNames', 0)} placeholder="e.g. Google India Pvt Ltd" className={`w-full p-2 text-sm rounded-lg border ${errors.companyNames ? 'border-red-500' : 'border-gray-200'}`} />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Foreign Holding Company</label>
+                                <input name="holdingCompanyName" value={formData.holdingCompanyName} onChange={handleInputChange} placeholder="Parent Company Name" className={`w-full p-2 text-sm rounded-lg border ${errors.holdingCompanyName ? 'border-red-500' : 'border-gray-200'}`} />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Country of Origin</label>
+                                <input name="holdingCompanyCountry" value={formData.holdingCompanyCountry} onChange={handleInputChange} placeholder="e.g. USA, UK" className={`w-full p-2 text-sm rounded-lg border ${errors.holdingCompanyCountry ? 'border-red-500' : 'border-gray-200'}`} />
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Proposed Business Activity</label>
+                                <textarea name="businessActivity" value={formData.businessActivity} onChange={handleInputChange} placeholder="Brief description..." className="w-full p-2 text-sm rounded-lg border border-gray-200" rows="2"></textarea>
                             </div>
                         </div>
                     </div>
-                );
-            case 2: // Directors
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-navy flex items-center gap-2"><Users size={20} className="text-blue-600" /> DIRECTORS (Min 2)</h2>
-                            <button onClick={addDirector} className="text-sm font-bold text-blue-600 hover:bg-blue-50 px-3 py-1 rounded-lg transition">+ Add Director</button>
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-navy mb-3 text-sm">Registered Office (India)</h3>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            <input name="addressLine1" value={formData.addressLine1} onChange={handleInputChange} placeholder="Address Line 1" className="w-full p-2 text-sm rounded-lg border border-gray-200" />
+                            <input name="pincode" value={formData.pincode} onChange={handleInputChange} placeholder="Pincode" className="w-full p-2 text-sm rounded-lg border border-gray-200" />
+                            <input name="state" value={formData.state} onChange={handleInputChange} placeholder="State" className="w-full p-2 text-sm rounded-lg border border-gray-200" />
                         </div>
-                        {formData.directors.map((director, i) => (
-                            <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative">
-                                <div className="flex justify-between items-center mb-4 border-b pb-2">
-                                    <h4 className="font-bold text-navy text-sm">Director #{i + 1} {i === 0 && '(Resident Director recommended)'}</h4>
-                                    {i > 1 && <button onClick={() => removeDirector(i)} className="text-red-500"><Trash2 size={16} /></button>}
-                                </div>
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <input name="name" value={director.name} onChange={(e) => handleInputChange(e, 'directors', i)} placeholder="Full Name" className="w-full p-3 rounded-lg border border-gray-200" />
-                                    <input name="country" value={director.country} onChange={(e) => handleInputChange(e, 'directors', i)} placeholder="Nationality" className="w-full p-3 rounded-lg border border-gray-200" />
-                                    <input name="passportNumber" value={director.passportNumber} onChange={(e) => handleInputChange(e, 'directors', i)} placeholder={director.country === 'India' ? 'PAN Number' : 'Passport Number'} className="w-full p-3 rounded-lg border border-gray-200" />
-                                    <input name="email" value={director.email} onChange={(e) => handleInputChange(e, 'directors', i)} placeholder="Email" className="w-full p-3 rounded-lg border border-gray-200" />
-                                </div>
-                            </div>
-                        ))}
                     </div>
-                );
-            case 3: // Documents
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4">Required Documents</h3>
-                            <div className="space-y-4">
-                                <div className="border border-dashed p-4 rounded-lg flex justify-between items-center">
-                                    <span className="text-sm font-medium">Holding Company Incorporation Certificate</span>
-                                    <input type="file" onChange={(e) => handleFileUpload(e, 'holding_co_inc')} className="text-xs" />
-                                </div>
-                                <div className="border border-dashed p-4 rounded-lg flex justify-between items-center">
-                                    <span className="text-sm font-medium">Board Resolution from Foreign Company</span>
-                                    <input type="file" onChange={(e) => handleFileUpload(e, 'board_resolution')} className="text-xs" />
-                                </div>
-                                {formData.directors.map((d, i) => (
-                                    <div key={i} className="border border-dashed p-4 rounded-lg flex justify-between items-center">
-                                        <span className="text-sm font-medium">ID Proof for {d.name || `Director ${i + 1}`} ({d.country === 'India' ? 'PAN' : 'Passport'})</span>
-                                        <input type="file" onChange={(e) => handleFileUpload(e, `director_${i}_id`)} className="text-xs" />
-                                    </div>
-                                ))}
+                </div>
+            );
+            case 2: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-sm font-bold text-navy flex items-center gap-2"><UsersIcon size={16} className="text-blue-600" /> DIRECTORS (Min 2)</h2>
+                        <button onClick={addDirector} className="text-xs font-bold text-blue-600 hover:bg-blue-50 px-3 py-1 rounded-lg transition">+ Add</button>
+                    </div>
+                    {formData.directors.map((director, i) => (
+                        <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm relative">
+                            <div className="flex justify-between items-center mb-2 border-b pb-2">
+                                <h4 className="font-bold text-navy text-xs uppercase">Director #{i + 1} {i === 0 && '(Resident Director)'}</h4>
+                                {i > 1 && <button onClick={() => removeDirector(i)} className="text-red-500"><Trash2 size={14} /></button>}
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-3">
+                                <input name="name" value={director.name} onChange={(e) => handleInputChange(e, 'directors', i)} placeholder="Full Name" className="w-full p-2 text-sm rounded-lg border border-gray-200" />
+                                <input name="country" value={director.country} onChange={(e) => handleInputChange(e, 'directors', i)} placeholder="Nationality" className="w-full p-2 text-sm rounded-lg border border-gray-200" />
+                                <input name="passportNumber" value={director.passportNumber} onChange={(e) => handleInputChange(e, 'directors', i)} placeholder={director.country === 'India' ? 'PAN Number' : 'Passport Number'} className="w-full p-2 text-sm rounded-lg border border-gray-200" />
+                                <input name="email" value={director.email} onChange={(e) => handleInputChange(e, 'directors', i)} placeholder="Email" className="w-full p-2 text-sm rounded-lg border border-gray-200" />
                             </div>
                         </div>
-                    </div>
-                );
-            case 4: // Review
-                return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95">
-                        <h2 className="text-3xl font-bold text-navy mb-6">Review & Submit</h2>
-                        <div className="bg-blue-50/50 p-4 rounded-xl mb-6">
-                            <div className="flex justify-between mb-2"><span className="text-gray-600">Plan</span><span className="font-bold text-navy uppercase">{selectedPlan}</span></div>
-                            <div className="flex justify-between"><span className="text-gray-600">Fee</span><span className="font-bold text-navy">₹{plans[selectedPlan].price.toLocaleString()}</span></div>
-                        </div>
-                        <div className="space-y-2 text-sm text-gray-600">
-                            <p><strong>Company:</strong> {formData.companyNames[0]}</p>
-                            <p><strong>Parent Entity:</strong> {formData.holdingCompanyName} ({formData.holdingCompanyCountry})</p>
-                            <p><strong>Directors:</strong> {formData.directors.length}</p>
-                        </div>
-                    </div>
-                );
-            case 5: // Payment
-                return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
-                        <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-600">
-                            <Globe size={32} />
-                        </div>
-                        <h2 className="text-3xl font-bold text-navy mb-2">Payment Summary</h2>
-                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="text-gray-500">Total Payable</span>
-                                <span className="text-3xl font-bold text-navy">₹{billDetails.total.toLocaleString()}</span>
+                    ))}
+                </div>
+            );
+            case 3: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-navy mb-3 text-sm">Required Documents</h3>
+                        <div className="space-y-3">
+                            <div className="border border-dashed p-3 rounded-lg flex justify-between items-center bg-slate-50">
+                                <span className="text-xs font-medium">Holding Co. Incorporation Cert.</span>
+                                <input type="file" onChange={(e) => handleFileUpload(e, 'holding_co_inc')} className="text-[10px] w-20" />
                             </div>
-                            <p className="text-xs text-gray-400">Incl. of GST & Govt Fees</p>
+                            <div className="border border-dashed p-3 rounded-lg flex justify-between items-center bg-slate-50">
+                                <span className="text-xs font-medium">Board Resolution</span>
+                                <input type="file" onChange={(e) => handleFileUpload(e, 'board_resolution')} className="text-[10px] w-20" />
+                            </div>
+                            {formData.directors.map((d, i) => (
+                                <div key={i} className="border border-dashed p-3 rounded-lg flex justify-between items-center bg-slate-50">
+                                    <span className="text-xs font-medium">ID: {d.name || `Director ${i + 1}`}</span>
+                                    <input type="file" onChange={(e) => handleFileUpload(e, `director_${i}_id`)} className="text-[10px] w-20" />
+                                </div>
+                            ))}
                         </div>
-                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2">
-                            {isSubmitting ? 'Processing...' : 'Pay & Register'}
-                            {!isSubmitting && <ArrowRight size={18} />}
-                        </button>
                     </div>
-                );
-            default: return null;
+                </div>
+            );
+            case 4: return (
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                    <h2 className="text-xl font-bold text-navy mb-4">Review application</h2>
+                    <div className="p-4 bg-blue-50/50 rounded-lg space-y-2 text-sm">
+                        <div className="flex justify-between border-b pb-2"><span className="text-gray-600">Plan</span><span className="font-bold text-navy uppercase">{plans[selectedPlan]?.title}</span></div>
+                        <div className="flex justify-between border-b pb-2"><span className="text-gray-600">Company</span><span className="font-bold text-navy">{formData.companyNames[0]}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-600">Parent Entity</span><span className="font-bold text-navy">{formData.holdingCompanyName}</span></div>
+                    </div>
+                </div>
+            );
+            case 5: return (
+                <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                    <Globe size={32} className="mx-auto mb-4 text-blue-600" />
+                    <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                    <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2">
+                        <div className="flex justify-between text-sm"><span>Base Price</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
+                    </div>
+                    <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg">
+                        {isSubmitting ? 'Processing...' : 'Pay & Register'}
+                    </button>
+                </div>
+            );
         }
     };
 
     if (isModal) {
         return (
-            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
-                {/* LEFT SIDEBAR: DARK */}
-                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
-                    {/* Background Pattern */}
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
-
                     <div className="relative z-10 mb-8">
-                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
+                        <h1 className="font-bold text-lg text-[#ED6E3F] flex items-center gap-2 tracking-tight">
                             <Globe className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
                             Registration
                         </h1>
-                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
-                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
-                            <p className="font-bold text-white leading-tight">{plans[selectedPlan]?.title}</p>
-                            <p className="text-[#ED6E3F] font-bold mt-1">₹{plans[selectedPlan]?.price.toLocaleString()}</p>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* VERTICAL STEPPER */}
                     <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
                         {['Company Details', 'Directors', 'Documents', 'Review', 'Payment'].map((step, i) => (
-                            <div key={i}
-                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
-                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
-                            >
+                            <div key={i} onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }} className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}>
                                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
                                     {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
                                 </div>
@@ -361,37 +349,47 @@ const IndianSubsidiaryRegistration = ({ isLoggedIn, isModal = false, planProp, o
                             </div>
                         ))}
                     </div>
-
-                    {/* BOTTOM TOTAL */}
-                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
-                        <div className="flex justify-between items-end">
-                            <div>
-                                <p className="text-[10px] text-blue-200 uppercase">Total Payable</p>
-                                <p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p>
-                            </div>
-                            <CreditCard className="text-white/20" size={24} />
-                        </div>
-                    </div>
                 </div>
 
-                {/* RIGHT CONTENT: FORM */}
+                {/* RIGHT CONTENT */}
                 <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
-                    {/* Header Bar */}
-                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
-                        <h2 className="font-bold text-navy text-lg">
-                            {currentStep === 1 && "Subsidiary Company Details"}
-                            {currentStep === 2 && "Director Information"}
-                            {currentStep === 3 && "Document Upload"}
-                            {currentStep === 4 && "Review Application"}
-                            {currentStep === 5 && "Safe Payment"}
-                        </h2>
-                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition">
-                            <X size={18} />
-                        </button>
+                    {/* Header */}
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            {/* Mobile Price */}
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">Indian Subsidiary</span>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.base) / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Subsidiary Details"}
+                                {currentStep === 2 && "Director Information"}
+                                {currentStep === 3 && "Document Upload"}
+                                {currentStep === 4 && "Review Application"}
+                                {currentStep === 5 && "Complete Payment"}
+                            </h2>
+                        </div>
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4"><X size={20} /></button>
                     </div>
 
-                    {/* Scrollable Area */}
-                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
                         {isSuccess ? (
                             <div className="text-center py-10">
                                 <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
@@ -399,26 +397,14 @@ const IndianSubsidiaryRegistration = ({ isLoggedIn, isModal = false, planProp, o
                                 <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
                                 <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
                             </div>
-                        ) : (
-                            renderStepContent()
-                        )}
+                        ) : renderStepContent()}
                     </div>
 
-                    {/* Sticky Footer */}
                     {!isSuccess && (
                         <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
-                            <button
-                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
-                                disabled={currentStep === 1}
-                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
-                            >
-                                Back
-                            </button>
+                            <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30">Back</button>
                             {currentStep < 5 && (
-                                <button
-                                    onClick={handleNext}
-                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
-                                >
+                                <button onClick={handleNext} className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg hover:-translate-y-0.5 transition flex items-center gap-2 text-sm">
                                     Save & Continue <ArrowRight size={16} />
                                 </button>
                             )}
@@ -429,16 +415,7 @@ const IndianSubsidiaryRegistration = ({ isLoggedIn, isModal = false, planProp, o
         );
     }
 
-    return (
-        <div className={` min-h-screen pb-20 pt-24 px-4 md:px-8 bg-[#F8F9FA]`}>
-            {/* Fallback for non-modal usage (if any) */}
-            <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm">
-                <h1 className="text-2xl font-bold mb-4">Indian Subsidiary Registration</h1>
-                <p>Please use the detailed modal wizard for registration.</p>
-                <button onClick={() => navigate('/')} className="mt-4 text-blue-600 underline">Go Home</button>
-            </div>
-        </div>
-    );
+    return null;
 };
 
 export default IndianSubsidiaryRegistration;

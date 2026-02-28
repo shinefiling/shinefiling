@@ -86,7 +86,7 @@ const ClientSupport = ({ setActiveTab }) => {
                     </div>
                     <h3 className="text-sm font-bold text-[#043E52] dark:text-white mb-0.5">Call Support</h3>
                     <p className="text-slate-500 dark:text-slate-400 text-[9px] mb-2 leading-tight">Speak with your manager.</p>
-                    <p className="text-sm font-mono font-bold text-slate-800 dark:text-white">+91 98765 43210</p>
+                    <p className="text-sm font-mono font-bold text-slate-800 dark:text-white">+91 7639227019</p>
                 </div>
 
                 {/* Email / Ticket */}

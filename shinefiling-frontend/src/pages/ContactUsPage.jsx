@@ -70,7 +70,7 @@ const ContactUsPage = () => {
                             <h3 className="text-xl font-bold text-navy mb-4">Contact Info</h3>
                             <div className="space-y-3">
                                 <p className="flex items-center gap-3 text-sm text-gray-600 font-medium">
-                                    <Phone size={16} className="text-bronze" /> +91 98765 43210
+                                    <Phone size={16} className="text-bronze" /> +91 7639227019
                                 </p>
                                 <p className="flex items-center gap-3 text-sm text-gray-600 font-medium">
                                     <Mail size={16} className="text-bronze" /> support@shinefiling.com
@@ -104,7 +104,7 @@ const ContactUsPage = () => {
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Phone Number</label>
-                                    <input type="text" className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-bronze focus:ring-0 transition-all outline-none text-navy font-medium" placeholder="+91 98765 43210" />
+                                    <input type="text" className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-bronze focus:ring-0 transition-all outline-none text-navy font-medium" placeholder="+91 7639227019" />
                                 </div>
                             </div>
 

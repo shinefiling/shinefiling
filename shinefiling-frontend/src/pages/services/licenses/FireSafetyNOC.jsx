@@ -129,7 +129,7 @@ const FireSafetyNOCPage = ({ isLoggedIn }) => {
                                 <div className="text-center mb-6">
                                     <h3 className="text-navy font-bold text-xl mb-2">New NOC</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">?14,999</h3>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹14,999</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ NOC</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
@@ -265,7 +265,7 @@ const FireSafetyNOCPage = ({ isLoggedIn }) => {
                                 <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
                                 <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
                                 <h3 className="text-xl font-bold text-white mb-2 mt-4">Provisional NOC</h3>
-                                <div className="text-4xl font-black text-white mb-1">?9,999</div>
+                                <div className="text-4xl font-black text-white mb-1">₹9,999</div>
                                 <p className="text-xs text-gray-400 mb-6">+ Govt Fees (Actuals)</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Drawing Review</li>
@@ -278,7 +278,7 @@ const FireSafetyNOCPage = ({ isLoggedIn }) => {
                             {/* Manufacturing */}
                             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
                                 <h3 className="text-xl font-bold text-navy mb-2">Final NOC</h3>
-                                <div className="text-4xl font-black text-navy mb-1">?14,999</div>
+                                <div className="text-4xl font-black text-navy mb-1">₹14,999</div>
                                 <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Site Inspection</li>

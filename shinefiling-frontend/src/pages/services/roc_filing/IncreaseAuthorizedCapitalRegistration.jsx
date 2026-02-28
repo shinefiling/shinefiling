@@ -1,55 +1,66 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     CheckCircle, Upload, Calendar, FileText,
-    ArrowLeft, ArrowRight, IndianRupee, Briefcase, User, Building2, TrendingUp, Users, Scale
+    ArrowLeft, ArrowRight, IndianRupee, Briefcase, Building2, TrendingUp, Users, Scale,
+    X, Info, Shield, Zap, Search, ClipboardList, Clock, CreditCard
 } from 'lucide-react';
-import { uploadFile, submitIncreaseAuthorizedCapital } from '../../../api'; // Need to add to api.js
+import { uploadFile, submitIncreaseAuthorizedCapital } from '../../../api';
 
-const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn }) => {
+const validatePlan = (plan) => {
+    return ['standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'standard';
+};
+
+const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
+    const plans = {
+        standard: { price: 2999, title: 'SH-7 Filing', icon: Zap },
+        premium: { price: 5999, title: 'Fund Raising Bundle', icon: Briefcase }
+    };
+
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const planParam = searchParams.get('plan');
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [planType, setPlanType] = useState('standard');
-
-    // Protect Route
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        const isReallyLoggedIn = isLoggedIn || !!storedUser;
-
-        if (!isReallyLoggedIn) {
-            const plan = searchParams.get('plan') || 'standard';
-            navigate('/login', { state: { from: `/services/roc-filing/increase-authorized-capital/register?plan=${plan}` } });
-        }
-    }, [isLoggedIn, navigate, searchParams]);
+    const [selectedPlan, setSelectedPlan] = useState(() => validatePlan(planProp || planParam));
 
     useEffect(() => {
-        const planParam = searchParams.get('plan');
-        if (planParam && ['standard', 'premium'].includes(planParam.toLowerCase())) {
-            setPlanType(planParam.toLowerCase());
+        const targetPlan = validatePlan(planProp || planParam);
+        if (targetPlan !== selectedPlan) {
+            setSelectedPlan(targetPlan);
         }
-    }, [searchParams]);
+    }, [planParam, planProp, selectedPlan]);
 
     const [formData, setFormData] = useState({
         companyName: '',
         cin: '',
         existingCapital: '',
         newCapital: '',
-        meetingDate: '', // EGM Date
+        meetingDate: ''
     });
 
     const [uploadedFiles, setUploadedFiles] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [automationPayload, setAutomationPayload] = useState(null);
     const [errors, setErrors] = useState({});
 
-    const plans = {
-        standard: { price: 2999, title: 'SH-7 Filing' },
-        premium: { price: 5999, title: 'Fund Raising' }
-    };
+    const billDetails = useMemo(() => {
+        const plan = plans[selectedPlan] || plans.standard;
+        const basePrice = plan.price;
+        const platformFee = Math.round(basePrice * 0.03);
+        const tax = Math.round(basePrice * 0.03);
+        const gst = Math.round(basePrice * 0.09);
+
+        return {
+            base: basePrice,
+            platformFee,
+            tax,
+            gst,
+            total: basePrice + platformFee + tax + gst
+        };
+    }, [selectedPlan]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -61,17 +72,16 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn }) => {
         const newErrors = {};
         let isValid = true;
 
-        if (step === 1) { // Capital Info
-            if (!formData.companyName) { newErrors.companyName = "Company required"; isValid = false; }
-            if (!formData.cin) { newErrors.cin = "CIN required"; isValid = false; }
-            if (!formData.existingCapital) { newErrors.existingCapital = "Existing Capital required"; isValid = false; }
-            if (!formData.newCapital) { newErrors.newCapital = "New Capital required"; isValid = false; }
+        if (step === 1) {
+            if (!formData.companyName) { newErrors.companyName = "Required"; isValid = false; }
+            if (!formData.cin) { newErrors.cin = "Required"; isValid = false; }
+            if (!formData.existingCapital) { newErrors.existingCapital = "Required"; isValid = false; }
+            if (!formData.newCapital) { newErrors.newCapital = "Required"; isValid = false; }
             if (parseFloat(formData.newCapital) <= parseFloat(formData.existingCapital)) {
-                newErrors.newCapital = "New Capital must be greater than Existing"; isValid = false;
+                newErrors.newCapital = "Must be > existing"; isValid = false;
             }
-        }
-        else if (step === 2) { // Resolution Checks
-            if (!formData.meetingDate) { newErrors.meetingDate = "EGM/Resolution Date required"; isValid = false; }
+        } else if (step === 2) {
+            if (!formData.meetingDate) { newErrors.meetingDate = "Required"; isValid = false; }
         }
 
         setErrors(newErrors);
@@ -87,82 +97,90 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn }) => {
     const handleFileUpload = async (e, key) => {
         const file = e.target.files[0];
         if (!file) return;
-
         try {
             const response = await uploadFile(file, 'capital_increase_docs');
             setUploadedFiles(prev => ({
                 ...prev,
-                [key]: {
-                    originalFile: file,
-                    name: response.originalName || file.name,
-                    fileUrl: response.fileUrl,
-                    fileId: response.id
-                }
+                [key]: { originalFile: file, name: response.originalName || file.name, fileUrl: response.fileUrl, fileId: response.id }
             }));
         } catch (error) {
-            console.error("Upload failed", error);
-            alert("File upload failed. Please try again.");
+            alert("Upload failed.");
+        }
+    };
+
+    const submitApplication = async () => {
+        setIsSubmitting(true);
+        try {
+            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({ id: k, filename: v.name, fileUrl: v.fileUrl }));
+            const finalPayload = {
+                submissionId: `ROCCAP-${Date.now()}`,
+                plan: selectedPlan,
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                formData: formData,
+                documents: docsList,
+                amountPaid: billDetails.total,
+                status: "PAYMENT_SUCCESSFUL"
+            };
+            await submitIncreaseAuthorizedCapital(finalPayload);
+            setIsSuccess(true);
+        } catch (error) {
+            alert("Submission error: " + error.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const renderStepContent = () => {
         switch (currentStep) {
-            case 1: // Capital Details
+            case 1: // Capital Structure
                 return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
-                                <TrendingUp size={20} className="text-yellow-600" /> CAPITAL STRUCTURE
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
+                                <TrendingUp size={16} className="text-[#ED6E3F]" /> CAPITAL CONFIGURATION
                             </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1 md:col-span-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Company CIN</label>
+                                    <input type="text" name="cin" value={formData.cin} onChange={handleInputChange} placeholder="U12345MH2024PTC123456" maxLength={21} className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl font-mono tracking-widest uppercase text-sm" />
+                                </div>
+                                <div className="space-y-1 md:col-span-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Company Name</label>
+                                    <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} placeholder="Full Name as per MCA" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl font-bold text-sm" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Existing Auth Capital (₹)</label>
+                                    <input type="number" name="existingCapital" value={formData.existingCapital} onChange={handleInputChange} placeholder="Current Capital" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-sm font-bold" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Proposed New Capital (₹)</label>
+                                    <input type="number" name="newCapital" value={formData.newCapital} onChange={handleInputChange} placeholder="Target Capital" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-sm font-bold" />
+                                </div>
 
-                            <div className="grid md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">Company Name</label>
-                                    <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.companyName ? 'border-red-500' : 'border-gray-200'}`} placeholder="e.g. ABC Pvt Ltd" />
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">CIN</label>
-                                    <input type="text" name="cin" value={formData.cin} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.cin ? 'border-red-500' : 'border-gray-200'}`} placeholder="U12345MH2024PTC123456" maxLength={21} style={{ textTransform: 'uppercase' }} />
-                                </div>
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">Existing Auth Capital (₹)</label>
-                                    <input type="number" name="existingCapital" value={formData.existingCapital} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.existingCapital ? 'border-red-500' : 'border-gray-200'}`} placeholder="e.g. 100000" />
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">Proposed New Capital (₹)</label>
-                                    <input type="number" name="newCapital" value={formData.newCapital} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.newCapital ? 'border-red-500' : 'border-gray-200'}`} placeholder="e.g. 500000" />
-                                </div>
-                            </div>
-
-                            {formData.newCapital && formData.existingCapital && (
-                                <div className="mt-4 p-4 bg-orange-50 text-orange-900 text-sm rounded-xl border border-orange-100 flex items-start gap-3">
-                                    <Scale size={20} className="shrink-0 mt-0.5" />
-                                    <div>
-                                        <strong>Validation Check:</strong> <br />
-                                        Net Increase: <b>₹{(formData.newCapital - formData.existingCapital).toLocaleString()}</b> <br />
-                                        <span className="text-xs opacity-80">Govt Fees will be calculated on this increase amount.</span>
+                                {formData.newCapital && formData.existingCapital && (
+                                    <div className="md:col-span-2 p-4 bg-orange-50 rounded-xl border border-orange-100 flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <Scale size={18} className="text-orange-600" />
+                                            <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest italic">Net Injection: ₹{(formData.newCapital - formData.existingCapital).toLocaleString()}</span>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                     </div>
                 );
 
-            case 2: // Meeting Details
+            case 2: // Approvals
                 return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
-                                <Users size={20} className="text-yellow-600" /> APPROVALS
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
+                                <Users size={16} className="text-[#ED6E3F]" /> SHAREHOLDER COMPLIANCE
                             </h3>
-
-                            <div className="mb-4">
-                                <label className="text-xs font-bold text-gray-500 block mb-1">Date of EGM (Shareholder Meeting)</label>
-                                <input type="date" name="meetingDate" value={formData.meetingDate} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.meetingDate ? 'border-red-500' : 'border-gray-200'}`} />
-                                <p className="text-xs text-gray-400 mt-2">Date when Special Resolution was passed for MOA alteration.</p>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Date of EGM / Special Resolution</label>
+                                <input type="date" name="meetingDate" value={formData.meetingDate} onChange={handleInputChange} className="w-full p-4 bg-slate-50 border border-gray-200 rounded-2xl text-sm font-black" />
+                                <p className="text-[8px] text-gray-400 font-bold uppercase tracking-[0.2em] mt-3 px-1 italic">The date on which shareholders authorized the MOA alteration.</p>
                             </div>
                         </div>
                     </div>
@@ -170,38 +188,30 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn }) => {
 
             case 3: // Uploads
                 return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2"><FileText size={20} className="text-yellow-600" /> DOCUMENTS</h3>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div className="border border-dashed p-6 rounded-xl text-center group hover:border-yellow-300 transition">
-                                    <label className="cursor-pointer block">
-                                        <div className="mb-2 mx-auto w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center text-yellow-500 group-hover:scale-110 transition">
-                                            <FileText size={24} />
-                                        </div>
-                                        <span className="font-bold text-gray-700 block mb-1">Board Resolution</span>
-                                        <span className="text-xs text-gray-400 block mb-4">Signed Scan</span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'board_resolution')} accept=".pdf,.jpg" />
-                                        {uploadedFiles['board_resolution'] ?
-                                            <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">{uploadedFiles['board_resolution'].name}</span> :
-                                            <span className="inline-block px-4 py-2 bg-gray-900 text-white rounded-lg text-xs font-bold">Choose File</span>
-                                        }
+                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
+                                <ClipboardList size={16} className="text-[#ED6E3F]" /> FILING EVIDENCE
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.resolution ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
+                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><FileText size={24} /></div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-700 italic">Certified Board Resolution</p>
+                                    <label className="cursor-pointer">
+                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-md transition-all ${uploadedFiles.resolution ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
+                                            {uploadedFiles.resolution ? 'Change File' : 'Upload Copy'}
+                                        </span>
+                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'resolution')} />
                                     </label>
                                 </div>
-
-                                <div className="border border-dashed p-6 rounded-xl text-center group hover:border-yellow-300 transition">
-                                    <label className="cursor-pointer block">
-                                        <div className="mb-2 mx-auto w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 group-hover:text-yellow-500 transition">
-                                            <FileText size={24} />
-                                        </div>
-                                        <span className="font-bold text-gray-700 block mb-1">Altered MOA</span>
-                                        <span className="text-xs text-gray-400 block mb-4">Capital Clause Updated</span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'altered_moa')} accept=".pdf,.jpg" />
-                                        {uploadedFiles['altered_moa'] ?
-                                            <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">{uploadedFiles['altered_moa'].name}</span> :
-                                            <span className="inline-block px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs font-bold">Choose File</span>
-                                        }
+                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.moa ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
+                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><Scale size={24} /></div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-700 italic">Altered MOA (Draft)</p>
+                                    <label className="cursor-pointer">
+                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-md transition-all ${uploadedFiles.moa ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
+                                            {uploadedFiles.moa ? 'Change File' : 'Upload MOA'}
+                                        </span>
+                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'moa')} />
                                     </label>
                                 </div>
                             </div>
@@ -211,126 +221,178 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn }) => {
 
             case 4: // Payment
                 return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
-                        <div className="w-20 h-20 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-6 text-yellow-600">
-                            <IndianRupee size={32} />
-                        </div>
-                        <h2 className="text-2xl font-black text-[#2B3446] mb-2">Payment Summary</h2>
-                        <p className="text-gray-500 mb-8">Pay professional fee for {plans[planType].title}.</p>
-
-                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="text-gray-500">Service Fee</span>
-                                <span className="text-3xl font-black text-[#2B3446]">₹{plans[planType].price.toLocaleString()}</span>
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 text-center relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                            <div className="w-20 h-20 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-orange-600 shadow-lg shadow-orange-500/10 rotate-2">
+                                <CreditCard size={32} />
                             </div>
-                            <div className="flex justify-between items-end text-xs text-gray-400">
-                                <span>Govt Fee</span>
-                                <span>Actuals Extra</span>
-                            </div>
-                        </div>
+                            <h2 className="text-2xl font-black text-navy mb-2 tracking-tight uppercase italic">Compliance Fee</h2>
+                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-8 opacity-60 italic underline decoration-orange-500 underline-offset-4">SH-7 Professional Service Charge</p>
 
-                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
-                            {isSubmitting ? 'Processing...' : 'Pay & File'}
-                            {!isSubmitting && <ArrowRight size={18} />}
-                        </button>
+                            <div className="bg-slate-50 p-8 rounded-3xl mb-8 space-y-4 font-poppins text-sm border-2 border-white">
+                                <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                    <span>SERVICE TIER</span>
+                                    <span className="px-4 py-1.5 bg-navy text-white rounded-full italic">{plans[selectedPlan].title}</span>
+                                </div>
+                                <div className="h-px bg-slate-200"></div>
+                                <div className="flex justify-between text-2xl font-black text-navy italic underline decoration-[#ED6E3F] decoration-4 underline-offset-8">
+                                    <span className="text-[10px] self-end mb-1 text-slate-400 not-italic font-bold">TOTAL PAYABLE</span>
+                                    <span>₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                                <div className="text-[8px] text-gray-400 font-bold uppercase tracking-widest text-left pt-2 opacity-50">Note: Govt ROC Fees will be calculated separately based on capital slab.</div>
+                            </div>
+
+                            <button
+                                onClick={submitApplication}
+                                disabled={isSubmitting}
+                                className="w-full py-5 bg-navy text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-navy/30 hover:bg-black transition-all flex items-center justify-center gap-3 italic"
+                            >
+                                {isSubmitting ? 'PROCESSING CAPITAL CHANGE...' : 'AUTHORIZE SH-7 FILING'}
+                                {!isSubmitting && <ArrowRight size={20} />}
+                            </button>
+                        </div>
                     </div>
                 );
 
             default: return null;
         }
-    };
+    }
 
-    const submitApplication = async () => {
-        setIsSubmitting(true);
-        try {
-            const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({
-                id: k,
-                filename: v.name,
-                fileUrl: v.fileUrl
-            }));
-
-            const finalPayload = {
-                submissionId: `ROCCAP-${Date.now()}`,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
-                plan: planType,
-                existingCapital: parseFloat(formData.existingCapital),
-                newCapital: parseFloat(formData.newCapital),
-                formData: formData,
-                documents: docsList,
-                status: "PAYMENT_SUCCESSFUL",
-                amountPaid: plans[planType].price
-            };
-
-            const response = await submitIncreaseAuthorizedCapital(finalPayload);
-            setAutomationPayload(response);
-            setIsSuccess(true);
-
-        } catch (error) {
-            console.error(error);
-            alert("Submission error: " + error.message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
+    // --- MODAL LAYOUT: SPLIT VIEW (Left Sidebar + Right Content) ---
     return (
-        <div className="min-h-screen bg-[#F8F9FA] pb-20 pt-24 px-4 md:px-8">
-            {isSuccess ? (
-                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
-                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle size={48} className="text-green-600" />
-                    </div>
-                    <h1 className="text-3xl font-black text-[#2B3446] mb-4">Capital Increase Queued!</h1>
-                    <p className="text-gray-500 mb-8">
-                        Your request to increase authorized capital for <b>{formData.companyName}</b> has been received.
-                        <br />We will draft Form SH-7 and calculate exact ROC fees.
-                    </p>
-                    <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
-                </div>
-            ) : (
-                <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition"><ArrowLeft size={14} /> Back</button>
-                        <h1 className="text-3xl font-black text-[#2B3446]">Increase Authorized Capital</h1>
-                        <p className="text-gray-500">Form SH-7 Filing</p>
-                    </div>
+        <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+            {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+            <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                {/* Background Pattern */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
 
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="w-full lg:w-80 space-y-6">
-                            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                                {['Capital Structure', 'Approvals', 'Documents', 'Payment'].map((step, i) => (
-                                    <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-yellow-50 border-yellow-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
-                                        <div>
-                                            <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
-                                            <span className={`font-bold text-sm ${currentStep === i + 1 ? 'text-yellow-700' : 'text-gray-600'}`}>{step}</span>
-                                        </div>
-                                        {currentStep > i + 1 && <CheckCircle size={16} className="text-green-500" />}
-                                    </div>
-                                ))}
+                <div className="relative z-10 mb-8">
+                    <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
+                        <TrendingUp className="text-[#ED6E3F]" size={20} />
+                        Increase Capital
+                    </h1>
+                    <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                        <div className="relative z-10">
+                            <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                            <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                        </div>
+
+                        <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                            <div className="flex justify-between items-center text-xs group">
+                                <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
                             </div>
-
-                            <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-100 text-xs text-yellow-800">
-                                <strong>Selected Plan:</strong> <br />
-                                <span className="text-lg font-bold">{plans[planType].title}</span>
+                            <div className="flex justify-between items-center text-xs group">
+                                <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                <span className="text-white font-medium font-mono">₹{Math.max(0, billDetails.total - billDetails.base).toLocaleString()}</span>
+                            </div>
+                            <div className="h-px bg-white/10 my-2"></div>
+                            <div className="flex justify-between items-end">
+                                <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
                             </div>
                         </div>
 
-                        <div className="flex-1">
-                            {renderStepContent()}
+                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
+                    </div>
+                </div>
 
-                            {!isSuccess && currentStep < 4 && (
-                                <div className="mt-8 flex justify-between">
-                                    <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
+                {/* VERTICAL STEPPER */}
+                <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                    {['Capital Info', 'Approvals', 'Documents', 'Payment'].map((step, i) => (
+                        <div key={i}
+                            onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                            className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                        >
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                            </div>
+                            <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
 
-                                    <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
-                                        Next Step <ArrowRight size={18} />
-                                    </button>
+            {/* RIGHT CONTENT: FORM */}
+            <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                {/* Header Bar */}
+                <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                    <div className="flex flex-col justify-center">
+                        {/* Mobile: Detailed Service & Price Info */}
+                        <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                            <div className="flex items-center gap-2 truncate">
+                                <span className="font-bold text-slate-800 text-sm truncate">Increase Capital</span>
+                            </div>
+                            <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                    <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
                                 </div>
-                            )}
+                                <div className="w-px h-5 bg-gray-200"></div>
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                    <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.base) / 1000).toFixed(1)}k</span>
+                                </div>
+                                <div className="w-px h-5 bg-gray-200"></div>
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                    <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
                         </div>
+
+                        {/* Desktop: Step Title */}
+                        <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                            {currentStep === 1 && "Capital Structure"}
+                            {currentStep === 2 && "Meeting Verification"}
+                            {currentStep === 3 && "Document Evidence"}
+                            {currentStep === 4 && "Complete Payment"}
+                        </h2>
                     </div>
+
+                    <button onClick={onClose || (() => navigate(-1))} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                        <X size={20} />
+                    </button>
                 </div>
-            )}
+
+                {/* Scrollable Area */}
+                <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                    {isSuccess ? (
+                        <div className="text-center py-10">
+                            <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                            <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                            <p className="text-gray-500 mt-2">Check dashboard for status updates.</p>
+                            <button onClick={onClose || (() => navigate(-1))} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Proceed to Dashboard</button>
+                        </div>
+                    ) : (
+                        renderStepContent()
+                    )}
+                </div>
+
+                {/* Sticky Footer */}
+                {!isSuccess && (
+                    <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                        <button
+                            onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                            disabled={currentStep === 1}
+                            className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                        >
+                            Back
+                        </button>
+                        {currentStep < 4 && (
+                            <button
+                                onClick={handleNext}
+                                className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                            >
+                                Save & Continue <ArrowRight size={16} />
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

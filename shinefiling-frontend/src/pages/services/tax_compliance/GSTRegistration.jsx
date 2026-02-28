@@ -1,20 +1,23 @@
 ﻿import GstRegistration from './GstRegistrationForm';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Truck, Handshake, Banknote } from 'lucide-react';
+import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Truck, Handshake, Banknote, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const GSTRegistrationPage = ({ isLoggedIn }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState('basic');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
     const navigate = useNavigate();
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const faqs = [
-        { q: "Who needs GST Registration?", a: "Businesses with turnover > ?20 Lakhs (Services) or ?40 Lakhs (Goods), or those selling online (E-commerce) or making inter-state sales." },
+        { q: "Who needs GST Registration?", a: "Businesses with turnover > ₹20 Lakhs (Services) or ₹40 Lakhs (Goods), or those selling online (E-commerce) or making inter-state sales." },
         { q: "Is a physical office required?", a: "Yes, you need a proof of address (Electricity Bill/NOC). However, it can be a residential address too if you operate from home." },
-        { q: "What is the penalty for not registering?", a: "Penalty can be 100% of the tax due or ?10,000, whichever is higher, along with potential confiscation of goods." },
+        { q: "What is the penalty for not registering?", a: "Penalty can be 100% of the tax due or ₹10,000, whichever is higher, along with potential confiscation of goods." },
         { q: "Can I register voluntarily?", a: "Yes, voluntary registration is allowed and beneficial for claiming Input Tax Credit (ITC)." },
         { q: "Difference between Regular and Composition?", a: "Regular scheme allows ITC claim but requires monthly returns. Composition scheme has lower tax rates but no ITC and cannot make inter-state sales." },
         { q: "Do I need to file returns if I have no sales?", a: "Yes, filing Nil Returns is mandatory to avoid late fees and penalties." },
@@ -22,17 +25,46 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
     ];
 
     const handlePlanSelect = (plan) => {
+        setSelectedPlan(plan);
         if (isLoggedIn) {
-            setSelectedPlan(plan);
             setShowRegisterModal(true);
         } else {
-            const url = window.location.pathname;
-            navigate('/login', { state: { from: url } });
+            setAuthMode('login');
+            setShowAuthModal(true);
         }
     };
 
     return (
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
+            <AnimatePresence>
+                {showRegisterModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <GstRegistration
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                planProp={selectedPlan}
+                                onClose={() => setShowRegisterModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegisterModal(true);
+                }}
+            />
 
             {/* HERO SECTION - PREMIUM DARK THEME */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -82,9 +114,9 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
                                     <Star size={12} className="fill-bronze" /> Mandatory for Business Growth
                                 </span>
-                                <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6 text-white tracking-tight">
+                                <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
                                     GST <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white italic uppercase">Registration Online</span>
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Registration Online</span>
                                 </h1>
                                 <p className="text-gray-300 text-xl max-w-xl font-light leading-relaxed">
                                     Get your GSTIN number online. Unlock <strong className="text-white font-semibold">Input Tax Credit</strong>, <strong className="text-white font-semibold">Legal Recognition</strong>, and the power to sell on E-commerce platforms like <strong className="text-white font-semibold">Amazon & Flipkart</strong>.
@@ -187,9 +219,10 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 {/* Check List - COMPACT */}
                                 <div className="space-y-3 mb-6 pl-2">
                                     {[
-                                        "GST Application Filing",
-                                        "Document Verification",
-                                        "ARN Generation"
+                                        "GST Application Filing & Tracking",
+                                        "Automated Document Verification",
+                                        "Guaranteed ARN Generation",
+                                        "Expert GSTIN Approval Support"
                                     ].map((item, i) => (
                                         <div key={i} className="flex items-center gap-3">
                                             <div className="bg-green-100 rounded-full p-1 shrink-0">
@@ -218,6 +251,116 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                 </div>
             </div>
 
+            {/* PRICING SECTION */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-5xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Path</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Transparent Pricing Plans</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                        <p className="mt-4 text-slate-500 max-w-2xl mx-auto">
+                            Choose the perfect plan for your business. From basic registration to complete compliance automation.
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {/* Basic Plan */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">Basic</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1">
+                                {[
+                                    "Full GST Application Preparation",
+                                    "Valid Application Filing on Portal",
+                                    "Immediate ARN Reference Handover",
+                                    "Free HSN/SAC Code Consultation",
+                                    "Registration Certificate Assistance",
+                                    "Email Support within 24 Hours"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Choose Quick Start</button>
+                        </motion.div>
+
+                        {/* Standard Plan */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Standard</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹1,499</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹3,000</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                <li className="text-xs font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Basic +</li>
+                                {[
+                                    "3 Months Nil Return Filing",
+                                    "GST Invoicing Format & Training",
+                                    "MSME (Udyam) Registration",
+                                    "Physical Address NOC Guidance",
+                                    "Priority WhatsApp & Call Support",
+                                    "Business Profile Setup on Portal"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Select Business Growth</button>
+                        </motion.div>
+
+                        {/* Premium Plan */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">Premium</h3>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy">₹2,999</span>
+                                <span className="text-slate-400 line-through text-xs">₹5,000</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1">
+                                <li className="text-xs font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">Everything in Standard +</li>
+                                {[
+                                    "6 Months Return Filing (1 & 3B)",
+                                    "Dedicated CA Professional",
+                                    "ITC Reconciliation & Advisory",
+                                    "Notice Monitoring & Reply Help",
+                                    "Registration Amendment Support",
+                                    "Lifetime Credential Management"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Choose Compliance Pro</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
 
@@ -234,7 +377,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 <strong>Goods and Services Tax (GST)</strong> is a unified indirect tax system in India that acts as a comprehensive, destination-based tax on the manufacture, sale, and consumption of goods and services.
                             </p>
                             <p>
-                                GST Registration is mandatory for businesses whose aggregate turnover exceeds <strong>?40 Lakhs (for Goods)</strong> or <strong>?20 Lakhs (for Services)</strong>. However, for certain categories like <strong>Inter-state Sellers</strong>, <strong>E-commerce Operators</strong> (like Amazon/Flipkart sellers), and <strong>Casual Taxable Persons</strong>, registration is compulsory regardless of turnover.
+                                GST Registration is mandatory for businesses whose aggregate turnover exceeds <strong>₹40 Lakhs (for Goods)</strong> or <strong>₹20 Lakhs (for Services)</strong>. However, for certain categories like <strong>Inter-state Sellers</strong>, <strong>E-commerce Operators</strong> (like Amazon/Flipkart sellers), and <strong>Casual Taxable Persons</strong>, registration is compulsory regardless of turnover.
                             </p>
                             <p>
                                 Obtaining a GSTIN (GST Identification Number) not only legalizes your business but also allows you to collect tax from customers and claim <strong>Input Tax Credit (ITC)</strong> on your business purchases, maintaining a healthy cash flow.
@@ -281,7 +424,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-100">
                                     {[
-                                        { f: "Turnover Limit", r: "No limit (Mandatory > ?40L)", c: "Up to ?1.5 Crores only" },
+                                        { f: "Turnover Limit", r: "No limit (Mandatory > ₹40L)", c: "Up to ₹1.5 Crores only" },
                                         { f: "Input Tax Credit", r: "Available (Can claim ITC)", c: "Not Available (Cannot claim ITC)" },
                                         { f: "Inter-state Sales", r: "Allowed", c: "Not Allowed (Intra-state only)" },
                                         { f: "Tax Rate", r: "Standard Rates (5%, 12%, 18%, 28%)", c: "Lower Rates (1% Traders, 5% Restaurants, 6% Service)" },
@@ -306,7 +449,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                             <p className="mb-6 text-gray-600">Mandatory for the following entities:</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
                                 {[
-                                    "Turnover > ?40L (Goods)", "Turnover > ?20L (Services)",
+                                    "Turnover > ₹40L (Goods)", "Turnover > ₹20L (Services)",
                                     "Inter-state Suppliers", "Casual Taxable Persons",
                                     "E-commerce Sellers", "Non-Resident Taxable Persons",
                                     "TDS/TCS Deductors", "Input Service Distributors"
@@ -338,7 +481,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                         <span className="text-navy font-bold text-sm">{item.days}</span>
                                     </div>
                                     <div className="flex-1 flex flex-col justify-center">
-                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
                                             {item.title}
                                         </h3>
                                         <p className="text-slate-600 leading-relaxed text-sm">
@@ -350,113 +493,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans" className="bg-white relative overflow-hidden rounded-3xl p-8 border border-gray-100 shadow-sm">
-                        <div className="text-center mb-16">
-                            <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Path</span>
-                            <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Transparent Pricing Plans</h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
-                        </div>
 
-                        <div className="grid md:grid-cols-3 gap-8 items-center">
-                            {/* Basic */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.1 }}
-                                className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
-                            >
-                                <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
-                                <p className="text-slate-500 text-sm mb-6">Essential for small businesses.</p>
-                                <div className="flex items-baseline gap-1 mb-6">
-                                    <span className="text-4xl font-black text-navy">?999</span>
-                                    <span className="text-slate-400 line-through text-sm">?2000</span>
-                                </div>
-
-                                <ul className="space-y-4 mb-8 flex-1">
-                                    <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500 shrink-0" /> GST Registration</li>
-                                    <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500 shrink-0" /> Application Filing</li>
-                                    <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} className="shrink-0" /> Return Filing</li>
-                                </ul>
-                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
-                                    Select Basic
-                                </button>
-                            </motion.div>
-
-                            {/* Standard */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.2 }}
-                                className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
-                            >
-                                {/* Top Gold Line */}
-                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
-
-                                <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
-                                    Most Popular
-                                </div>
-
-                                <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
-                                <p className="text-gray-400 text-sm mb-6">Complete expert assisted registration.</p>
-                                <div className="flex items-baseline gap-1 mb-6">
-                                    <span className="text-5xl font-black text-white">?1,499</span>
-                                    <span className="text-gray-500 line-through text-sm">?3,000</span>
-                                </div>
-
-                                <ul className="space-y-4 mb-8 flex-1">
-                                    {[
-                                        "Everything in Basic",
-                                        "Document Verification",
-                                        "ARN Generation",
-                                        "Certificate Download",
-                                        "Expert Support"
-                                    ].map((feat, i) => (
-                                        <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
-                                    Choose Standard
-                                </button>
-                            </motion.div>
-
-                            {/* Premium */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.3 }}
-                                className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
-                            >
-                                <h3 className="text-xl font-bold text-navy mb-2">Premium</h3>
-                                <p className="text-slate-500 text-sm mb-6">Registration + 3 Months Compliance.</p>
-                                <div className="flex items-baseline gap-1 mb-6">
-                                    <span className="text-4xl font-black text-navy">?2,999</span>
-                                    <span className="text-slate-400 line-through text-sm">?5,000</span>
-                                </div>
-
-                                <ul className="space-y-4 mb-8 flex-1">
-                                    {[
-                                        "Everything in Standard",
-                                        "3 Months Return Filing",
-                                        "Invoicing Software",
-                                        "Dedicated CA Support"
-                                    ].map((feat, i) => (
-                                        <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                            <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
-                                    Select Premium
-                                </button>
-                            </motion.div>
-                        </div>
-                    </section>
 
                     {/* MANDATORY DELIVERABLES */}
                     <section>
@@ -493,34 +530,6 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                     </section>
 
 
-                    {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
-                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl mb-16">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
-                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling?</h2>
-                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
-                            <div className="space-y-4">
-                                <div className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0"><Award size={24} /></div>
-                                    <div><h4 className="font-bold text-lg">Guaranteed ARN</h4><p className="text-gray-300 text-sm">We ensure your application is error-free, leading to instant ARN generation without rejections.</p></div>
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0"><Zap size={24} /></div>
-                                    <div><h4 className="font-bold text-lg">Fast-Track Filing</h4><p className="text-gray-300 text-sm">Our priority channel ensures your application is filed within 24 hours of document submission.</p></div>
-                                </div>
-                            </div>
-                            <div className="space-y-4">
-                                <div className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0"><Shield size={24} /></div>
-                                    <div><h4 className="font-bold text-lg">Clarification Support</h4><p className="text-gray-300 text-sm">If the Tax Officer raises a query, our CA experts draft the legal reply at no extra cost.</p></div>
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0"><Users size={24} /></div>
-                                    <div><h4 className="font-bold text-lg">Compliance Guide</h4><p className="text-gray-300 text-sm">We don't just register you; we guide you on how to raise invoices and file returns correctly.</p></div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
                     {/* DETAILED SEO CONTENT SECTION */}
                     <section className="mt-20 space-y-12">
                         <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl border border-gray-100">
@@ -528,7 +537,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
 
                             <div className="prose prose-slate max-w-none space-y-8 text-gray-700 leading-relaxed">
                                 <div>
-                                    <h3 className="text-xl font-bold text-navy mb-4">What is GST (Goods and Services Tax)?</h3>
+                                    <h3 className="text-lg font-bold text-navy mb-4">What is GST (Goods and Services Tax)?</h3>
                                     <p>
                                         GST is a comprehensive, multi-stage, destination-based tax that is levied on every value addition. It has simplified the indirect tax structure in India by replacing various taxes like Excise Duty, Service Tax, VAT, and others. Registration for GST is mandatory for businesses that meet certain turnover thresholds or engage in specific types of trade.
                                     </p>
@@ -536,11 +545,11 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
 
                                 <div className="grid md:grid-cols-2 gap-8">
                                     <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-                                        <h3 className="text-xl font-bold text-navy mb-4 flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-4 flex items-center gap-2">
                                             <Building size={20} className="text-bronze" /> Who Must Register?
                                         </h3>
                                         <ul className="space-y-3 list-disc pl-5">
-                                            <li><strong>Threshold Limit:</strong> Service providers with turnover &gt; ?20 Lakhs and Goods suppliers with turnover &gt; ?40 Lakhs.</li>
+                                            <li><strong>Threshold Limit:</strong> Service providers with turnover &gt; ₹20 Lakhs and Goods suppliers with turnover &gt; ₹40 Lakhs.</li>
                                             <li><strong>Inter-state Trade:</strong> Businesses making sales across different states.</li>
                                             <li><strong>E-commerce Sellers:</strong> Anyone selling via platforms like Amazon, Flipkart, or Myntra.</li>
                                             <li><strong>Casual Taxable Persons:</strong> Those who conduct business occasionally in a territory where they have no fixed place.</li>
@@ -548,7 +557,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                         </ul>
                                     </div>
                                     <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-                                        <h3 className="text-xl font-bold text-navy mb-4 flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-4 flex items-center gap-2">
                                             <Zap size={20} className="text-bronze" /> Major Benefits of GST
                                         </h3>
                                         <ul className="space-y-3 list-disc pl-5">
@@ -562,7 +571,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 </div>
 
                                 <div>
-                                    <h3 className="text-xl font-bold text-navy mb-4">Types of GST Registrations</h3>
+                                    <h3 className="text-lg font-bold text-navy mb-4">Types of GST Registrations</h3>
                                     <div className="grid md:grid-cols-3 gap-6">
                                         <div className="p-4 border border-gray-100 rounded-xl hover:shadow-md transition">
                                             <h4 className="font-bold text-bronze mb-2">Regular Taxpayer</h4>
@@ -570,7 +579,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                         </div>
                                         <div className="p-4 border border-gray-100 rounded-xl hover:shadow-md transition">
                                             <h4 className="font-bold text-bronze mb-2">Composition Scheme</h4>
-                                            <p className="text-sm">For small businesses with turnover up to ?1.5 Cr. Lower tax rates but no ITC benefits.</p>
+                                            <p className="text-sm">For small businesses with turnover up to ₹1.5 Cr. Lower tax rates but no ITC benefits.</p>
                                         </div>
                                         <div className="p-4 border border-gray-100 rounded-xl hover:shadow-md transition">
                                             <h4 className="font-bold text-bronze mb-2">Non-Resident Taxable</h4>
@@ -579,22 +588,23 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                     </div>
                                 </div>
 
-                                <div className="bg-navy/5 p-8 rounded-3xl border border-navy/10 mt-12">
-                                    <h3 className="text-2xl font-bold text-navy mb-6">Why Choose ShineFiling for GST Registration?</h3>
-                                    <p className="mb-6">
-                                        ShineFiling simplifies the complex GST registration process, ensuring 100% accuracy and fast approval. Our team of expert CAs and tax professionals handles everything from documentation to follow-ups with GST officers.
-                                    </p>
-                                    <div className="grid sm:grid-cols-2 gap-4">
+                                <div className="bg-[#043E52] p-8 md:p-10 rounded-3xl mt-12">
+                                    <h3 className="text-3xl font-bold mb-8 text-center text-[#CFD3D9]">Why Choose ShineFiling?</h3>
+                                    <div className="grid md:grid-cols-2 gap-8">
                                         {[
-                                            "Expert Documentation Review",
-                                            "End-to-end Application Tracking",
-                                            "Post-Registration Support",
-                                            "Notice Resolution & Compliance",
-                                            "Dedicated Account Manager",
-                                            "Lowest Professional Fees"
-                                        ].map((item, idx) => (
-                                            <div key={idx} className="flex items-center gap-2 text-navy/80 font-medium">
-                                                <CheckCircle size={18} className="text-green-600" /> {item}
+                                            { title: "Guaranteed ARN", icon: Award, desc: "We ensure your application is error-free, leading to instant ARN generation without rejections." },
+                                            { title: "Fast-Track Filing", icon: Zap, desc: "Our priority channel ensures your application is filed within 24 hours of document submission." },
+                                            { title: "Clarification Support", icon: Shield, desc: "If the Tax Officer raises a query, our CA experts draft the legal reply at no extra cost." },
+                                            { title: "Compliance Guide", icon: Users, desc: "We don't just register you; we guide you on how to raise invoices and file returns correctly." }
+                                        ].map((item, i) => (
+                                            <div key={i} className="flex gap-4">
+                                                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                                                    <item.icon className="text-[#CFD3D9]" size={24} />
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-lg mb-2 text-[#CFD3D9]">{item.title}</h4>
+                                                    <p className="text-[#CFD3D9] text-sm leading-relaxed">{item.desc}</p>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -674,9 +684,9 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 </div>
                             </div>
 
-                            <div className="mt-8 bg-beige/10 p-4 rounded-xl border border-blue-100">
+                            <div className="mt-8 bg-blue-50 p-4 rounded-xl border border-blue-100">
                                 <p className="text-xs text-blue-800 font-medium leading-relaxed flex gap-2">
-                                    <span className="text-lg">??</span>
+                                    <Lightbulb size={24} className="text-blue-600 shrink-0" />
                                     <span><strong>Pro Tip:</strong> The Electricity Bill must be recent (less than 2 months old) and clearly show the owner's name.</span>
                                 </p>
                             </div>
@@ -694,7 +704,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400 uppercase">Call Us</p>
-                                    <p className="font-bold">+91 98765 43210</p>
+                                    <p className="font-bold">+91 7639227019</p>
                                 </div>
                             </div>
                             <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
@@ -702,15 +712,7 @@ const GSTRegistrationPage = ({ isLoggedIn }) => {
                     </div>
                 </div>
 
-                <AnimatePresence>
-                    {showRegisterModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                            <div className="relative w-full max-w-6xl max-h-[95vh] rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 bg-white ring-1 ring-white/20">
-                                <GstRegistration isLoggedIn={isLoggedIn} isModal={true} initialPlan={selectedPlan} onClose={() => setShowRegisterModal(false)} />
-                            </div>
-                        </div>
-                    )}
-                </AnimatePresence>
+
             </div>
         </div>
     );

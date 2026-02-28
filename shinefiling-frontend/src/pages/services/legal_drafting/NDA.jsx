@@ -246,8 +246,8 @@ const NDA = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
                             <p className="text-slate-500 text-sm mb-6">Simple Unilateral NDA.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?499</span>
-                                <span className="text-slate-400 line-through text-sm">?800</span>
+                                <span className="text-4xl font-black text-navy">₹499</span>
+                                <span className="text-slate-400 line-through text-sm">₹800</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -273,8 +273,8 @@ const NDA = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
                             <p className="text-gray-400 text-sm mb-6">Mutual / Employee NDA.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?999</span>
-                                <span className="text-gray-500 line-through text-sm">?1,500</span>
+                                <span className="text-5xl font-black text-white">₹999</span>
+                                <span className="text-gray-500 line-through text-sm">₹1,500</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -297,8 +297,8 @@ const NDA = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Premium / Custom</h3>
                             <p className="text-slate-500 text-sm mb-6">Complex Deals / M&A.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?2,499</span>
-                                <span className="text-slate-400 line-through text-sm">?4,000</span>
+                                <span className="text-4xl font-black text-navy">₹2,499</span>
+                                <span className="text-slate-400 line-through text-sm">₹4,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">

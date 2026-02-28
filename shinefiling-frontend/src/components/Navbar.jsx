@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { getDashboardPath } from '../utils/permissions';
 import { ChevronDown, Menu, X, Search, User, Bell, LogOut, ArrowRight, FileText, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SERVICE_DATA } from '../data/services';
@@ -303,7 +304,7 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
 
     return (
         <>
-            <div className={`fixed w-full z-50 top-0 left-0 transition-all duration-500 ease-in-out font-sans ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${(scrolled || !isHome) ? 'bg-white/90 backdrop-blur-md shadow-lg py-1' : 'bg-transparent py-4'}`}>
+            <div className={`fixed w-full z-[100] top-0 left-0 transition-all duration-500 ease-in-out font-sans ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${(scrolled || !isHome) ? 'bg-white/90 backdrop-blur-md shadow-lg py-1' : 'bg-transparent py-4'}`}>
                 {/* SINGLE ROW NAVBAR */}
                 <div className="w-full relative z-50">
                     <div className="max-w-[1600px] mx-auto px-4 lg:px-8 h-20 flex items-center justify-between">
@@ -355,7 +356,7 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 10 }}
                                             transition={{ duration: 0.15 }}
-                                            className="absolute top-full left-0 w-full flex justify-center pt-1 z-[100]"
+                                            className="absolute top-full left-0 w-full flex justify-center pt-1 z-[102]"
                                         >
                                             <div className="w-[95%] max-w-[1000px] bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden flex">
                                                 {/* Left Sidebar: Categories */}
@@ -484,7 +485,7 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                                     transition={{ duration: 0.2 }}
-                                                    className="absolute top-full right-0 mt-4 w-80 bg-white rounded-xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5"
+                                                    className="absolute top-full right-0 mt-4 w-80 bg-white rounded-xl shadow-2xl z-[102] overflow-hidden ring-1 ring-black/5"
                                                 >
                                                     {/* Header */}
                                                     <div className="bg-[#ED6E3F] px-4 py-3 flex items-center justify-between">
@@ -564,14 +565,14 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                                     transition={{ duration: 0.2 }}
-                                                    className="absolute top-full right-0 mt-4 w-56 bg-white border border-slate-100 rounded-xl shadow-xl py-2 z-50 overflow-hidden"
+                                                    className="absolute top-full right-0 mt-4 w-56 bg-white border border-slate-100 rounded-xl shadow-xl py-2 z-[102] overflow-hidden"
                                                 >
                                                     <div className="px-4 py-3 border-b border-slate-50 bg-slate-50/50">
                                                         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Signed in as</p>
                                                         <p className="text-xs font-bold text-[#043E52] truncate">{user?.email}</p>
                                                     </div>
                                                     <Link
-                                                        to={(user?.role?.includes('ADMIN')) ? "/admin-dashboard" : (user?.role === 'AGENT' ? "/agent-dashboard" : "/dashboard")}
+                                                        to={getDashboardPath(user?.role)}
                                                         onClick={() => setShowUserMenu(false)}
                                                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#043E52] transition-colors"
                                                     >
@@ -710,7 +711,7 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                         </div>
                                         <div className="grid grid-cols-2 gap-3">
                                             <Link
-                                                to={user?.role?.includes('ADMIN') ? "/admin-dashboard" : (user?.role === 'AGENT' ? "/agent-dashboard" : "/dashboard")}
+                                                to={getDashboardPath(user?.role)}
                                                 onClick={() => setMobileMenuOpen(false)}
                                                 className="flex items-center justify-center h-10 rounded-lg bg-slate-50 border border-slate-100 text-xs font-bold text-[#043E52] hover:bg-slate-100 transition-colors"
                                             >

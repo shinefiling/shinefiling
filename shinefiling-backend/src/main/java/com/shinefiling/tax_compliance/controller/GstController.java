@@ -5,6 +5,8 @@ import com.shinefiling.tax_compliance.dto.GstRegistrationRequest;
 import com.shinefiling.common.model.ServiceRequest;
 import com.shinefiling.common.repository.ServiceRequestRepository;
 import com.shinefiling.common.service.ServiceRequestService;
+import com.shinefiling.tax.model.GstApplication;
+import com.shinefiling.tax.repository.GstRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,9 @@ public class GstController {
     @Autowired
     private ServiceRequestRepository serviceRequestRepository;
 
+    @Autowired
+    private GstRepository gstRepository;
+
     private static final String SERVICE_NAME = "GST Registration";
 
     @PostMapping("/apply")
@@ -34,9 +39,6 @@ public class GstController {
             if (plan == null)
                 plan = "basic";
 
-            // Validation can be added here if needed (e.g., PAN format check)
-
-            // Generate Automation Tasks
             List<GstRegistrationRequest.AutomationTaskDTO> tasks = generateGstAutomationTasks(plan);
             requestDTO.setAutomationQueue(tasks);
 
@@ -44,7 +46,7 @@ public class GstController {
                 requestDTO.setStatus("PAYMENT_SUCCESSFUL");
             }
 
-            // Serialize and Save
+            // Serialize formData for generic ServiceRequest (backward compatibility)
             String formDataStr = new ObjectMapper().writeValueAsString(requestDTO);
             ServiceRequest createdRequest = serviceRequestService.createRequest(email, SERVICE_NAME, formDataStr);
 
@@ -58,7 +60,41 @@ public class GstController {
             createdRequest.setPaymentStatus("PAID");
             createdRequest.setStatus("PAYMENT_SUCCESSFUL");
 
-            serviceRequestRepository.save(createdRequest);
+            createdRequest = serviceRequestRepository.save(createdRequest);
+
+            // SAVE TO SEPARATE TABLE
+            GstApplication gstApp = new GstApplication();
+            gstApp.setServiceRequestId(createdRequest.getId().toString()); // Map to the SR
+            gstApp.setUser(createdRequest.getUser());
+            gstApp.setStatus(createdRequest.getStatus());
+            gstApp.setPlan(plan);
+
+            // Extract from DTO
+            if (requestDTO.getFormData() != null) {
+                gstApp.setLegalName(requestDTO.getFormData().getLegalName());
+                gstApp.setTradeName(requestDTO.getFormData().getTradeName());
+                gstApp.setBusinessType(requestDTO.getFormData().getBusinessType());
+                gstApp.setNatureOfBusiness(requestDTO.getFormData().getNatureOfBusiness());
+                gstApp.setTurnoverEstimate(requestDTO.getFormData().getEstimatedTurnover());
+
+                String fullAddress = requestDTO.getFormData().getAddressLine1();
+                if (requestDTO.getFormData().getAddressLine2() != null
+                        && !requestDTO.getFormData().getAddressLine2().isEmpty()) {
+                    fullAddress += ", " + requestDTO.getFormData().getAddressLine2();
+                }
+                fullAddress += ", " + requestDTO.getFormData().getState() + " - "
+                        + requestDTO.getFormData().getPincode();
+                gstApp.setBusinessAddress(fullAddress);
+            }
+
+            // Save documents to server table
+            if (requestDTO.getDocuments() != null) {
+                for (GstRegistrationRequest.UploadedDocumentDTO doc : requestDTO.getDocuments()) {
+                    gstApp.getUploadedDocuments().put(doc.getId(), doc.getFileUrl());
+                }
+            }
+
+            gstRepository.save(gstApp);
 
             return ResponseEntity.ok(createdRequest);
         } catch (Exception e) {
@@ -88,7 +124,16 @@ public class GstController {
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestBody Map<String, String> payload) {
         try {
-            return ResponseEntity.ok(serviceRequestService.updateStatus(id, payload.get("status")));
+            // Update ServiceRequest
+            ServiceRequest updated = serviceRequestService.updateStatus(id, payload.get("status"));
+
+            // Also update GstApplication table
+            gstRepository.findByServiceRequestId(id.toString()).ifPresent(gstApp -> {
+                gstApp.setStatus(payload.get("status"));
+                gstRepository.save(gstApp);
+            });
+
+            return ResponseEntity.ok(updated);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
@@ -143,6 +188,3 @@ public class GstController {
         }
     }
 }
-
-
-

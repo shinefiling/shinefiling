@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import {
-    DollarSign, Download, CreditCard, RefreshCcw, CheckCircle,
+    IndianRupee, Download, CreditCard, RefreshCcw, CheckCircle,
     ArrowUpRight, ArrowDownLeft, Search, Filter, FileText, AlertCircle,
     Calendar, MoreVertical, ChevronDown, PieChart as PieChartIcon, TrendingUp,
     Wallet, Landmark, Receipt, ExternalLink, ArrowRight, Plus
@@ -175,7 +175,7 @@ const PaymentFinance = () => {
                             label="Total Revenue"
                             value={`₹${((financialData?.stats?.revenue?.total || 0) / 100000).toFixed(2)}L`}
                             subtext={`+${financialData?.stats?.revenue?.growth || 0}% vs last month`}
-                            icon={DollarSign}
+                            icon={IndianRupee}
                             color={{ bg: 'bg-emerald-50', text: 'text-emerald-600' }}
                         />
                         <StatCard

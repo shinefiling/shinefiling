@@ -36,14 +36,8 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
         if (isLoggedIn) {
             setShowRegisterModal(true);
         } else {
-            // Check if user is logged in via localStorage as a fallback
-            const storedUser = localStorage.getItem('user');
-            if (storedUser) {
-                setShowRegisterModal(true);
-            } else {
-                setAuthMode('login');
-                setShowAuthModal(true);
-            }
+            setAuthMode('login');
+            setShowAuthModal(true);
         }
     };
 
@@ -63,27 +57,7 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                     <div className="absolute inset-0 bg-gradient-to-t from-navy to-transparent"></div>
                 </div>
 
-                {/* Animated Background Elements */}
-                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                    <motion.div
-                        animate={{
-                            scale: [1, 1.2, 1],
-                            opacity: [0.1, 0.2, 0.1],
-                            rotate: [0, 45, 0]
-                        }}
-                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-bronze/20 rounded-full blur-[120px]"
-                    />
-                    <motion.div
-                        animate={{
-                            scale: [1, 1.1, 1],
-                            opacity: [0.1, 0.15, 0.1],
-                            x: [0, -50, 0]
-                        }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/20 rounded-full blur-[100px]"
-                    />
-                </div>
+
 
                 <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
@@ -124,11 +98,11 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <Users size={20} />
+                                        <Star size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Trusted By</p>
-                                        <p className="font-bold text-sm text-white">10k+ Founders</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Google Rating</p>
+                                        <p className="font-bold text-sm text-white">4.9/5 Stars</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -236,30 +210,29 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
 
             {/* --- PRICING SECTION (3 PLANS) --- */}
             <section id="pricing-section" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
-                <div className="max-w-7xl mx-auto relative z-10">
+                <div className="max-w-5xl mx-auto relative z-10">
                     <div className="text-center mb-16">
                         <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Solo Entrepreneurship</span>
                         <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">OPC Registration Plans</h2>
                         <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                    <div className="grid md:grid-cols-3 gap-8">
                         {/* PLAN 1: BASIC */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Startup</h3>
-                            <p className="text-slate-500 text-sm mb-6">Foundational setup for solo founders.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹4,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹8,000</span>
+                            <h3 className="text-lg font-bold text-navy mb-2">Startup</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹4,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">₹8,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1 text-slate-700">
                                 {[
                                     "1 Digital Signature (DSC)",
                                     "1 Director PIN (DIN)",
@@ -269,53 +242,49 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                                     "PAN & TAN Allocation",
                                     "Nominee Consent Filing (INC-3)"
                                 ].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
                                 Choose Startup
                             </button>
                         </motion.div>
 
                         {/* PLAN 2: STANDARD (POPULAR) */}
-                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
-                            {/* Top Gold Line */}
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
-                                Most Popular
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Standard</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹9,999</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹15,000</span>
                             </div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Opc</h3>
-                            <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹6,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹12,000</span>
-                            </div>
-
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="text-sm font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Startup +</li>
-                                {["GST Registration",
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                <li className="text-xs font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Startup +</li>
+                                {[
+                                    "GST Registration",
                                     "MSME (Udyam) Registration",
                                     "Share Certificates Issue",
                                     "Bank Account Opening Support",
-                                    "Rubber Stamp (Digital Copy)"].map((feat, i) => (
-                                        <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
-                                        </li>
-                                    ))}
+                                    "Auditor Appointment (ADT-1)"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('growth')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
-                                Get Started
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">
+                                Choose Standard
                             </button>
                         </motion.div>
 
@@ -325,31 +294,30 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Elite</h3>
-                            <p className="text-slate-500 text-sm mb-6">Full business readiness & compliance.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹12,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹20,000</span>
+                            <h3 className="text-lg font-bold text-navy mb-2">Premium</h3>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy">₹19,999</span>
+                                <span className="text-slate-400 line-through text-xs">₹30,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="text-sm font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">Everything in Standard +</li>
+                            <ul className="space-y-3 mb-6 flex-1 text-slate-700">
+                                <li className="text-xs font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">Everything in Standard +</li>
                                 {[
-                                    "1st Year ROC Compliance",
-                                    "Auditor Appointment (ADT-1)",
+                                    "1st Year ROC Compliance (AOC-4, MGT-7)",
+                                    "DIR-3 KYC for Director",
                                     "Commencement of Business (INC-20A)",
                                     "Income Tax Filing (1 Year)",
-                                    "Business Domain & Email (1 Year)"
+                                    "Trademark Filing (1 Class)"
                                 ].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('enterprise')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
-                                Choose Enterprise
+                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
+                                Choose Premium
                             </button>
                         </motion.div>
                     </div>
@@ -383,15 +351,15 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                         <h2 className="text-3xl font-bold text-navy mb-8">Key Benefits of OPC</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Limited Liability", desc: "Your personal assets (home, car) are safe. Liability is limited only to the unpaid share capital of the company.", icon: Shield },
-                                { title: "Complete Control", desc: "You are the single director and shareholder. You have 100% control over decision making with no interference.", icon: User },
-                                { title: "Separate Legal Status", desc: "The OPC can own property/assets in its own name. It has better standing than a proprietorship.", icon: Briefcase },
-                                { title: "Perpetual Succession", desc: "The company lives on through the Nominee even in the event of death or incapacity of the member.", icon: Clock },
-                                { title: "Easy Banking", desc: "Banks and Financial Institutions prefer OPCs over Proprietorships for loans and credits.", icon: Building },
-                                { title: "Brand Protection", desc: "Your company name is protected by the ROC. No one else can use it.", icon: Award },
+                                { title: "Limited Liability Protection", desc: "Your personal assets (home, car) are safe. Liability is limited only to the unpaid share capital of the company, protecting you from business losses.", icon: Shield },
+                                { title: "Complete Control", desc: "You are the single director and shareholder. You have 100% control over decision making with no interference from other partners.", icon: User },
+                                { title: "Separate Legal Entity", desc: "The OPC is a separate legal person from its owner. It can own property, incur debts, and sue or be sued in its own name.", icon: Briefcase },
+                                { title: "Perpetual Succession", desc: "The company lives on through the Nominee even in the event of death or incapacity of the member, ensuring business continuity.", icon: Clock },
+                                { title: "Easy Banking & Funding", desc: "Banks and Financial Institutions prefer OPCs over Proprietorships for loans and credits due to its corporate structure.", icon: Building },
+                                { title: "Brand Protection", desc: "Your company name is protected by the ROC. No one else can use it throughout India, unlike a proprietorship.", icon: Award },
                             ].map((benefit, i) => (
-                                <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-beige transition group">
-                                    <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
+                                <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-bronze/30 transition group">
+                                    <div className="w-14 h-14 rounded-2xl bg-bronze/10 flex items-center justify-center text-bronze flex-shrink-0 transition-all duration-300">
                                         <benefit.icon size={28} />
                                     </div>
                                     <div>
@@ -455,10 +423,10 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                         <h2 className="text-3xl font-bold text-navy mb-8">Registration Process</h2>
                         <div className="space-y-6">
                             {[
-                                { step: "Step 1", title: "DSC & Name Application", days: "Day 1-2", desc: "We apply for Digital Signature Certificate (DSC) and check/reserve your Company Name on MCA." },
-                                { step: "Step 2", title: "Incorporation Filling", days: "Day 3-5", desc: "We draft MOA, AOA, and Nominee Consent (Form INC-3) and file SPICe+ forms with ROC." },
-                                { step: "Step 3", title: "Certificate Issue", days: "Day 6-8", desc: "ROC approves the forms and issues the Certificate of Incorporation (COI), PAN, and TAN." },
-                                { step: "Step 4", title: "Bank & Compliance", days: "Post-Reg", desc: "Support for opening current bank account and 1st year compliance guidance." }
+                                { step: "Step 1", title: "DSC & Name Reservation", days: "Day 1-2", desc: "We apply for Digital Signature Certificate (DSC) for the director and submit a name reservation request (RUN) to the MCA." },
+                                { step: "Step 2", title: "Incorporation & Nominee", days: "Day 3-5", desc: "We draft MOA, AOA, and Nominee Consent (Form INC-3) and file the SPICe+ incorporation forms with the ROC." },
+                                { step: "Step 3", title: "Certificate Issue", days: "Day 6-8", desc: "The ROC approves the forms and issues the Certificate of Incorporation (COI), along with PAN, TAN, and DIN." },
+                                { step: "Step 4", title: "Bank & Compliance", days: "Post-Reg", desc: "We assist you in opening a current bank account and guide you on the mandatory auditor appointment." }
                             ].map((item, i) => (
                                 <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
                                     <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
@@ -482,53 +450,45 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
                     </section>
 
 
-                    {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
-                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
-                        {/* Background Deco */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
 
-                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling for OPC?</h2>
-                        <div className="grid md:grid-cols-2 gap-8 relative z-10">
-                            <div className="space-y-4">
-                                <div className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
-                                        <Award size={24} />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-lg">Nominee Guidance</h4>
-                                        <p className="text-gray-300 text-sm">We help you correctly file Form INC-3 for your Nominee, avoiding future legal complications.</p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
-                                        <Zap size={24} />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-lg">Fast Track Filing</h4>
-                                        <p className="text-gray-300 text-sm">Our SPICe+ expert team ensures your OPC is registered in as little as 7 working days.</p>
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Important Post-Incorporation Compliances</h2>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {[
+                                { title: "Auditor Appointment (ADT-1)", desc: "Must be filed within 30 days of incorporation to appoint the first auditor." },
+                                { title: "Commencement of Business (INC-20A)", desc: "Mandatory filing within 180 days after opening a bank account and depositing share capital." },
+                                { title: "Annual Filing (AOC-4 & MGT-7)", desc: "Yearly submission of financial statements and annual returns to the ROC." },
+                                { title: "Income Tax Filing (ITR-6)", desc: "Company must file its income tax return annually before the due date." }
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                                    <div className="flex items-start gap-4">
+                                        <div className="bg-red-50 text-red-600 p-3 rounded-lg shrink-0"><FileText size={20} /></div>
+                                        <div>
+                                            <h4 className="font-bold text-navy text-sm mb-1">{item.title}</h4>
+                                            <p className="text-xs text-gray-500 leading-relaxed font-medium">{item.desc}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="space-y-4">
-                                <div className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
-                                        <Shield size={24} />
+                            ))}
+                        </div>
+                    </section>
+
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Why Choose ShineFiling?</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {[
+                                { title: "100% Online Process", icon: Globe },
+                                { title: "Expert Nominee Guidance", icon: Users },
+                                { title: "Bank-Grade Security", icon: Shield },
+                                { title: "No Hidden Costs", icon: Banknote }
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                                    <div className="w-14 h-14 mx-auto bg-navy/5 rounded-full flex items-center justify-center text-navy mb-4 group-hover:bg-navy group-hover:text-white transition-colors">
+                                        <item.icon size={28} />
                                     </div>
-                                    <div>
-                                        <h4 className="font-bold text-lg">Audit Assistance</h4>
-                                        <p className="text-gray-300 text-sm">We provide connections to CAs for your mandatory annual statutory audit at affordable rates.</p>
-                                    </div>
+                                    <h4 className="font-bold text-navy text-sm">{item.title}</h4>
                                 </div>
-                                <div className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-bronze shrink-0">
-                                        <Users size={24} />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-lg">Lifetime Compliance Partner</h4>
-                                        <p className="text-gray-300 text-sm">From registration to conversion (if you grow big), we are with you at every step.</p>
-                                    </div>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </section>
 
@@ -589,18 +549,18 @@ const OpcPage = ({ isLoggedIn, onLogout }) => {
 
                         {/* Support Card */}
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">Need Help?</h4>
+                            <h4 className="font-bold text-lg text-bronze mb-2">Need Help?</h4>
                             <p className="text-gray-300 text-sm mb-4">Our experts are available 24/7 to guide you through the process.</p>
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                                     <Users size={20} className="text-yellow-400" />
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-400 uppercase">Call Us</p>
-                                    <p className="font-bold">+91 98765 43210</p>
+                                    <p className="text-xs text-gray-400 uppercase">Chat Support</p>
+                                    <p className="font-bold text-white">+91 7639227019</p>
                                 </div>
                             </div>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
+                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">WhatsApp Now</button>
                         </div>
                     </div>
                 </div>

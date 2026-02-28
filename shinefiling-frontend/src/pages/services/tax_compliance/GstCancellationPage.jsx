@@ -36,12 +36,12 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
             <AnimatePresence>
                 {showRegistrationModal && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6 overflow-hidden">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                            className="bg-white rounded-[2.5rem] w-full max-w-7xl max-h-[90vh] overflow-hidden shadow-2xl relative flex flex-col"
                         >
                             <GstCancellationRegistration
                                 isLoggedIn={isLoggedIn}
@@ -238,16 +238,16 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Basic Exit</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Basic Exit</h3>
                             <p className="text-slate-500 text-sm mb-6">Simple Registration Surrender.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹999</span>
+                                <span className="text-3xl font-black text-navy">₹999</span>
                                 <span className="text-slate-400 line-through text-lg">₹1,999</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 {[
                                     "Application for Surrender",
                                     "Reason for Closure Drafting",
@@ -255,7 +255,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                     "Online Filing Support"
                                 ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                             </ul>
@@ -270,21 +270,21 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-bronze via-yellow-400 to-bronze rounded-t-3xl"></div>
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-bronze to-yellow-600 text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
                                 Recommended
                             </div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Full Closure</h3>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-2">Full Closure</h3>
                             <p className="text-gray-400 text-sm mb-6">Cancellation + Final Return.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹1,999</span>
+                                <span className="text-3xl font-black text-white">₹1,999</span>
                                 <span className="text-gray-500 line-through text-sm">₹3,499</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 {[
                                     "Everything in Basic",
                                     "Mandatory GSTR-10 (Final Return)",
@@ -293,7 +293,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                     "Priority Handling"
                                 ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
                                     </li>
                                 ))}
                             </ul>
@@ -308,16 +308,16 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Corporate Exit</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Corporate Exit</h3>
                             <p className="text-slate-500 text-sm mb-6">Complex Stock Issues.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹3,499</span>
+                                <span className="text-3xl font-black text-navy">₹3,499</span>
                                 <span className="text-slate-400 line-through text-lg">₹5,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 {[
                                     "Everything in Standard",
                                     "Stock ITC Reversal Calculation",
@@ -326,7 +326,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                     "Compliance Certificate"
                                 ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                             </ul>
@@ -403,7 +403,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                         <span className="text-navy font-bold text-sm">Phase</span>
                                     </div>
                                     <div className="flex-1 flex flex-col justify-center">
-                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
                                             {item.title}
                                         </h3>
                                         <p className="text-slate-600 leading-relaxed text-sm">
@@ -458,7 +458,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
 
                             <div className="prose prose-slate max-w-none space-y-8 text-gray-700 leading-relaxed">
                                 <div>
-                                    <h3 className="text-xl font-bold text-navy mb-4">Navigating the Closure of Your GSTIN</h3>
+                                    <h3 className="text-lg font-bold text-navy mb-4">Navigating the Closure of Your GSTIN</h3>
                                     <p>
                                         Cancelling a GST registration is a critical legal process that must be handled with precision. Whether you are closing your business, changing its legal structure, or your turnover has fallen below the mandatory threshold, surrendering your GSTIN requires a clean settlement of all tax liabilities. Failure to follow the correct procedure can lead to the "Suo-Moto" cancellation by officers, which carries heavy penalties and blocks you from obtaining a new GSTIN in the future.
                                     </p>
@@ -466,7 +466,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
 
                                 <div className="grid md:grid-cols-2 gap-8">
                                     <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-                                        <h3 className="text-xl font-bold text-navy mb-4 flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-4 flex items-center gap-2">
                                             <Building size={20} className="text-bronze" /> Voluntary vs Suo-Moto
                                         </h3>
                                         <ul className="space-y-3 list-disc pl-5 text-sm">
@@ -476,7 +476,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                         </ul>
                                     </div>
                                     <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-                                        <h3 className="text-xl font-bold text-navy mb-4 flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-4 flex items-center gap-2">
                                             <Layers size={20} className="text-bronze" /> The Final Settlement (GSTR-10)
                                         </h3>
                                         <p className="text-sm">
@@ -617,7 +617,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400 uppercase">Call Advisor</p>
-                                    <p className="font-bold">+91 98765 43210</p>
+                                    <p className="font-bold">+91 7639227019</p>
                                 </div>
                             </div>
                         </div>

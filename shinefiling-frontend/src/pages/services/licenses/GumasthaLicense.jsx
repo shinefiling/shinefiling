@@ -129,7 +129,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
                                 <div className="text-center mb-6">
                                     <h3 className="text-navy font-bold text-xl mb-2">Gumastha License</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">?1,499</h3>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹1,499</h3>
                                         <span className="text-lg text-slate-400 font-medium">/ Shop</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
@@ -205,7 +205,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
                             <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
                                 <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
                                 <h3 className="text-xl font-bold text-white mb-2">Standard</h3>
-                                <div className="text-4xl font-black text-white mb-1">?1,499</div>
+                                <div className="text-4xl font-black text-white mb-1">₹1,499</div>
                                 <p className="text-xs text-gray-400 mb-6">+ Govt Fees (Actuals)</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Application Filing</li>
@@ -218,7 +218,7 @@ const GumasthaLicensePage = ({ isLoggedIn }) => {
                             {/* Premium - Large Establishment */}
                             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
                                 <h3 className="text-xl font-bold text-navy mb-2">Registration (10+ Emp)</h3>
-                                <div className="text-4xl font-black text-navy mb-1">?2,999</div>
+                                <div className="text-4xl font-black text-navy mb-1">₹2,999</div>
                                 <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Form B Registration</li>

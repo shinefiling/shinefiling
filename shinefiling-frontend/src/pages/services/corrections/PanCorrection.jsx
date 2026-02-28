@@ -2,7 +2,8 @@
 import { useNavigate } from 'react-router-dom';
 import {
     CheckCircle, User, CreditCard, FileText, RefreshCw, HelpCircle, Shield,
-    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, X, PenTool, Handshake, Banknote
+    BookOpen, Clock, Zap, ChevronRight, Star, ArrowRight, X, PenTool, Handshake, Banknote,
+    AlertTriangle, ThumbsUp, ShieldCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PanCorrectionRegistration from './PanCorrectionRegistration';
@@ -355,9 +356,36 @@ const PanCorrection = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
+                    {/* New Section: Consequences of Incorrect PAN */}
+                    <section>
+                        <div className="bg-red-50 border-l-4 border-red-500 p-8 rounded-r-2xl text-left">
+                            <h3 className="text-xl font-bold text-red-800 mb-4 flex items-center gap-2">
+                                <AlertTriangle className="text-red-600" /> Consequences of Incorrect PAN Details
+                            </h3>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <ul className="space-y-3">
+                                    <li className="flex gap-3 text-sm text-red-900/80">
+                                        <X size={16} className="mt-0.5 shrink-0" /> Rejection of Loan Applications
+                                    </li>
+                                    <li className="flex gap-3 text-sm text-red-900/80">
+                                        <X size={16} className="mt-0.5 shrink-0" /> Issues in Filing Income Tax Returns (ITR)
+                                    </li>
+                                </ul>
+                                <ul className="space-y-3">
+                                    <li className="flex gap-3 text-sm text-red-900/80">
+                                        <X size={16} className="mt-0.5 shrink-0" /> Failure in KYC Verification (Bank/Demat)
+                                    </li>
+                                    <li className="flex gap-3 text-sm text-red-900/80">
+                                        <X size={16} className="mt-0.5 shrink-0" /> Delays in PF Withdrawal & Claims
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* What Can Be Corrected */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">What Can You Correct?</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8 text-left">What Can You Correct?</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
                                 { title: "Name Correction", desc: "Spelling errors or full name change (with proof)." },
@@ -367,7 +395,7 @@ const PanCorrection = ({ isLoggedIn }) => {
                                 { title: "Address Update", desc: "Update communication address for delivering the card." },
                                 { title: "Contact Details", desc: "Update Mobile Number and Email ID for OTPs." },
                             ].map((item, i) => (
-                                <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group">
+                                <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition hover:shadow-lg group text-left">
                                     <div className="flex items-start gap-4">
                                         <CheckCircle size={24} className="text-green-500 shrink-0 mt-1" />
                                         <div>
@@ -380,9 +408,34 @@ const PanCorrection = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
+                    {/* New Section: Detailed Scenarios Table */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8 text-left">Common Correction Scenarios</h2>
+                        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                            <div className="grid grid-cols-12 bg-gray-50 p-4 border-b border-gray-200 font-bold text-navy text-sm uppercase tracking-wide">
+                                <div className="col-span-4 text-left">Scenario</div>
+                                <div className="col-span-4 text-left">What to Submit?</div>
+                                <div className="col-span-4 text-left">Turnaround Time</div>
+                            </div>
+                            {[
+                                { case: "Spelling Mistake in Name", proof: "Aadhaar / Voter ID / Driving License", time: "15-20 Days" },
+                                { case: "Complete Name Change", proof: "Marriage Certificate / Gazette Notification", time: "25-30 Days" },
+                                { case: "Date of Birth Correction", proof: "Birth Certificate / 10th Marksheet", time: "15-20 Days" },
+                                { case: "Father's Name Correction", proof: "Father's Proof / Ration Card", time: "15-20 Days" },
+                                { case: "Signature/Photo Update", proof: "Recent Photo & Sign on Form", time: "15-20 Days" },
+                            ].map((row, idx) => (
+                                <div key={idx} className="grid grid-cols-12 p-4 border-b border-gray-100 text-sm hover:bg-slate-50 transition-colors items-center text-left">
+                                    <div className="col-span-4 font-semibold text-navy">{row.case}</div>
+                                    <div className="col-span-4 text-slate-600">{row.proof}</div>
+                                    <div className="col-span-4 text-green-600 font-bold">{row.time}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
                     {/* Process Section */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Correction Process</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8 text-left">Correction Process</h2>
                         <div className="space-y-6">
                             {[
                                 { step: "Step 1", title: "Fill details", days: "Day 1", desc: "Fill our simple form with the correct details you want on the card." },
@@ -390,7 +443,7 @@ const PanCorrection = ({ isLoggedIn }) => {
                                 { step: "Step 3", title: "Application Filing", days: "Day 2", desc: "We file the correction request with NSDL/UTI." },
                                 { step: "Step 4", title: "Delivery", days: "15-20 Days", desc: "Physical card is dispatched to your address by the department." }
                             ].map((item, i) => (
-                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300">
+                                <div key={i} className="group flex flex-col md:flex-row gap-6 p-6 bg-white rounded-2xl border border-gray-100 hover:border-bronze/30 hover:shadow-lg transition-all duration-300 text-left">
                                     <div className="flex-shrink-0 w-full md:w-32 bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center text-center group-hover:bg-bronze/5 transition-colors">
                                         <div className="w-8 h-8 rounded-full bg-white border border-gray-200 text-bronze font-bold flex items-center justify-center mb-2 shadow-sm">
                                             {i + 1}
@@ -410,9 +463,52 @@ const PanCorrection = ({ isLoggedIn }) => {
                         </div>
                     </section>
 
+                    {/* New Section: Why Choose ShineFiling */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8 text-left">Why Trust ShineFiling?</h2>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 flex gap-4 text-left">
+                                <div className="bg-blue-100 rounded-xl p-3 h-fit text-blue-600">
+                                    <ShieldCheck size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-navy text-lg mb-2">Error-Free Application</h3>
+                                    <p className="text-sm text-slate-600">Our experts verify every detail before submission to ensure zero rejection chances.</p>
+                                </div>
+                            </div>
+                            <div className="bg-amber-50/50 p-6 rounded-2xl border border-amber-100 flex gap-4 text-left">
+                                <div className="bg-amber-100 rounded-xl p-3 h-fit text-amber-600">
+                                    <Zap size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-navy text-lg mb-2">Priority Processing</h3>
+                                    <p className="text-sm text-slate-600">We file correction requests under priority mode for faster approval from the department.</p>
+                                </div>
+                            </div>
+                            <div className="bg-green-50/50 p-6 rounded-2xl border border-green-100 flex gap-4 text-left">
+                                <div className="bg-green-100 rounded-xl p-3 h-fit text-green-600">
+                                    <ThumbsUp size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-navy text-lg mb-2">Dedicated Support</h3>
+                                    <p className="text-sm text-slate-600">Get a dedicated account manager to assist you throughout the correction process.</p>
+                                </div>
+                            </div>
+                            <div className="bg-purple-50/50 p-6 rounded-2xl border border-purple-100 flex gap-4 text-left">
+                                <div className="bg-purple-100 rounded-xl p-3 h-fit text-purple-600">
+                                    <Clock size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-navy text-lg mb-2">Real-time Tracking</h3>
+                                    <p className="text-sm text-slate-600">Track your application status at every step via our dashboard and SMS updates.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* FAQs */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
+                        <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3 text-left">
                             <HelpCircle className="text-bronze" /> Frequently Asked Questions
                         </h2>
                         <div className="space-y-4">
@@ -436,7 +532,7 @@ const PanCorrection = ({ isLoggedIn }) => {
                     <div className="sticky top-32 space-y-8">
 
                         {/* Documents Sidebar */}
-                        <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
+                        <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 text-left">
                             <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
                                 <FileText className="text-bronze" /> Documents Required
                             </h3>
@@ -459,10 +555,25 @@ const PanCorrection = ({ isLoggedIn }) => {
                         </div>
 
                         {/* Support Card */}
-                        <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">Lost PAN?</h4>
-                            <p className="text-gray-300 text-sm mb-4">Don't remember your number? We can help you find it.</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
+                        <div className="bg-gradient-to-br from-[#8B5E3C] to-[#D4AF37] text-white p-8 rounded-3xl shadow-xl shadow-bronze/20 text-left relative overflow-hidden group">
+                            {/* Decorative Background Icon */}
+                            <HelpCircle className="absolute -right-4 -bottom-4 w-32 h-32 text-white/10 -rotate-12 transition-transform group-hover:scale-110" />
+                            <h4 className="font-bold text-2xl mb-2 relative z-10">Lost PAN?</h4>
+                            <p className="text-white/90 text-sm mb-6 relative z-10 leading-relaxed font-medium">Don't remember your number? We can help you find it within minutes.</p>
+                            <div className="space-y-4 relative z-10">
+                                <button className="w-full py-3 bg-white text-bronze hover:bg-navy hover:text-white rounded-xl font-bold text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                                    Compare Plans <ArrowRight size={18} />
+                                </button>
+                                <a
+                                    href="https://wa.me/917639227019"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-3 bg-navy/20 backdrop-blur-md border border-white/30 text-white hover:bg-navy/40 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
+                                >
+                                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                                    Chat: +91 7639227019
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

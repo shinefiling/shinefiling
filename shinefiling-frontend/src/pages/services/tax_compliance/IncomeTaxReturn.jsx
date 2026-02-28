@@ -1,6 +1,6 @@
 ﻿import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, BookOpen, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X } from 'lucide-react';
+import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, BookOpen, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Lightbulb } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const IncomeTaxReturnPage = ({ isLoggedIn }) => {
@@ -9,7 +9,7 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const faqs = [
-        { q: "Is it mandatory to file ITR?", a: "Yes, if your gross income exceeds the basic exemption limit (?2.5L/?3L) or if you want to claim a refund/carry forward losses." },
+        { q: "Is it mandatory to file ITR?", a: "Yes, if your gross income exceeds the basic exemption limit (₹2.5L/₹3L) or if you want to claim a refund/carry forward losses." },
         { q: "What is the due date for ITR?", a: "For most individuals and non-audit cases, it is 31st July of the assessment year." },
         { q: "Can I file ITR after the due date?", a: "Yes, you can file a 'Belated Return' with a late fee until 31st December." },
         { q: "Which ITR form should I choose?", a: "ITR-1 is for salary/house property income. ITR-3/4 is for business/professionals. Our experts will choose the right form for you." },
@@ -134,8 +134,8 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                                 <div className="text-center mb-6">
                                     <h3 className="text-navy font-bold text-xl mb-2">Salaried ITR</h3>
                                     <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">?999</h3>
-                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">?2k</span>
+                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹999</h3>
+                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">₹2k</span>
                                     </div>
                                     <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees may apply</p>
                                 </div>
@@ -206,7 +206,7 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                             {/* Basic */}
                             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
                                 <h3 className="text-xl font-bold text-navy mb-2">Salaried</h3>
-                                <div className="text-3xl font-black text-navy mb-1">?999</div>
+                                <div className="text-3xl font-black text-navy mb-1">₹999</div>
                                 <p className="text-xs text-slate-400 mb-6">+ GST</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Salary Income</li>
@@ -220,7 +220,7 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                             <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
                                 <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
                                 <h3 className="text-xl font-bold text-white mb-2">Business</h3>
-                                <div className="text-3xl font-black text-white mb-1">?1,999</div>
+                                <div className="text-3xl font-black text-white mb-1">₹1,999</div>
                                 <p className="text-xs text-gray-400 mb-6">+ GST</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Business/Profession</li>
@@ -233,7 +233,7 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                             {/* Premium */}
                             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
                                 <h3 className="text-xl font-bold text-navy mb-2">Capital Gains</h3>
-                                <div className="text-3xl font-black text-navy mb-1">?2,999</div>
+                                <div className="text-3xl font-black text-navy mb-1">₹2,999</div>
                                 <p className="text-xs text-slate-400 mb-6">+ GST</p>
                                 <ul className="space-y-3 mb-8 flex-1">
                                     <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Stock Market Gains</li>
@@ -286,7 +286,7 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                                 </div>
                                 <div className="mt-8 bg-beige/10 p-4 rounded-xl border border-blue-100">
                                     <p className="text-xs text-blue-800 font-medium leading-relaxed flex gap-2">
-                                        <span className="text-lg">??</span>
+                                        <Lightbulb size={24} className="text-blue-600 shrink-0" />
                                         <span><strong>Pro Tip:</strong> Linking PAN with Aadhaar is mandatory for filing ITR.</span>
                                     </p>
                                 </div>

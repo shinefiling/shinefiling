@@ -7,17 +7,23 @@ import {
 } from 'lucide-react';
 import { submitCmaDataPreparation, uploadFile } from '../../../api';
 
-const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) => {
+const CmaDataPreparationRegistration = ({ isLoggedIn, isModal = false, onClose, initialData = {}, planProp }) => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        // Login check removed to allow manual entry if user logged out
+    }, []);
+
     // Determine initial plan
-    const queryPlan = searchParams.get('plan') || initialData.plan || 'standard';
+    const queryPlan = searchParams.get('plan') || planProp || initialData.plan || 'standard';
     const [selectedPlan, setSelectedPlan] = useState(queryPlan);
 
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+    const [errors, setErrors] = useState({});
     const [uploadedFiles, setUploadedFiles] = useState({});
 
     const [formData, setFormData] = useState({
@@ -72,7 +78,29 @@ const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) 
     }, [isModal]);
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
+    };
+
+    const validateStep = (step) => {
+        const newErrors = {};
+        let isValid = true;
+        if (step === 1) {
+            const storedUser = localStorage.getItem('user');
+            const isReallyLoggedIn = isLoggedIn || !!storedUser;
+            if (!isReallyLoggedIn) {
+                if (!formData.email) { newErrors.email = "Required"; isValid = false; }
+            }
+            if (!formData.businessName) { newErrors.businessName = "Required"; isValid = false; }
+            if (!formData.bankName) { newErrors.bankName = "Required"; isValid = false; }
+            if (!formData.loanAmount) { newErrors.loanAmount = "Required"; isValid = false; }
+        }
+        if (step === 2) {
+            if (!formData.lastYearTurnover) { newErrors.lastYearTurnover = "Required"; isValid = false; }
+        }
+        setErrors(newErrors);
+        return isValid;
     };
 
     const handleFileUpload = async (e, key) => {
@@ -109,7 +137,7 @@ const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) 
                 status: 'INITIATED'
             };
             await submitCmaDataPreparation(finalPayload);
-            setSuccess(true);
+            setIsSuccess(true);
         } catch (err) {
             alert(err.message || 'Submission failed. Please try again.');
         } finally {
@@ -119,23 +147,54 @@ const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) 
 
     const steps = ['Bank Details', 'Financial Summary', 'Documents', 'Review & Pay'];
 
+    const handleNext = () => {
+        if (validateStep(currentStep)) {
+            setCurrentStep(p => p + 1);
+        }
+    };
+
     if (isModal) {
         return (
-            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
-                {/* LEFT SIDEBAR: DARK */}
-                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                    {/* Background Pattern */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+
                     <div className="relative z-10 mb-8">
-                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
-                            <span className="text-[#ED6E3F]">CMA</span>
-                            Data
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            CMA Data
                         </h1>
-                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
-                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
-                            <p className="font-bold text-white leading-tight">{plans[selectedPlan]?.title}</p>
-                            <p className="text-[#ED6E3F] font-bold mt-1">₹{billDetails.total.toLocaleString()}</p>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
                         </div>
                     </div>
+
+                    {/* VERTICAL STEPPER */}
                     <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
                         {steps.map((step, i) => (
                             <div key={i} onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }} className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}>
@@ -146,35 +205,73 @@ const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) 
                             </div>
                         ))}
                     </div>
-                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
-                        <div className="flex justify-between items-end">
-                            <div><p className="text-[10px] text-blue-200 uppercase">Total Payable</p><p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p></div>
-                            <IndianRupee className="text-white/20" size={24} />
-                        </div>
-                    </div>
                 </div>
-                {/* RIGHT CONTENT */}
+
+                {/* RIGHT CONTENT: FORM */}
                 <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
-                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
-                        <h2 className="font-bold text-navy text-lg">{steps[currentStep - 1]}</h2>
-                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition"><X size={18} /></button>
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            {/* Mobile: Detailed Service & Price Info */}
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">CMA Data Preparation</span>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{billDetails.base.toLocaleString()}</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: Step Title */}
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Bank Details"}
+                                {currentStep === 2 && "Financial Summary"}
+                                {currentStep === 3 && "Documents"}
+                                {currentStep === 4 && "Review & Pay"}
+                            </h2>
+                        </div>
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4"><X size={20} /></button>
                     </div>
-                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
-                        {success ? (
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                        {isSuccess ? (
                             <div className="text-center py-10">
                                 <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
-                                <h2 className="text-2xl font-bold text-navy">Request Logged!</h2>
-                                <p className="text-gray-500 mt-2">Your request for <span className="font-bold text-navy">{plans[selectedPlan].title}</span> has been received.</p>
+                                <h2 className="text-2xl font-bold text-navy">Request Received!</h2>
+                                <p className="text-gray-500 mt-2">Request received for <span className="font-bold text-navy">{plans[selectedPlan].title}</span>.</p>
                                 <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
                             </div>
                         ) : (
                             renderStepContent()
                         )}
                     </div>
-                    {!success && currentStep < 4 && (
+                    {/* Sticky Footer */}
+                    {!isSuccess && currentStep < 4 && (
                         <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
-                            <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30">Back</button>
-                            <button onClick={() => setCurrentStep(p => p + 1)} className="px-6 py-2.5 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2 text-sm">Next Step <ArrowRight size={16} /></button>
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            <button
+                                onClick={handleNext}
+                                className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                            >
+                                Save & Continue <ArrowRight size={16} />
+                            </button>
                         </div>
                     )}
                 </div>
@@ -182,31 +279,39 @@ const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) 
         );
     }
 
-    const renderStepContent = () => {
+    function renderStepContent() {
         switch (currentStep) {
             case 1: // Bank Details
                 return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
-                                <Building size={20} className="text-blue-600" /> LOAN REQUIREMENT
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        {(!isLoggedIn && !localStorage.getItem('user')) && (
+                            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm mb-4">
+                                <h3 className="font-bold text-slate-800 mb-4 text-sm flex items-center gap-2"><User size={16} /> CONTACT DETAILS</h3>
+                                <div className="grid md:grid-cols-2 gap-3">
+                                    <input name="email" value={formData.email} onChange={handleChange} placeholder="Your Email Address" className={`p-2 text-sm border rounded-lg ${errors.email ? 'border-red-500' : ''}`} />
+                                </div>
+                            </div>
+                        )}
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-4 text-sm flex items-center gap-2">
+                                <Building size={16} className="text-[#015A62]" /> LOAN REQUIREMENT
                             </h3>
-                            <div className="grid md:grid-cols-2 gap-4">
+                            <div className="grid md:grid-cols-2 gap-3">
                                 <div className="md:col-span-2">
                                     <label className="text-xs font-bold text-gray-500 mb-1 block">Entity Name</label>
-                                    <input type="text" name="businessName" value={formData.businessName} onChange={handleChange} placeholder="As per PAN" className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 bg-gray-50" />
+                                    <input type="text" name="businessName" value={formData.businessName} onChange={handleChange} placeholder="As per PAN" className={`w-full p-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500 bg-gray-50 ${errors.businessName ? 'border-red-500' : 'border-gray-200'}`} />
                                 </div>
                                 <div>
                                     <label className="text-xs font-bold text-gray-500 mb-1 block">Prospective Bank</label>
-                                    <input type="text" name="bankName" value={formData.bankName} onChange={handleChange} placeholder="e.g. SBI, HDFC, ICICI" className="w-full p-3 rounded-lg border border-gray-200 bg-white" />
+                                    <input type="text" name="bankName" value={formData.bankName} onChange={handleChange} placeholder="e.g. SBI, HDFC, ICICI" className={`w-full p-2 text-sm rounded-lg border bg-white ${errors.bankName ? 'border-red-500' : 'border-gray-200'}`} />
                                 </div>
                                 <div>
                                     <label className="text-xs font-bold text-gray-500 mb-1 block">Requested Loan Amount (₹)</label>
-                                    <input type="text" name="loanAmount" value={formData.loanAmount} onChange={handleChange} placeholder="Total Limit Required" className="w-full p-3 rounded-lg border border-gray-200 bg-white" />
+                                    <input type="text" name="loanAmount" value={formData.loanAmount} onChange={handleChange} placeholder="Total Limit Required" className={`w-full p-2 text-sm rounded-lg border bg-white ${errors.loanAmount ? 'border-red-500' : 'border-gray-200'}`} />
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="text-xs font-bold text-gray-500 mb-1 block">Facility Type</label>
-                                    <select name="loanType" value={formData.loanType} onChange={handleChange} className="w-full p-3 rounded-lg border border-gray-200 bg-white">
+                                    <select name="loanType" value={formData.loanType} onChange={handleChange} className="w-full p-2 text-sm rounded-lg border border-gray-200 bg-white">
                                         <option value="Cash Credit / Overdraft">Working Capital (CC/OD)</option>
                                         <option value="Term Loan">Term Loan (Machinery/Property)</option>
                                         <option value="Letter of Credit / BG">Non-Fund Based (LC/BG)</option>
@@ -220,23 +325,23 @@ const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) 
 
             case 2: // Financial Summary
                 return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
-                                <BarChart size={20} className="text-green-600" /> HISTORICAL DATA
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-4 text-sm flex items-center gap-2">
+                                <BarChart size={16} className="text-[#ED6E3F]" /> HISTORICAL DATA
                             </h3>
-                            <div className="grid md:grid-cols-2 gap-4">
+                            <div className="grid md:grid-cols-2 gap-3">
                                 <div>
                                     <label className="text-xs font-bold text-gray-500 mb-1 block">Last Year Turnover (₹)</label>
-                                    <input type="text" name="lastYearTurnover" value={formData.lastYearTurnover} onChange={handleChange} placeholder="Sales in previous FY" className="w-full p-3 rounded-lg border border-gray-200 bg-white" />
+                                    <input type="text" name="lastYearTurnover" value={formData.lastYearTurnover} onChange={handleChange} placeholder="Sales in previous FY" className={`w-full p-2 text-sm rounded-lg border bg-white ${errors.lastYearTurnover ? 'border-red-500' : 'border-gray-200'}`} />
                                 </div>
                                 <div>
                                     <label className="text-xs font-bold text-gray-500 mb-1 block">Net Profit %</label>
-                                    <input type="text" name="netProfit" value={formData.netProfit} onChange={handleChange} placeholder="Approx Profit Margin" className="w-full p-3 rounded-lg border border-gray-200 bg-white" />
+                                    <input type="text" name="netProfit" value={formData.netProfit} onChange={handleChange} placeholder="Approx Profit Margin" className="w-full p-2 text-sm rounded-lg border border-gray-200 bg-white" />
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="text-xs font-bold text-gray-500 mb-1 block">Existing Bank Debt (₹)</label>
-                                    <input type="text" name="existingDebt" value={formData.existingDebt} onChange={handleChange} placeholder="Current outstanding loans if any" className="w-full p-3 rounded-lg border border-gray-200 bg-white" />
+                                    <input type="text" name="existingDebt" value={formData.existingDebt} onChange={handleChange} placeholder="Current outstanding loans if any" className="w-full p-2 text-sm rounded-lg border border-gray-200 bg-white" />
                                 </div>
                             </div>
                         </div>
@@ -245,25 +350,25 @@ const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) 
 
             case 3: // Documents
                 return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
-                                <FileText size={20} className="text-bronze" /> INPUT DOCUMENTS
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-4 text-sm flex items-center gap-2">
+                                <FileText size={16} className="text-[#015A62]" /> INPUT DOCUMENTS
                             </h3>
-                            <p className="text-sm text-gray-500 mb-6">Required for T-Form and CMA computations.</p>
+                            <p className="text-xs text-gray-500 mb-4">Required for T-Form and CMA computations.</p>
 
-                            <div className="grid md:grid-cols-2 gap-4">
+                            <div className="grid md:grid-cols-2 gap-3">
                                 {['2 Year Audited Balance Sheets', 'Latest Provisional Balance Sheet', 'Sales & Purchases Statement', 'Existing Loan Sanction Letters'].map((label, idx) => {
                                     const key = `doc_${idx}`;
                                     return (
-                                        <div key={idx} className="border border-dashed p-4 rounded-lg flex justify-between items-center group hover:border-blue-300 transition-colors bg-gray-50">
+                                        <div key={idx} className="border border-dashed p-3 rounded-lg flex justify-between items-center group hover:border-blue-300 transition-colors bg-gray-50">
                                             <div className="flex items-center gap-2">
-                                                <Upload size={16} className="text-gray-400 group-hover:text-bronze" />
-                                                <span className="text-sm font-medium text-gray-600">{label}</span>
+                                                <Upload size={14} className="text-gray-400 group-hover:text-bronze" />
+                                                <span className="text-xs font-medium text-gray-600 truncate max-w-[120px]">{label}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                {uploadedFiles[key] && <CheckCircle size={16} className="text-green-500" />}
-                                                <input type="file" onChange={(e) => handleFileUpload(e, key)} className="text-xs w-24 text-slate-400" />
+                                                {uploadedFiles[key] && <CheckCircle size={14} className="text-green-500" />}
+                                                <input type="file" onChange={(e) => handleFileUpload(e, key)} className="text-[10px] w-20 text-slate-400" />
                                             </div>
                                         </div>
                                     )
@@ -275,22 +380,17 @@ const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) 
 
             case 4: // Review
                 return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
-                        <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-navy">
-                            <PieChart size={32} />
+                    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center animate-in zoom-in-95">
+                        <IndianRupee size={32} className="mx-auto mb-4 text-green-600" />
+                        <h2 className="text-xl font-bold text-slate-800 mb-4">Payment Summary</h2>
+                        <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2">
+                            <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-lg font-black text-[#015A62] border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
                         </div>
-                        <h2 className="text-3xl font-bold text-navy mb-2">Review Summary</h2>
-                        <p className="text-gray-500 mb-8">Professional CMA computation for bank approval.</p>
-
-                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Base Price</span><span>₹{billDetails.base.toLocaleString()}</span></div>
-                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Platform Fee</span><span>₹{billDetails.platformFn.toLocaleString()}</span></div>
-                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Tax</span><span>₹{billDetails.tax.toLocaleString()}</span></div>
-                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>GST</span><span>₹{billDetails.gst.toLocaleString()}</span></div>
-                            <div className="border-t pt-2 mt-2 flex justify-between items-end"><span className="text-gray-500 font-bold">Total Payable</span><span className="text-3xl font-bold text-navy">₹{billDetails.total.toLocaleString()}</span></div>
-                        </div>
-
-                        <div className="text-left bg-gray-50 p-4 rounded-xl mb-6 text-sm space-y-2 border border-gray-200">
+                        <div className="text-left bg-gray-50 p-4 rounded-xl mb-4 text-xs space-y-2 border border-gray-200">
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Bank:</span>
                                 <span className="font-semibold">{formData.bankName}</span>
@@ -300,10 +400,11 @@ const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) 
                                 <span className="font-semibold text-blue-600">₹{formData.loanAmount}</span>
                             </div>
                         </div>
-
-                        <button onClick={handleSubmit} disabled={loading} className="w-full py-4 bg-navy text-white rounded-xl font-bold shadow-lg hover:bg-black transition flex items-center justify-center gap-2">
-                            {loading ? 'Processing...' : 'Pay & Prepare CMA Data'}
-                            {!loading && <ArrowRight size={18} />}
+                        <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center">
+                            <input type="checkbox" checked={isTermsAccepted || false} onChange={(e) => setIsTermsAccepted(e.target.checked)} /> I Accept Terms & Conditions
+                        </label>
+                        <button onClick={handleSubmit} disabled={!isTermsAccepted || loading} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50">
+                            {loading ? 'Processing...' : 'Pay & Submit'}
                         </button>
                     </div>
                 );
@@ -312,95 +413,28 @@ const CmaDataPreparationRegistration = ({ isModal, onClose, initialData = {} }) 
         }
     };
 
+    // --- STANDARD FULL PAGE LAYOUT (Kept for fallback/direct access) ---
     return (
-        <div className={isModal ? "bg-[#F8F9FA] p-4 md:p-8" : "min-h-screen bg-[#F8F9FA] pb-20 pt-24 px-4 md:px-8"}>
-            {success ? (
-                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
-                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle size={48} className="text-green-600" />
-                    </div>
-                    <h1 className="text-3xl font-bold text-navy mb-4">Request Logged!</h1>
-                    <p className="text-gray-500 mb-8">
-                        Your request for <span className="font-bold text-navy">CMA Data Preparation</span> has been received.
-                        Reference ID: <span className="font-bold text-blue-600">{formData.submissionId}</span>.
-                        Our loan consultants will contact you shortly to review the financial inputs.
-                    </p>
-                    <button onClick={() => isModal && onClose ? onClose() : navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">
-                        Go to Dashboard
-                    </button>
-                </div>
-            ) : (
-                <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        {!isModal && (
-                            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-navy transition">
-                                <ArrowLeft size={14} /> Back
-                            </button>
-                        )}
-                        <h1 className="text-3xl font-bold text-navy">CMA Data Preparation</h1>
-                        <p className="text-gray-500">Optimized financials for faster loan sanctions.</p>
-                    </div>
-
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        {/* LEFT SIDEBAR */}
-                        <div className="w-full lg:w-80 space-y-6">
-                            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                                {steps.map((step, i) => (
-                                    <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
-                                        <div>
-                                            <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
-                                            <span className={`font-bold text-sm ${currentStep === i + 1 ? 'text-blue-800' : 'text-gray-600'}`}>{step}</span>
-                                        </div>
-                                        {currentStep > i + 1 && <CheckCircle size={16} className="text-green-500" />}
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className={`p-6 rounded-2xl border shadow-sm ${plans[selectedPlan]?.color || 'bg-white'} relative overflow-hidden transition-all sticky top-24`}>
-                                <div className="relative z-10">
-                                    <div className="text-xs font-bold opacity-70 uppercase tracking-widest mb-1">Current Plan</div>
-                                    <div className="text-2xl font-bold mb-2">{plans[selectedPlan]?.title}</div>
-                                    <div className="text-3xl font-black mb-4">₹{plans[selectedPlan]?.price?.toLocaleString()}</div>
-
-                                    <div className="space-y-3 mb-6">
-                                        {plans[selectedPlan]?.features?.map((feat, i) => (
-                                            <div key={i} className="flex gap-2 text-xs font-medium opacity-80">
-                                                <CheckCircle size={14} className="shrink-0 mt-0.5" />
-                                                <span className="leading-tight">{feat}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <PieChart className="absolute -bottom-8 -right-8 w-32 h-32 opacity-10 rotate-12" />
-                            </div>
+        <div className="min-h-screen pb-20 pt-24 px-4 bg-[#F8F9FA]">
+            <div className="max-w-6xl mx-auto">
+                <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-gray-500 font-bold text-xs uppercase"><ArrowLeft size={14} /> Back</button>
+                <div className="flex gap-8">
+                    <div className="w-72 hidden lg:block space-y-4">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
+                            {steps.map((s, i) => (
+                                <div key={i} className={`p-2 rounded ${currentStep === i + 1 ? 'bg-navy text-white' : 'text-gray-500'}`}>{s}</div>
+                            ))}
                         </div>
-
-                        {/* RIGHT FORM CONTENT */}
-                        <div className="flex-1">
-                            {renderStepContent()}
-
-                            {currentStep < 4 && (
-                                <div className="mt-8 flex justify-between">
-                                    <button
-                                        onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
-                                        disabled={currentStep === 1}
-                                        className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50"
-                                    >
-                                        Back
-                                    </button>
-
-                                    <button
-                                        onClick={() => setCurrentStep(p => Math.min(4, p + 1))}
-                                        className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2"
-                                    >
-                                        Next Step <ArrowRight size={18} />
-                                    </button>
-                                </div>
-                            )}
+                    </div>
+                    <div className="flex-1">
+                        {renderStepContent()}
+                        <div className="mt-6 flex justify-between">
+                            <button onClick={() => setCurrentStep(p => p - 1)} disabled={currentStep === 1}>Back</button>
+                            <button onClick={handleNext} className="bg-[#ED6E3F] text-white px-6 py-2 rounded">Next</button>
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

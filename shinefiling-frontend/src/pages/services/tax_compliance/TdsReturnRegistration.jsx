@@ -1,24 +1,17 @@
-﻿
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import {
-    CheckCircle, CreditCard, FileText,
-    User, Upload, Calendar, Trash2, Check, FileCheck,
-    ArrowLeft, ArrowRight, Zap, Building, Clock,
-    Sparkles, AlertCircle, FileBarChart, HardDrive,
-    ShieldCheck, Download, ReceiptText, ClipboardList
-} from 'lucide-react';
-import { useAuth } from '../../../context/AuthContext';
+﻿import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import { CheckCircle, Upload, CreditCard, Building, ArrowLeft, ArrowRight, Shield, IndianRupee, X, Zap, Calendar, ReceiptText, User } from 'lucide-react';
 import { submitTdsReturn } from '../../../api';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../../context/AuthContext';
 
-const TdsReturnRegistration = ({ initialPlan = 'non_salary', onClose }) => {
+const TdsReturnRegistration = ({ initialPlan = 'non_salary', isModal = false, onClose }) => {
     const { state } = useLocation();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const [searchParams] = useSearchParams();
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [selectedPlan, setSelectedPlan] = useState(state?.plan || initialPlan);
+    const [selectedPlan, setSelectedPlan] = useState(state?.plan || searchParams.get('plan') || initialPlan);
 
     const [formData, setFormData] = useState({
         deductorName: user?.name || '',
@@ -29,34 +22,50 @@ const TdsReturnRegistration = ({ initialPlan = 'non_salary', onClose }) => {
     });
 
     const [files, setFiles] = useState({});
-    const [uploadProgress, setUploadProgress] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
-    const steps = [
-        { id: 1, title: 'Form', icon: Zap },
-        { id: 2, title: 'Deductor', icon: Building },
-        { id: 3, title: 'Timeline', icon: Calendar },
-        { id: 4, title: 'Payload', icon: Upload },
-        { id: 5, title: 'Finalize', icon: CreditCard }
-    ];
+    const plans = {
+        salary: { price: 999, title: 'Salary (24Q)', features: ["Employer deduction", "Employee data audit"] },
+        non_salary: { price: 1499, title: 'Non-Salary (26Q)', features: ["Vendor payments", "Rent/Profs."] },
+        nri: { price: 2499, title: 'NRI (27Q)', features: ["Foreign Remittance", "DTAA Rate Audit"] }
+    };
+
+    const billDetails = useMemo(() => {
+        const plan = plans[selectedPlan] || plans.non_salary;
+        const basePrice = plan.price;
+        const platformFee = Math.round(basePrice * 0.03);
+        const tax = Math.round(basePrice * 0.03);
+        const gst = Math.round(basePrice * 0.09);
+        return {
+            base: basePrice,
+            platformFn: platformFee,
+            tax: tax,
+            gst: gst,
+            total: basePrice + platformFee + tax + gst
+        };
+    }, [selectedPlan]);
 
     const handleInputChange = (e) => {
-        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-        setFormData({ ...formData, [e.target.name]: value });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleFileUpload = (e, docName) => {
         const file = e.target.files[0];
         if (file) {
             setFiles(prev => ({ ...prev, [docName]: file }));
-            setUploadProgress(prev => ({ ...prev, [docName]: 100 }));
         }
     };
 
-    const handleSubmit = async () => {
+    const submitApplication = async () => {
+        setIsSubmitting(true);
         const payload = new FormData();
         const requestData = {
             plan: selectedPlan,
-            ...formData
+            ...formData,
+            status: "PAYMENT_SUCCESSFUL",
+            paymentDetails: billDetails
         };
 
         payload.append('data', JSON.stringify(requestData));
@@ -67,299 +76,285 @@ const TdsReturnRegistration = ({ initialPlan = 'non_salary', onClose }) => {
 
         try {
             await submitTdsReturn(payload);
-            setCurrentStep(6);
+            setIsSuccess(true);
         } catch (error) {
             console.error("Submission failed", error);
             alert("Transmission break. Please reconnect and retry.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 5));
-    const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+    const handleNext = () => setCurrentStep(p => Math.min(5, p + 1));
 
-    return (
-        <div className="flex flex-col h-full bg-white font-sans text-navy">
-            {/* PROGRESS BAR */}
-            <div className="px-12 pt-10 pb-6 bg-slate-50/50 border-b border-slate-100 font-poppins">
-                <div className="flex justify-between items-center mb-10">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-purple-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-purple-500/20 rotate-3">
-                            <ClipboardList size={24} />
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-black italic tracking-tighter uppercase">Quarterly TDS filing</h2>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Compliance Protocol v3.2</p>
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 1: return (
+                <div className="space-y-6">
+                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                        <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><Zap size={18} className="text-purple-500" /> Form Type</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {Object.entries(plans).map(([key, plan]) => (
+                                <div key={key} onClick={() => setSelectedPlan(key)} className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedPlan === key ? 'border-[#043E52] bg-blue-50/30' : 'border-gray-100'}`}>
+                                    <h4 className="font-bold text-navy">{plan.title}</h4>
+                                    <p className="font-bold text-lg mb-2">₹{plan.price}</p>
+                                    <ul className="text-xs text-gray-500 space-y-1">
+                                        {plan.features.map((f, i) => <li key={i}>• {f}</li>)}
+                                    </ul>
+                                </div>
+                            ))}
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-3 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors order-last">
-                        <Trash2 size={24} />
-                    </button>
                 </div>
-
-                <div className="flex justify-between relative px-4">
-                    <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -translate-y-1/2 z-0"></div>
-                    <motion.div
-                        className="absolute top-1/2 left-0 h-0.5 bg-purple-500 -translate-y-1/2 z-0"
-                        initial={{ width: '0%' }}
-                        animate={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
-                    ></motion.div>
-
-                    {steps.map((s) => (
-                        <div key={s.id} className="relative z-10 flex flex-col items-center gap-3">
-                            <motion.div
-                                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${currentStep >= s.id ? 'bg-purple-600 border-purple-600 text-white' : 'bg-white border-slate-200 text-slate-400 shadow-inner'}`}
-                            >
-                                {currentStep > s.id ? <Check size={18} /> : <s.icon size={18} />}
-                            </motion.div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest ${currentStep >= s.id ? 'text-purple-700' : 'text-slate-400'}`}>{s.title}</span>
+            );
+            case 2: return (
+                <div className="space-y-6">
+                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                        <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><Building size={18} className="text-purple-500" /> Deductor Profile</h3>
+                        <div className="space-y-3">
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase">Legal Deductor Name</label>
+                                <input name="deductorName" value={formData.deductorName} onChange={handleInputChange} type="text" placeholder="Company or Individual Name" className="w-full p-3 border rounded-lg" />
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase">TAN Number (10 Digits)</label>
+                                <input name="tanNumber" value={formData.tanNumber} onChange={handleInputChange} type="text" placeholder="ABCD12345E" className="w-full p-3 border rounded-lg uppercase" maxLength={10} />
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase">Entity Type</label>
+                                <select name="deductorType" value={formData.deductorType} onChange={handleInputChange} className="w-full p-3 border rounded-lg">
+                                    <option value="Company">Pvt Ltd / Ltd Company</option>
+                                    <option value="Firm">Partnership / LLP</option>
+                                    <option value="Individual">Individual / Proprietor</option>
+                                    <option value="Trust">Trust / NGO</option>
+                                </select>
+                            </div>
                         </div>
-                    ))}
+                    </div>
+                </div>
+            );
+            case 3: return (
+                <div className="space-y-6">
+                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                        <h3 className="font-bold text-navy mb-4 flex items-center gap-2"><Calendar size={18} className="text-purple-500" /> Timeline</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase">Financial Year</label>
+                                <select name="financialYear" value={formData.financialYear} onChange={handleInputChange} className="w-full p-3 border rounded-lg">
+                                    <option value="2024-25">2024-2025</option>
+                                    <option value="2023-24">2023-2024</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase">Filing Quarter</label>
+                                <select name="quarter" value={formData.quarter} onChange={handleInputChange} className="w-full p-3 border rounded-lg">
+                                    <option value="Q1">Q1 (Apr-Jun)</option>
+                                    <option value="Q2">Q2 (Jul-Sep)</option>
+                                    <option value="Q3">Q3 (Oct-Dec)</option>
+                                    <option value="Q4">Q4 (Jan-Mar)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+            case 4: return (
+                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                    <h3 className="font-bold text-navy mb-4">Upload Documents</h3>
+                    <div className="space-y-3">
+                        {[
+                            { label: 'Payment / Deductee List (XLS)', key: 'deductee_data' },
+                            { label: 'Paid Challan Copies (Zip/PDF)', key: 'challan_proof' },
+                            { label: 'Previous Ack. (Optional)', key: 'prev_ack' },
+                            { label: 'Auth Signatory Identity', key: 'auth_id' }
+                        ].map((doc, i) => (
+                            <div key={i} className="border border-dashed p-4 rounded-lg flex justify-between items-center bg-gray-50">
+                                <span className="text-sm font-medium">{doc.label}</span>
+                                <div className="flex items-center gap-3">
+                                    {files[doc.key] && <CheckCircle className="text-green-500" size={16} />}
+                                    <input type="file" id={doc.key} className="hidden" onChange={(e) => handleFileUpload(e, doc.key)} />
+                                    <label htmlFor={doc.key} className="text-xs font-bold px-3 py-1.5 bg-white border rounded cursor-pointer hover:bg-gray-50">
+                                        {files[doc.key] ? 'Change File' : 'Upload'}
+                                    </label>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+            case 5:
+                return (
+                    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                        <IndianRupee size={32} className="mx-auto mb-4 text-green-600" />
+                        <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                        <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2 text-left">
+                            <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
+                        </div>
+                        <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center"><input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} /> I Accept Terms & Conditions</label>
+                        <button onClick={submitApplication} disabled={!isTermsAccepted || isSubmitting} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50">Pay & Submit</button>
+                    </div>
+                );
+        }
+    };
+
+    if (isModal) {
+        return (
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white mb-6">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            TDS Return
+                        </h1>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
+                        </div>
+                    </div>
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {['Form Type', 'Deductor', 'Timeline', 'Payload', 'Finalize'].map((step, i) => (
+                            <div key={i}
+                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                            >
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">TDS Return</span>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.base) / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Form Type"}
+                                {currentStep === 2 && "Deductor Profile"}
+                                {currentStep === 3 && "Timeline Details"}
+                                {currentStep === 4 && "Upload Documents"}
+                                {currentStep === 5 && "Complete Payment"}
+                            </h2>
+                        </div>
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                        {isSuccess ? (
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">We will review your TDS return details shortly.</p>
+                                <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg hover:bg-black transition">Close Window</button>
+                            </div>
+                        ) : (
+                            renderStepContent()
+                        )}
+                    </div>
+
+                    {!isSuccess && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            {currentStep < 5 && (
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                                >
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
+        );
+    }
 
-            {/* FORM AREA */}
-            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar font-poppins">
-                <AnimatePresence mode="wait">
-                    {/* STEP 1: FORM TYPE */}
-                    {currentStep === 1 && (
-                        <motion.div key="step1" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-10">
-                            <div className="bg-purple-50 border border-purple-100 p-8 rounded-[40px] flex items-center justify-between">
-                                <div className="space-y-1">
-                                    <h3 className="text-3xl font-black text-purple-950 italic tracking-tighter uppercase">Statutory Matrix</h3>
-                                    <p className="text-purple-700/60 font-medium text-sm tracking-wide">Select the TDS form applicable to this quarter.</p>
-                                </div>
-                                <Zap className="text-purple-500 animate-pulse" size={40} />
+    return (
+        <div className="min-h-screen pb-20 pt-24 px-4 bg-[#F8F9FA]">
+            <div className="max-w-6xl mx-auto">
+                <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-gray-500 font-bold text-xs uppercase"><ArrowLeft size={14} /> Back</button>
+                <div className="flex gap-8">
+                    <div className="w-72 hidden lg:block space-y-4">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
+                            {['Form Type', 'Deductor', 'Timeline', 'Payload', 'Finalize'].map((s, i) => (
+                                <div key={i} className={`p-2 rounded font-bold text-sm ${currentStep === i + 1 ? 'bg-[#043E52] text-white' : 'text-gray-500'}`}>{s}</div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex-1 bg-transparent">
+                        {isSuccess ? (
+                            <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">We will review your TDS return details shortly.</p>
                             </div>
-
-                            <div className="grid md:grid-cols-3 gap-8 text-left">
-                                {[
-                                    { id: 'salary', name: 'Salary (24Q)', price: '999', features: ["Employer deduction", "Employee data audit"] },
-                                    { id: 'non_salary', name: 'Non-Salary (26Q)', price: '1499', features: ["Vendor payments", "Rent/Profs."] },
-                                    { id: 'nri', name: 'NRI (27Q)', price: '2499', features: ["Foreign Remittance", "DTAA Rate Audit"] }
-                                ].map(p => (
-                                    <div
-                                        key={p.id}
-                                        onClick={() => setSelectedPlan(p.id)}
-                                        className={`p-10 rounded-[45px] border-4 transition-all cursor-pointer relative overflow-hidden group ${selectedPlan === p.id ? 'border-purple-500 bg-purple-50 shadow-2xl scale-105' : 'border-slate-100 hover:border-purple-200'}`}
-                                    >
-                                        {selectedPlan === p.id && <div className="absolute top-0 right-0 bg-purple-500 text-white p-3 rounded-bl-3xl"><CheckCircle size={20} /></div>}
-                                        <h4 className={`text-xl font-black mb-1 uppercase italic ${selectedPlan === p.id ? 'text-purple-900' : 'text-slate-400'}`}>{p.name}</h4>
-                                        <div className="flex items-baseline gap-1 mb-8">
-                                            <span className="text-4xl font-black">₹{p.price}</span>
-                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">/ QUARTER</span>
-                                        </div>
-                                        <div className="space-y-3">
-                                            {p.features.map((f, i) => (
-                                                <div key={i} className="flex gap-3 text-[10px] font-black uppercase text-slate-500 tracking-widest"><Check size={14} className="text-purple-500" /> {f}</div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 2: DEDUCTOR */}
-                    {currentStep === 2 && (
-                        <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-purple-500 pl-6">Deductor Profile</h3>
-
-                            <div className="grid md:grid-cols-2 gap-8 text-left">
-                                <div className="space-y-3 md:col-span-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">Legal Deductor Name</label>
-                                    <div className="relative">
-                                        <Building className="absolute left-6 top-1/2 -translate-y-1/2 text-purple-500" size={24} />
-                                        <input
-                                            name="deductorName"
-                                            value={formData.deductorName}
-                                            onChange={handleInputChange}
-                                            type="text"
-                                            placeholder="Company or Individual Name"
-                                            className="w-full pl-16 pr-6 py-6 bg-slate-50 border-2 border-slate-100 rounded-[30px] font-black focus:border-purple-500 transition-all text-2xl tracking-widest uppercase italic shadow-inner"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">TAN Number (10 Digits)</label>
-                                    <div className="relative">
-                                        <ReceiptText className="absolute left-5 top-1/2 -translate-y-1/2 text-purple-500" size={20} />
-                                        <input
-                                            name="tanNumber"
-                                            value={formData.tanNumber}
-                                            onChange={handleInputChange}
-                                            type="text"
-                                            placeholder="ABCD12345E"
-                                            className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black focus:border-purple-500 transition-all text-xl italic uppercase tracking-widest font-mono"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">Entity Type</label>
-                                    <div className="relative">
-                                        <User className="absolute left-5 top-1/2 -translate-y-1/2 text-purple-500" size={20} />
-                                        <select
-                                            name="deductorType"
-                                            value={formData.deductorType}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black focus:border-purple-500 transition-all text-lg tracking-tight uppercase appearance-none"
-                                        >
-                                            <option value="Company">Pvt Ltd / Ltd Company</option>
-                                            <option value="Firm">Partnership / LLP</option>
-                                            <option value="Individual">Individual / Proprietor</option>
-                                            <option value="Trust">Trust / NGO</option>
-                                        </select>
-                                    </div>
+                        ) : (
+                            <div className="bg-transparent">
+                                {renderStepContent()}
+                                <div className="mt-6 flex justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                    <button onClick={() => setCurrentStep(p => p - 1)} disabled={currentStep === 1} className="px-6 py-2 text-gray-500 font-bold rounded hover:bg-gray-50 disabled:opacity-50">Back</button>
+                                    <button onClick={handleNext} className="bg-[#ED6E3F] text-white px-6 py-2 rounded font-bold hover:shadow-lg transition">Next Step</button>
                                 </div>
                             </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 3: TIMELINE */}
-                    {currentStep === 3 && (
-                        <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-purple-500 pl-6">Statutory Timeline</h3>
-
-                            <div className="grid md:grid-cols-2 gap-8 text-left">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">Financial Year</label>
-                                    <div className="relative">
-                                        <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-purple-500" size={20} />
-                                        <select
-                                            name="financialYear"
-                                            value={formData.financialYear}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black focus:border-purple-500 transition-all text-lg tracking-tight appearance-none italic"
-                                        >
-                                            <option value="2024-25">2024-2025</option>
-                                            <option value="2023-24">2023-2024</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 italic">Filing Quarter</label>
-                                    <div className="relative">
-                                        <Clock className="absolute left-5 top-1/2 -translate-y-1/2 text-purple-500" size={20} />
-                                        <select
-                                            name="quarter"
-                                            value={formData.quarter}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black focus:border-purple-500 transition-all text-lg tracking-tight uppercase appearance-none italic"
-                                        >
-                                            <option value="Q1">Q1 (Apr-Jun)</option>
-                                            <option value="Q2">Q2 (Jul-Sep)</option>
-                                            <option value="Q3">Q3 (Oct-Dec)</option>
-                                            <option value="Q4">Q4 (Jan-Mar)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 4: PAYLOAD */}
-                    {currentStep === 4 && (
-                        <motion.div key="step4" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-purple-500 pl-6 text-left">Filing Payload</h3>
-
-                            <div className="grid md:grid-cols-2 gap-8 text-left">
-                                {[
-                                    { label: 'Payment / Deductee List (XLS)', key: 'deductee_data' },
-                                    { label: 'Paid Challan Copies (Zip/PDF)', key: 'challan_proof' },
-                                    { label: 'Previous Ack. (Optional)', key: 'prev_ack' },
-                                    { label: 'Auth Signatory Identity', key: 'auth_id' }
-                                ].map((doc, i) => (
-                                    <div key={i} className={`p-8 rounded-[40px] border-2 border-dashed transition-all relative ${files[doc.key] ? 'border-purple-500 bg-purple-50' : 'border-slate-200 hover:border-purple-300'}`}>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest">{doc.label}</h4>
-                                            {files[doc.key] && <CheckCircle className="text-purple-600 animate-bounce" size={20} />}
-                                        </div>
-                                        <input type="file" id={doc.key} className="hidden" onChange={(e) => handleFileUpload(e, doc.key)} />
-                                        <label htmlFor={doc.key} className="flex items-center gap-4 cursor-pointer text-navy font-black text-sm uppercase italic">
-                                            <Upload size={20} className="text-purple-500" />
-                                            {files[doc.key] ? files[doc.key].name.substring(0, 20) + '...' : 'Upload Data/File'}
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 5: FINALIZE */}
-                    {currentStep === 5 && (
-                        <motion.div key="step5" initial={{ opacity: 1 }} className="space-y-10 text-center">
-                            <div className="space-y-4 font-poppins text-navy">
-                                <div className="w-24 h-24 bg-purple-100 text-purple-600 rounded-[40px] flex items-center justify-center mx-auto -rotate-12 mb-8 shadow-xl border border-purple-200">
-                                    <ShieldCheck size={48} />
-                                </div>
-                                <h3 className="text-5xl font-black italic tracking-tighter uppercase">TDS Authorization</h3>
-                                <p className="text-slate-400 font-bold uppercase tracking-[0.3em]">Validation sequence ready</p>
-                            </div>
-
-                            <div className="bg-navy rounded-[60px] p-12 text-white relative overflow-hidden group shadow-6xl text-left">
-                                <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-150 transition-transform duration-1000">
-                                    <ClipboardList size={200} />
-                                </div>
-
-                                <div className="grid md:grid-cols-2 gap-12 relative z-10 font-poppins">
-                                    <div className="space-y-8">
-                                        <div>
-                                            <p className="text-purple-400 text-[10px] font-black uppercase tracking-widest mb-2 italic">Deductor TAN</p>
-                                            <p className="text-4xl font-black italic tracking-tighter uppercase font-mono">{formData.tanNumber || 'XXXXXXXXXX'}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-purple-400 text-[10px] font-black uppercase tracking-widest mb-2 italic">Filing Target</p>
-                                            <p className="text-2xl font-black italic uppercase tracking-tighter">{formData.quarter} | FY {formData.financialYear}</p>
-                                        </div>
-                                    </div>
-                                    <div className="bg-white/10 backdrop-blur-3xl rounded-[40px] p-10 flex flex-col justify-center border border-white/10">
-                                        <p className="text-purple-400 text-[10px] font-black uppercase tracking-widest mb-2 italic">Service Fee (Quarterly)</p>
-                                        <div className="flex items-baseline gap-2 mb-6">
-                                            <span className="text-7xl font-black italic tracking-tighter">₹{selectedPlan === 'salary' ? '999' : selectedPlan === 'non_salary' ? '1,499' : '2,499'}</span>
-                                            <span className="text-purple-300 font-bold text-xl">+ GST</span>
-                                        </div>
-                                        <div className="w-full h-px bg-white/20 mb-6"></div>
-                                        <p className="text-[10px] font-medium text-white/60 uppercase tracking-widest italic">Includes portal submission & receipt.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* SUCCESS */}
-                    {currentStep === 6 && (
-                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-20 space-y-10">
-                            <div className="w-32 h-32 bg-purple-600 rounded-[50px] flex items-center justify-center mx-auto text-white shadow-3xl shadow-purple-500/40 rotate-12">
-                                <Check size={64} strokeWidth={4} />
-                            </div>
-                            <div className="space-y-4 font-poppins">
-                                <h3 className="text-6xl font-black italic tracking-tighter uppercase text-navy">Transmission Sent</h3>
-                                <p className="text-slate-400 font-bold uppercase tracking-[0.5em] max-w-md mx-auto">Your TDS return data has been successfully transmitted for portal synchronization.</p>
-                            </div>
-                            <button onClick={() => navigate('/dashboard')} className="px-12 py-6 bg-navy text-white font-black text-xs uppercase tracking-[0.5em] rounded-[2rem] hover:bg-purple-600 transition-all shadow-4xl">Enter Dashboard</button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* ACTION FOOTER */}
-            {currentStep < 6 && (
-                <div className="px-12 py-10 bg-slate-50 flex justify-between items-center border-t border-slate-100 font-poppins">
-                    <button
-                        onClick={prevStep}
-                        disabled={currentStep === 1}
-                        className={`flex items-center gap-3 font-black text-xs uppercase tracking-widest transition-all ${currentStep === 1 ? 'opacity-0' : 'hover:translate-x-[-5px] text-slate-400 hover:text-navy'}`}
-                    >
-                        <ArrowLeft size={18} /> Prev Stage
-                    </button>
-
-                    <button
-                        onClick={currentStep === 5 ? handleSubmit : nextStep}
-                        className="flex items-center gap-6 px-12 py-6 bg-navy text-white font-black text-xs uppercase tracking-[0.5em] rounded-[2rem] hover:bg-purple-600 transition-all shadow-2xl group"
-                    >
-                        {currentStep === 5 ? 'Authorize & Transmit' : 'Next Stage'} <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
-                    </button>
+                        )}
+                    </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

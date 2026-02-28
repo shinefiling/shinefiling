@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     CheckCircle, Upload, CreditCard, FileText, User,
@@ -44,12 +44,28 @@ const Itr1Registration = ({ isLoggedIn, isModal = false, planProp, onClose }) =>
     const [isSuccess, setIsSuccess] = useState(false);
     const [automationPayload, setAutomationPayload] = useState(null);
     const [errors, setErrors] = useState({});
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
     const plans = {
         basic: { price: 499, title: 'Standard Plan', features: ["Form 16 Upload", "Basic Filing"], color: 'bg-white border-slate-200' },
         assisted: { price: 999, title: 'Assisted Plan', features: ["CA Support", "Detailed Review"], recommended: true, color: 'bg-indigo-50 border-indigo-200' },
         premium: { price: 1499, title: 'Premium Plan', features: ["Tax Planning", "Expert Support"], color: 'bg-white border-slate-200' }
     };
+
+    const billDetails = useMemo(() => {
+        const plan = plans[selectedPlan] || plans.basic;
+        const basePrice = plan.price;
+        const platformFee = Math.round(basePrice * 0.03);
+        const tax = Math.round(basePrice * 0.03);
+        const gst = Math.round(basePrice * 0.09);
+        return {
+            base: basePrice,
+            platformFn: platformFee,
+            tax: tax,
+            gst: gst,
+            total: basePrice + platformFee + tax + gst
+        };
+    }, [selectedPlan]);
 
     useEffect(() => { if (planProp) setSelectedPlan(planProp); }, [planProp]);
 
@@ -88,7 +104,7 @@ const Itr1Registration = ({ isLoggedIn, isModal = false, planProp, onClose }) =>
         setIsSubmitting(true);
         try {
             const docsList = Object.entries(uploadedFiles).map(([k, v]) => ({ id: k, filename: v.name, fileUrl: v.fileUrl }));
-            const finalPayload = { plan: selectedPlan, formData: formData, documents: docsList, status: "PAYMENT_SUCCESSFUL" };
+            const finalPayload = { plan: selectedPlan, formData: formData, documents: docsList, status: "PAYMENT_SUCCESSFUL", paymentDetails: billDetails };
             const response = await submitIncomeTaxReturn(finalPayload);
             setAutomationPayload(response);
             setIsSuccess(true);
@@ -143,60 +159,189 @@ const Itr1Registration = ({ isLoggedIn, isModal = false, planProp, onClose }) =>
                 );
             case 4:
                 return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 text-center animate-in zoom-in-95">
-                        <h2 className="text-3xl font-bold text-navy mb-4">Confirm Filing</h2>
-                        <div className="bg-gray-50 p-4 rounded-xl text-left space-y-2 mb-6">
-                            <p className="flex justify-between text-sm"><span className="text-gray-500">Name</span> <span className="font-bold">{formData.fullName}</span></p>
-                            <p className="flex justify-between text-sm"><span className="text-gray-500">Form</span> <span className="font-bold">ITR-1 (Sahaj)</span></p>
-                            <p className="flex justify-between text-sm"><span className="text-gray-500">Plan</span> <span className="font-bold text-bronze-dark">{plans[selectedPlan].title}</span></p>
+                    <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                        <h2 className="text-xl font-bold text-navy mb-4">Confirm Details</h2>
+                        <div className="p-4 bg-gray-50 rounded-lg space-y-2 text-sm">
+                            <div className="flex justify-between"><span>Plan</span><span className="font-bold text-navy">{plans[selectedPlan]?.title}</span></div>
+                            <div className="flex justify-between"><span>Name</span><span className="font-bold">{formData.fullName}</span></div>
+                            <div className="flex justify-between"><span>Form</span><span className="font-bold">ITR-1 (Sahaj)</span></div>
                         </div>
                     </div>
                 );
             case 5:
                 return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 text-center animate-in zoom-in-95">
-                        <div className="w-20 h-20 bg-beige/10 rounded-full flex items-center justify-center mx-auto mb-6"><IndianRupee size={32} /></div>
-                        <h2 className="text-3xl font-bold text-navy mb-4">Pay & Submit</h2>
-                        <p className="text-3xl font-bold text-navy mb-6">₹{plans[selectedPlan].price}</p>
-                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-navy text-white rounded-xl font-bold transition">{isSubmitting ? 'Processing...' : 'Pay Now'}</button>
+                    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                        <IndianRupee size={32} className="mx-auto mb-4 text-green-600" />
+                        <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                        <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2 text-left">
+                            <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
+                        </div>
+                        <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center"><input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} /> I Accept Terms & Conditions</label>
+                        <button onClick={submitApplication} disabled={!isTermsAccepted || isSubmitting} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50">Pay & Submit</button>
                     </div>
                 );
             default: return null;
         }
     };
 
-    return (
-        <div className={`bg-[#F8F9FA] ${isModal ? 'h-full overflow-y-auto p-6' : 'min-h-screen pb-20 pt-24 px-4 md:px-8'}`}>
-            {isSuccess ? (
-                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
-                    <CheckCircle size={48} className="text-green-600 mx-auto mb-4" />
-                    <h1 className="text-2xl font-bold text-navy">ITR-1 Filing Request Submitted!</h1>
-                    <p className="text-gray-500 mb-6">Ref: {automationPayload?.submissionId}</p>
-                    <button onClick={() => isModal ? onClose() : navigate('/dashboard')} className="bg-navy text-white px-6 py-2 rounded-lg">Done</button>
-                </div>
-            ) : (
-                <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
-                    <div className="w-full lg:w-80 space-y-6">
-                        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                            {['Personal Info', 'Income Details', 'Documents', 'Review', 'Payment'].map((step, i) => (
-                                <div key={i} className={`px-4 py-3 rounded-xl border flex justify-between ${currentStep === i + 1 ? 'bg-beige/10 border-beige' : 'border-transparent opacity-60'}`} onClick={() => currentStep > i + 1 && setCurrentStep(i + 1)}>
-                                    <span className="font-bold text-sm text-navy">{step}</span>
-                                    {currentStep > i + 1 && <CheckCircle size={16} className="text-bronze" />}
+    if (isModal) {
+        return (
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white mb-6">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            ITR-1 (Sahaj)
+                        </h1>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
                                 </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
+                        </div>
+                    </div>
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {['Personal Info', 'Income Details', 'Documents', 'Review', 'Payment'].map((step, i) => (
+                            <div key={i}
+                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                            >
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">ITR-1 (Sahaj)</span>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.base) / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Personal Information"}
+                                {currentStep === 2 && "Income Details"}
+                                {currentStep === 3 && "Upload Documents"}
+                                {currentStep === 4 && "Review Application"}
+                                {currentStep === 5 && "Complete Payment"}
+                            </h2>
+                        </div>
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                        {isSuccess ? (
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                                <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg hover:bg-black transition">Close Window</button>
+                            </div>
+                        ) : (
+                            renderStepContent()
+                        )}
+                    </div>
+
+                    {!isSuccess && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            {currentStep < 5 && (
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                                >
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen pb-20 pt-24 px-4 bg-[#F8F9FA]">
+            <div className="max-w-6xl mx-auto">
+                <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-gray-500 font-bold text-xs uppercase"><ArrowLeft size={14} /> Back</button>
+                <div className="flex gap-8">
+                    <div className="w-72 hidden lg:block space-y-4">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
+                            {['Personal Info', 'Income Details', 'Documents', 'Review', 'Payment'].map((s, i) => (
+                                <div key={i} className={`p-2 rounded font-bold text-sm ${currentStep === i + 1 ? 'bg-[#043E52] text-white' : 'text-gray-500'}`}>{s}</div>
                             ))}
                         </div>
                     </div>
-                    <div className="flex-1">
-                        {renderStepContent()}
-                        {!isSuccess && currentStep < 5 && (
-                            <div className="mt-8 flex justify-between">
-                                <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
-                                <button onClick={handleNext} className="px-8 py-3 bg-navy text-white rounded-xl font-bold shadow-lg flex items-center gap-2">Next Step <ArrowRight size={18} /></button>
+                    <div className="flex-1 bg-transparent">
+                        {isSuccess ? (
+                            <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                            </div>
+                        ) : (
+                            <div className="bg-transparent">
+                                {renderStepContent()}
+                                <div className="mt-6 flex justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                    <button onClick={() => setCurrentStep(p => p - 1)} disabled={currentStep === 1} className="px-6 py-2 text-gray-500 font-bold rounded hover:bg-gray-50 disabled:opacity-50">Back</button>
+                                    <button onClick={handleNext} className="bg-[#ED6E3F] text-white px-6 py-2 rounded font-bold hover:shadow-lg transition">Next Step</button>
+                                </div>
                             </div>
                         )}
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

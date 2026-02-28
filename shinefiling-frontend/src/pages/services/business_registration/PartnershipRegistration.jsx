@@ -15,19 +15,37 @@ const PartnershipRegistration = ({ isLoggedIn, isModal = false, planProp, onClos
         basic: {
             price: 2999,
             title: 'Lite Plan',
-            features: ["Custom Deed Drafting", "PAN Card Application", "Legal Consulting", "Affidavit Prep"],
+            features: [
+                "Partnership Deed Drafting",
+                "PAN Card Application",
+                "Initial Consultation",
+                "Affidavit Preparation",
+                "Email Support"
+            ],
             color: 'bg-white border-slate-200'
         },
         standard: {
             price: 5999,
             title: 'Classic Plan',
-            features: ["Everything in Lite", "ROF Filing", "Reg. Certificate", "TAN Allotment", "Priority Support"],
+            features: [
+                "Everything in Lite Plan",
+                "Registration of Firm (ROF)",
+                "TAN Registration",
+                "GST Registration",
+                "Priority Support"
+            ],
             color: 'bg-[#F0F7FF] border-blue-200'
         },
         premium: {
             price: 8999,
             title: 'Complete Plan',
-            features: ["Everything in Classic", "GST Registration", "MSME/Udyam Reg.", "Zero Balance Account"],
+            features: [
+                "Everything in Classic Plan",
+                "MSME (Udyam) Registration",
+                "Business Current Account",
+                "Trademark Filing (1 Class)",
+                "Personal Dedicated Manager"
+            ],
             color: 'bg-[#FDF4FF] border-purple-200'
         }
     };
@@ -66,7 +84,6 @@ const PartnershipRegistration = ({ isLoggedIn, isModal = false, planProp, onClos
             }
         }
     }, [searchParams, planProp]);
-
     const [formData, setFormData] = useState({
         firmNameOption1: '',
         firmNameOption2: '',
@@ -92,6 +109,21 @@ const PartnershipRegistration = ({ isLoggedIn, isModal = false, planProp, onClos
         ]
     });
 
+    useEffect(() => {
+        const storedUser = user || JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            setFormData(prev => ({
+                ...prev,
+                partners: prev.partners.map((p, i) => i === 0 ? {
+                    ...p,
+                    name: p.name || storedUser.name || storedUser.fullName || '',
+                    email: p.email || storedUser.email || '',
+                    mobile: p.mobile || storedUser.mobile || storedUser.phoneNumber || ''
+                } : p)
+            }));
+        }
+    }, [user]);
+
     const [files, setFiles] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -103,17 +135,12 @@ const PartnershipRegistration = ({ isLoggedIn, isModal = false, planProp, onClos
         const plan = plans[planKey];
         const basePrice = plan.price;
 
-        // User Request: Total extra is 15% split into Platform Fee, Tax, and GST
-        const platformFee = Math.round(basePrice * 0.03); // 3%
-        const tax = Math.round(basePrice * 0.03);         // 3%
-        const gst = Math.round(basePrice * 0.09);         // 9%
+        const gst = Math.round(basePrice * 0.18);
 
         return {
             base: basePrice,
-            platformFn: platformFee,
-            tax: tax,
             gst: gst,
-            total: basePrice + platformFee + tax + gst
+            total: basePrice + gst
         };
     }, [selectedPlan]);
 
@@ -325,11 +352,19 @@ const PartnershipRegistration = ({ isLoggedIn, isModal = false, planProp, onClos
                         </div>
                         <h2 className="text-3xl font-bold text-navy mb-2">Payment Summary</h2>
                         <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="text-gray-500">Total Payable</span>
-                                <span className="text-3xl font-bold text-navy">₹{plans[selectedPlan].price.toLocaleString()}</span>
+                            <div className="flex justify-between text-sm mb-2 text-gray-600">
+                                <span>Base Price</span>
+                                <span className="font-bold">₹{billDetails.base.toLocaleString()}</span>
                             </div>
-                            <p className="text-[10px] text-gray-400 text-right">+ Govt Fees (Later)</p>
+                            <div className="flex justify-between text-sm mb-4 text-gray-600">
+                                <span>GST (18%)</span>
+                                <span className="font-bold">₹{billDetails.gst.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between items-end pt-4 border-t border-gray-200">
+                                <span className="text-gray-500">Total Payable</span>
+                                <span className="text-3xl font-bold text-navy">₹{billDetails.total.toLocaleString()}</span>
+                            </div>
+                            <p className="text-[10px] text-gray-400 text-right mt-1">+ Govt Fees (Later)</p>
                         </div>
                         <button onClick={handleSubmit} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
                             {isSubmitting ? 'Processing...' : 'Pay & Submit'}
@@ -341,24 +376,45 @@ const PartnershipRegistration = ({ isLoggedIn, isModal = false, planProp, onClos
         }
     }
 
-    // --- MODAL LAYOUT: SPLIT VIEW (Matches Private Limited) ---
+    // --- MODAL LAYOUT: SPLIT VIEW (Left Sidebar + Right Content) ---
     if (isModal) {
         return (
-            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
-                {/* LEFT SIDEBAR: DARK */}
-                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
                     {/* Background Pattern */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
 
                     <div className="relative z-10 mb-8">
-                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
                             <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
                             Partnership Reg.
                         </h1>
-                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
-                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
-                            <p className="font-bold text-white leading-tight">{plans[selectedPlan]?.title}</p>
-                            <p className="text-[#ED6E3F] font-bold mt-1">₹{plans[selectedPlan]?.price.toLocaleString()}</p>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
                         </div>
                     </div>
 
@@ -376,37 +432,55 @@ const PartnershipRegistration = ({ isLoggedIn, isModal = false, planProp, onClos
                             </div>
                         ))}
                     </div>
-
-                    {/* BOTTOM TOTAL */}
-                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
-                        <div className="flex justify-between items-end">
-                            <div>
-                                <p className="text-[10px] text-blue-200 uppercase">Total Payable</p>
-                                <p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p>
-                            </div>
-                            <Receipt className="text-white/20" size={24} />
-                        </div>
-                    </div>
                 </div>
 
                 {/* RIGHT CONTENT: FORM */}
                 <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
                     {/* Header Bar */}
-                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
-                        <h2 className="font-bold text-navy text-lg">
-                            {currentStep === 1 && "Firm Information"}
-                            {currentStep === 2 && "Partner Details"}
-                            {currentStep === 3 && "Upload Documents"}
-                            {currentStep === 4 && "Review Application"}
-                            {currentStep === 5 && "Complete Payment"}
-                        </h2>
-                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition">
-                            <X size={18} />
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            {/* Mobile: Detailed Service & Price Info */}
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">Partnership</span>
+                                    {/* <span className="text-gray-300">|</span> */}
+                                    {/* <span className="text-slate-500 text-xs font-medium truncate">{plans[selectedPlan]?.title}</span> */}
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.base) / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: Step Title */}
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Firm Information"}
+                                {currentStep === 2 && "Partner Details"}
+                                {currentStep === 3 && "Upload Documents"}
+                                {currentStep === 4 && "Review Application"}
+                                {currentStep === 5 && "Complete Payment"}
+                            </h2>
+                        </div>
+
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                            <X size={20} />
                         </button>
                     </div>
 
                     {/* Scrollable Area */}
-                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
                         {isSuccess ? (
                             <div className="text-center py-10">
                                 <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />

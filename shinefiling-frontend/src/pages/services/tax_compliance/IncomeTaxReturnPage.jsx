@@ -235,12 +235,12 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Salaried</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Salaried</h3>
                             <p className="text-slate-500 text-sm mb-6">ITR-1 / ITR-2</p>
                             <div className="flex items-baseline gap-2 mb-6">
-                                <span className="text-4xl font-black text-navy">₹799</span>
+                                <span className="text-3xl font-black text-navy">₹799</span>
                                 <span className="text-slate-300 line-through text-lg">₹1.5k</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1 text-sm text-slate-600">
@@ -267,12 +267,12 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                             <h3 className="text-2xl font-bold mb-2 text-white mt-2">Business / Pro</h3>
                             <p className="text-gray-400 text-sm mb-6">ITR-3 / ITR-4</p>
                             <div className="flex items-baseline gap-2 mb-6">
-                                <span className="text-5xl font-black text-white">₹1,499</span>
+                                <span className="text-3xl font-black text-white">₹1,499</span>
                                 <span className="text-white/20 line-through text-xl">₹2.5k</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1 text-sm text-gray-300">
                                 {["Everything in Salaried", "Business P&L Computation", "Balance Sheet Creation", "Presumptive Taxation", "Refund Optimization"].map((f, i) => (
-                                    <li key={i} className="flex gap-3"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {f}</li>
+                                    <li key={i} className="flex gap-3"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {f}</li>
                                 ))}
                             </ul>
                             <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg hover:shadow-bronze/20 transition-all hover:scale-105">Launch Filing</button>
@@ -284,12 +284,12 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Capital Gains</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Capital Gains</h3>
                             <p className="text-slate-500 text-sm mb-6">Investors / Traders</p>
                             <div className="flex items-baseline gap-2 mb-6">
-                                <span className="text-4xl font-black text-navy">₹1,999</span>
+                                <span className="text-3xl font-black text-navy">₹1,999</span>
                                 <span className="text-slate-300 line-through text-lg">₹4k</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1 text-sm text-slate-600">
@@ -306,12 +306,12 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.4 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Entity / Firm</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Entity / Firm</h3>
                             <p className="text-slate-500 text-sm mb-6">ITR-5 / ITR-6 / ITR-7</p>
                             <div className="flex items-baseline gap-2 mb-6">
-                                <span className="text-4xl font-black text-navy">₹4,999</span>
+                                <span className="text-3xl font-black text-navy">₹4,999</span>
                                 <span className="text-slate-300 line-through text-lg">₹10k</span>
                             </div>
                             <ul className="space-y-4 mb-10 flex-1 text-sm text-slate-600">
@@ -345,7 +345,7 @@ const IncomeTaxReturnPage = ({ isLoggedIn }) => {
                                         <span className="text-navy font-bold text-sm">Phase</span>
                                     </div>
                                     <div className="flex-1 flex flex-col justify-center">
-                                        <h3 className="text-xl font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-navy mb-2 group-hover:text-bronze transition-colors flex items-center gap-2">
                                             {item.title}
                                         </h3>
                                         <p className="text-slate-600 leading-relaxed text-sm">

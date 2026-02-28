@@ -36,7 +36,7 @@ const PartnershipDeed = ({ isLoggedIn }) => {
     const faqs = [
         { q: "Is a Partnership Deed mandatory?", a: "While not legally mandatory to start a business, a written Partnership Deed is strictly required for registering the firm with the Registrar of Firms and for obtaining a PAN card in the firm's name. Without a deed, the partnership is \"At Will\" and governed by the default provisions of the Partnership Act, 1932, which may not be favorable." },
         { q: "What is the difference between specific and general partnership?", a: "A specific partnership is formed for a particular venture or time period, and it dissolves automatically once that is achieved. A general partnership is for carrying on business in general and continues until dissolved by partners." },
-        { q: "Do I need Stamp Paper?", a: "Yes, the Partnership Deed must be printed on non-judicial stamp paper. The value of the stamp paper depends on the capital contribution and the state in which the deed is executed (e.g., ?500, ?2000, etc.). It must also be notarized." },
+        { q: "Do I need Stamp Paper?", a: "Yes, the Partnership Deed must be printed on non-judicial stamp paper. The value of the stamp paper depends on the capital contribution and the state in which the deed is executed (e.g., ₹500, ₹2000, etc.). It must also be notarized." },
         { q: "Can we change terms later?", a: "Absolutely. The flexibility of a partnership is its biggest advantage. You can execute a 'Supplementary Partnership Deed' or 'Reconstitution Deed' to add/remove partners, change profit ratios, or modify other terms." },
         { q: "What is the partner limit?", a: "As per the Companies Act, 2013, the maximum number of partners in a partnership firm is 50. The minimum is 2." },
         { q: "Does it cover profit sharing?", a: "Yes, this is a critical clause. If not defined in the deed, the Partnership Act mandates equal profit sharing, regardless of capital contribution or effort. A deed allows you to customize this (e.g., 60:40 or based on performance)." },
@@ -245,8 +245,8 @@ const PartnershipDeed = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
                             <p className="text-slate-500 text-sm mb-6">Standard Verified Template.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?999</span>
-                                <span className="text-slate-400 line-through text-sm">?1,500</span>
+                                <span className="text-4xl font-black text-navy">₹999</span>
+                                <span className="text-slate-400 line-through text-sm">₹1,500</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -272,8 +272,8 @@ const PartnershipDeed = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
                             <p className="text-gray-400 text-sm mb-6">Expert Drafting for your Firm.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?1,999</span>
-                                <span className="text-gray-500 line-through text-sm">?3,000</span>
+                                <span className="text-5xl font-black text-white">₹1,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹3,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -296,8 +296,8 @@ const PartnershipDeed = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Premium</h3>
                             <p className="text-slate-500 text-sm mb-6">With Lawyer Consultation.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?3,499</span>
-                                <span className="text-slate-400 line-through text-sm">?5,000</span>
+                                <span className="text-4xl font-black text-navy">₹3,499</span>
+                                <span className="text-slate-400 line-through text-sm">₹5,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -358,7 +358,7 @@ const PartnershipDeed = ({ isLoggedIn }) => {
                                 </div>
                                 <div className="grid grid-cols-3 p-4 hover:bg-gray-50 transition">
                                     <div className="font-bold text-navy text-sm">Right to Set-Off</div>
-                                    <div className="text-sm text-green-600 font-semibold text-center">Allowed (&gt; ?100 claim)</div>
+                                    <div className="text-sm text-green-600 font-semibold text-center">Allowed (&gt; ₹100 claim)</div>
                                     <div className="text-sm text-red-600 font-semibold text-center">Not Allowed</div>
                                 </div>
                                 <div className="grid grid-cols-3 p-4 hover:bg-gray-50 transition">

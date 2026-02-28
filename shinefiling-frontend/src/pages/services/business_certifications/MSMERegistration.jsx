@@ -354,18 +354,18 @@ const MSMERegistration = ({ isLoggedIn }) => {
                             <div className="divide-y divide-gray-100 bg-white">
                                 <div className="grid grid-cols-3 text-center p-6 hover:bg-gray-50 transition items-center">
                                     <div className="font-bold text-navy text-lg">Micro</div>
-                                    <div className="text-sm text-slate-600">&lt; ?1 Crore</div>
-                                    <div className="text-sm text-slate-600">&lt; ?5 Crore</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹1 Crore</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹5 Crore</div>
                                 </div>
                                 <div className="grid grid-cols-3 text-center p-6 hover:bg-gray-50 transition items-center">
                                     <div className="font-bold text-navy text-lg">Small</div>
-                                    <div className="text-sm text-slate-600">&lt; ?10 Crore</div>
-                                    <div className="text-sm text-slate-600">&lt; ?50 Crore</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹10 Crore</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹50 Crore</div>
                                 </div>
                                 <div className="grid grid-cols-3 text-center p-6 hover:bg-gray-50 transition items-center">
                                     <div className="font-bold text-navy text-lg">Medium</div>
-                                    <div className="text-sm text-slate-600">&lt; ?50 Crore</div>
-                                    <div className="text-sm text-slate-600">&lt; ?250 Crore</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹50 Crore</div>
+                                    <div className="text-sm text-slate-600">&lt; ₹250 Crore</div>
                                 </div>
                             </div>
                         </div>

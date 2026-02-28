@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Copyright, ShieldCheck, Search, Globe, Award, FileText, CheckCircle, BookOpen, Clock, Zap, HelpCircle, ChevronRight, Star, ArrowRight, UserCheck } from 'lucide-react';
+import { Copyright, ShieldCheck, Search, Globe, Award, FileText, CheckCircle, BookOpen, Clock, Zap, HelpCircle, ChevronRight, Star, ArrowRight, UserCheck, Handshake, HandCoins } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthModal from '../../../components/auth/AuthModal';
 import ApplyTrademarkRegistration from './ApplyTrademarkRegistration';
@@ -9,7 +9,7 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState('login');
-    const [selectedPlan, setSelectedPlan] = useState('startup');
+    const [selectedPlan, setSelectedPlan] = useState('standard');
 
     const navigate = useNavigate();
 
@@ -88,14 +88,14 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-bronze/20 text-bronze border border-bronze/30 rounded-full text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-                                    <ShieldCheck size={12} className="fill-bronze" /> Intellectual Property Rights
+                                    <Star size={12} className="fill-bronze" /> India's #1 Trademark Platform
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4 text-white tracking-tight">
                                     Online Trademark <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-bronze to-white">Registration in India</span>
                                 </h1>
                                 <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                                    Protect your Logo, Brand Name, and Slogans. Get legal ownership and prevent copycats. File your trademark application (TM) in just 24 hours.
+                                    Protect your brand identity with the most trusted IP structure. Get <strong className="text-white font-semibold">Exclusive Rights</strong>, <strong className="text-white font-semibold">Legal Protection</strong>, and <strong className="text-white font-semibold">Brand Value</strong> today.
                                 </p>
                             </motion.div>
 
@@ -110,17 +110,17 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                                         <Clock size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Filing Speed</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Fast Track</p>
                                         <p className="font-bold text-sm text-white">24 Hours</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <Globe size={20} />
+                                        <Star size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Validity</p>
-                                        <p className="font-bold text-sm text-white">10 Years</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Google Rating</p>
+                                        <p className="font-bold text-sm text-white">4.9/5 Stars</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -135,45 +135,85 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                             </div>
                         </div>
 
-                        {/* Pricing Card - Floating Glass Effect (Best Seller) */}
+                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
-                                <div className="absolute top-3 right-0 bg-[#043E52] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Popular</div>
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                                {/* Top Gold Line (Matching other pages) */}
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
 
-                                <div className="text-center mb-6 mt-4">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Standard</h3>
-                                    <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">?1,499</h3>
-                                        <span className="text-lg text-slate-400 line-through mb-1 font-medium">?3,000</span>
+                                {/* Header - COMPACT */}
+                                <div className="flex flex-col items-center justify-center text-center mb-5 mt-2">
+                                    <div className="mb-3 relative">
+                                        <div className="w-14 h-14 rounded-full bg-bronze/10 flex items-center justify-center">
+                                            <Award size={28} className="text-bronze fill-bronze/20" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle size={14} className="text-green-500 fill-white" />
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees (?4,500)</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">
+                                        Trademark <br />Registration
+                                    </h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">Brand Protection ™</p>
                                 </div>
 
-                                <div className="space-y-4 mb-8 flex-1">
+                                {/* Divider */}
+                                <div className="h-px w-full bg-slate-100 mb-5"></div>
+
+                                {/* Stats Grid - COMPACT */}
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    {/* Left Stat */}
+                                    <div className="text-center relative">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Handshake size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">100%</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Process <br />Online</p>
+                                        <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
+                                    </div>
+
+                                    {/* Right Stat */}
+                                    <div className="text-center">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <ShieldCheck size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">10 Years</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Validity <br />Assured</p>
+                                    </div>
+                                </div>
+
+                                {/* Check List - COMPACT */}
+                                <div className="space-y-3 mb-6 pl-2">
                                     {[
-                                        "Name & Logo Search",
-                                        "Class Selection Support",
-                                        "Same Day Filing",
+                                        "TM Application Number",
                                         "Use ™ Symbol Instantly",
-                                        "Application Tracking"
+                                        "Brand Ownership"
                                     ].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                                            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
-                                            <span className="leading-snug">{item}</span>
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="bg-green-100 rounded-full p-1 shrink-0">
+                                                <CheckCircle size={12} className="text-green-600" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-xs tracking-wide">{item}</span>
                                         </div>
                                     ))}
                                 </div>
 
+                                {/* CTA Button - COMPACT */}
                                 <button
                                     onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
-                                    className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >View Plans <ArrowRight size={18} /></button>
+                                    className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                >
+                                    Start Registration <ArrowRight size={16} />
+                                </button>
+
+                                <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">
+                                    Compare all plans below
+                                </p>
                             </div>
                         </motion.div>
                     </div>
@@ -201,8 +241,8 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Basic</h3>
                             <p className="text-slate-500 text-sm mb-6">For Individuals & Sole Proprietors.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?999</span>
-                                <span className="text-slate-400 line-through text-sm">?2,000</span>
+                                <span className="text-4xl font-black text-navy">₹999</span>
+                                <span className="text-slate-400 line-through text-sm">₹2,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -220,7 +260,7 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                                     <Zap size={16} className="shrink-0" /> No Objection Support
                                 </li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Basic
                             </button>
                         </motion.div>
@@ -241,8 +281,8 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
                             <p className="text-gray-400 text-sm mb-6">For MSMEs & Startups.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?1,499</span>
-                                <span className="text-gray-500 line-through text-sm">?3,000</span>
+                                <span className="text-5xl font-black text-white">₹1,499</span>
+                                <span className="text-gray-500 line-through text-sm">₹3,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -259,7 +299,8 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button
+                                onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
                                 Select Standard
                             </button>
                         </motion.div>
@@ -275,8 +316,8 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Corporate</h3>
                             <p className="text-slate-500 text-sm mb-6">For Pvt Ltd & Large Companies.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?2,999</span>
-                                <span className="text-slate-400 line-through text-sm">?6,000</span>
+                                <span className="text-4xl font-black text-navy">₹2,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹6,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -293,7 +334,7 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('corporate')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                 Choose Corporate
                             </button>
                         </motion.div>
@@ -327,24 +368,17 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
 
                     {/* BENEFITS GRID */}
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8">Why Register a Trademark?</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Key Benefits</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Exclusive Rights", desc: "You become the sole owner of the brand. You can stop others from using similar names.", icon: ShieldCheck },
-                                { title: "Builds Trust", desc: "Customers trust brands with a registered trademark (®). It signifies quality and reliability.", icon: Star },
-                                { title: "Intangible Asset", desc: "Trademarks can be sold, franchised, or commercially contracted. It creates brand value.", icon: Award },
-                                { title: "Legal Protection", desc: "Registered owners can sue anyone who infringes upon their rights.", icon: FileText },
-                                { title: "Global Registration", desc: "Indian registration acts as a base for registering in other countries via Madrid Protocol.", icon: Globe },
-                                { title: "Use ® Symbol", desc: "You can upgrade from ™ to the prestigious ® symbol after registration.", icon: CheckCircle },
-                            ].map((item, i) => (
-                                <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-bronze transition group">
-                                    <div className="w-14 h-14 rounded-2xl bg-[#2B3446]/5 group-hover:bg-[#2B3446] group-hover:text-bronze flex items-center justify-center text-navy flex-shrink-0 transition-all duration-300">
-                                        <item.icon size={28} />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-navy mb-2 text-lg">{item.title}</h4>
-                                        <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
-                                    </div>
+                                { title: "Exclusive Legal Rights", desc: "You become the sole owner of the brand. You can stop others from using similar names and logo in the same category.", icon: ShieldCheck },
+                                { title: "Builds Trust & Loyalty", desc: "Customers trust brands with a registered trademark (®). It signifies quality, authenticity and reliability.", icon: Star },
+                                { title: "Valuable Asset", desc: "Trademarks can be sold, franchised, or commercially contracted. It creates massive brand valuation over time.", icon: Award },
+                                { title: "Legal Protection", desc: "Registered owners can sue anyone who infringes upon their rights, preventing unauthorized brand usage.", icon: FileText }
+                            ].map((benefit, i) => (
+                                <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-bronze/30 transition shadow-bronze/5">
+                                    <div className="w-12 h-12 rounded-xl bg-bronze/10 flex items-center justify-center text-bronze shrink-0"><benefit.icon size={24} /></div>
+                                    <div><h4 className="font-bold text-navy mb-1">{benefit.title}</h4><p className="text-sm text-gray-500">{benefit.desc}</p></div>
                                 </div>
                             ))}
                         </div>
@@ -455,9 +489,10 @@ const TrademarkRegistrationPage = ({ isLoggedIn }) => {
                     <div className="sticky top-32 space-y-8">
 
                         {/* Documents Sidebar */}
-                        <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
-                            <h3 className="font-bold text-xl text-navy mb-6 flex items-center gap-2">
-                                <FileText className="text-bronze" /> Required Documents
+                        <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-50 overflow-hidden relative">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-bronze/5 rounded-full -mr-16 -mt-16 blur-xl"></div>
+                            <h3 className="font-black text-xl text-navy mb-6 flex items-center gap-2">
+                                <FileText className="text-bronze" /> Required Docs
                             </h3>
                             <div className="space-y-6">
                                 <div>

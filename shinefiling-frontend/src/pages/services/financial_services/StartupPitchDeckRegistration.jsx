@@ -7,17 +7,20 @@ import {
 } from 'lucide-react';
 import { submitStartupPitchDeck, uploadFile } from '../../../api';
 
-const StartupPitchDeckRegistration = ({ isModal, onClose, initialData = {} }) => {
+const StartupPitchDeckRegistration = ({ isModal, onClose, initialData = {}, planProp }) => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     // Determine initial plan
-    const queryPlan = searchParams.get('plan') || initialData.plan || 'investor';
+    const queryPlan = searchParams.get('plan') || planProp || initialData.plan || 'investor';
     const [selectedPlan, setSelectedPlan] = useState(queryPlan);
 
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+    const [errors, setErrors] = useState({});
+    const isLoggedIn = !!localStorage.getItem('user');
     const [uploadedFiles, setUploadedFiles] = useState({});
 
     const [formData, setFormData] = useState({
@@ -109,7 +112,7 @@ const StartupPitchDeckRegistration = ({ isModal, onClose, initialData = {} }) =>
                 status: 'INITIATED'
             };
             await submitStartupPitchDeck(finalPayload);
-            setSuccess(true);
+            setIsSuccess(true);
         } catch (err) {
             alert(err.message || 'Submission failed. Please try again.');
         } finally {
@@ -117,21 +120,46 @@ const StartupPitchDeckRegistration = ({ isModal, onClose, initialData = {} }) =>
         }
     };
 
+    const handleNext = () => {
+        if (validateStep(currentStep)) {
+            setCurrentStep(p => p + 1);
+        }
+    };
+
+    const validateStep = (step) => {
+        let newErrors = {};
+        if (step === 1) {
+            if (!isLoggedIn && !formData.email) newErrors.email = 'Email required';
+            if (!formData.startupName) newErrors.startupName = 'Startup name required';
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const steps = ['Startup Profile', 'The Pitch', 'Documents', 'Review & Pay'];
 
-    const renderStepContent = () => {
+    function renderStepContent() {
         switch (currentStep) {
             case 1: // Startup Profile
                 return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-navy mb-4 flex items-center gap-2">
-                                <Building size={20} className="text-blue-600" /> STARTUP IDENTITY
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        {(!isLoggedIn && !localStorage.getItem('user')) && (
+                            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm mb-4">
+                                <h3 className="font-bold text-slate-800 mb-4 text-sm flex items-center gap-2"><User size={16} /> CONTACT DETAILS</h3>
+                                <div className="grid md:grid-cols-2 gap-3">
+                                    <input name="email" value={formData.email} onChange={handleChange} placeholder="Your Email Address" className={`p-2 text-sm border rounded-lg ${errors.email ? 'border-red-500' : ''}`} />
+                                    <input name="mobile" value={formData.mobile} onChange={handleChange} placeholder="Your Phone Number" className={`p-2 text-sm border rounded-lg ${errors.mobile ? 'border-red-500' : ''}`} />
+                                </div>
+                            </div>
+                        )}
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-4 text-sm flex items-center gap-2">
+                                <Building size={16} className="text-[#015A62]" /> STARTUP IDENTITY
                             </h3>
-                            <div className="grid md:grid-cols-2 gap-4">
+                            <div className="grid md:grid-cols-2 gap-3">
                                 <div className="md:col-span-2">
                                     <label className="text-xs font-bold text-gray-500 mb-1 block">Startup / Company Name</label>
-                                    <input type="text" name="startupName" value={formData.startupName} onChange={handleChange} placeholder="e.g. Acme Tech Solutions" className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 bg-gray-50" />
+                                    <input type="text" name="startupName" value={formData.startupName} onChange={handleChange} placeholder="e.g. Acme Tech Solutions" className={`w-full p-2 text-sm rounded-lg border bg-white ${errors.startupName ? 'border-red-500' : 'border-gray-200'}`} />
                                 </div>
                                 <div>
                                     <label className="text-xs font-bold text-gray-500 mb-1 block">Industry</label>
@@ -239,7 +267,10 @@ const StartupPitchDeckRegistration = ({ isModal, onClose, initialData = {} }) =>
                             </div>
                         </div>
 
-                        <button onClick={handleSubmit} disabled={loading} className="w-full py-4 bg-navy text-white rounded-xl font-bold shadow-lg hover:bg-black transition flex items-center justify-center gap-2">
+                        <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center">
+                            <input type="checkbox" checked={isTermsAccepted || false} onChange={(e) => setIsTermsAccepted(e.target.checked)} /> I Accept Terms & Conditions
+                        </label>
+                        <button onClick={handleSubmit} disabled={!isTermsAccepted || loading} className="w-full py-4 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2 disabled:opacity-50">
                             {loading ? 'Processing...' : 'Pay & Start Designing'}
                             {!loading && <ArrowRight size={18} />}
                         </button>
@@ -252,21 +283,46 @@ const StartupPitchDeckRegistration = ({ isModal, onClose, initialData = {} }) =>
 
     if (isModal) {
         return (
-            <div className="flex flex-row h-[85vh] overflow-hidden bg-white">
-                {/* LEFT SIDEBAR: DARK */}
-                <div className="w-72 bg-[#043E52] text-white flex flex-col p-6 shrink-0 relative overflow-hidden">
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                    {/* Background Pattern */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+
                     <div className="relative z-10 mb-8">
-                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight">
-                            <span className="text-[#ED6E3F]">Startup</span>
-                            Deck
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            Startup Deck
                         </h1>
-                        <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
-                            <p className="text-[10px] uppercase text-blue-200 tracking-wider mb-1">Selected Plan</p>
-                            <p className="font-bold text-white leading-tight">{plans[selectedPlan]?.title}</p>
-                            <p className="text-[#ED6E3F] font-bold mt-1">₹{billDetails.total.toLocaleString()}</p>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
                         </div>
                     </div>
+
+                    {/* VERTICAL STEPPER */}
                     <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
                         {steps.map((step, i) => (
                             <div key={i} onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }} className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}>
@@ -277,24 +333,46 @@ const StartupPitchDeckRegistration = ({ isModal, onClose, initialData = {} }) =>
                             </div>
                         ))}
                     </div>
-                    <div className="mt-auto pt-6 border-t border-white/10 relative z-10">
-                        <div className="flex justify-between items-end">
-                            <div><p className="text-[10px] text-blue-200 uppercase">Total Payable</p><p className="text-xl font-bold text-white">₹{billDetails.total.toLocaleString()}</p></div>
-                            <IndianRupee className="text-white/20" size={24} />
-                        </div>
-                    </div>
                 </div>
                 {/* RIGHT CONTENT */}
                 <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
-                    <div className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20">
-                        <h2 className="font-bold text-navy text-lg">{steps[currentStep - 1]}</h2>
-                        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition"><X size={18} /></button>
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            {/* Mobile: Detailed Service & Price Info */}
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">Startup Pitch Deck</span>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{billDetails.base.toLocaleString()}</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: Step Title */}
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {steps[currentStep - 1]}
+                            </h2>
+                        </div>
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4"><X size={20} /></button>
                     </div>
-                    <div className="flex-1 overflow-y-auto p-6 md:p-8">
-                        {success ? (
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                        {isSuccess ? (
                             <div className="text-center py-10">
                                 <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
-                                <h2 className="text-2xl font-bold text-navy">Pitch Perfect!</h2>
+                                <h2 className="text-2xl font-bold text-navy">Request Received!</h2>
                                 <p className="text-gray-500 mt-2">Request received for <span className="font-bold text-navy">{plans[selectedPlan].title}</span>.</p>
                                 <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
                             </div>
@@ -302,10 +380,21 @@ const StartupPitchDeckRegistration = ({ isModal, onClose, initialData = {} }) =>
                             renderStepContent()
                         )}
                     </div>
-                    {!success && currentStep < 4 && (
+                    {!isSuccess && currentStep < 4 && (
                         <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
-                            <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30">Back</button>
-                            <button onClick={() => setCurrentStep(p => p + 1)} className="px-6 py-2.5 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2 text-sm">Next Step <ArrowRight size={16} /></button>
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            <button
+                                onClick={handleNext}
+                                className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                            >
+                                Save & Continue <ArrowRight size={16} />
+                            </button>
                         </div>
                     )}
                 </div>
@@ -313,95 +402,28 @@ const StartupPitchDeckRegistration = ({ isModal, onClose, initialData = {} }) =>
         );
     }
 
+    // --- STANDARD FULL PAGE LAYOUT (Kept for fallback/direct access) ---
     return (
-        <div className={isModal ? "bg-[#F8F9FA] p-4 md:p-8" : "min-h-screen bg-[#F8F9FA] pb-20 pt-24 px-4 md:px-8"}>
-            {success ? (
-                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
-                    <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle size={48} className="text-blue-600" />
-                    </div>
-                    <h1 className="text-3xl font-bold text-navy mb-4">Pitch Perfect!</h1>
-                    <p className="text-gray-500 mb-8">
-                        Your request for a <span className="font-bold text-navy">Startup Pitch Deck</span> has been received.
-                        Reference ID: <span className="font-bold text-blue-600">{formData.submissionId}</span>.
-                        Our creative team will contact you within 4 hours to begin storyboarding.
-                    </p>
-                    <button onClick={() => isModal && onClose ? onClose() : navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">
-                        Go to Dashboard
-                    </button>
-                </div>
-            ) : (
-                <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        {!isModal && (
-                            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-navy transition">
-                                <ArrowLeft size={14} /> Back
-                            </button>
-                        )}
-                        <h1 className="text-3xl font-bold text-navy">Startup Pitch Deck</h1>
-                        <p className="text-gray-500">Crafting visual narratives for high-growth startups.</p>
-                    </div>
-
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        {/* LEFT SIDEBAR */}
-                        <div className="w-full lg:w-80 space-y-6">
-                            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                                {steps.map((step, i) => (
-                                    <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
-                                        <div>
-                                            <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
-                                            <span className={`font-bold text-sm ${currentStep === i + 1 ? 'text-blue-800' : 'text-gray-600'}`}>{step}</span>
-                                        </div>
-                                        {currentStep > i + 1 && <CheckCircle size={16} className="text-green-500" />}
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className={`p-6 rounded-2xl border shadow-sm ${plans[selectedPlan]?.color || 'bg-white'} relative overflow-hidden transition-all sticky top-24`}>
-                                <div className="relative z-10">
-                                    <div className="text-xs font-bold opacity-70 uppercase tracking-widest mb-1">Current Plan</div>
-                                    <div className="text-2xl font-bold mb-2">{plans[selectedPlan]?.title}</div>
-                                    <div className="text-3xl font-black mb-4">₹{plans[selectedPlan]?.price?.toLocaleString()}</div>
-
-                                    <div className="space-y-3 mb-6">
-                                        {plans[selectedPlan]?.features?.map((feat, i) => (
-                                            <div key={i} className="flex gap-2 text-xs font-medium opacity-80">
-                                                <CheckCircle size={14} className="shrink-0 mt-0.5" />
-                                                <span className="leading-tight">{feat}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <Monitor className="absolute -bottom-8 -right-8 w-32 h-32 opacity-10 rotate-12" />
-                            </div>
+        <div className="min-h-screen pb-20 pt-24 px-4 bg-[#F8F9FA]">
+            <div className="max-w-6xl mx-auto">
+                <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-gray-500 font-bold text-xs uppercase"><ArrowLeft size={14} /> Back</button>
+                <div className="flex gap-8">
+                    <div className="w-72 hidden lg:block space-y-4">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
+                            {steps.map((s, i) => (
+                                <div key={i} className={`p-2 rounded ${currentStep === i + 1 ? 'bg-navy text-white' : 'text-gray-500'}`}>{s}</div>
+                            ))}
                         </div>
-
-                        {/* RIGHT FORM CONTENT */}
-                        <div className="flex-1">
-                            {renderStepContent()}
-
-                            {currentStep < 4 && (
-                                <div className="mt-8 flex justify-between">
-                                    <button
-                                        onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
-                                        disabled={currentStep === 1}
-                                        className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50"
-                                    >
-                                        Back
-                                    </button>
-
-                                    <button
-                                        onClick={() => setCurrentStep(p => Math.min(4, p + 1))}
-                                        className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2"
-                                    >
-                                        Next Step <ArrowRight size={18} />
-                                    </button>
-                                </div>
-                            )}
+                    </div>
+                    <div className="flex-1">
+                        {renderStepContent()}
+                        <div className="mt-6 flex justify-between">
+                            <button onClick={() => setCurrentStep(p => p - 1)} disabled={currentStep === 1}>Back</button>
+                            <button onClick={handleNext} className="bg-[#ED6E3F] text-white px-6 py-2 rounded">Next</button>
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

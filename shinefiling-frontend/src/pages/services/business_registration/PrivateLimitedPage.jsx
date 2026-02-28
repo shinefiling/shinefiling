@@ -33,8 +33,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
 
     const handlePlanSelect = (plan) => {
         setSelectedPlan(plan);
-        const storedUser = localStorage.getItem('user');
-        if (isLoggedIn || !!storedUser) {
+        if (isLoggedIn) {
             setShowRegistrationModal(true);
         } else {
             setAuthMode('login');
@@ -126,11 +125,11 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md pr-6 pl-4 py-3 rounded-xl border border-white/10">
                                     <div className="w-10 h-10 rounded-lg bg-bronze/20 flex items-center justify-center text-bronze">
-                                        <Users size={20} />
+                                        <Star size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Trusted By</p>
-                                        <p className="font-bold text-sm text-white">50k+ Founders</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Google Rating</p>
+                                        <p className="font-bold text-sm text-white">4.9/5 Stars</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -218,7 +217,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
 
             {/* PRICING SECTION */}
             <section id="pricing-section" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
-                <div className="max-w-7xl mx-auto relative z-10">
+                <div className="max-w-5xl mx-auto relative z-10">
                     <div className="text-center mb-16">
                         <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Path</span>
                         <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Transparent Pricing Plans</h2>
@@ -228,60 +227,100 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8 items-start">
+                    <div className="grid md:grid-cols-3 gap-8">
                         {/* Standard Plan */}
-                        <motion.div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300">
-                            <h3 className="text-xl font-bold text-navy mb-2">Standard</h3>
-                            <div className="flex items-center gap-2 mb-6">
-                                <span className="text-4xl font-black text-navy">₹6,799</span>
-                                <span className="text-xs font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">Standard</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹6,799</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
                             </div>
-                            <ul className="space-y-4 mb-8 flex-1">
-                                {["2 Digital Signatures (DSC)", "2 Director PINs (DIN)", "Name Approval (RUN)", "MOA & AOA Drafting", "Certificate of Incorporation", "PAN & TAN Allocation", "PF & ESIC Registration", "Bank Account Support"].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                            <ul className="space-y-3 mb-6 flex-1">
+                                {[
+                                    "2 Digital Signatures (DSC)",
+                                    "2 Director PINs (DIN)",
+                                    "Name Approval (RUN)",
+                                    "MOA & AOA Drafting",
+                                    "Certificate of Incorporation",
+                                    "PAN & TAN Allocation",
+                                    "PF & ESIC Registration",
+                                    "Bank Account Support"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Choose Standard</button>
+                            <button onClick={() => handlePlanSelect('startup')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Choose Standard</button>
                         </motion.div>
 
                         {/* Premium Plan */}
-                        <motion.div className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Bestseller</div>
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Premium</h3>
-                            <div className="flex items-center gap-2 mb-6">
-                                <span className="text-4xl font-black text-white">₹11,999</span>
-                                <span className="text-sm font-bold text-gray-400 line-through">₹18,000</span>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Premium</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹11,999</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹18,000</span>
                             </div>
-                            <ul className="space-y-4 mb-8 flex-1 text-gray-200">
-                                <li className="text-sm font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Standard +</li>
-                                {["GST Registration", "Udyam (MSME) Registration", "Share Certificates Issue", "INC-20A (Commencement of Business)", "First Auditor Appointment (ADT-1)", "Zero Balance Current A/c"].map((feat, i) => (
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                <li className="text-xs font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Standard +</li>
+                                {[
+                                    "GST Registration",
+                                    "Udyam (MSME) Registration",
+                                    "Share Certificates Issue",
+                                    "INC-20A (Commencement of Business)",
+                                    "First Auditor Appointment (ADT-1)",
+                                    "Zero Balance Current A/c"
+                                ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('growth')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-xl shadow-lg transition-all">Get Premium</button>
+                            <button onClick={() => handlePlanSelect('growth')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Get Premium</button>
                         </motion.div>
 
                         {/* Elite Plan */}
-                        <motion.div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300">
-                            <h3 className="text-xl font-bold text-navy mb-2">Elite</h3>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹24,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹40,000</span>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">Elite</h3>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy">₹24,999</span>
+                                <span className="text-slate-400 line-through text-xs">₹40,000</span>
                             </div>
-                            <ul className="space-y-4 mb-8 flex-1 text-slate-700">
-                                <li className="text-sm font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">Everything in Premium +</li>
-                                {["Trademark Filing (1 Class)", "1 Year ROC Compliance", "1 Year Income Tax Filing", "Dedicated CA Support", "Accounting Software (1 Year)"].map((feat, i) => (
+                            <ul className="space-y-3 mb-6 flex-1">
+                                <li className="text-xs font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">Everything in Premium +</li>
+                                {[
+                                    "Trademark Filing (1 Class)",
+                                    "1 Year ROC Compliance",
+                                    "1 Year Income Tax Filing",
+                                    "Dedicated CA Support",
+                                    "Accounting Software (1 Year)"
+                                ].map((feat, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('enterprise')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Choose Elite</button>
+                            <button onClick={() => handlePlanSelect('enterprise')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Choose Elite</button>
                         </motion.div>
                     </div>
                 </div>
@@ -290,7 +329,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
                 <div id="details-section" className="lg:col-span-8 space-y-20">
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3 font-outfit uppercase tracking-tighter italic">
+                        <h2 className="text-3xl font-bold text-navy mb-6 flex items-center gap-3">
                             <Building className="text-bronze" /> What is a Private Limited Company?
                         </h2>
                         <div className="prose prose-lg text-gray-600">
@@ -300,13 +339,13 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                     </section>
 
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8 font-outfit uppercase tracking-tighter italic">Key Benefits</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Key Benefits</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {[
-                                { title: "Limited Liability", desc: "Protect your personal assets from business debts.", icon: Shield },
-                                { title: "Separate Identity", desc: "The company exists as a separate legal person.", icon: Briefcase },
-                                { title: "Raise Capital", desc: "Preferred structure for investors and banks.", icon: TrendingUp },
-                                { title: "Trust & Credibility", desc: "Established brand value for your business.", icon: Star }
+                                { title: "Limited Liability Protection", desc: "Your personal assets remain safe. In a Pvt Ltd Company, the liability of shareholders is limited to their share capital, protecting your personal wealth from business losses.", icon: Shield },
+                                { title: "Separate Legal Entity", desc: "The company acts as an artificial person. It can own property, incur debts, and sue or be sued in its own name, independent of its owners.", icon: Briefcase },
+                                { title: "Easy Fundraising", desc: "The most preferred structure for investors. You can easily raise capital from VCs, angel investors, and banks by issuing equity shares.", icon: TrendingUp },
+                                { title: "Credibility & Trust", desc: "Registered companies are viewed as more stable and credible by customers, suppliers, and banks, enhancing your business reputation.", icon: Star }
                             ].map((benefit, i) => (
                                 <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-bronze/30 transition shadow-bronze/5">
                                     <div className="w-12 h-12 rounded-xl bg-bronze/10 flex items-center justify-center text-bronze shrink-0"><benefit.icon size={24} /></div>
@@ -317,12 +356,12 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                     </section>
 
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8 font-outfit uppercase tracking-tighter italic">The Process</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">The Process</h2>
                         <div className="space-y-4">
                             {[
-                                { t: "DSC & Name Approval", d: "We secure your digital signature and company name." },
-                                { t: "Form Filing", d: "We submit the official SPICe+ registration form to MCA." },
-                                { t: "Incorporation", d: "Get your Certificate of Incorporation along with PAN/TAN." }
+                                { t: "1. DSC & Name Approval", d: "We obtain Digital Signature Certificates (DSC) for directors and submit a name reservation request to the MCA to secure your unique brand name." },
+                                { t: "2. Documentation & Filing", d: "Our experts draft the MOA & AOA and submit the SPICe+ incorporation forms to the Ministry of Corporate Affairs (MCA)." },
+                                { t: "3. Incorporation & PAN/TAN", d: "Upon approval, you receive the Certificate of Incorporation (CoI), PAN, TAN, and DIN. You are now ready to start your business!" }
                             ].map((s, i) => (
                                 <div key={i} className="flex gap-6 p-6 bg-white rounded-2xl border border-gray-50 shadow-sm">
                                     <div className="text-4xl font-black text-bronze opacity-20 italic">0{i + 1}</div>
@@ -332,8 +371,50 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                         </div>
                     </section>
 
+
                     <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8 font-outfit uppercase tracking-tighter italic">FAQs</h2>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Important Post-Incorporation Compliances</h2>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {[
+                                { title: "Auditor Appointment (ADT-1)", desc: "Must be filed within 30 days of incorporation to appoint the first auditor." },
+                                { title: "Commencement of Business (INC-20A)", desc: "Mandatory filing within 180 days after opening a bank account and depositing share capital." },
+                                { title: "Annual Filing (AOC-4 & MGT-7)", desc: "Yearly submission of financial statements and annual returns to the ROC." },
+                                { title: "Income Tax Filing (ITR-6)", desc: "Company must file its income tax return annually before the due date." }
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                                    <div className="flex items-start gap-4">
+                                        <div className="bg-red-50 text-red-600 p-3 rounded-lg shrink-0"><FileText size={20} /></div>
+                                        <div>
+                                            <h4 className="font-bold text-navy text-sm mb-1">{item.title}</h4>
+                                            <p className="text-xs text-gray-500 leading-relaxed font-medium">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">Why Choose ShineFiling?</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {[
+                                { title: "100% Online Process", icon: Globe },
+                                { title: "Dedicated CA Support", icon: Users },
+                                { title: "Bank-Grade Security", icon: Shield },
+                                { title: "No Hidden Costs", icon: Banknote }
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                                    <div className="w-14 h-14 mx-auto bg-navy/5 rounded-full flex items-center justify-center text-navy mb-4 group-hover:bg-navy group-hover:text-white transition-colors">
+                                        <item.icon size={28} />
+                                    </div>
+                                    <h4 className="font-bold text-navy text-sm">{item.title}</h4>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">FAQs</h2>
                         <div className="space-y-4">
                             {faqs.map((faq, i) => (
                                 <details key={i} className="group bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
@@ -349,7 +430,7 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
                     <div className="sticky top-32 space-y-8">
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-50 overflow-hidden relative">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-bronze/5 rounded-full -mr-16 -mt-16 blur-xl"></div>
-                            <h3 className="font-black text-xl text-navy mb-6 flex items-center gap-2 font-outfit uppercase tracking-tighter italic">Required Docs</h3>
+                            <h3 className="font-black text-xl text-navy mb-6 flex items-center gap-2">Required Docs</h3>
                             <div className="space-y-6 relative z-10">
                                 <div><h4 className="text-[10px] font-black text-gray-400 hover:text-bronze transition uppercase tracking-widest mb-3 border-b pb-2 cursor-pointer">Director Identity</h4><ul className="space-y-2 text-sm text-gray-600 font-medium"><li>• PAN Card (Mandatory)</li><li>• Aadhaar Card / Voter ID</li><li>• Passport Size Photo</li></ul></div>
                                 <div><h4 className="text-[10px] font-black text-gray-400 hover:text-bronze transition uppercase tracking-widest mb-3 border-b pb-2 cursor-pointer">Office Address</h4><ul className="space-y-2 text-sm text-gray-600 font-medium"><li>• Electricity / Utility Bill</li><li>• Rent Agreement / NOC</li></ul></div>
@@ -359,11 +440,11 @@ const PrivateLimitedPage = ({ isLoggedIn, onLogout }) => {
 
                         <div className="bg-[#043E52] text-white p-6 rounded-3xl shadow-xl border border-white/5 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-24 h-24 bg-bronze/10 rounded-full -mr-12 -mt-12 transition-transform duration-500 group-hover:scale-150"></div>
-                            <h4 className="font-bold text-lg mb-2 relative z-10">Expert Consult</h4>
+                            <h4 className="font-bold text-lg text-bronze mb-2 relative z-10">Expert Consult</h4>
                             <p className="text-gray-400 text-xs mb-6 font-medium relative z-10">Speak with our CA/CS experts before you start.</p>
                             <div className="flex items-center gap-3 mb-6 relative z-10">
                                 <div className="w-10 h-10 rounded-full bg-bronze/20 flex items-center justify-center text-bronze shadow-inner"><Users size={20} /></div>
-                                <div><p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Call Support</p><p className="font-black text-white">+91 97735 99863</p></div>
+                                <div><p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Chat Support</p><p className="font-black text-white">+91 7639227019</p></div>
                             </div>
                             <button className="w-full py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-[10px] uppercase tracking-widest transition">WhatsApp Now</button>
                         </div>

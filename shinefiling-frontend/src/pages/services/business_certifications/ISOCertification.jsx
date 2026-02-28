@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     CheckCircle, Award, ShieldCheck, Globe, HelpCircle, FileText, Star,
     BookOpen, Clock, Zap, ChevronRight, ArrowRight, UserCheck, Lock,
-    Leaf, Briefcase, BarChart, Settings, MousePointer, Shield, X
+    Leaf, Briefcase, BarChart, Settings, MousePointer, Shield, X, Lightbulb
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthModal from '../../../components/auth/AuthModal';
@@ -274,8 +274,8 @@ const ISOCertification = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Essential</h3>
                             <p className="text-slate-500 text-sm mb-6">Fastest certification for branding.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?1,499</span>
-                                <span className="text-slate-400 line-through text-sm">?3,000</span>
+                                <span className="text-4xl font-black text-navy">₹1,499</span>
+                                <span className="text-slate-400 line-through text-sm">₹3,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -301,8 +301,8 @@ const ISOCertification = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-white mb-2 mt-2">Professional</h3>
                             <p className="text-gray-400 text-sm mb-6">Globally accepted IAF certificate.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">?3,999</span>
-                                <span className="text-gray-500 line-through text-sm">?7,000</span>
+                                <span className="text-5xl font-black text-white">₹3,999</span>
+                                <span className="text-gray-500 line-through text-sm">₹7,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -325,8 +325,8 @@ const ISOCertification = ({ isLoggedIn }) => {
                             <h3 className="text-xl font-bold text-navy mb-2">Enterprise</h3>
                             <p className="text-slate-500 text-sm mb-6">QMS + EMS Integrated.</p>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">?6,999</span>
-                                <span className="text-slate-400 line-through text-sm">?12,000</span>
+                                <span className="text-4xl font-black text-navy">₹6,999</span>
+                                <span className="text-slate-400 line-through text-sm">₹12,000</span>
                             </div>
 
                             <ul className="space-y-4 mb-8 flex-1">
@@ -491,9 +491,9 @@ const ISOCertification = ({ isLoggedIn }) => {
                                         <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> PAN & GST</li>
                                     </ul>
                                 </div>
-                                <div className="mt-8 bg-beige/10 p-4 rounded-xl border border-blue-100">
+                                <div className="mt-8 bg-blue-50 p-4 rounded-xl border border-blue-100">
                                     <p className="text-xs text-blue-800 font-medium leading-relaxed flex gap-2">
-                                        <span className="text-lg">??</span>
+                                        <Lightbulb size={24} className="text-blue-600 shrink-0" />
                                         <span><strong>Pro Tip:</strong> Decide if you need IAF or Non-IAF based on your tender requirements.</span>
                                     </p>
                                 </div>

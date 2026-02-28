@@ -1,25 +1,37 @@
-﻿
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+﻿import React, { useState, useEffect, useMemo } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
     CheckCircle, CreditCard, FileText,
     User, Upload, Calendar, Trash2, Check, FileCheck,
     ArrowLeft, ArrowRight, Zap, Building, Clock,
     Sparkles, AlertCircle, TrendingUp, Calculator,
     ShieldCheck, Download, ReceiptText, Briefcase,
-    Wallet, PieChart
+    Wallet, PieChart, Shield, IndianRupee, X
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { submitIncomeTaxReturn } from '../../../api';
-import { motion, AnimatePresence } from 'framer-motion';
 
-const IncomeTaxReturnRegistration = ({ planProp = 'business', isModal, onClose }) => {
+const IncomeTaxReturnRegistration = ({ planProp, isModal = false, onClose }) => {
     const { state } = useLocation();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const [searchParams] = useSearchParams();
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [selectedPlan, setSelectedPlan] = useState(state?.plan || planProp);
+
+    const validatePlan = (plan) => {
+        return ['salaried', 'business', 'capital_gains', 'corporate'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'salaried';
+    };
+
+    const [selectedPlan, setSelectedPlan] = useState(() => validatePlan(planProp || state?.plan || searchParams.get('plan')));
+
+    useEffect(() => {
+        const targetPlan = validatePlan(planProp || state?.plan || searchParams.get('plan'));
+        if (targetPlan !== selectedPlan) {
+            setSelectedPlan(targetPlan);
+        }
+    }, [planProp, state, searchParams, selectedPlan]);
+
 
     const [formData, setFormData] = useState({
         applicantName: user?.name || '',
@@ -31,41 +43,100 @@ const IncomeTaxReturnRegistration = ({ planProp = 'business', isModal, onClose }
         turnover: '',
         capitalGainType: 'Equity',
         entityType: 'Firm',
-        wantsRefundOptimization: true
+        wantsRefundOptimization: true,
+        userEmail: user?.email || '',
+        userPhone: user?.mobile || ''
     });
 
     const [files, setFiles] = useState({});
-    const [uploadProgress, setUploadProgress] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+    const [automationPayload, setAutomationPayload] = useState(null);
+    const [errors, setErrors] = useState({});
 
-    const steps = [
-        { id: 1, title: 'Scope', icon: Zap },
-        { id: 2, title: 'Identity', icon: User },
-        { id: 3, title: 'Yield', icon: PieChart },
-        { id: 4, title: 'Vault', icon: Upload },
-        { id: 5, title: 'Review', icon: CreditCard }
-    ];
+    const plans = {
+        salaried: {
+            price: 999,
+            title: 'Salaried',
+            features: ["ITR-1/2 Filing", "Form-16 Import", "Tax Refund Assist"],
+            color: 'bg-white border-slate-200'
+        },
+        business: {
+            price: 1999,
+            title: 'Business',
+            features: ["ITR-3/4 Filing", "P&L/Balance Sheet", "Presumptive Audit"],
+            recommended: true,
+            color: 'bg-indigo-50 border-indigo-200'
+        },
+        capital_gains: {
+            price: 2999,
+            title: 'Investor',
+            features: ["Shares/MF Gain", "Property Tax Prep", "Loss Carry Forward"],
+            color: 'bg-purple-50 border-purple-200'
+        },
+        corporate: {
+            price: 4999,
+            title: 'Entity / Firm',
+            features: ["ITR-5/6/7 Filing", "Pvt Ltd / LLP", "Tax Audit Support"],
+            color: 'bg-blue-50 border-blue-200'
+        }
+    };
+
+    const billDetails = useMemo(() => {
+        const plan = plans[selectedPlan] || plans.salaried;
+        const basePrice = plan.price;
+        const platformFee = Math.round(basePrice * 0.03);
+        const tax = Math.round(basePrice * 0.03);
+        const gst = Math.round(basePrice * 0.09);
+        const total = basePrice + platformFee + tax + gst;
+        return { basePrice, platformFee, tax, gst, total };
+    }, [selectedPlan]);
 
     const handleInputChange = (e) => {
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         setFormData({ ...formData, [e.target.name]: value });
+        if (errors[e.target.name]) setErrors(prev => ({ ...prev, [e.target.name]: null }));
     };
 
     const handleFileUpload = (e, docName) => {
         const file = e.target.files[0];
         if (file) {
             setFiles(prev => ({ ...prev, [docName]: file }));
-            setUploadProgress(prev => ({ ...prev, [docName]: 100 }));
         }
     };
 
-    const handleSubmit = async () => {
+    const validateStep = (step) => {
+        const newErrors = {};
+        let isValid = true;
+
+        if (step === 1) {
+            const isReallyLoggedIn = !!user;
+            if (!isReallyLoggedIn) {
+                if (!formData.userEmail) { newErrors.userEmail = "Required"; isValid = false; }
+                if (!formData.userPhone) { newErrors.userPhone = "Required"; isValid = false; }
+            }
+            if (!formData.applicantName) { newErrors.applicantName = "Name required"; isValid = false; }
+            if (!formData.panNumber) { newErrors.panNumber = "PAN required"; isValid = false; }
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    const handleNext = () => {
+        if (validateStep(currentStep)) setCurrentStep(prev => Math.min(4, prev + 1));
+    };
+
+
+    const submitApplication = async () => {
+        setIsSubmitting(true);
         const payload = new FormData();
         const incomeDetails = {
             employerName: formData.employerName,
             annualSalary: formData.annualSalary,
             businessName: formData.businessName,
             turnover: formData.turnover,
-
             capitalGainType: formData.capitalGainType,
             entityType: formData.entityType
         };
@@ -76,7 +147,9 @@ const IncomeTaxReturnRegistration = ({ planProp = 'business', isModal, onClose }
             panNumber: formData.panNumber,
             applicantName: formData.applicantName,
             incomeDetails: incomeDetails,
-            wantsRefundOptimization: formData.wantsRefundOptimization
+            wantsRefundOptimization: formData.wantsRefundOptimization,
+            userEmail: formData.userEmail,
+            userPhone: formData.userPhone
         };
 
         payload.append('data', JSON.stringify(requestData));
@@ -86,476 +159,306 @@ const IncomeTaxReturnRegistration = ({ planProp = 'business', isModal, onClose }
         });
 
         try {
-            await submitIncomeTaxReturn(payload);
-            setCurrentStep(6);
+            const response = await submitIncomeTaxReturn(payload);
+            setAutomationPayload({ submissionId: response?.submissionId || `ITR-${Date.now()}` });
+            setIsSuccess(true);
         } catch (error) {
-            console.error("Submission failed", error);
-            alert("Transmission failed. Please check your data packets.");
+            alert("Submission failed. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 5));
-    const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
-    return (
-        <div className="flex flex-col h-full bg-white font-sans text-navy">
-            {/* PROGRESS BAR */}
-            <div className="px-12 pt-10 pb-6 bg-slate-50/50 border-b border-slate-100 font-poppins">
-                <div className="flex justify-between items-center mb-10">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-teal-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-teal-500/20 -rotate-3">
-                            <TrendingUp size={24} />
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-black italic tracking-tighter uppercase">ITR Filing expert</h2>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Tax Optimization Engine v5.0</p>
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 1: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        {(!user) && (
+                            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3 pb-6 border-b border-gray-100">
+                                <h3 className="md:col-span-2 font-bold text-slate-800 mb-1 text-sm flex items-center gap-2"><User size={16} /> CONTACT DETAILS</h3>
+                                <input name="userEmail" value={formData.userEmail} onChange={handleInputChange} placeholder="Your Email Address" className={`p-2 text-sm border rounded-lg ${errors.userEmail ? 'border-red-500' : ''}`} />
+                                <input name="userPhone" value={formData.userPhone} onChange={handleInputChange} placeholder="Your Phone Number" className={`p-2 text-sm border rounded-lg ${errors.userPhone ? 'border-red-500' : ''}`} />
+                            </div>
+                        )}
+                        <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><User size={16} /> PRIMARY IDENTIFICATION</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input name="applicantName" value={formData.applicantName} onChange={handleInputChange} placeholder="Applicant Legal Name" className={`p-2 text-sm border rounded-lg ${errors.applicantName ? 'border-red-500' : ''}`} />
+                            <input name="panNumber" value={formData.panNumber} onChange={handleInputChange} placeholder="PAN Card Number" className={`p-2 text-sm border rounded-lg uppercase ${errors.panNumber ? 'border-red-500' : ''}`} />
+                            <select name="assessmentYear" value={formData.assessmentYear} onChange={handleInputChange} className="md:col-span-2 p-2 text-sm border rounded-lg w-full">
+                                <option value="2025-26">2025-26 (Latest)</option>
+                                <option value="2024-25">2024-25</option>
+                            </select>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-3 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors order-last">
-                        <Trash2 size={24} />
-                    </button>
                 </div>
+            );
+            case 2: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><PieChart size={16} /> INCOME METRICS</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {selectedPlan === 'salaried' && (
+                                <>
+                                    <input name="employerName" value={formData.employerName} onChange={handleInputChange} placeholder="Current Employer Name" className="p-2 text-sm border rounded-lg md:col-span-2" />
+                                    <input type="number" name="annualSalary" value={formData.annualSalary} onChange={handleInputChange} placeholder="Annual CTC (Approx)" className="p-2 text-sm border rounded-lg md:col-span-2" />
+                                </>
+                            )}
+                            {selectedPlan === 'business' && (
+                                <>
+                                    <input name="businessName" value={formData.businessName} onChange={handleInputChange} placeholder="Trade / Profession Name" className="p-2 text-sm border rounded-lg md:col-span-2" />
+                                    <input type="number" name="turnover" value={formData.turnover} onChange={handleInputChange} placeholder="Estimated Turnover" className="p-2 text-sm border rounded-lg md:col-span-2" />
+                                </>
+                            )}
+                            {selectedPlan === 'capital_gains' && (
+                                <select name="capitalGainType" value={formData.capitalGainType} onChange={handleInputChange} className="p-2 text-sm border rounded-lg md:col-span-2">
+                                    <option value="Equity">Listed Shares / Mutual Funds</option>
+                                    <option value="Property">Real Estate / Property Sale</option>
+                                    <option value="Crypto">VDA / Crypto-Currency Yields</option>
+                                    <option value="Foreign">Foreign Assets / Income</option>
+                                </select>
+                            )}
+                            {selectedPlan === 'corporate' && (
+                                <>
+                                    <input name="businessName" value={formData.businessName} onChange={handleInputChange} placeholder="Entity Name" className="p-2 text-sm border rounded-lg md:col-span-2" />
+                                    <select name="entityType" value={formData.entityType} onChange={handleInputChange} className="p-2 text-sm border rounded-lg">
+                                        <option value="Firm">Partnership Firm</option>
+                                        <option value="LLP">LLP</option>
+                                        <option value="Company">Private Ltd / Ltd</option>
+                                        <option value="Trust">Trust / NGO</option>
+                                    </select>
+                                    <input type="number" name="turnover" value={formData.turnover} onChange={handleInputChange} placeholder="Annual Turnover" className="p-2 text-sm border rounded-lg" />
+                                </>
+                            )}
 
-                <div className="flex justify-between relative px-4">
-                    <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -translate-y-1/2 z-0"></div>
-                    <motion.div
-                        className="absolute top-1/2 left-0 h-0.5 bg-teal-500 -translate-y-1/2 z-0"
-                        initial={{ width: '0%' }}
-                        animate={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
-                    ></motion.div>
-
-                    {steps.map((s) => (
-                        <div key={s.id} className="relative z-10 flex flex-col items-center gap-3">
-                            <motion.div
-                                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${currentStep >= s.id ? 'bg-teal-600 border-teal-600 text-white' : 'bg-white border-slate-200 text-slate-400 shadow-inner'}`}
-                            >
-                                {currentStep > s.id ? <Check size={18} /> : <s.icon size={18} />}
-                            </motion.div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest ${currentStep >= s.id ? 'text-teal-700' : 'text-slate-400'}`}>{s.title}</span>
+                            <label className="md:col-span-2 flex items-center gap-2 mt-4 p-3 border rounded-lg bg-teal-50/30">
+                                <input type="checkbox" name="wantsRefundOptimization" checked={formData.wantsRefundOptimization} onChange={handleInputChange} className="w-4 h-4 text-teal-600 rounded border-gray-300" />
+                                <span className="text-sm text-slate-700">Apply Refund Optimization (80C / Chapter VI-A)</span>
+                            </label>
                         </div>
-                    ))}
+                    </div>
                 </div>
-            </div>
-
-            {/* FORM AREA */}
-            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar font-poppins">
-                <AnimatePresence mode="wait">
-                    {/* STEP 1: PLAN */}
-                    {currentStep === 1 && (
-                        <motion.div key="step1" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-10">
-                            <div className="bg-teal-50 border border-teal-100 p-8 rounded-[40px] flex items-center justify-between">
-                                <div className="space-y-2">
-                                    <h3 className="text-3xl font-black text-teal-900 italic tracking-tighter uppercase">Direct Tax Tiers</h3>
-                                    <p className="text-teal-700/60 font-medium text-sm tracking-wide">Select the return type matched to your income profile.</p>
-                                </div>
-                                <Zap className="text-teal-500 animate-pulse" size={40} />
-                            </div>
-
-                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                {[
-                                    { id: 'salaried', name: 'Salaried', price: '999', features: ["ITR-1/2 Filing", "Form-16 Import", "Tax Refund Assist"] },
-                                    { id: 'business', name: 'Business', price: '1999', features: ["ITR-3/4 Filing", "P&L/Balance Sheet", "Presumptive Audit"] },
-                                    { id: 'capital_gains', name: 'Investor', price: '2999', features: ["Shares/MF Gain Audit", "Property Tax Prep", "Loss Carry Forward"] },
-                                    { id: 'corporate', name: 'Entity / Firm', price: '4999', features: ["ITR-5/6/7 Filing", "Pvt Ltd / LLP / Firm", "Tax Audit Support"] }
-                                ].map(p => (
-                                    <div
-                                        key={p.id}
-                                        onClick={() => setSelectedPlan(p.id)}
-                                        className={`p-6 rounded-[45px] border-4 transition-all cursor-pointer relative overflow-hidden group ${selectedPlan === p.id ? 'border-teal-500 bg-teal-50 shadow-2xl scale-105' : 'border-slate-100 hover:border-teal-200'}`}
-                                    >
-                                        {selectedPlan === p.id && <div className="absolute top-0 right-0 bg-teal-500 text-white p-3 rounded-bl-3xl"><CheckCircle size={20} /></div>}
-                                        <h4 className={`text-xl font-black mb-1 uppercase italic ${selectedPlan === p.id ? 'text-teal-900' : 'text-slate-400'}`}>{p.name}</h4>
-                                        <div className="flex items-baseline gap-1 mb-8">
-                                            <span className="text-4xl font-black">₹{p.price}</span>
-                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">ONE TIME</span>
-                                        </div>
-                                        <div className="space-y-3">
-                                            {p.features.map((f, i) => (
-                                                <div key={i} className="flex gap-3 text-[10px] font-black uppercase text-slate-500 tracking-widest"><Check size={14} className="text-teal-500" /> {f}</div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 2: IDENTITY */}
-                    {currentStep === 2 && (
-                        <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-teal-500 pl-6">Primary Identification</h3>
-
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className="space-y-3 md:col-span-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Applicant Legal Name</label>
-                                    <div className="relative">
-                                        <User className="absolute left-6 top-1/2 -translate-y-1/2 text-teal-500" size={24} />
-                                        <input
-                                            name="applicantName"
-                                            value={formData.applicantName}
-                                            onChange={handleInputChange}
-                                            type="text"
-                                            placeholder="As per PAN Card"
-                                            className="w-full pl-16 pr-6 py-6 bg-slate-50 border-2 border-slate-100 rounded-[30px] font-black focus:border-teal-500 transition-all text-2xl uppercase italic shadow-inner"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">PAN Card Number</label>
-                                    <div className="relative">
-                                        <ReceiptText className="absolute left-5 top-1/2 -translate-y-1/2 text-teal-500" size={20} />
-                                        <input
-                                            name="panNumber"
-                                            value={formData.panNumber}
-                                            onChange={handleInputChange}
-                                            type="text"
-                                            placeholder="ABCDE1234F"
-                                            className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black focus:border-teal-500 transition-all text-xl italic uppercase tracking-widest"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Assessment Year</label>
-                                    <div className="relative">
-                                        <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-teal-500" size={20} />
-                                        <select
-                                            name="assessmentYear"
-                                            value={formData.assessmentYear}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold focus:border-teal-500 transition-all text-lg tracking-tight uppercase appearance-none"
-                                        >
-                                            <option value="2025-26">2025-26 (Latest)</option>
-                                            <option value="2024-25">2024-25</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 3: YIELD (DYANMIC) */}
-                    {currentStep === 3 && (
-                        <motion.div key="step3" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-teal-500 pl-6">Yield Metrics</h3>
-
-                            <div className="grid md:grid-cols-2 gap-8">
-                                {selectedPlan === 'salaried' && (
-                                    <>
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Current Employer</label>
-                                            <div className="relative">
-                                                <Building className="absolute left-5 top-1/2 -translate-y-1/2 text-teal-500" size={20} />
-                                                <input
-                                                    name="employerName"
-                                                    value={formData.employerName}
-                                                    onChange={handleInputChange}
-                                                    type="text"
-                                                    placeholder="Company Name"
-                                                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold focus:border-teal-500 transition-all text-lg italic"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Annual CTC (Approx)</label>
-                                            <div className="relative">
-                                                <Wallet className="absolute left-5 top-1/2 -translate-y-1/2 text-teal-500" size={20} />
-                                                <input
-                                                    name="annualSalary"
-                                                    value={formData.annualSalary}
-                                                    onChange={handleInputChange}
-                                                    type="text"
-                                                    placeholder="e.g. 12,00,000"
-                                                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold focus:border-teal-500 transition-all text-lg italic"
-                                                />
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-
-                                {selectedPlan === 'business' && (
-                                    <>
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Trade/Profession Name</label>
-                                            <div className="relative">
-                                                <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 text-teal-500" size={20} />
-                                                <input
-                                                    name="businessName"
-                                                    value={formData.businessName}
-                                                    onChange={handleInputChange}
-                                                    type="text"
-                                                    placeholder="Operational Entity"
-                                                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold focus:border-teal-500 transition-all text-lg italic"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Estimated Turnover</label>
-                                            <div className="relative">
-                                                <TrendingUp className="absolute left-5 top-1/2 -translate-y-1/2 text-teal-500" size={20} />
-                                                <input
-                                                    name="turnover"
-                                                    value={formData.turnover}
-                                                    onChange={handleInputChange}
-                                                    type="text"
-                                                    placeholder="Gross Receipts"
-                                                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold focus:border-teal-500 transition-all text-lg italic"
-                                                />
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-
-                                {selectedPlan === 'capital_gains' && (
-                                    <div className="space-y-3 md:col-span-2 text-left">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Yield Vector</label>
-                                        <div className="relative">
-                                            <PieChart className="absolute left-5 top-1/2 -translate-y-1/2 text-teal-500" size={20} />
-                                            <select
-                                                name="capitalGainType"
-                                                value={formData.capitalGainType}
-                                                onChange={handleInputChange}
-                                                className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold focus:border-teal-500 transition-all text-lg tracking-tight uppercase appearance-none"
-                                            >
-                                                <option value="Equity">Listed Shares / Mutual Funds</option>
-                                                <option value="Property">Real Estate / Property Sale</option>
-                                                <option value="Crypto">VDA / Crypto-Currency Yields</option>
-                                                <option value="Foreign">Foreign Assets / Income</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {selectedPlan === 'corporate' && (
-                                    <div className="md:col-span-2 grid md:grid-cols-2 gap-8">
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Entity Name</label>
-                                            <div className="relative">
-                                                <Building className="absolute left-5 top-1/2 -translate-y-1/2 text-teal-500" size={20} />
-                                                <input
-                                                    name="businessName"
-                                                    value={formData.businessName}
-                                                    onChange={handleInputChange}
-                                                    type="text"
-                                                    placeholder="Company / Firm Name"
-                                                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold focus:border-teal-500 transition-all text-lg italic"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Entity Type</label>
-                                            <div className="relative">
-                                                <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 text-teal-500" size={20} />
-                                                <select
-                                                    name="entityType"
-                                                    value={formData.entityType}
-                                                    onChange={handleInputChange}
-                                                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold focus:border-teal-500 transition-all text-lg tracking-tight uppercase appearance-none"
-                                                >
-                                                    <option value="Firm">Partnership Firm</option>
-                                                    <option value="LLP">LLP</option>
-                                                    <option value="Company">Private Ltd / Ltd</option>
-                                                    <option value="Trust">Trust / NGO</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Annual Turnover</label>
-                                            <div className="relative">
-                                                <TrendingUp className="absolute left-5 top-1/2 -translate-y-1/2 text-teal-500" size={20} />
-                                                <input
-                                                    name="turnover"
-                                                    value={formData.turnover}
-                                                    onChange={handleInputChange}
-                                                    type="text"
-                                                    placeholder="Gross Receipts / Turnover"
-                                                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold focus:border-teal-500 transition-all text-lg italic"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="p-10 rounded-[40px] border-4 border-slate-100 flex items-center justify-between mt-12 bg-teal-50/10">
-                                <div>
-                                    <h4 className="font-black italic text-lg uppercase tracking-tighter">Refund Optimization</h4>
-                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Our Experts scan all 80C/80D/Chapter VI-A options.</p>
-                                </div>
-                                <input
-                                    type="checkbox"
-                                    name="wantsRefundOptimization"
-                                    checked={formData.wantsRefundOptimization}
-                                    onChange={handleInputChange}
-                                    className="w-8 h-8 rounded-xl text-teal-600 focus:ring-teal-500 border-2"
-                                />
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 4: VAULT */}
-                    {currentStep === 4 && (
-                        <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                            <h3 className="text-4xl font-black italic tracking-tighter uppercase border-l-8 border-teal-500 pl-6">Document Vault</h3>
-
-                            <div className="grid md:grid-cols-2 gap-8">
-                                {selectedPlan === 'salaried' && (
-                                    <div className={`p-8 rounded-[40px] border-2 border-dashed transition-all relative ${files.form16 ? 'border-teal-500 bg-teal-50' : 'border-slate-200 hover:border-teal-300'}`}>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Form-16 (PDF)</h4>
-                                            {files.form16 && <CheckCircle className="text-teal-600 animate-bounce" size={20} />}
-                                        </div>
-                                        <input type="file" id="form16" className="hidden" onChange={(e) => handleFileUpload(e, 'form16')} />
-                                        <label htmlFor="form16" className="flex items-center gap-4 cursor-pointer text-navy font-black text-sm uppercase italic">
-                                            <Upload size={20} className="text-teal-500" />
-                                            {files.form16 ? files.form16.name.substring(0, 15) : 'Select Form-16'}
-                                        </label>
-                                    </div>
-                                )}
-
-                                <div className={`p-8 rounded-[40px] border-2 border-dashed transition-all relative ${files.bank_stmt ? 'border-teal-500 bg-teal-50' : 'border-slate-200 hover:border-teal-300'}`}>
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Bank Stmt (Full FY)</h4>
-                                        {files.bank_stmt && <CheckCircle className="text-teal-600 animate-bounce" size={20} />}
-                                    </div>
-                                    <input type="file" id="bank_stmt" className="hidden" onChange={(e) => handleFileUpload(e, 'bank_stmt')} />
-                                    <label htmlFor="bank_stmt" className="flex items-center gap-4 cursor-pointer text-navy font-black text-sm uppercase italic">
-                                        <Upload size={20} className="text-teal-500" />
-                                        {files.bank_stmt ? files.bank_stmt.name.substring(0, 15) : 'Select Statements'}
-                                    </label>
-                                </div>
-
-                                <div className={`p-8 rounded-[40px] border-2 border-dashed transition-all relative ${files.investments ? 'border-teal-500 bg-teal-50' : 'border-slate-200 hover:border-teal-300'}`}>
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Investment Proofs</h4>
-                                        {files.investments && <CheckCircle className="text-teal-600 animate-bounce" size={20} />}
-                                    </div>
-                                    <input type="file" id="investments" className="hidden" onChange={(e) => handleFileUpload(e, 'investments')} />
-                                    <label htmlFor="investments" className="flex items-center gap-4 cursor-pointer text-navy font-black text-sm uppercase italic">
-                                        <Upload size={20} className="text-teal-500" />
-                                        {files.investments ? files.investments.name.substring(0, 15) : 'Select Proofs'}
-                                    </label>
-                                </div>
-
-                                {selectedPlan === 'capital_gains' && (
-                                    <div className={`p-8 rounded-[40px] border-2 border-dashed transition-all relative ${files.gain_stmt ? 'border-teal-500 bg-teal-50' : 'border-slate-200 hover:border-teal-300'}`}>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Capital Gain Summary</h4>
-                                            {files.gain_stmt && <CheckCircle className="text-teal-600 animate-bounce" size={20} />}
-                                        </div>
-                                        <input type="file" id="gain_stmt" className="hidden" onChange={(e) => handleFileUpload(e, 'gain_stmt')} />
-                                        <label htmlFor="gain_stmt" className="flex items-center gap-4 cursor-pointer text-navy font-black text-sm uppercase italic">
-                                            <Upload size={20} className="text-teal-500" />
-                                            {files.gain_stmt ? files.gain_stmt.name.substring(0, 15) : 'Select Statement'}
-                                        </label>
-                                    </div>
-                                )}
-                                {selectedPlan === 'corporate' && (
-                                    <>
-                                        <div className={`p-8 rounded-[40px] border-2 border-dashed transition-all relative ${files.financials ? 'border-teal-500 bg-teal-50' : 'border-slate-200 hover:border-teal-300'}`}>
-                                            <div className="flex items-center justify-between mb-4">
-                                                <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Financial Stmts</h4>
-                                                {files.financials && <CheckCircle className="text-teal-600 animate-bounce" size={20} />}
-                                            </div>
-                                            <input type="file" id="financials" className="hidden" onChange={(e) => handleFileUpload(e, 'financials')} />
-                                            <label htmlFor="financials" className="flex items-center gap-4 cursor-pointer text-navy font-black text-sm uppercase italic">
-                                                <Upload size={20} className="text-teal-500" />
-                                                {files.financials ? files.financials.name.substring(0, 15) : 'BS / PL / Trial Bal'}
-                                            </label>
-                                        </div>
-                                        <div className={`p-8 rounded-[40px] border-2 border-dashed transition-all relative ${files.audit ? 'border-teal-500 bg-teal-50' : 'border-slate-200 hover:border-teal-300'}`}>
-                                            <div className="flex items-center justify-between mb-4">
-                                                <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Audit Report (Opt)</h4>
-                                                {files.audit && <CheckCircle className="text-teal-600 animate-bounce" size={20} />}
-                                            </div>
-                                            <input type="file" id="audit" className="hidden" onChange={(e) => handleFileUpload(e, 'audit')} />
-                                            <label htmlFor="audit" className="flex items-center gap-4 cursor-pointer text-navy font-black text-sm uppercase italic">
-                                                <Upload size={20} className="text-teal-500" />
-                                                {files.audit ? files.audit.name.substring(0, 15) : 'Tax Audit Report'}
-                                            </label>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* STEP 5: REVIEW */}
-                    {currentStep === 5 && (
-                        <motion.div key="step5" initial={{ opacity: 1 }} className="space-y-10">
-                            <div className="text-center space-y-4 font-poppins text-navy">
-                                <div className="w-24 h-24 bg-teal-100 text-teal-600 rounded-[40px] flex items-center justify-center mx-auto -rotate-12 mb-8 shadow-xl border border-teal-200">
-                                    <ShieldCheck size={48} />
-                                </div>
-                                <h3 className="text-5xl font-black italic tracking-tighter uppercase">ITR Finalize</h3>
-                                <p className="text-slate-400 font-bold uppercase tracking-[0.3em]">Validation sequence complete</p>
-                            </div>
-
-                            <div className="bg-navy rounded-[60px] p-12 text-white relative overflow-hidden group shadow-6xl">
-                                <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-150 transition-transform duration-1000">
-                                    <ReceiptText size={200} />
-                                </div>
-
-                                <div className="grid md:grid-cols-2 gap-12 relative z-10 font-poppins">
-                                    <div className="space-y-8">
-                                        <div>
-                                            <p className="text-teal-400 text-[10px] font-black uppercase tracking-widest mb-2 italic">Taxpayer Profile</p>
-                                            <p className="text-2xl font-black italic tracking-tighter uppercase">{formData.applicantName || 'Applicant Name'}</p>
-                                            <p className="text-xl font-black tracking-widest text-white/60 font-mono mt-1 uppercase">{formData.panNumber || 'XXXXXXXXXX'}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-teal-400 text-[10px] font-black uppercase tracking-widest mb-2 italic">Assessment Cycle</p>
-                                            <p className="text-2xl font-black italic uppercase tracking-tighter">{formData.assessmentYear}</p>
-                                        </div>
-                                    </div>
-                                    <div className="bg-white/10 backdrop-blur-3xl rounded-[40px] p-10 flex flex-col justify-center border border-white/10">
-                                        <p className="text-teal-400 text-[10px] font-black uppercase tracking-widest mb-2 italic">Professional Fee</p>
-                                        <div className="flex items-baseline gap-2 mb-6">
-                                            <span className="text-7xl font-black italic tracking-tighter">₹{selectedPlan === 'salaried' ? '999' : selectedPlan === 'business' ? '1,999' : selectedPlan === 'corporate' ? '4,999' : '2,999'}</span>
-                                            <span className="text-teal-300 font-bold text-xl">+ GST</span>
-                                        </div>
-                                        <div className="w-full h-px bg-white/20 mb-6"></div>
-                                        <p className="text-[10px] font-medium text-white/60 uppercase tracking-widest">Estimated processing: 48-72 Hours.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* SUCCESS */}
-                    {currentStep === 6 && (
-                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-20 space-y-10">
-                            <div className="w-32 h-32 bg-teal-600 rounded-[50px] flex items-center justify-center mx-auto text-white shadow-3xl shadow-teal-500/40 rotate-12">
-                                <Check size={64} strokeWidth={4} />
-                            </div>
-                            <div className="space-y-4 font-poppins">
-                                <h3 className="text-6xl font-black italic tracking-tighter uppercase text-navy">Application Delivered</h3>
-                                <p className="text-slate-400 font-bold uppercase tracking-[0.5em] max-w-md mx-auto">Your ITR data has been transmitted to our expert tax auditors for final audit.</p>
-                            </div>
-                            <button onClick={() => navigate('/dashboard')} className="px-12 py-6 bg-navy text-white font-black text-xs uppercase tracking-[0.5em] rounded-[2rem] hover:bg-teal-600 transition-all shadow-4xl">Enter Dashboard</button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* ACTION FOOTER */}
-            {currentStep < 6 && (
-                <div className="px-12 py-10 bg-slate-50 flex justify-between items-center border-t border-slate-100 font-poppins">
-                    <button
-                        onClick={prevStep}
-                        disabled={currentStep === 1}
-                        className={`flex items-center gap-3 font-black text-xs uppercase tracking-widest transition-all ${currentStep === 1 ? 'opacity-0' : 'hover:translate-x-[-5px] text-slate-400 hover:text-navy'}`}
-                    >
-                        <ArrowLeft size={18} /> Prev Stage
-                    </button>
-
-                    <button
-                        onClick={currentStep === 5 ? handleSubmit : nextStep}
-                        className="flex items-center gap-6 px-12 py-6 bg-navy text-white font-black text-xs uppercase tracking-[0.5em] rounded-[2rem] hover:bg-teal-600 transition-all shadow-2xl group"
-                    >
-                        {currentStep === 5 ? 'Authorize & Pay' : 'Next Stage'} <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+            );
+            case 3: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-slate-800 mb-3 text-sm">UPLOAD DATA</h3>
+                        <div className="grid grid-cols-1 gap-3">
+                            {selectedPlan === 'salaried' && (
+                                <div className="border border-dashed p-3 rounded-lg flex justify-between items-center"><span className="text-xs text-gray-600">Form-16 (PDF)</span><input type="file" onChange={(e) => handleFileUpload(e, 'form16')} className="text-[10px] w-20" /></div>
+                            )}
+                            <div className="border border-dashed p-3 rounded-lg flex justify-between items-center"><span className="text-xs text-gray-600">Bank Stmt (Full FY)</span><input type="file" onChange={(e) => handleFileUpload(e, 'bank_stmt')} className="text-[10px] w-20" /></div>
+                            <div className="border border-dashed p-3 rounded-lg flex justify-between items-center"><span className="text-xs text-gray-600">Investment Proofs</span><input type="file" onChange={(e) => handleFileUpload(e, 'investments')} className="text-[10px] w-20" /></div>
+                            {selectedPlan === 'capital_gains' && (
+                                <div className="border border-dashed p-3 rounded-lg flex justify-between items-center"><span className="text-xs text-gray-600">Capital Gain Summary</span><input type="file" onChange={(e) => handleFileUpload(e, 'gain_stmt')} className="text-[10px] w-20" /></div>
+                            )}
+                            {selectedPlan === 'corporate' && (
+                                <>
+                                    <div className="border border-dashed p-3 rounded-lg flex justify-between items-center"><span className="text-xs text-gray-600">Financial Stmts (BS/PL)</span><input type="file" onChange={(e) => handleFileUpload(e, 'financials')} className="text-[10px] w-20" /></div>
+                                    <div className="border border-dashed p-3 rounded-lg flex justify-between items-center"><span className="text-xs text-gray-600">Audit Report (Opt)</span><input type="file" onChange={(e) => handleFileUpload(e, 'audit')} className="text-[10px] w-20" /></div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+            case 4: return (
+                <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                    <IndianRupee size={32} className="mx-auto mb-4 text-green-600" />
+                    <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                    <div className="bg-slate-50 p-4 rounded-xl mb-6 text-left space-y-2">
+                        <div className="flex justify-between text-sm"><span>Applicant</span><span className="font-bold">{formData.applicantName}</span></div>
+                        <div className="flex justify-between text-sm"><span>PAN</span><span className="font-bold uppercase">{formData.panNumber}</span></div>
+                        <div className="flex justify-between text-sm"><span>FY</span><span className="font-bold">{formData.assessmentYear}</span></div>
+                        <div className="my-2 border-t"></div>
+                        <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.basePrice.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFee}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
+                    </div>
+                    <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center">
+                        <input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} />
+                        I Accept Terms & Conditions
+                    </label>
+                    <button onClick={submitApplication} disabled={!isTermsAccepted || isSubmitting} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50 transition">
+                        Pay & Submit
                     </button>
                 </div>
-            )}
+            );
+            default: return null;
+        }
+    }
+
+    if (isModal) {
+        return (
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white mb-6">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            Income Tax Return
+                        </h1>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.basePrice.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{(billDetails.total - billDetails.basePrice).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
+                        </div>
+                    </div>
+
+                    {/* VERTICAL STEPPER */}
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {['Identity Info', 'Income Metrics', 'Upload Data', 'Payment'].map((step, i) => (
+                            <div key={i}
+                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                            >
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* RIGHT CONTENT: FORM */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    {/* Header Bar */}
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            {/* Mobile: Detailed Service & Price Info */}
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">Income Tax Return</span>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.basePrice / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.basePrice) / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: Step Title */}
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Start Filing"}
+                                {currentStep === 2 && "Income Details"}
+                                {currentStep === 3 && "Data Upload"}
+                                {currentStep === 4 && "Complete Payment"}
+                            </h2>
+                        </div>
+
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    {/* Scrollable Area */}
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                        {isSuccess ? (
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                                <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg hover:bg-black transition">Close Window</button>
+                            </div>
+                        ) : (
+                            renderStepContent()
+                        )}
+                    </div>
+
+                    {/* Sticky Footer */}
+                    {!isSuccess && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            {currentStep < 4 && (
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                                >
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen pb-20 pt-24 px-4 bg-[#F8F9FA]">
+            <div className="max-w-6xl mx-auto">
+                <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-gray-500 font-bold text-xs uppercase"><ArrowLeft size={14} /> Back</button>
+                <div className="flex gap-8">
+                    <div className="w-72 hidden lg:block space-y-4">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
+                            {['Identity Info', 'Income Metrics', 'Upload Data', 'Payment'].map((s, i) => (
+                                <div key={i} className={`p-2 rounded font-bold text-sm ${currentStep === i + 1 ? 'bg-[#043E52] text-white' : 'text-gray-500'}`}>{s}</div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex-1 bg-transparent">
+                        {isSuccess ? (
+                            <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                            </div>
+                        ) : (
+                            <div className="bg-transparent">
+                                {renderStepContent()}
+                                <div className="mt-6 flex justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                    <button onClick={() => setCurrentStep(p => p - 1)} disabled={currentStep === 1} className="px-6 py-2 text-gray-500 font-bold rounded hover:bg-gray-50 disabled:opacity-50">Back</button>
+                                    <button onClick={handleNext} className="bg-[#ED6E3F] text-white px-6 py-2 rounded font-bold hover:shadow-lg transition">Next Step</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

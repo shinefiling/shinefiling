@@ -79,7 +79,6 @@ public class DataInitializer implements CommandLineRunner {
         ca.setVerified(true);
         userRepository.save(ca);
         System.out.println("CA synced: ca@shinefiling.com");
-
         // Seed Services
         seedServices();
     }

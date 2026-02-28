@@ -1792,30 +1792,24 @@ export const requestWithdrawal = async (userId, amount) => {
 
 // --- SUPER ADMIN CRM APIs ---
 
-
-
-
-
-
-
-export const broadcastRequest = async (requestId, amount) => {
-    const response = await fetch(`${BASE_URL}/admin/requests/${requestId}/broadcast`, {
+export const broadcastRequest = async (requestId, amount, duration, description) => {
+    const response = await fetch(`${BASE_URL}/super-admin/requests/${requestId}/broadcast`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ amount })
+        body: JSON.stringify({ amount, duration, description })
     });
     return handleResponse(response);
 };
 
 export const getBidsForRequest = async (requestId) => {
-    const response = await fetch(`${BASE_URL}/admin/requests/${requestId}/bids`, {
+    const response = await fetch(`${BASE_URL}/super-admin/requests/${requestId}/bids`, {
         headers: getAuthHeaders()
     });
     return handleResponse(response);
 };
 
 export const acceptBid = async (bidId) => {
-    const response = await fetch(`${BASE_URL}/admin/bids/${bidId}/accept`, {
+    const response = await fetch(`${BASE_URL}/super-admin/bids/${bidId}/accept`, {
         method: 'POST',
         headers: getAuthHeaders()
     });
@@ -2834,7 +2828,7 @@ export const getBotResponse = (message, role) => {
     if (msg.includes('status')) return "You can check your application status in the 'My Applications' tab.";
     if (msg.includes('document') || msg.includes('upload')) return "Please go to 'My Documents' to upload or view your files.";
     if (msg.includes('payment') || msg.includes('invoice')) return "Billing details are available under the 'Billing & Invoices' section.";
-    if (msg.includes('contact') || msg.includes('call')) return "You can call our support at +91 98765 43210.";
+    if (msg.includes('contact') || msg.includes('call')) return "You can call our support at +91 7639227019.";
 
     return "I'm here to help! Could you please provide more details?";
 };

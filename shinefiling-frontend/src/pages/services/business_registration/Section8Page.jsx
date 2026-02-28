@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Heart, HandHelping, Banknote, Handshake } from 'lucide-react';
+import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, Building, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Heart, HandHelping, Banknote, Handshake, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Section8Registration from './Section8Registration';
 import AuthModal from '../../../components/auth/AuthModal';
@@ -63,27 +63,7 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                     <div className="absolute inset-0 bg-gradient-to-t from-navy to-transparent"></div>
                 </div>
 
-                {/* Animated Background Elements */}
-                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                    <motion.div
-                        animate={{
-                            scale: [1, 1.2, 1],
-                            opacity: [0.1, 0.2, 0.1],
-                            rotate: [0, 45, 0]
-                        }}
-                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-bronze/20 rounded-full blur-[120px]"
-                    />
-                    <motion.div
-                        animate={{
-                            scale: [1, 1.1, 1],
-                            opacity: [0.1, 0.15, 0.1],
-                            x: [0, -50, 0]
-                        }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/20 rounded-full blur-[100px]"
-                    />
-                </div>
+
 
                 <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
@@ -236,30 +216,29 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
 
             {/* --- PRICING SECTION (3 PLANS) --- */}
             <section id="pricing-section" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
-                <div className="max-w-7xl mx-auto relative z-10">
+                <div className="max-w-5xl mx-auto relative z-10">
                     <div className="text-center mb-16">
                         <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Empowering Social Good</span>
                         <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">NGO Registration Plans</h2>
                         <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                    <div className="grid md:grid-cols-3 gap-8">
                         {/* PLAN 1: BASIC */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Foundation</h3>
-                            <p className="text-slate-500 text-sm mb-6">Basic Section 8 registration.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹9,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹15,000</span>
+                            <h3 className="text-lg font-bold text-navy mb-2">Foundation</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹9,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">₹15,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 {[
                                     "2 DSC & 2 DIN",
                                     "Name Approval (RUN)",
@@ -268,55 +247,53 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                                     "Certificate of Incorporation",
                                     "PAN & TAN Allotment"
                                 ].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                                 <li className="flex items-center gap-3 text-sm text-slate-400">
-                                    <X size={16} className="shrink-0" /> 12A & 80G Registration
+                                    <X size={14} className="shrink-0" /> 12A & 80G Registration
                                 </li>
                                 <li className="flex items-center gap-3 text-sm text-slate-400">
-                                    <X size={16} className="shrink-0" /> NGO Darpan
+                                    <X size={14} className="shrink-0" /> NGO Darpan
                                 </li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
                                 Choose Foundation
                             </button>
                         </motion.div>
 
                         {/* PLAN 2: STANDARD (POPULAR) */}
-                        {/* Trust Card - Official Registration (Replaces Pricing Card) - WHITE THEME COMPACT */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
-                            {/* Top Gold Line */}
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
 
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
-                                Most Popular
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Section8</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹14,999</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹25,000</span>
                             </div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Section8</h3>
-                            <p className="text-gray-400 text-sm mb-6">Comprehensive Solution</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹14,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹25,000</span>
-                            </div>
-
-                            <ul className="space-y-4 mb-8 flex-1">
-                                {["Everything in Foundation",
-                                    "12A Tax Exemption App",
-                                    "80G (Donor Tax Benefit) App"].map((feat, i) => (
-                                        <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
-                                        </li>
-                                    ))}
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                <li className="text-xs font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Foundation Plan +</li>
+                                {[
+                                    "12A (Prov.) Tax Exemption App",
+                                    "80G (Prov.) Donor Benefit App",
+                                    "GST Registration & PAN/TAN",
+                                    "NGO Darpan Portal Enrollment"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">
                                 Get Started
                             </button>
                         </motion.div>
@@ -327,30 +304,29 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Global</h3>
-                            <p className="text-slate-500 text-sm mb-6">FCRA & Compliance.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹24,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹40,000</span>
+                            <h3 className="text-lg font-bold text-navy mb-2">Global</h3>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy">₹24,999</span>
+                                <span className="text-slate-400 line-through text-xs">₹40,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
+                                <li className="text-xs font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">Everything in Impact +</li>
                                 {[
-                                    "Everything in Impact",
                                     "FCRA Prior Permission App",
                                     "CSR Policy Drafting",
                                     "Project Proposal Template",
                                     "Annual Compliance (1 Year)",
                                     "Dedicated NGO Expert"
                                 ].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
                                 Choose Global
                             </button>
                         </motion.div>
@@ -465,11 +441,11 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
 
 
                     {/* WHY CHOOSE SHINEFILING - NEW SEO SECTION */}
-                    <section className="bg-gradient-to-br from-[#043E52] to-navy p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
+                    <section className="bg-gradient-to-br from-[#043E52] to-[#022c3b] p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
                         {/* Background Deco */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-bronze/10 rounded-full blur-3xl"></div>
 
-                        <h2 className="text-3xl font-bold mb-6 relative z-10">Why Choose ShineFiling for Your NGO?</h2>
+                        <h2 className="text-3xl font-bold mb-6 relative z-10 text-white">Why Choose ShineFiling for Your NGO?</h2>
                         <div className="grid md:grid-cols-2 gap-8 relative z-10">
                             <div className="space-y-4">
                                 <div className="flex gap-4">
@@ -477,7 +453,7 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                                         <Award size={24} />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-lg">Guaranteed License</h4>
+                                        <h4 className="font-bold text-lg text-[#F8F9FA]">Guaranteed License</h4>
                                         <p className="text-gray-300 text-sm">Our experts meticulously draft the MOA & AOA to ensure your Section 8 License is approved without rejection.</p>
                                     </div>
                                 </div>
@@ -486,7 +462,7 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                                         <Zap size={24} />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-lg">12A & 80G Support</h4>
+                                        <h4 className="font-bold text-lg text-[#F8F9FA]">12A & 80G Support</h4>
                                         <p className="text-gray-300 text-sm">We don't stop at registration. We help you get tax exemption certificates so you can attract more donors.</p>
                                     </div>
                                 </div>
@@ -497,7 +473,7 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                                         <Shield size={24} />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-lg">CSR Advisory</h4>
+                                        <h4 className="font-bold text-lg text-[#F8F9FA]">CSR Advisory</h4>
                                         <p className="text-gray-300 text-sm">Our consultants guide you on how to structure your projects to be eligible for Corporate Social Responsibility funds.</p>
                                     </div>
                                 </div>
@@ -506,10 +482,67 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                                         <Users size={24} />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-lg">FCRA Guidance</h4>
+                                        <h4 className="font-bold text-lg text-[#F8F9FA]">FCRA Guidance</h4>
                                         <p className="text-gray-300 text-sm">Planning to receive foreign funds? We provide roadmap and compliance support for FCRA registration.</p>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* NGO COMPLIANCE CALENDAR - NEW SECTION */}
+                    <section>
+                        <h2 className="text-3xl font-bold text-navy mb-8">NGO Compliance Calendar</h2>
+                        <div className="overflow-x-auto bg-white rounded-3xl border border-gray-100 shadow-sm">
+                            <table className="w-full text-left">
+                                <thead className="bg-navy text-white">
+                                    <tr>
+                                        <th className="px-6 py-4 rounded-tl-3xl font-bold">Compliance</th>
+                                        <th className="px-6 py-4 font-bold">Frequency</th>
+                                        <th className="px-6 py-4 rounded-tr-3xl font-bold">Due Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 text-sm">
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-navy">ROC Form AOC-4 (Financials)</td><td className="px-6 py-4 italic">Annual</td><td className="px-6 py-4 text-orange-600 font-bold">Oct 30th</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-navy">ROC Form MGT-7 (Annual Return)</td><td className="px-6 py-4 italic">Annual</td><td className="px-6 py-4 text-orange-600 font-bold">Nov 29th</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-navy">Income Tax Return (ITR-7)</td><td className="px-6 py-4 italic">Annual</td><td className="px-6 py-4 text-red-600 font-bold">Sept 30th</td></tr>
+                                    <tr className="hover:bg-gray-50"><td className="px-6 py-4 font-bold text-navy">Form 10B/BB (Audit Report)</td><td className="px-6 py-4 italic">Annual</td><td className="px-6 py-4 text-red-600 font-bold">Sept 30th</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    {/* TAX EXEMPTION DEEP DIVE - NEW SECTION */}
+                    <section className="bg-bronze/5 p-8 rounded-3xl border border-bronze/20">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-bronze shadow-lg">
+                                <FileText size={32} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-bold text-navy">Empower Your Fundraising</h2>
+                                <p className="text-gray-600 text-sm">Unlock the potential of 12A & 80G registrations with our experts.</p>
+                            </div>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-8">
+                            <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                                <h4 className="font-bold text-navy mb-3 flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs italic">12A</div>
+                                    Income Tax Exemption
+                                </h4>
+                                <ul className="space-y-2 text-xs text-gray-500 leading-relaxed">
+                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-bronze mt-1.5 shrink-0"></div> Makes the entire income of the NGO tax-free.</li>
+                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-bronze mt-1.5 shrink-0"></div> Essential for obtaining FCRA registration.</li>
+                                </ul>
+                            </div>
+                            <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                                <h4 className="font-bold text-navy mb-3 flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center font-bold text-xs italic">80G</div>
+                                    Donor Tax Benefits
+                                </h4>
+                                <ul className="space-y-2 text-xs text-gray-500 leading-relaxed">
+                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-bronze mt-1.5 shrink-0"></div> Allows donors to claim a 50% deduction in their taxable income.</li>
+                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-bronze mt-1.5 shrink-0"></div> Increases trust and encourages larger corporate donations.</li>
+                                </ul>
                             </div>
                         </div>
                     </section>
@@ -569,20 +602,16 @@ const Section8Page = ({ isLoggedIn, onLogout }) => {
                             <button className="w-full mt-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-sm transition">View Plans <ArrowRight size={18} /></button>
                         </div>
 
-                        {/* Support Card */}
-                        <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
-                            <h4 className="font-bold text-lg mb-2">Need Help?</h4>
-                            <p className="text-gray-300 text-sm mb-4">Our NGO experts can guide you on tax exemptions.</p>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                                    <Users size={20} className="text-yellow-400" />
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-400 uppercase">Call Us</p>
-                                    <p className="font-bold">+91 98765 43210</p>
-                                </div>
+                        {/* Support Card - PREMIUM */}
+                        <div className="bg-[#043E52] text-white p-6 rounded-3xl shadow-xl border border-white/5 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-bronze/10 rounded-full -mr-12 -mt-12 transition-transform duration-500 group-hover:scale-150"></div>
+                            <h4 className="font-bold text-lg text-bronze mb-2 relative z-10">NGO Desk</h4>
+                            <p className="text-gray-400 text-xs mb-6 font-medium relative z-10">Our NGO experts can guide you on tax exemptions.</p>
+                            <div className="flex items-center gap-3 mb-6 relative z-10">
+                                <div className="w-10 h-10 rounded-full bg-bronze/20 flex items-center justify-center text-bronze shadow-inner"><Users size={20} /></div>
+                                <div><p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Expert Support</p><p className="font-black text-white">+91 7639227019</p></div>
                             </div>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">View Plans <ArrowRight size={18} /></button>
+                            <button className="w-full py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-[10px] uppercase tracking-widest transition">WhatsApp Now</button>
                         </div>
                     </div>
                 </div>

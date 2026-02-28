@@ -1,12 +1,25 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, HelpCircle, ChevronRight, BookOpen, Users, UserPlus, UserMinus, AlertCircle, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import AddRemoveDirectorRegistration from './AddRemoveDirectorRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
-const AddRemoveDirectorPage = ({ isLoggedIn }) => {
+const AddRemoveDirectorPage = ({ isLoggedIn, onLogout }) => {
     const navigate = useNavigate();
+    const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState('add');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
+
+    const scrollToPlans = () => {
+        const section = document.getElementById('pricing-plans');
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     const faqs = [
         { q: "How to add a director?", a: "To add a director, the person must obtain a DSC and DIN. Then Form DIR-12 is filed with the ROC along with the consent letter (DIR-2)." },
@@ -17,13 +30,47 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
     ];
 
     const handlePlanSelect = (plan) => {
-        const url = `/services/roc-filing/add-remove-director/register?plan=${plan}`;
-        if (isLoggedIn) navigate(url);
-        else navigate('/login', { state: { from: url } });
+        setSelectedPlan(plan);
+        const storedUser = localStorage.getItem('user');
+        if (isLoggedIn || !!storedUser) {
+            setShowRegistrationModal(true);
+        } else {
+            setAuthMode('login');
+            setShowAuthModal(true);
+        }
     };
 
     return (
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
+            <AnimatePresence>
+                {showRegistrationModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <AddRemoveDirectorRegistration
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                initialPlan={selectedPlan}
+                                onClose={() => setShowRegistrationModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegistrationModal(true);
+                }}
+            />
 
             {/* HERO SECTION */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -35,28 +82,6 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-navy/95 via-navy/90 to-navy/80 mix-blend-multiply"></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-navy to-transparent"></div>
-                </div>
-
-                {/* Animated Background Elements */}
-                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                    <motion.div
-                        animate={{
-                            scale: [1, 1.2, 1],
-                            opacity: [0.1, 0.2, 0.1],
-                            rotate: [0, 45, 0]
-                        }}
-                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-bronze/20 rounded-full blur-[120px]"
-                    />
-                    <motion.div
-                        animate={{
-                            scale: [1, 1.1, 1],
-                            opacity: [0.1, 0.15, 0.1],
-                            x: [0, -50, 0]
-                        }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/20 rounded-full blur-[100px]"
-                    />
                 </div>
 
                 <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
@@ -106,47 +131,72 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
                             </motion.div>
 
                             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
+                                <button onClick={scrollToPlans} className="px-8 py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg shadow-bronze/30 hover:shadow-bronze/50 transform hover:-translate-y-1 transition-all">
                                     Start Process
                                 </button>
                             </div>
                         </div>
 
-                        {/* Pricing Card */}
+                        {/* Trust Card - Official Compliance */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                {/* Top Gold Line */}
-                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
-
-                                <div className="absolute top-3 right-0 bg-[#043E52] text-white text-[10px] font-bold px-4 py-1.5 rounded-l-full uppercase tracking-wider z-10 shadow-md">Best Value</div>
-
-                                <div className="text-center mb-6 mt-4">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Per Change</h3>
-                                    <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹1,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ Director</span>
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+                                <div className="flex flex-col items-center justify-center text-center mb-5 mt-2">
+                                    <div className="mb-3 relative">
+                                        <div className="w-14 h-14 rounded-full bg-bronze/10 flex items-center justify-center">
+                                            <Shield size={28} className="text-bronze fill-bronze/20" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle size={14} className="text-green-500 fill-white" />
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">Official <br />Compliance</h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">Ministry of Corporate Affairs</p>
                                 </div>
-                                <div className="space-y-4 mb-8 flex-1">
-                                    {["Drafting Board Resolutions", "Resignation/Appt. Letter", "Form DIR-12 Filing", "Govt Fee Payment", "Master Data Update"].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                                            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
-                                            <span className="leading-snug">{item}</span>
+                                <div className="h-px w-full bg-slate-100 mb-5"></div>
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    <div className="text-center relative">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Shield size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Fast</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Dir-12 <br />Filing</p>
+                                        <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Users size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">100%</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Online <br />Process</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-3 mb-6 pl-2">
+                                    {[
+                                        "Drafting Board Resolutions",
+                                        "Resignation/Appt. Letter",
+                                        "Govt Form Filing"
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="bg-green-100 rounded-full p-1 shrink-0">
+                                                <CheckCircle size={12} className="text-green-600" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-xs tracking-wide">{item}</span>
                                         </div>
                                     ))}
                                 </div>
                                 <button
-                                    onClick={() => handlePlanSelect('add')}
-                                    className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                    onClick={scrollToPlans}
+                                    className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
-                                    Add Director <ArrowRight size={18} />
+                                    View Packages <ArrowRight size={16} />
                                 </button>
+                                <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">Compare all plans below</p>
                             </div>
                         </motion.div>
                     </div>
@@ -155,40 +205,64 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
 
             {/* --- PRICING SECTION (2 PLANS) --- */}
             <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
-                <div className="max-w-7xl mx-auto relative z-10">
+                <div className="max-w-5xl mx-auto relative z-10">
                     <div className="text-center mb-16">
                         <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Transparency First</span>
                         <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Service Packages</h2>
                         <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-center">
+                    <div className="grid md:grid-cols-3 gap-8 items-start">
                         {/* ADD Director */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            {/* Top Gold Line */}
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
-
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
-                                Growth
+                            <h3 className="text-lg font-bold text-navy mb-2">ADD Director</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹1,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
                             </div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-4">ADD Director</h3>
-                            <div className="text-5xl font-black text-white mb-2">₹1,999</div>
-                            <p className="text-xs text-gray-400 mb-6 font-bold uppercase tracking-wide">+ Govt Fees</p>
-
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Appointment Letter</li>
-                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Consent (DIR-2)</li>
-                                <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> DIR-12 Filing</li>
+                            <ul className="space-y-3 mb-6 flex-1 text-slate-700">
+                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Appointment Letter</li>
+                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Consent (DIR-2)</li>
+                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> DIR-12 Filing</li>
+                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> DIR-8 Preparation</li>
                             </ul>
-                            <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => handlePlanSelect('add')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
                                 Select Add Package
+                            </button>
+                        </motion.div>
+
+                        {/* Combo */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Growth</div>
+
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Add & Remove (Combo)</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹2,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100/10 px-2 py-1 rounded">+ Govt Fees</span>
+                            </div>
+
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Everything in Add + Remove</li>
+                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Single DIR-12 Filing</li>
+                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Consolidated Board Res.</li>
+                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Priority Processing</li>
+                            </ul>
+                            <button onClick={() => handlePlanSelect('both')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">
+                                Select Combo Package
                             </button>
                         </motion.div>
 
@@ -197,19 +271,21 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: 0.2 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">REMOVE Director</h3>
-                            <div className="text-4xl font-black text-navy mb-2">₹1,999</div>
-                            <p className="text-xs text-slate-400 mb-6 font-bold uppercase tracking-widest">+ Govt Fees</p>
+                            <h3 className="text-lg font-bold text-navy mb-2">REMOVE Director</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹1,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
+                            </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Resignation Letter</li>
-                                <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Board Resolution</li>
-                                <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> DIR-12 Filing</li>
+                            <ul className="space-y-3 mb-6 flex-1 text-slate-700">
+                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Resignation Letter</li>
+                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Board Resolution</li>
+                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> DIR-12 Filing</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('remove')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('remove')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
                                 Select Remove Package
                             </button>
                         </motion.div>
@@ -220,27 +296,17 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
             {/* CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
                 <div id="details-section" className="lg:col-span-8 space-y-20">
-                    {/* DETAILED SEO CONTENT SECTION - COMPREHENSIVE GUIDE */}
                     <section className="mt-10 space-y-12 mb-20">
                         <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl border border-gray-100">
                             <h2 className="text-3xl font-bold text-navy mb-8 border-b pb-4">Comprehensive Guide to Directorship Changes</h2>
-
                             <div className="prose prose-slate max-w-none space-y-8 text-gray-700 leading-relaxed">
-
-                                {/* Introduction */}
                                 <div>
                                     <h3 className="text-xl font-bold text-navy mb-4 flex items-center gap-2">
                                         <BookOpen className="text-bronze" /> Managing The Board
                                     </h3>
-                                    <p className="lead text-xl text-gray-800 font-medium">
-                                        Companies evolve, and so does their management. Adding new expertise or removing inactive members is a routine corporate action that requires formal notification to the ROC via Form DIR-12.
-                                    </p>
-                                    <p>
-                                        Whether you are bringing in a new partner (Additional Director) or accepting a resignation, compliance within 30 days is mandatory to avoid late fees.
-                                    </p>
+                                    <p className="lead text-xl text-gray-800 font-medium">Companies evolve, and so does their management. Adding new expertise or removing inactive members is a routine corporate action that requires formal notification to the ROC via Form DIR-12.</p>
+                                    <p>Whether you are bringing in a new partner (Additional Director) or accepting a resignation, compliance within 30 days is mandatory to avoid late fees.</p>
                                 </div>
-
-                                {/* Process Section */}
                                 <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
                                     <h3 className="text-xl font-bold text-navy mb-4">The Process</h3>
                                     <ul className="space-y-3 list-disc pl-5">
@@ -251,40 +317,10 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
                                         <li><strong>Filing DIR-12:</strong> We file the e-form DIR-12 with the ROC along with the attachments.</li>
                                     </ul>
                                 </div>
-
-                                {/* Comparison Section */}
-                                <div>
-                                    <h3 className="text-xl font-bold text-navy mb-4">Types of Changes</h3>
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                                            <div className="flex items-center gap-3 mb-3">
-                                                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><UserPlus size={16} /></div>
-                                                <h4 className="font-bold text-navy">Appointment</h4>
-                                            </div>
-                                            <ul className="text-sm space-y-1 text-gray-600 pl-11">
-                                                <li>• Additional Director</li>
-                                                <li>• Alternate Director</li>
-                                                <li>• Nominee Director</li>
-                                            </ul>
-                                        </div>
-                                        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                                            <div className="flex items-center gap-3 mb-3">
-                                                <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600"><UserMinus size={16} /></div>
-                                                <h4 className="font-bold text-navy">Cessation</h4>
-                                            </div>
-                                            <ul className="text-sm space-y-1 text-gray-600 pl-11">
-                                                <li>• Resignation</li>
-                                                <li>• Death of Director</li>
-                                                <li>• Removal by Shareholders</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </section>
 
-                    {/* MANDATORY DELIVERABLES */}
                     <section className="mb-20">
                         <h2 className="text-3xl font-bold text-navy mb-8">What You Will Receive</h2>
                         <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
@@ -317,29 +353,8 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
                             </div>
                         </div>
                     </section>
-
-                    {/* FAQs */}
-                    <section>
-                        <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
-                            <HelpCircle className="text-bronze" /> Frequently Asked Questions
-                        </h2>
-                        <div className="space-y-4">
-                            {faqs.map((faq, i) => (
-                                <details key={i} className="group bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm open:shadow-md transition text-left">
-                                    <summary className="flex justify-between items-center px-6 py-4 cursor-pointer font-bold text-gray-800 hover:bg-gray-50 transition select-none">
-                                        <span className="pr-4">{faq.q}</span>
-                                        <ChevronRight className="text-gray-400 group-open:rotate-90 transition-transform flex-shrink-0" />
-                                    </summary>
-                                    <div className="px-6 pb-6 pt-2 text-gray-600 text-sm leading-relaxed border-t border-gray-50">
-                                        {faq.a}
-                                    </div>
-                                </details>
-                            ))}
-                        </div>
-                    </section>
                 </div>
 
-                {/* RIGHT SIDEBAR */}
                 <div className="lg:col-span-4">
                     <div className="sticky top-32 space-y-8">
                         <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
@@ -347,34 +362,19 @@ const AddRemoveDirectorPage = ({ isLoggedIn }) => {
                                 <FileText className="text-bronze" /> Documents Needed
                             </h3>
                             <div className="space-y-6">
-                                <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">For Appointment</h4>
-                                    <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Consent Letter (DIR-2)</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Digital Signature (DSC)</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> PAN & Aadhaar</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">For Resignation</h4>
-                                    <ul className="space-y-3">
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Resignation Letter</li>
-                                        <li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Board Resolution</li>
-                                    </ul>
-                                </div>
+                                <div><h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">For Appointment</h4><ul className="space-y-3"><li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Consent Letter (DIR-2)</li><li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Digital Signature (DSC)</li><li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> PAN & Aadhaar</li></ul></div>
+                                <div><h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">For Resignation</h4><ul className="space-y-3"><li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Resignation Letter</li><li className="flex gap-3 text-sm text-gray-700"><CheckCircle size={16} className="text-bronze flex-shrink-0 mt-0.5" /> Board Resolution</li></ul></div>
                             </div>
                         </div>
-
                         <div className="bg-[#2B3446] text-white p-6 rounded-3xl shadow-lg">
                             <h4 className="font-bold text-lg mb-2">Need Guidance?</h4>
                             <p className="text-gray-300 text-sm mb-4">Questions about Director KYC or Disqualification?</p>
-                            <button className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
+                            <button onClick={() => handlePlanSelect('consult')} className="w-full py-2 bg-bronze/20 text-yellow-400 hover:bg-bronze/30 border border-yellow-500/50 rounded-lg font-bold text-sm transition">
                                 Talk to Expert
                             </button>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );
