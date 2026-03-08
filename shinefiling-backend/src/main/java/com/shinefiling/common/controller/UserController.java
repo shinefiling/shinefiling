@@ -6,22 +6,24 @@ import com.shinefiling.common.model.Payment;
 import com.shinefiling.common.repository.UserRepository;
 import com.shinefiling.common.repository.ClientDetailsRepository;
 import com.shinefiling.common.repository.PaymentRepository;
+import com.shinefiling.common.model.ServiceRequest;
+import com.shinefiling.common.service.ServiceRequestService;
+import com.shinefiling.common.service.EmailService;
+import com.shinefiling.common.service.NotificationService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+
 import java.nio.file.*;
 import java.net.MalformedURLException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import com.shinefiling.common.model.ServiceRequest;
-import com.shinefiling.licenses.model.FssaiApplication;
-import com.shinefiling.business_reg.model.PrivateLimitedApplication;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/users")
@@ -38,13 +40,13 @@ public class UserController {
     private PaymentRepository paymentRepository;
 
     @Autowired
-    private com.shinefiling.common.service.ServiceRequestService serviceRequestService;
+    private ServiceRequestService serviceRequestService;
 
     @Autowired
-    private com.shinefiling.licenses.service.FssaiService fssaiService;
+    private EmailService emailService;
 
     @Autowired
-    private com.shinefiling.business_reg.service.PrivateLimitedService pvtLtdService;
+    private NotificationService notificationService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
@@ -67,53 +69,37 @@ public class UserController {
             return Map.of("activeServices", 0, "pendingActions", 0, "totalDocuments", 0);
 
         String email = user.getEmail();
+        List<ServiceRequest> requests = serviceRequestService.getKeyRequests(email);
 
-        List<ServiceRequest> generic = serviceRequestService.getKeyRequests(email);
-        List<FssaiApplication> fssai = fssaiService.getUserApplications(email);
-        List<PrivateLimitedApplication> pvt = pvtLtdService.getApplicationsByUser(email);
+        long active = requests.stream()
+                .filter(r -> !"COMPLETED".equalsIgnoreCase(r.getStatus())
+                        && !"CANCELLED".equalsIgnoreCase(r.getStatus()))
+                .count();
 
-        long active = 0;
-        long actions = 0;
-        long docs = 0;
+        long actions = requests.stream()
+                .filter(r -> "ACTION_REQUIRED".equalsIgnoreCase(r.getStatus())
+                        || "CORRECTION_REQUIRED".equalsIgnoreCase(r.getStatus()))
+                .count();
 
-        // 1. Generic Services
-        active += generic.stream().filter(r -> !"COMPLETED".equalsIgnoreCase(r.getStatus())).count();
-
-        // 2. FSSAI Services
-        active += fssai.stream().filter(r -> !"COMPLETED".equalsIgnoreCase(r.getStatus())).count();
-        actions += fssai.stream().filter(r -> "CORRECTION_REQUIRED".equalsIgnoreCase(r.getStatus())
-                || "ACTION_REQUIRED".equalsIgnoreCase(r.getStatus())).count();
-        docs += fssai.stream().mapToLong(r -> (r.getUploadedDocuments() != null ? r.getUploadedDocuments().size() : 0)
-                + (r.getGeneratedDocuments() != null ? r.getGeneratedDocuments().size() : 0)).sum();
-
-        // 3. Pvt Ltd Services
-        active += pvt.stream().filter(r -> !"COMPLETED".equalsIgnoreCase(r.getStatus())).count();
-        actions += pvt.stream().filter(r -> "CORRECTION_REQUIRED".equalsIgnoreCase(r.getStatus())).count();
-        docs += pvt.stream().mapToLong(r -> (r.getUploadedDocuments() != null ? r.getUploadedDocuments().size() : 0)
-                + (r.getGeneratedDocuments() != null ? r.getGeneratedDocuments().size() : 0)).sum();
-
+        // Documents are not easily countable from ServiceRequest yet, returning 0 or
+        // placeholder
         return Map.of(
                 "activeServices", active,
                 "pendingActions", actions,
-                "totalDocuments", docs);
+                "totalDocuments", 0);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUserProfile(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Update User Basic Info
         if (payload.containsKey("fullName"))
             user.setFullName((String) payload.get("fullName"));
         if (payload.containsKey("mobile"))
             user.setMobile((String) payload.get("mobile"));
-        if (payload.containsKey("address")) { // Address moved to ClientDetails, but might be sent here
-            // Handle in ClientDetails
-        }
 
         userRepository.save(user);
 
-        // Update ClientDetails
         Optional<ClientDetails> detailsOpt = clientDetailsRepository.findByUserId(id);
         ClientDetails details = detailsOpt.orElse(new ClientDetails());
         if (!detailsOpt.isPresent()) {
@@ -155,76 +141,50 @@ public class UserController {
             return ResponseEntity.ok(Map.of("message", "Profile image updated", "profileImage", fileUrl));
 
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().body(Map.of("message", "Upload failed: " + e.getMessage()));
         }
     }
 
-    @Autowired
-    private com.shinefiling.common.service.EmailService emailService;
-
-    // ... (Existing mappings)
-
     @PostMapping("/{id}/kyc")
     public ResponseEntity<?> submitKyc(
             @PathVariable Long id,
-            @RequestParam("panNumber") String panNumber,
-            @RequestParam("aadhaarNumber") String aadhaarNumber,
-            @RequestParam(value = "panFile", required = false) MultipartFile panFile,
-            @RequestParam(value = "aadhaarFile", required = false) MultipartFile aadhaarFile) {
+            @RequestBody Map<String, Object> kycData) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setPanNumber(panNumber);
-        user.setAadhaarNumber(aadhaarNumber);
+        if (kycData.get("panNumber") != null) {
+            user.setPanNumber(kycData.get("panNumber").toString());
+        }
+        if (kycData.get("aadhaarNumber") != null) {
+            user.setAadhaarNumber(kycData.get("aadhaarNumber").toString());
+        }
 
         try {
-            // Handle File Uploads
-            String uploadDir = System.getProperty("user.home") + "/.shinefiling/uploads/";
-            Files.createDirectories(Paths.get(uploadDir));
-
-            Map<String, String> docs = new java.util.HashMap<>();
-            if (user.getKycDocuments() != null) {
-                try {
-                    docs = new ObjectMapper().readValue(user.getKycDocuments(), Map.class);
-                } catch (Exception e) {
-                }
-            }
-
-            if (panFile != null && !panFile.isEmpty()) {
-                String fileName = "PAN_" + id + "_" + System.currentTimeMillis() + "_" + panFile.getOriginalFilename();
-                Path filePath = Paths.get(uploadDir + fileName);
-                Files.write(filePath, panFile.getBytes());
-                docs.put("pan", "http://localhost:8080/api/users/uploads/" + fileName);
-            }
-
-            if (aadhaarFile != null && !aadhaarFile.isEmpty()) {
-                String fileName = "AADHAAR_" + id + "_" + System.currentTimeMillis() + "_"
-                        + aadhaarFile.getOriginalFilename();
-                Path filePath = Paths.get(uploadDir + fileName);
-                Files.write(filePath, aadhaarFile.getBytes());
-                docs.put("aadhaar", "http://localhost:8080/api/users/uploads/" + fileName);
-            }
-
-            user.setKycDocuments(new ObjectMapper().writeValueAsString(docs));
-
+            // Since files are now uploaded separately via the separate upload endpoint,
+            // we just store the metadata/URLs provided in the JSON payload.
+            user.setKycDocuments(new ObjectMapper().writeValueAsString(kycData));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(Map.of("message", "File upload failed: " + e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("message", "Processing KYC data failed: " + e.getMessage()));
         }
 
         user.setKycStatus("SUBMITTED");
         userRepository.save(user);
 
-        // Send Email to Agent
         String refNo = "KYC-" + user.getId() + "-" + System.currentTimeMillis();
+
+        // Notify Admins
+        notificationService.notifyAdmins(
+                "KYC_REVIEW",
+                "New KYC Submission",
+                "A new KYC request has been submitted by " + user.getFullName() + " for review. Ref: " + refNo,
+                user.getId().toString());
+
         emailService.sendEmail(
                 user.getEmail(),
                 "KYC Submission Received - ShineFiling",
                 "Dear " + user.getFullName() + ",\n\n" +
                         "Your KYC details have been successfully submitted.\n" +
                         "Reference Number: " + refNo + "\n\n" +
-                        "Our team will review your documents shortly. You will be notified once your account is activated.\n\n"
-                        +
+                        "Our team will review your documents shortly.\n\n" +
                         "Best Regards,\nShineFiling Team");
 
         return ResponseEntity.ok(Map.of("message", "KYC submitted successfully", "kycStatus", "SUBMITTED"));
@@ -233,21 +193,29 @@ public class UserController {
     @PutMapping("/{id}/approve-kyc")
     public ResponseEntity<?> approveAgentKyc(@PathVariable Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-
         user.setKycStatus("VERIFIED");
         user.setStatus("Active");
         userRepository.save(user);
 
-        // Send Approval Email
-        emailService.sendEmail(
-                user.getEmail(),
-                "Account Activated - ShineFiling Partner Program",
-                "Dear " + user.getFullName() + ",\n\n" +
-                        "Congratulations! Your KYC documents have been verified and your Agent account has been activated.\n\n"
-                        +
-                        "You can now login and start submitting applications for your clients.\n" +
-                        "Login here: http://localhost:5173/login\n\n" +
-                        "Best Regards,\nShineFiling Team");
+        // Notify User
+        notificationService.createNotification(
+                user,
+                "KYC_STATUS",
+                "KYC Verified & Account Activated",
+                "Congratulations! Your KYC documents have been verified and your account is now active.",
+                user.getId().toString(),
+                "KYC_APPROVAL");
+
+        try {
+            emailService.sendEmail(
+                    user.getEmail(),
+                    "Account Activated - ShineFiling Partner Program",
+                    "Dear " + user.getFullName() + ",\n\n" +
+                            "Congratulations! Your KYC documents have been verified and your account is now active.\n\n"
+                            +
+                            "Best Regards,\nShineFiling Team");
+        } catch (Exception e) {
+        }
 
         return ResponseEntity.ok(Map.of("message", "Agent KYC Approved and Account Activated"));
     }
@@ -260,15 +228,25 @@ public class UserController {
         user.setKycStatus("REJECTED");
         userRepository.save(user);
 
-        // Send Rejection Email
-        emailService.sendEmail(
-                user.getEmail(),
-                "KYC Application Requires Action - ShineFiling",
-                "Dear " + user.getFullName() + ",\n\n" +
-                        "Your Agent KYC application has been reviewed and requires attention.\n\n" +
-                        "Reason: " + reason + "\n\n" +
-                        "Please login to your dashboard and re-submit your documents with corrections.\n\n" +
-                        "Best Regards,\nShineFiling Team");
+        // Notify User
+        notificationService.createNotification(
+                user,
+                "KYC_STATUS",
+                "KYC Application Requires Action",
+                "Your KYC application was reviewed and requires attention. Reason: " + reason,
+                user.getId().toString(),
+                "KYC_REJECTION");
+
+        try {
+            emailService.sendEmail(
+                    user.getEmail(),
+                    "KYC Application Requires Action - ShineFiling",
+                    "Dear " + user.getFullName() + ",\n\n" +
+                            "Your KYC application has been reviewed and requires attention.\n\n" +
+                            "Reason: " + reason + "\n\n" +
+                            "Best Regards,\nShineFiling Team");
+        } catch (Exception e) {
+        }
 
         return ResponseEntity.ok(Map.of("message", "Agent KYC Rejected"));
     }

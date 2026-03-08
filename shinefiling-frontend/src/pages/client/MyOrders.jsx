@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState, useRef } from 'react';
-import { Package, Search, ExternalLink, Download, MessageCircle, Clock, ChevronRight, FileCheck, Receipt, Loader2, Send, X, User, ShieldCheck, MoreVertical, Paperclip, Smile, Minimize2, Archive, CheckCircle, Terminal, Star, Briefcase, FileText, Filter, Activity, TrendingUp } from 'lucide-react';
+import { Package, Search, ExternalLink, Download, MessageCircle, Clock, ChevronRight, FileCheck, Receipt, Loader2, Send, X, User, Users, ShieldCheck, MoreVertical, Paperclip, Smile, Minimize2, Archive, CheckCircle, Terminal, Star, Briefcase, FileText, Filter, Activity, TrendingUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getUserApplications, BASE_URL, getChatHistory, sendChatMessage, getUserUnreadChatCounts, markChatAsRead, setTypingStatus, getTypingStatus, editChatMessage, deleteChatMessage, clearChatHistory } from '../../api';
 import FeedbackModal from '../../components/FeedbackModal';
 
@@ -360,33 +361,34 @@ const MyOrders = () => {
                 )}
             </div>
 
-            {/* DETAILS MODAL - PREMIUM REDESIGN */}
+            {/* DETAILS MODAL - MINIMALIST REDESIGN */}
             {selectedOrder && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-white dark:bg-[#043E52] w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-[#1C3540]">
-
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                        transition={{ duration: 0.2 }}
+                        className="bg-white dark:bg-[#1C3540] w-full max-w-2xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden relative"
+                    >
                         {/* Header */}
-                        <div className="px-8 py-6 border-b border-slate-100 dark:border-[#1C3540] bg-white dark:bg-[#043E52] flex justify-between items-start shrink-0">
-                            <div className="flex items-center gap-5">
-                                <div className="w-16 h-16 bg-[#FDFBF7] dark:bg-[#1C3540] border border-[#ED6E3F]/20 rounded-2xl flex items-center justify-center text-[#ED6E3F] shadow-sm">
-                                    <FileText size={32} />
-                                </div>
-                                <div>
-                                    <h3 className="text-2xl font-bold text-[#015A62] dark:text-white leading-tight">{selectedOrder.serviceName}</h3>
-                                    <div className="flex items-center gap-3 mt-1.5 text-sm">
-                                        <span className="font-mono font-bold text-slate-500 bg-slate-100 dark:bg-[#1C3540] px-2 py-0.5 rounded">#{selectedOrder.id.toString().replace('ORD-', '')}</span>
-                                        <span className="text-slate-400">•</span>
-                                        <span className="text-slate-500 dark:text-slate-400 font-medium">{selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' }) : 'Date N/A'}</span>
-                                    </div>
-                                </div>
+                        <div className="px-8 py-6 border-b border-slate-100 dark:border-[#2A4550] flex justify-between items-center bg-white dark:bg-[#1C3540] shrink-0">
+                            <div className="flex items-center gap-4">
+                                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Order Details</h3>
+                                <span className="px-3 py-1 bg-[#1A1A1A] dark:bg-[#0D1C22] text-white/90 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                                    {selectedOrder.status || 'Processing'}
+                                </span>
                             </div>
-                            <button onClick={() => setSelectedOrder(null)} className="p-2.5 bg-slate-50 dark:bg-[#1C3540] hover:bg-slate-100 dark:hover:bg-[#2A4550] rounded-full text-slate-500 dark:text-slate-400 transition">
+                            <button
+                                onClick={() => setSelectedOrder(null)}
+                                className="p-2 hover:bg-slate-100 dark:hover:bg-[#2A4550] rounded-full text-slate-500 transition-colors"
+                            >
                                 <X size={20} />
                             </button>
                         </div>
 
-                        {/* Scrollable Content */}
-                        <div className="flex-1 overflow-y-auto p-8 bg-[#F8FAFC] dark:bg-[#0D1C22]">
+                        {/* Body Container */}
+                        <div className="flex-1 overflow-y-auto p-8 bg-white dark:bg-[#1C3540] custom-scrollbar">
                             {(() => {
                                 // DATA NORMALIZATION
                                 let normalized = { ...selectedOrder };
@@ -394,231 +396,285 @@ const MyOrders = () => {
                                     ? (function () { try { return JSON.parse(selectedOrder.formData) } catch (e) { return {} } })()
                                     : (selectedOrder.formData || {});
 
-                                if (form.formData && (Array.isArray(form.formData.companyNames) || form.formData.businessActivity)) {
-                                    normalized.companyName1 = form.formData.companyNames ? form.formData.companyNames[0] : null;
-                                    normalized.companyName2 = (form.formData.companyNames && form.formData.companyNames.length > 1) ? form.formData.companyNames[1] : null;
-                                    normalized.activity = form.formData.businessActivity;
-                                    normalized.authorizedCapital = form.formData.authorizedCapital;
-                                    normalized.paidUpCapital = form.formData.paidUpCapital;
-                                    const { addressLine1, district, state, pincode } = form.formData;
-                                    normalized.registeredAddress = `${addressLine1 || ''}, ${district || ''}, ${state || ''} - ${pincode || ''}`;
-                                    normalized.directors = form.formData.directors || [];
-                                    if (form.documents && Array.isArray(form.documents)) {
-                                        if (!normalized.uploadedDocuments) normalized.uploadedDocuments = {};
-                                        form.documents.forEach(d => {
-                                            if (d.fileUrl && d.fileUrl.trim() !== '') {
-                                                normalized.uploadedDocuments[d.id] = d.fileUrl;
-                                            }
-                                        });
-                                    }
+                                if (form.formData) {
+                                    Object.assign(normalized, form.formData);
                                 } else {
-                                    normalized.companyName1 = form.companyName1 || selectedOrder.businessName;
-                                    normalized.companyName2 = form.companyName2;
-                                    normalized.activity = form.activity;
-                                    normalized.authorizedCapital = form.authorizedCapital;
-                                    normalized.paidUpCapital = form.paidUpCapital;
-                                    normalized.registeredAddress = form.registeredAddress;
-                                    normalized.directors = form.directors || [];
-                                    if (form.uploadedDocuments && typeof form.uploadedDocuments === 'object') {
-                                        if (!normalized.uploadedDocuments) normalized.uploadedDocuments = {};
-                                        Object.entries(form.uploadedDocuments).forEach(([k, v]) => {
-                                            if (v && typeof v === 'string' && v.trim() !== '') {
-                                                normalized.uploadedDocuments[k] = v;
+                                    Object.assign(normalized, form);
+                                }
+
+                                const skipFields = ['id', '_id', 'status', 'createdAt', 'updatedAt', 'formData', 'generatedDocuments', 'userId', 'amount', 'plan', 'uploadedDocuments', 'email', 'mobile', 'user', 'serviceName', '__v', 'userEmail', 'directors', 'amountPaid', 'assignedTo', 'businessInfo', 'stakeholders', 'documents'];
+
+                                const isUrl = (str) => typeof str === 'string' && (str.startsWith('http://') || str.startsWith('https://') || str.match(/\.(png|jpg|jpeg|pdf|doc|docx)$/i));
+
+                                const fileEntries = [];
+                                const regularEntries = [];
+
+                                const formatValue = (v) => {
+                                    if (typeof v === 'boolean') return v ? 'Yes' : 'No';
+                                    if (Array.isArray(v)) return v.map(item => typeof item === 'object' ? JSON.stringify(item) : item).join(', ');
+                                    if (typeof v === 'object' && v !== null) return JSON.stringify(v);
+                                    return String(v);
+                                };
+
+                                // Recursive extractor that separates URLs from text
+                                const processNode = (obj, prefix = '') => {
+                                    for (const [k, v] of Object.entries(obj || {})) {
+                                        if (skipFields.includes(k) && !prefix) continue;
+                                        if (v === null || v === undefined || v === '') continue;
+
+                                        let formattedKey = k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim();
+                                        formattedKey = formattedKey.charAt(0).toUpperCase() + formattedKey.slice(1);
+                                        const newKey = prefix ? `${prefix} - ${formattedKey}` : formattedKey;
+
+                                        if (typeof v === 'string') {
+                                            if (isUrl(v)) fileEntries.push([newKey, v]);
+                                            else regularEntries.push([newKey, v]);
+                                        } else if (typeof v === 'boolean' || typeof v === 'number') {
+                                            regularEntries.push([newKey, formatValue(v)]);
+                                        } else if (Array.isArray(v)) {
+                                            // Handling array of objects or strings
+                                            v.forEach((item, idx) => {
+                                                const arrKey = `${newKey} ${idx + 1}`;
+                                                if (typeof item === 'string') {
+                                                    if (isUrl(item)) fileEntries.push([arrKey, item]);
+                                                    else regularEntries.push([arrKey, item]);
+                                                } else if (typeof item === 'object' && item !== null) {
+                                                    // Check if it's a file object
+                                                    if (item.url || item.fileUrl || item.link) {
+                                                        const url = item.url || item.fileUrl || item.link;
+                                                        const name = item.name || item.filename || item.originalName || item.type || item.id || arrKey;
+                                                        fileEntries.push([name, url]);
+                                                    } else {
+                                                        processNode(item, arrKey);
+                                                    }
+                                                } else {
+                                                    regularEntries.push([arrKey, formatValue(item)]);
+                                                }
+                                            });
+                                        } else if (typeof v === 'object' && v !== null) {
+                                            // Handle case where object is directly a file object
+                                            if (v.url || v.fileUrl || v.link) {
+                                                const url = v.url || v.fileUrl || v.link;
+                                                const name = v.name || v.filename || v.originalName || v.type || newKey;
+                                                fileEntries.push([name, url]);
+                                            } else {
+                                                processNode(v, newKey);
+                                            }
+                                        }
+                                    }
+                                };
+
+                                // Also process the skipped document structures manually to make sure they get added correctly
+                                const processSkippedDocs = (docs) => {
+                                    if (!docs) return;
+                                    if (Array.isArray(docs)) {
+                                        docs.forEach((doc, i) => {
+                                            if (!doc) return;
+                                            if (typeof doc === 'string') {
+                                                if (isUrl(doc)) fileEntries.push([`Document ${i + 1}`, doc]);
+                                            }
+                                            else if (doc.url || doc.fileUrl || doc.link) {
+                                                fileEntries.push([doc.name || doc.filename || doc.type || `Document ${i + 1}`, doc.url || doc.fileUrl || doc.link]);
                                             }
                                         });
+                                    } else if (typeof docs === 'object') {
+                                        for (const [k, v] of Object.entries(docs)) {
+                                            if (!v) continue;
+                                            if (typeof v === 'string') {
+                                                if (isUrl(v)) fileEntries.push([k, v]);
+                                            }
+                                            else if (v.url || v.fileUrl || v.link) {
+                                                fileEntries.push([v.name || v.filename || v.type || k, v.url || v.fileUrl || v.link]);
+                                            }
+                                        }
                                     }
-                                }
-                                if (!normalized.uploadedDocuments) normalized.uploadedDocuments = {};
+                                };
 
-                                // Parse Generated Documents (Deliverables)
-                                try {
-                                    if (typeof selectedOrder.generatedDocuments === 'string') {
-                                        normalized.generatedDocuments = JSON.parse(selectedOrder.generatedDocuments);
-                                    } else {
-                                        normalized.generatedDocuments = selectedOrder.generatedDocuments || {};
-                                    }
-                                } catch (e) {
-                                    normalized.generatedDocuments = {};
-                                }
+                                processNode(normalized);
+                                processSkippedDocs(normalized.uploadedDocuments);
+                                processSkippedDocs(normalized.documents);
 
                                 return (
-                                    <div className="space-y-8">
-                                        {/* 1. Status Stepper */}
-                                        <div className="bg-white dark:bg-[#043E52] p-8 rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm relative overflow-hidden">
-                                            <div className="absolute top-0 right-0 p-4 opacity-10">
-                                                <Activity size={100} />
+                                    <div className="space-y-10">
+
+                                        {/* Basic Info Section (Like Bank Information in mockup) */}
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-4 text-slate-500 dark:text-slate-400">
+                                                <Briefcase size={16} />
+                                                <h4 className="text-sm font-medium">Business Information</h4>
                                             </div>
-                                            <h4 className="font-bold text-[#015A62] dark:text-white text-sm uppercase tracking-widest mb-8 flex items-center gap-2">
-                                                <TrendingUp size={16} className="text-[#ED6E3F]" /> Tracking Timeline
-                                            </h4>
-                                            <div className="relative px-4">
-                                                {/* Connecting Line */}
-                                                <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-slate-100 dark:bg-[#1C3540] z-0 mx-10"></div>
-                                                <div className="flex justify-between relative z-10">
-                                                    {['Review', 'Processing', 'Approval', 'Download'].map((s, idx) => {
-                                                        const stages = ['SUBMITTED', 'PROCESSING', 'APPROVED', 'COMPLETED'];
 
-                                                        // Map backend statuses to timeline stages
-                                                        const status = selectedOrder.status || 'SUBMITTED';
-                                                        let currentIdx = 0;
+                                            <div className="flex flex-col border border-slate-100 dark:border-[#2A4550] rounded-2xl overflow-hidden shadow-sm">
 
-                                                        if (['PENDING', 'SUBMITTED', 'INITIATED'].includes(status)) currentIdx = 0;
-                                                        else if (['ACCEPTED_BY_CA', 'READY_FOR_WORK', 'WORK_IN_PROGRESS', 'PROCESSING', 'Action Required'].includes(status)) currentIdx = 1;
-                                                        else if (['SUBMITTED_BY_CA', 'READY_FOR_DOWNLOAD', 'APPROVED'].includes(status)) currentIdx = 2;
-                                                        else if (['COMPLETED', 'COMPLETED_FINAL'].includes(status)) currentIdx = 3;
-
-                                                        const isCompleted = currentIdx >= idx;
-
-
-                                                        return (
-                                                            <div key={s} className="flex flex-col items-center gap-4">
-                                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all border-4 ${isCompleted ? 'bg-[#ED6E3F] text-white border-white dark:border-[#043E52] shadow-xl scale-110' : 'bg-slate-100 dark:bg-[#1C3540] text-slate-400 border-white dark:border-[#043E52]'}`}>
-                                                                    {isCompleted ? <CheckCircle size={20} /> : idx + 1}
-                                                                </div>
-                                                                <span className={`text-xs font-bold uppercase tracking-wider ${isCompleted ? 'text-[#015A62] dark:text-white' : 'text-slate-400'}`}>{s}</span>
-                                                            </div>
-                                                        )
-                                                    })}
+                                                {/* Core Order Details block (Amount, Name, etc.) */}
+                                                <div className="flex items-center justify-between py-4 px-5 border-b border-slate-100 dark:border-[#2A4550] bg-white dark:bg-[#1C3540]">
+                                                    <div className="flex items-center gap-3 w-1/3 shrink-0">
+                                                        <Receipt size={16} className="text-slate-400" />
+                                                        <span className="text-sm text-slate-500">Amount</span>
+                                                    </div>
+                                                    <div className="w-2/3 text-right sm:text-left flex items-center justify-end sm:justify-start">
+                                                        <span className="text-sm font-bold text-slate-800 dark:text-white">₹{selectedOrder.amountPaid || '0.00'}</span>
+                                                    </div>
                                                 </div>
+
+                                                <div className="flex items-center justify-between py-4 px-5 border-b border-slate-100 dark:border-[#2A4550] bg-white dark:bg-[#1C3540]">
+                                                    <div className="flex items-center gap-3 w-1/3 shrink-0">
+                                                        <Package size={16} className="text-slate-400" />
+                                                        <span className="text-sm text-slate-500">Service</span>
+                                                    </div>
+                                                    <div className="w-2/3 text-right sm:text-left flex items-center justify-end sm:justify-start">
+                                                        <span className="text-sm font-bold text-slate-800 dark:text-white">{selectedOrder.serviceName}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center justify-between py-4 px-5 border-b border-slate-100 dark:border-[#2A4550] bg-white dark:bg-[#1C3540]">
+                                                    <div className="flex items-center gap-3 w-1/3 shrink-0">
+                                                        <Archive size={16} className="text-slate-400" />
+                                                        <span className="text-sm text-slate-500">Order ID</span>
+                                                    </div>
+                                                    <div className="w-2/3 text-right sm:text-left flex items-center justify-end sm:justify-start">
+                                                        <span className="text-sm font-bold text-slate-800 dark:text-white">#{selectedOrder.id?.toString().replace('ORD-', '')}</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Dynamic FormData key-value pairs */}
+                                                {regularEntries.length > 0 && regularEntries.map(([key, value], idx) => {
+                                                    let Icon = FileText;
+                                                    const lowerKey = key.toLowerCase();
+                                                    if (lowerKey.includes('name')) Icon = User;
+                                                    if (lowerKey.includes('date') || lowerKey.includes('time')) Icon = Clock;
+                                                    if (lowerKey.includes('pan') || lowerKey.includes('gst') || lowerKey.includes('tax')) Icon = Receipt;
+
+                                                    const isLast = idx === regularEntries.length - 1;
+
+                                                    return (
+                                                        <div key={key} className={`flex items-center justify-between py-4 px-5 bg-white dark:bg-[#1C3540] hover:bg-slate-50 dark:hover:bg-[#2A4550]/50 transition-colors ${!isLast ? 'border-b border-slate-100 dark:border-[#2A4550]' : ''}`}>
+                                                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-1/3 shrink-0">
+                                                                <div className="hidden sm:block"><Icon size={16} className="text-slate-400" /></div>
+                                                                <span className="text-sm font-medium text-slate-500 capitalize">{key}</span>
+                                                            </div>
+                                                            <div className="w-2/3 text-right sm:text-left flex items-center justify-end sm:justify-start">
+                                                                <span className="text-sm font-bold text-slate-800 dark:text-white break-words text-left">{value}</span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                            {/* 2. Left Column: Business Info */}
-                                            <div className="lg:col-span-2 space-y-8">
-                                                <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm overflow-hidden">
-                                                    <div className="p-6 border-b border-slate-100 dark:border-[#1C3540] bg-slate-50/50 dark:bg-[#1C3540]/30 flex justify-between items-center">
-                                                        <h4 className="font-bold text-[#015A62] dark:text-white flex items-center gap-2">
-                                                            <Briefcase size={18} className="text-[#ED6E3F]" /> Application Details
-                                                        </h4>
-                                                    </div>
-                                                    <div className="p-6">
-                                                        {selectedOrder.serviceName && selectedOrder.serviceName.toLowerCase().includes('private limited') ? (
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                                                                <div>
-                                                                    <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Proposed Name 1</label>
-                                                                    <p className="font-bold text-slate-800 dark:text-white">{normalized.companyName1 || '---'}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Proposed Name 2</label>
-                                                                    <p className="font-bold text-slate-800 dark:text-white">{normalized.companyName2 || '---'}</p>
-                                                                </div>
-                                                                <div className="md:col-span-2">
-                                                                    <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Business Activity</label>
-                                                                    <p className="font-medium text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{normalized.activity || 'N/A'}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Authorized Capital</label>
-                                                                    <p className="font-bold text-slate-800 dark:text-white">{normalized.authorizedCapital || '---'}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Paid-up Capital</label>
-                                                                    <p className="font-bold text-slate-800 dark:text-white">{normalized.paidUpCapital || '---'}</p>
-                                                                </div>
-                                                                <div className="md:col-span-2">
-                                                                    <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Registered Address</label>
-                                                                    <div className="flex items-start gap-2 bg-slate-50 dark:bg-[#1C3540] p-3 rounded-xl border border-slate-100 dark:border-[#2A4550]">
-                                                                        <User size={16} className="text-[#ED6E3F] shrink-0 mt-0.5" />
-                                                                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{normalized.registeredAddress || 'No address provided'}</p>
-                                                                    </div>
-                                                                </div>
+                                        {/* Stakeholders (if any) */}
+                                        {(normalized.directors && Array.isArray(normalized.directors) && normalized.directors.length > 0) && (
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-4 text-slate-500 dark:text-slate-400">
+                                                    <Users size={16} />
+                                                    <h4 className="text-sm font-medium">Stakeholders / Directors</h4>
+                                                </div>
+                                                <div className="flex flex-col border border-slate-100 dark:border-[#2A4550] rounded-2xl overflow-hidden shadow-sm">
+                                                    {normalized.directors.map((d, i) => (
+                                                        <div key={i} className={`flex items-center justify-between py-4 px-5 bg-white dark:bg-[#1C3540] hover:bg-slate-50 dark:hover:bg-[#2A4550]/50 transition-colors ${i !== normalized.directors.length - 1 ? 'border-b border-slate-100 dark:border-[#2A4550]' : ''}`}>
+                                                            <div className="flex items-center gap-3 w-1/3 shrink-0">
+                                                                <User size={16} className="text-slate-400" />
+                                                                <span className="text-sm text-slate-500 font-medium">Director {i + 1}</span>
                                                             </div>
-                                                        ) : (
-                                                            <div className="space-y-4">
-                                                                <div className="flex justify-between items-center py-2 border-b border-dashed border-slate-200 dark:border-[#2A4550]">
-                                                                    <span className="text-slate-500 text-sm font-medium">Business Name / Applicant</span>
-                                                                    <span className="font-bold text-[#015A62] dark:text-white">{normalized.businessName || selectedOrder.applicantName || 'N/A'}</span>
-                                                                </div>
-                                                                <div className="flex justify-between items-center py-2 border-b border-dashed border-slate-200 dark:border-[#2A4550]">
-                                                                    <span className="text-slate-500 text-sm font-medium">Entity Type</span>
-                                                                    <span className="font-bold text-[#015A62] dark:text-white">{selectedOrder.businessType || 'N/A'}</span>
-                                                                </div>
+                                                            <div className="w-2/3 text-right sm:text-left flex items-center justify-end sm:justify-start">
+                                                                <span className="text-sm font-bold text-slate-800 dark:text-white break-words">{d.name || d.fullName}</span>
                                                             </div>
-                                                        )}
-                                                    </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
+                                        )}
 
-                                            {/* 3. Right Column: Payment & Docs */}
-                                            <div className="space-y-6">
-                                                {/* Payment Card */}
-                                                <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm p-6">
-                                                    <h4 className="font-bold text-[#015A62] dark:text-white mb-4 flex items-center gap-2">
-                                                        <Receipt size={18} className="text-[#ED6E3F]" /> Payment Summary
-                                                    </h4>
-                                                    <div className="space-y-3">
-                                                        <div className="flex justify-between text-sm">
-                                                            <span className="text-slate-500">Service Fee</span>
-                                                            <span className="font-bold text-slate-800 dark:text-white">₹{selectedOrder.amountPaid || '0.00'}</span>
-                                                        </div>
-                                                        <div className="flex justify-between text-sm">
-                                                            <span className="text-slate-500">Status</span>
-                                                            <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Paid via Online</span>
-                                                        </div>
-                                                        <div className="pt-3 border-t border-slate-100 dark:border-[#1C3540] mt-1">
-                                                            <button className="w-full py-2.5 bg-[#015A62] dark:bg-white text-white dark:text-[#015A62] font-bold rounded-xl text-xs hover:opacity-90 transition flex items-center justify-center gap-2">
-                                                                <Download size={14} /> Download Invoice
-                                                            </button>
-                                                        </div>
-                                                    </div>
+                                        {/* Deliverables / Documents locker */}
+                                        {(normalized.generatedDocuments && Object.keys(normalized.generatedDocuments).length > 0) && (
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-4 text-slate-500 dark:text-slate-400">
+                                                    <FileCheck size={16} />
+                                                    <h4 className="text-sm font-medium">Official Documents</h4>
                                                 </div>
-
-                                                {/* Files Card */}
-                                                <div className="bg-white dark:bg-[#043E52] rounded-3xl border border-slate-100 dark:border-[#1C3540] shadow-sm p-6 flex-1">
-                                                    <h4 className="font-bold text-[#015A62] dark:text-white mb-4 flex items-center gap-2">
-                                                        <Paperclip size={18} className="text-[#ED6E3F]" /> Attachments
-                                                    </h4>
-
-                                                    <div className="space-y-2 max-h-[200px] overflow-y-auto no-scrollbar">
-                                                        {normalized.uploadedDocuments && Object.keys(normalized.uploadedDocuments).length > 0 ? (
-                                                            Object.entries(normalized.uploadedDocuments).map(([key, val]) => (
-                                                                <a href={val} target="_blank" rel="noreferrer" key={key} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[#1C3540] rounded-xl hover:bg-slate-100 dark:hover:bg-[#2A4550] transition group">
-                                                                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#0D1C22] flex items-center justify-center text-slate-400 group-hover:text-[#ED6E3F]">
-                                                                        <FileText size={16} />
-                                                                    </div>
-                                                                    <div className="min-w-0">
-                                                                        <p className="text-xs font-bold text-slate-700 dark:text-white truncate capitalize">{key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}</p>
-                                                                        <span className="text-[9px] text-slate-400">View Document</span>
-                                                                    </div>
+                                                <div className="flex flex-col border border-slate-100 dark:border-[#2A4550] rounded-2xl overflow-hidden shadow-sm">
+                                                    {Object.entries(normalized.generatedDocuments).map(([key, val], idx, arr) => (
+                                                        <div key={key} className={`flex items-center justify-between py-4 px-5 bg-white dark:bg-[#1C3540] hover:bg-slate-50 dark:hover:bg-[#2A4550]/50 transition-colors ${idx !== arr.length - 1 ? 'border-b border-slate-100 dark:border-[#2A4550]' : ''}`}>
+                                                            <div className="flex items-center gap-3 max-w-[70%]">
+                                                                <Download size={16} className="text-slate-400 shrink-0" />
+                                                                <span className="text-sm font-bold text-slate-800 dark:text-white capitalize truncate">{key.replace(/_/g, ' ')}</span>
+                                                            </div>
+                                                            <div className="text-right">
+                                                                <a
+                                                                    href={val.url || val}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20"
+                                                                >
+                                                                    Download
                                                                 </a>
-                                                            ))
-                                                        ) : (
-                                                            <p className="text-xs text-slate-400 italic">No files attached.</p>
-                                                        )}
-                                                    </div>
-
-                                                    {(normalized.generatedDocuments && (Array.isArray(normalized.generatedDocuments) ? normalized.generatedDocuments.length > 0 : Object.keys(normalized.generatedDocuments).length > 0)) && (
-                                                        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-[#1C3540]">
-                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Deliverables</p>
-                                                            <div className="space-y-2">
-                                                                {Object.entries(normalized.generatedDocuments).map(([key, val]) => (
-                                                                    <a href={val.url || val} target="_blank" rel="noreferrer" key={key} className="flex items-center gap-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition border border-emerald-100 dark:border-emerald-900/30">
-                                                                        <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-800/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                                                                            <Download size={16} />
-                                                                        </div>
-                                                                        <div className="min-w-0">
-                                                                            <p className="text-xs font-bold text-emerald-900 dark:text-emerald-100 truncate capitalize">{key.replace(/_/g, ' ')}</p>
-                                                                            <span className="text-[9px] text-emerald-600 dark:text-emerald-400">Download File</span>
-                                                                        </div>
-                                                                    </a>
-                                                                ))}
                                                             </div>
                                                         </div>
-                                                    )}
+                                                    ))}
                                                 </div>
                                             </div>
-                                        </div>
+                                        )}
+
+                                        {/* User Uploads Snippet */}
+                                        {fileEntries.length > 0 && (
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-4 text-slate-500 dark:text-slate-400">
+                                                    <Archive size={16} />
+                                                    <h4 className="text-sm font-medium">Uploaded Files</h4>
+                                                </div>
+                                                <div className="flex flex-col border border-slate-100 dark:border-[#2A4550] rounded-2xl overflow-hidden shadow-sm">
+                                                    {fileEntries.map(([k, v], idx, arr) => (
+                                                        <div key={idx} className={`flex items-center justify-between py-4 px-5 bg-white dark:bg-[#1C3540] hover:bg-slate-50 dark:hover:bg-[#2A4550]/50 transition-colors ${idx !== arr.length - 1 ? 'border-b border-slate-100 dark:border-[#2A4550]' : ''}`}>
+                                                            <div className="flex items-center gap-3 max-w-[70%]">
+                                                                <ExternalLink size={16} className="text-slate-400 shrink-0" />
+                                                                <span className="text-sm font-bold text-slate-800 dark:text-white capitalize truncate">{k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}</span>
+                                                            </div>
+                                                            <div className="text-right">
+                                                                <a
+                                                                    href={v}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    className="text-xs font-bold text-[#015A62] hover:text-[#014A51] hover:underline px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20"
+                                                                >
+                                                                    View
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
                                     </div>
                                 );
                             })()}
                         </div>
-                    </div>
+
+                        {/* Footer / Actions */}
+                        <div className="px-8 py-5 border-t border-slate-100 dark:border-[#2A4550] bg-white dark:bg-[#1C3540] shrink-0 flex justify-end gap-4 rounded-b-3xl">
+                            <button
+                                onClick={() => setSelectedOrder(null)}
+                                className="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#2A4550] transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    handleChatClick(selectedOrder);
+                                    setSelectedOrder(null);
+                                }}
+                                className="px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-[#001741] dark:bg-[#ED6E3F] hover:bg-[#000F2B] dark:hover:bg-[#D55F35] transition-colors shadow-sm"
+                            >
+                                Get Support
+                            </button>
+                        </div>
+                    </motion.div>
                 </div>
             )}
 
             {/* FLOATING CHAT - Compact */}
             {activeChatOrder && (
-                <div className={`fixed bottom-4 right-4 z-[100] w-[320px] shadow-2xl rounded-2xl overflow-hidden bg-white dark:bg-[#043E52] border border-gray-100 dark:border-[#1C3540] flex flex-col transition-all duration-300 ${isChatMinimized ? 'h-12' : 'h-[450px]'}`}>
+                <div className={`fixed bottom-4 right-4 z-[100] w-[320px] max-w-[calc(100vw-2rem)] shadow-2xl rounded-2xl overflow-hidden bg-white dark:bg-[#043E52] border border-gray-100 dark:border-[#1C3540] flex flex-col transition-all duration-300 ${isChatMinimized ? 'h-12' : 'h-[450px] max-h-[calc(100vh-2rem)]'}`}>
                     <div className="p-3 bg-[#015A62] text-white flex justify-between items-center cursor-pointer shrink-0 z-10 relative" onClick={() => setIsChatMinimized(!isChatMinimized)}>
                         <div className="flex items-center gap-2.5">
                             <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center"><ShieldCheck size={12} /></div>
@@ -634,7 +690,7 @@ const MyOrders = () => {
                     </div>
 
                     {!isChatMinimized && (
-                        <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-[#0D1C22] relative font-sans">
+                        <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-[#0D1C22] relative font-sans w-full">
                             <div className="flex-1 p-3 space-y-1.5 overflow-y-auto custom-scrollbar bg-[#F8FAFC] dark:bg-[#0D1C22]">
                                 {chatHistory.length === 0 && <div className="text-center text-gray-400 text-[10px] py-4">Start a conversation...</div>}
                                 {chatHistory.map((msg, i) => {
@@ -652,7 +708,7 @@ const MyOrders = () => {
                                                 : 'bg-white dark:bg-[#1C3540] text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-[#2A4550] rounded-xl rounded-tl-none'
                                                 }`}>
                                                 {!isUser && <p className="text-[8px] font-bold text-[#ED6E3F] mb-0.5 opacity-80">{msg.senderName}</p>}
-                                                <p className="leading-relaxed">{msg.message} {msg.edited && <span className="text-[8px] opacity-50 italic">(edited)</span>}</p>
+                                                <p className="leading-relaxed break-words whitespace-pre-wrap">{msg.message} {msg.edited && <span className="text-[8px] opacity-50 italic">(edited)</span>}</p>
                                                 <div className={`flex items-center justify-end gap-1 mt-0.5`}>
                                                     <span className={`text-[8px] font-bold ${isUser ? 'text-white/60' : 'text-gray-300'}`}>
                                                         {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

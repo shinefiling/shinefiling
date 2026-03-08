@@ -242,9 +242,9 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                         >
                             <h3 className="text-lg font-bold text-navy mb-2">Basic Exit</h3>
                             <p className="text-slate-500 text-sm mb-6">Simple Registration Surrender.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
+                            <div className="flex items-center gap-2 mb-4">
                                 <span className="text-3xl font-black text-navy">₹999</span>
-                                <span className="text-slate-400 line-through text-lg">₹1,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">₹1,999</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1">
@@ -259,7 +259,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
                                 Select Basic
                             </button>
                         </motion.div>
@@ -277,11 +277,11 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                 Recommended
                             </div>
 
-                            <h3 className="text-lg font-bold text-white mb-2 mt-2">Full Closure</h3>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Full Closure</h3>
                             <p className="text-gray-400 text-sm mb-6">Cancellation + Final Return.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
+                            <div className="flex items-center gap-2 mb-4">
                                 <span className="text-3xl font-black text-white">₹1,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹3,499</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹3,499</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1">
@@ -297,7 +297,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">
                                 Select Standard
                             </button>
                         </motion.div>
@@ -312,9 +312,9 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                         >
                             <h3 className="text-lg font-bold text-navy mb-2">Corporate Exit</h3>
                             <p className="text-slate-500 text-sm mb-6">Complex Stock Issues.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
+                            <div className="flex items-baseline gap-1 mb-4">
                                 <span className="text-3xl font-black text-navy">₹3,499</span>
-                                <span className="text-slate-400 line-through text-lg">₹5,000</span>
+                                <span className="text-slate-400 line-through text-xs">₹5,000</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1">
@@ -330,7 +330,7 @@ const GstCancellationPage = ({ isLoggedIn, onLogout }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
+                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
                                 Select Premium
                             </button>
                         </motion.div>

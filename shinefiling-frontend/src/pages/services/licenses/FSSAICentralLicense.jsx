@@ -1,17 +1,27 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Globe, Clock, CheckCircle, FileText, Building, Award, Shield, ChevronRight, HelpCircle, ArrowRight, Zap, Star, Users } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Globe, Clock, CheckCircle, FileText, Building, Award, Shield, ChevronRight, HelpCircle, ArrowRight, Zap, Star, Users, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import FSSAILicenseRegistration from './FSSAILicenseRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const FSSAICentralLicensePage = ({ isLoggedIn }) => {
     const navigate = useNavigate();
+    const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState('central');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const handlePlanSelect = (plan) => {
-        const url = `/services/licenses/fssai-license/register?type=${plan}`;
-        if (isLoggedIn) navigate(url);
-        else navigate('/login', { state: { from: url } });
+        setSelectedPlan(plan);
+        if (isLoggedIn) {
+            setShowRegistrationModal(true);
+        } else {
+            setAuthMode('login');
+            setShowAuthModal(true);
+        }
     };
 
     const faqs = [
@@ -23,6 +33,35 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
 
     return (
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
+            <AnimatePresence>
+                {showRegistrationModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <FSSAILicenseRegistration
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                planProp={selectedPlan}
+                                onClose={() => setShowRegistrationModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegistrationModal(true);
+                }}
+            />
 
             {/* HERO SECTION - PREMIUM DARK THEME */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -117,7 +156,7 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
                             </div>
                         </div>
 
-                        {/* Trust Card - Official Compliance */}
+                        {/* Trust Card - Official Registration */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -135,32 +174,32 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
                                             <CheckCircle size={14} className="text-green-500 fill-white" />
                                         </div>
                                     </div>
-                                    <h3 className="text-navy font-bold text-2xl leading-tight">Official <br />Compliance</h3>
-                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">Food Safety Authority</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">Official <br />Central License</h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">Central Food Authority (FOSCOS)</p>
                                 </div>
                                 <div className="h-px w-full bg-slate-100 mb-5"></div>
                                 <div className="grid grid-cols-2 gap-4 mb-5">
                                     <div className="text-center relative">
                                         <div className="flex items-center justify-center gap-1 mb-1">
-                                            <Shield size={14} className="text-bronze" />
+                                            <Building size={14} className="text-bronze" />
                                             <span className="text-navy text-xl font-black tracking-tighter">Fast</span>
                                         </div>
-                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Expert <br />Guidance</p>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Central <br />Liaison</p>
                                         <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
                                     </div>
                                     <div className="text-center">
                                         <div className="flex items-center justify-center gap-1 mb-1">
-                                            <Users size={14} className="text-bronze" />
-                                            <span className="text-navy text-xl font-black tracking-tighter">100%</span>
+                                            <Shield size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Legal</span>
                                         </div>
-                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Online <br />Process</p>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Ministry <br />Approved</p>
                                     </div>
                                 </div>
                                 <div className="space-y-3 mb-6 pl-2">
                                     {[
-                                        "Eligibility Check",
-                                        "Document Preparation",
-                                        "FSSAI Application Filing"
+                                        "Multi-State Validity",
+                                        "Import/Export Allowed",
+                                        "Highest Safety Class"
                                     ].map((item, i) => (
                                         <div key={i} className="flex items-center gap-3">
                                             <div className="bg-green-100 rounded-full p-1 shrink-0">
@@ -174,7 +213,7 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
                                     onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
                                     className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
                                 >
-                                    View Packages <ArrowRight size={16} />
+                                    Start Application <ArrowRight size={16} />
                                 </button>
                                 <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">Compare all plans below</p>
                             </div>
@@ -182,6 +221,113 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
                     </div>
                 </div>
             </div>
+
+            {/* --- PRICING SECTION --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-5xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Path</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Transparent Pricing Plans</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                        <p className="mt-4 text-slate-500 max-w-2xl mx-auto">
+                            Get your Central FSSAI License with expert guidance. Choose the plan that fits your business scale.
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {/* Advisory */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">Advisory</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">EXPERT REVIEW</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1 text-slate-700">
+                                {[
+                                    "Gap Analysis Of Documents",
+                                    "Central Eligibility Audit",
+                                    "Product Category Mapping",
+                                    "Technical Dossier Review",
+                                    "Regulatory Consultation"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('advisory')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Choose Advisory</button>
+                        </motion.div>
+
+                        {/* Standard Filing - Recommended */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Recommended</div>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Standard Filing</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹7,499</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹10,500</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                <li className="text-xs font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Advisory +</li>
+                                {[
+                                    "Central Form B Submission",
+                                    "IEC & Ministry Liaisoning",
+                                    "Technical Recall Plan Aid",
+                                    "Quarterly Compliance Alert",
+                                    "Priority Liaison Support"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('central')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Get Standard</button>
+                        </motion.div>
+
+                        {/* Premium Support */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">Premium Support</h3>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy">₹12,499</span>
+                                <span className="text-slate-400 line-through text-xs">₹18,000</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1 text-slate-700">
+                                <li className="text-xs font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">Everything in Standard +</li>
+                                {[
+                                    "Physical Inspection Prep",
+                                    "Water/Food Lab Reports",
+                                    "Unit Layout Optimization",
+                                    "Lifetime Renewal Support",
+                                    "Dedicated Account Head"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Choose Premium</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
 
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -254,96 +400,6 @@ const FSSAICentralLicensePage = ({ isLoggedIn }) => {
                                         </div>
                                     </div>
                                 ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* --- PRICING SECTION --- */}
-                    <section id="pricing-plans" className="py-20 bg-white relative overflow-hidden rounded-3xl border border-gray-100 shadow-sm mb-20 px-6 lg:px-12">
-                        <div className="max-w-5xl mx-auto relative z-10">
-                            <div className="text-center mb-16">
-                                <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Premium Service</span>
-                                <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Central License Pricing</h2>
-                                <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
-                            </div>
-
-                            <div className="grid md:grid-cols-3 gap-8 items-start">
-                                {/* Basic Consult */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: 0.1 }}
-                                    className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
-                                >
-                                    <h3 className="text-lg font-bold text-navy mb-2">Consultation</h3>
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <span className="text-3xl font-black text-navy">₹999</span>
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">No Govt Fees</span>
-                                    </div>
-
-                                    <ul className="space-y-3 mb-6 flex-1 text-slate-700">
-                                        <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Requirements Analysis</li>
-                                        <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Document Checklist</li>
-                                        <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Process Overview</li>
-                                    </ul>
-                                    <button onClick={() => handlePlanSelect('consultation')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
-                                        Select Consult
-                                    </button>
-                                </motion.div>
-
-                                {/* Central License - Standard */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: 0.2 }}
-                                    className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
-                                >
-                                    <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
-                                    <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
-                                        Most Popular
-                                    </div>
-
-                                    <h3 className="text-lg font-bold text-white mb-2 mt-1">Standard Filing</h3>
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <span className="text-3xl font-black text-white">₹7,499</span>
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100/10 px-2 py-1 rounded">+ Govt Fees</span>
-                                    </div>
-
-                                    <ul className="space-y-3 mb-6 flex-1 text-gray-200">
-                                        <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Turnover {'>'} ₹20 Crores</li>
-                                        <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Import / Export Code Linkage</li>
-                                        <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Priority Processing</li>
-                                    </ul>
-                                    <button onClick={() => handlePlanSelect('central')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">
-                                        Select Filing
-                                    </button>
-                                </motion.div>
-
-                                {/* Premium Support */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: 0.3 }}
-                                    className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
-                                >
-                                    <h3 className="text-lg font-bold text-navy mb-2">Premium Support</h3>
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <span className="text-3xl font-black text-navy">₹12,499</span>
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
-                                    </div>
-
-                                    <ul className="space-y-3 mb-6 flex-1 text-slate-700">
-                                        <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Full Licensing Package</li>
-                                        <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Inspection Preparation</li>
-                                        <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Post-issue Compliance Guide</li>
-                                    </ul>
-                                    <button onClick={() => handlePlanSelect('premium')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
-                                        Select Premium
-                                    </button>
-                                </motion.div>
                             </div>
                         </div>
                     </section>

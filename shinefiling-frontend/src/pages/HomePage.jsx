@@ -264,8 +264,8 @@ const LandingPage = ({ isLoggedIn }) => {
                             transition={{ duration: 0.6, delay: 0.1 }}
                             className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.2] mb-6 tracking-tight max-w-5xl"
                         >
-                            Business Compliance & Filing <br />
-                            <span className="text-[#F9A65E]">Made Easy For Your Business</span>
+                            Connect with India’s Most Trusted Network of <br />
+                            <span className="text-[#F9A65E]">Elite Freelance CAs & Financial Experts</span>
                         </motion.h1>
 
                         {/* --- 4. Subtext --- */}
@@ -275,7 +275,7 @@ const LandingPage = ({ isLoggedIn }) => {
                             transition={{ duration: 0.6, delay: 0.2 }}
                             className="max-w-2xl mx-auto text-base text-slate-100 mb-10 leading-relaxed"
                         >
-                            Register your company, file your GST returns, and manage complex tax compliances effortlessly with ShineFiling's expert-led digital platform.
+                            Hire specialized top-tier Chartered Accountants and financial experts on-demand. From company formation to complex tax audits, access premium professional services through our secure freelance marketplace.
                         </motion.p>
 
                         {/* --- NEW: Hero Search & CTA Row --- */}
@@ -714,10 +714,10 @@ const LandingPage = ({ isLoggedIn }) => {
                     >
                         <span className="text-[#F9A65E] font-bold uppercase tracking-widest text-xs mb-4">OUR PHILOSOPHY</span>
                         <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6 leading-tight">
-                            Complete Corporate Governance & Compliance
+                            Access Elite Professional <br /> Expertise On-Demand
                         </h2>
                         <p className="text-slate-100 text-lg leading-relaxed mb-8">
-                            At ShineFiling, we act as the strategic backbone for your venture. From the initial spark of incorporation to the rigorous demands of annual audits and trademark protection, we manage your legal complexities so you can focus on building your legacy.
+                            ShineFiling is India's premier gateway to specialized freelance CAs and financial architects. We connect your business with the right experts for company incorporation, annual audits, and strategic trademark protection. Stop managing compliance alone—hire a professional who understands your industry.
                         </p>
                         <Link to="/about-us" className="inline-flex items-center gap-2 text-white font-bold hover:text-[#F9A65E] transition-colors uppercase tracking-widest text-sm self-start border-b-2 border-white/30 hover:border-[#F9A65E] pb-1">
                             EXPLORE OUR EXPERTISE <ArrowRight size={16} />
@@ -754,11 +754,11 @@ const LandingPage = ({ isLoggedIn }) => {
                     >
                         <span className="text-[#ED6E3F] font-bold tracking-widest uppercase text-xs mb-4 block">TAXATION SERVICES</span>
                         <h2 className="text-4xl lg:text-5xl font-bold text-[#043E52] mb-8 leading-tight">
-                            Effortless GST Compliance <br />
-                            <span className="text-[#043E52]">& Tax Advisory</span>
+                            Expert GST Freelancers <br />
+                            <span className="text-[#043E52]">& Professional Tax Advisory</span>
                         </h2>
                         <p className="text-slate-600 text-lg mb-10 leading-relaxed">
-                            Stay ahead of regulatory deadlines and avoid heavy penalties. Our automated tax platform ensures your GST returns are filed with 100% accuracy while maximizing your Input Tax Credit (ITC).
+                            Navigate the complex world of GST with India's most trusted freelance tax professionals. Our platform connects you with experts who ensure 100% accuracy in filings while maximizing your Input Tax Credit (ITC) through personalized advisory.
                         </p>
 
                         <div className="grid sm:grid-cols-2 gap-8 mb-10">

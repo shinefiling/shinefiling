@@ -395,7 +395,7 @@ const ApplyISOCertification = ({ isLoggedIn, isModal = false, onClose, planProp 
                         <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
                             <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Certification Fee</span><span>₹{billDetails.base.toLocaleString()}</span></div>
                             <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Tax (18%)</span><span>₹{billDetails.tax}</span></div>
-                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Platform Fee</span><span>₹{billDetails.platformFn}</span></div>
+                            <div className="flex justify-between text-sm mb-2 text-gray-600"><span>Platform Fee</span><span>₹{billDetails.platformFn.toLocaleString()}</span></div>
                             <div className="border-t pt-2 mt-2 flex justify-between items-end"><span className="text-gray-500 font-bold">Total</span><span className="text-3xl font-bold text-navy">₹{billDetails.total.toLocaleString()}</span></div>
                         </div>
 

@@ -241,22 +241,28 @@ const TanPanApplication = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">PAN Card</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">PAN Card</h3>
                             <p className="text-slate-500 text-sm mb-6">New / Correction.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹249</span>
-                                <span className="text-slate-400 line-through text-sm">₹500</span>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹249</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">₹500</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> New PAN Application</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Correction / Update</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Lost Card Reprint</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> TAN Allotment</li>
+                            <ul className="space-y-3 mb-6 flex-1">
+                                {[
+                                    "New PAN Application",
+                                    "Correction / Update",
+                                    "Lost Card Reprint",
+                                    "E-PAN Support"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('pan_new')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select PAN</button>
+                            <button onClick={() => handlePlanSelect('pan_new')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Choose PAN</button>
                         </motion.div>
 
                         {/* PLAN 2: TAN - POPULAR */}
@@ -265,25 +271,32 @@ const TanPanApplication = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">TAN Number</h3>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">TAN Number</h3>
                             <p className="text-gray-400 text-sm mb-6">Mandatory for Business.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹999</span>
-                                <span className="text-gray-500 line-through text-sm">₹1,500</span>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹999</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹1,500</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> New TAN Application</li>
-                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Form 49B Filing</li>
-                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> TDS Return Compliance</li>
-                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Business Validation</li>
+                            <ul className="space-y-3 mb-6 flex-1">
+                                {[
+                                    "New TAN Application",
+                                    "Form 49B Filing",
+                                    "TDS Return Compliance",
+                                    "Business Validation",
+                                    "Expert Assistance"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('tan_new')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select TAN</button>
+                            <button onClick={() => handlePlanSelect('tan_new')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Choose TAN</button>
                         </motion.div>
 
                         {/* PLAN 3: COMBO */}
@@ -292,22 +305,29 @@ const TanPanApplication = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Combo Pack</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Combo Pack</h3>
                             <p className="text-slate-500 text-sm mb-6">PAN + TAN Registration.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹1,199</span>
-                                <span className="text-slate-400 line-through text-sm">₹2,000</span>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy border-b-2 border-slate-100">₹1,199</span>
+                                <span className="text-slate-400 line-through text-xs">₹2,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Company PAN Card</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Company TAN Number</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Priority Processing</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Document Support</li>
+                            <ul className="space-y-3 mb-6 flex-1">
+                                {[
+                                    "Company PAN Card",
+                                    "Company TAN Number",
+                                    "Priority Processing",
+                                    "Document Support",
+                                    "Express Service"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('combo')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Combo</button>
+                            <button onClick={() => handlePlanSelect('combo')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Choose Combo</button>
                         </motion.div>
                     </div>
                 </div>

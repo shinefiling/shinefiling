@@ -24,6 +24,7 @@ public class Notification {
     private String referenceId; // e.g., "ORD-123"
     private String referenceType; // e.g., "ORDER", "PAYMENT"
 
+    @Column(name = "is_read")
     private boolean isRead = false;
     private LocalDateTime createdAt = LocalDateTime.now();
 

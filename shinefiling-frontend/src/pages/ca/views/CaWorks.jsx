@@ -162,7 +162,7 @@ const ManageServiceModal = ({ request, onClose, onUpdate }) => {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="p-8 bg-slate-100 dark:bg-white/5 rounded-xl text-center text-slate-400 italic">
+                                    <div className="p-8 bg-slate-100 dark:bg-white/5 rounded-xl text-center text-slate-400">
                                         No documents found for this request.
                                     </div>
                                 )}
@@ -561,7 +561,7 @@ const CaWorks = ({ requests, employees, handleAssignEmployee, respondToBoundAmou
                                                 : 'bg-white dark:bg-[#1C3540] text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-[#2A4550] rounded-xl rounded-tl-none'
                                                 }`}>
                                                 {!isUser && <p className="text-[8px] font-bold text-[#F97316] mb-0.5 opacity-80">{msg.senderName}</p>}
-                                                <p className="leading-relaxed">{msg.message} {msg.edited && <span className="text-[8px] opacity-50 italic">(edited)</span>}</p>
+                                                <p className="leading-relaxed">{msg.message} {msg.edited && <span className="text-[8px] opacity-50">(edited)</span>}</p>
                                                 <div className={`flex items-center justify-end gap-1 mt-0.5`}>
                                                     <span className={`text-[8px] font-bold ${isUser ? 'text-white/60' : 'text-gray-300'}`}>
                                                         {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

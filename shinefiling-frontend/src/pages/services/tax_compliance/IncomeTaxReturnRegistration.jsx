@@ -273,7 +273,7 @@ const IncomeTaxReturnRegistration = ({ planProp, isModal = false, onClose }) => 
                         <div className="flex justify-between text-sm"><span>FY</span><span className="font-bold">{formData.assessmentYear}</span></div>
                         <div className="my-2 border-t"></div>
                         <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.basePrice.toLocaleString()}</span></div>
-                        <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFee}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFee.toLocaleString()}</span></div>
                         <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
                         <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
                         <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>

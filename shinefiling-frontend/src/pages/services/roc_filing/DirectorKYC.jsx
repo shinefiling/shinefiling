@@ -327,42 +327,28 @@ const DirectorKYCPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                            className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
                             <h3 className="text-lg font-bold text-navy mb-2">Web Based</h3>
-                            <p className="text-slate-500 text-sm mb-6">
-                                If no change in details
-                            </p>
+                            <p className="text-slate-500 text-sm mb-6">If no change in details.</p>
                             <div className="flex items-center gap-2 mb-4">
-                                <span className="text-3xl font-black text-navy">₹499</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">
-                                    + GST
-                                </span>
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹499</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">RE-FILING</span>
                             </div>
+
                             <ul className="space-y-3 mb-6 flex-1 text-slate-700">
-                                <li className="flex gap-3 text-sm">
-                                    <CheckCircle size={14} className="text-green-500 shrink-0" />{" "}
-                                    Web-KYC Filing
-                                </li>
-                                <li className="flex gap-3 text-sm">
-                                    <CheckCircle size={14} className="text-green-500 shrink-0" />{" "}
-                                    No Change in Details
-                                </li>
-                                <li className="flex gap-3 text-sm">
-                                    <CheckCircle size={14} className="text-green-500 shrink-0" />{" "}
-                                    OTP Verification Only
-                                </li>
-                                <li className="flex gap-3 text-sm">
-                                    <CheckCircle size={14} className="text-green-500 shrink-0" />{" "}
-                                    SRN Generation
-                                </li>
+                                {[
+                                    "Web-KYC Filing",
+                                    "No Change in Details",
+                                    "OTP Verification Only",
+                                    "SRN Generation"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button
-                                onClick={() => handlePlanSelect("web")}
-                                className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm"
-                            >
-                                Select Web KYC
-                            </button>
+                            <button onClick={() => handlePlanSelect('web')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Web KYC</button>
                         </motion.div>
 
                         {/* e-Form */}
@@ -374,53 +360,28 @@ const DirectorKYCPage = ({ isLoggedIn, onLogout }) => {
                             className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
                             <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
-                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
-                                Most Popular
-                            </div>
-                            <h3 className="text-lg font-bold text-white mb-2 mt-1">
-                                e-Form KYC
-                            </h3>
-                            <p className="text-gray-400 text-sm mb-6">
-                                For changes or first-time
-                            </p>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Recommended</div>
+
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">e-Form KYC</h3>
+                            <p className="text-gray-400 text-sm mb-6">For changes or first-time.</p>
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="text-3xl font-black text-white">₹1,499</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100/10 px-2 py-1 rounded">
-                                    + GST
-                                </span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase bg-white/10 px-2 py-1 rounded">MOST POPULAR</span>
                             </div>
+
                             <ul className="space-y-3 mb-6 flex-1 text-gray-200">
-                                <li className="flex gap-3 text-sm">
-                                    <div className="bg-bronze/20 p-1 rounded-full">
-                                        <CheckCircle size={12} className="text-bronze" />
-                                    </div>{" "}
-                                    Change in Details
-                                </li>
-                                <li className="flex gap-3 text-sm">
-                                    <div className="bg-bronze/20 p-1 rounded-full">
-                                        <CheckCircle size={12} className="text-bronze" />
-                                    </div>{" "}
-                                    First Time Filers
-                                </li>
-                                <li className="flex gap-3 text-sm">
-                                    <div className="bg-bronze/20 p-1 rounded-full">
-                                        <CheckCircle size={12} className="text-bronze" />
-                                    </div>{" "}
-                                    Professional Certification
-                                </li>
-                                <li className="flex gap-3 text-sm">
-                                    <div className="bg-bronze/20 p-1 rounded-full">
-                                        <CheckCircle size={12} className="text-bronze" />
-                                    </div>{" "}
-                                    Priority Filing
-                                </li>
+                                {[
+                                    "Change in Details",
+                                    "First Time Filers",
+                                    "Professional Certification",
+                                    "Priority Filing"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button
-                                onClick={() => handlePlanSelect("eform")}
-                                className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm"
-                            >
-                                Select e-Form KYC
-                            </button>
+                            <button onClick={() => handlePlanSelect('eform')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Select e-Form KYC</button>
                         </motion.div>
 
                         {/* Late Filing */}
@@ -429,41 +390,28 @@ const DirectorKYCPage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                            className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
                             <h3 className="text-lg font-bold text-navy mb-2">Late Filing</h3>
-                            <p className="text-slate-500 text-sm mb-6">
-                                If filed after deadline
-                            </p>
+                            <p className="text-slate-500 text-sm mb-6">If filed after deadline.</p>
                             <div className="flex items-center gap-2 mb-4">
-                                <span className="text-3xl font-black text-navy">₹5,499</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">
-                                    Incl Penalty
-                                </span>
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹5,499</span>
+                                <span className="text-[10px] font-bold text-red-500 uppercase bg-red-50 px-2 py-1 rounded">INCL PENALTY</span>
                             </div>
+
                             <ul className="space-y-3 mb-6 flex-1 text-slate-700">
-                                <li className="text-xs font-bold text-red-600 uppercase tracking-wider border-b border-gray-100 pb-2">
-                                    Includes ₹5000 Govt Penalty
-                                </li>
-                                <li className="flex gap-3 text-sm">
-                                    <CheckCircle size={14} className="text-green-500 shrink-0" />{" "}
-                                    Web or e-Form Filing
-                                </li>
-                                <li className="flex gap-3 text-sm">
-                                    <CheckCircle size={14} className="text-green-500 shrink-0" />{" "}
-                                    Fast-track Processing
-                                </li>
-                                <li className="flex gap-3 text-sm">
-                                    <CheckCircle size={14} className="text-green-500 shrink-0" />{" "}
-                                    Avoid DIN Deactivation
-                                </li>
+                                <li className="text-[10px] font-bold text-red-600 uppercase tracking-wider border-b border-gray-100 pb-2">Includes ₹5000 Govt Penalty</li>
+                                {[
+                                    "Web or e-Form Filing",
+                                    "Fast-track Processing",
+                                    "Avoid DIN Deactivation"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button
-                                onClick={() => handlePlanSelect("late")}
-                                className="w-full py-2.5 bg-slate-100 text-red-600 hover:text-white font-bold rounded-lg hover:bg-red-600 transition-colors text-sm"
-                            >
-                                Select Late Filing
-                            </button>
+                            <button onClick={() => handlePlanSelect('late')} className="w-full py-2.5 bg-slate-100 text-red-600 font-bold rounded-lg hover:bg-red-600 hover:text-white transition-colors text-sm">Select Late Filing</button>
                         </motion.div>
                     </div>
                 </div>

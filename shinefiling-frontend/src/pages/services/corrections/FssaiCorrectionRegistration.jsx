@@ -280,7 +280,7 @@ const FssaiCorrectionRegistration = ({ isLoggedIn, isModal = false, onClose, pla
 
                         <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2 text-left">
                             <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
-                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn.toLocaleString()}</span></div>
                             <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
                             <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
                             <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
@@ -389,7 +389,7 @@ const FssaiCorrectionRegistration = ({ isLoggedIn, isModal = false, onClose, pla
                                 {currentStep === 4 && "Complete Payment"}
                             </h2>
                         </div>
-                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition shrink-0 ml-4">
+                        <button onClick={onClose || (() => navigate(-1))} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition shrink-0 ml-4">
                             <X size={20} />
                         </button>
                     </div>
@@ -401,7 +401,7 @@ const FssaiCorrectionRegistration = ({ isLoggedIn, isModal = false, onClose, pla
                                 <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
                                 <h2 className="text-2xl font-bold text-navy">Modification Submitted!</h2>
                                 <p className="text-gray-500 mt-2">Your request has been submitted successfully.</p>
-                                <button onClick={onClose} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
+                                <button onClick={onClose || (() => navigate(-1))} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
                             </div>
                         ) : (
                             renderStepContent()

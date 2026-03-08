@@ -52,6 +52,16 @@ const GstMonthlyReturnRegistration = ({ isLoggedIn, isModal = false, planProp, o
         premium: { price: 1999, title: 'Premium Return', features: ["100% 2B Reconciliation", "CA Review"], color: 'bg-purple-50 border-purple-200' }
     };
 
+    const billDetails = useMemo(() => {
+        const plan = plans[selectedPlan] || plans.standard;
+        const basePrice = plan.price;
+        const platformFee = Math.round(basePrice * 0.03);
+        const tax = Math.round(basePrice * 0.03);
+        const gst = Math.round(basePrice * 0.09);
+        const total = basePrice + platformFee + tax + gst;
+        return { base: basePrice, platformFn: platformFee, tax: tax, gst: gst, total: total };
+    }, [selectedPlan]);
+
     useEffect(() => {
         if (planProp) setSelectedPlan(validatePlan(planProp));
         setFormData(prev => ({ ...prev, isNilReturn: selectedPlan === 'nil' }));
@@ -153,14 +163,15 @@ const GstMonthlyReturnRegistration = ({ isLoggedIn, isModal = false, planProp, o
                 return (
                     <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
                         <div className="w-20 h-20 bg-beige/10 rounded-full flex items-center justify-center mx-auto mb-6 text-navy"><IndianRupee size={32} /></div>
-                        <h2 className="text-3xl font-bold text-navy mb-2">Payment</h2>
-                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="text-gray-500">Total</span>
-                                <span className="text-3xl font-bold text-navy">₹{plans[selectedPlan].price}</span>
-                            </div>
+                        <h2 className="text-3xl font-bold text-navy mb-2">Payment Summary</h2>
+                        <div className="bg-slate-50 p-6 rounded-2xl mb-8 border border-gray-200 text-left space-y-2">
+                            <div className="flex justify-between text-sm"><span>Base Fee</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
                         </div>
-                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold transition">{isSubmitting ? 'Processing...' : 'Pay Now'}</button>
+                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-[#043E52] text-white rounded-xl font-bold transition">{isSubmitting ? 'Processing...' : 'Pay & Submit'}</button>
                     </div>
                 );
             default: return null;
@@ -181,9 +192,14 @@ const GstMonthlyReturnRegistration = ({ isLoggedIn, isModal = false, planProp, o
                             ))}
                         </div>
                         <div className={`p-6 rounded-2xl border shadow-sm ${plans[selectedPlan].color} sticky top-24`}>
-                            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Plan</div>
-                            <div className="text-3xl font-bold text-gray-800 mb-2">{plans[selectedPlan].title}</div>
-                            <div className="text-3xl font-bold text-navy mb-4">₹{plans[selectedPlan].price}</div>
+                            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Plan Details</div>
+                            <div className="text-2xl font-bold text-gray-800 mb-4">{plans[selectedPlan].title}</div>
+                            <div className="space-y-2 border-t pt-4">
+                                <div className="flex justify-between text-xs"><span className="text-gray-500">Service Fee</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                                <div className="flex justify-between text-xs"><span className="text-gray-500">Govt Fee & Taxes</span><span className="font-bold">₹{(billDetails.total - billDetails.base).toLocaleString()}</span></div>
+                                <div className="h-px bg-gray-100 my-2"></div>
+                                <div className="flex justify-between items-end"><span className="text-[10px] font-bold text-navy uppercase">Total</span><span className="text-xl font-bold text-navy">₹{billDetails.total.toLocaleString()}</span></div>
+                            </div>
                         </div>
                     </div>
                     <div className="flex-1">

@@ -1,10 +1,16 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, CheckCircle, FileText, Rocket, Briefcase, Users, Shield, Award, HelpCircle, ChevronRight, BookOpen, AlertCircle, RefreshCw, PenTool, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, FileText, Rocket, Briefcase, Users, Shield, Award, HelpCircle, ChevronRight, BookOpen, AlertCircle, RefreshCw, PenTool, ArrowRight, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import CompanyNameChangeRegistration from './CompanyNameChangeRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const CompanyNameChangePage = ({ isLoggedIn }) => {
     const navigate = useNavigate();
+    const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState('standard');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -17,13 +23,46 @@ const CompanyNameChangePage = ({ isLoggedIn }) => {
     ];
 
     const handlePlanSelect = (plan) => {
-        const url = `/services/roc-filing/company-name-change/register?plan=${plan}`;
-        if (isLoggedIn) navigate(url);
-        else navigate('/login', { state: { from: url } });
+        setSelectedPlan(plan);
+        if (isLoggedIn) {
+            setShowRegistrationModal(true);
+        } else {
+            setAuthMode('login');
+            setShowAuthModal(true);
+        }
     };
 
     return (
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
+            <AnimatePresence>
+                {showRegistrationModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <CompanyNameChangeRegistration
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                planProp={selectedPlan}
+                                onClose={() => setShowRegistrationModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegistrationModal(true);
+                }}
+            />
 
             {/* HERO SECTION */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -194,21 +233,28 @@ const CompanyNameChangePage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                            className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-lg font-bold text-navy mb-2">Consultation</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Advisory</h3>
+                            <p className="text-slate-500 text-sm mb-6">Expert Name Suitability.</p>
                             <div className="flex items-center gap-2 mb-4">
-                                <span className="text-3xl font-black text-navy">Free</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">Initial Advice</span>
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">Free</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">CONSULTATION</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1 text-slate-700">
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Name Availability</li>
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Trademark Check</li>
+                                {[
+                                    "MCV Name Availability Check",
+                                    "Trademark Conflict Search",
+                                    "Significance Drafting Aid",
+                                    "Identity Strategy Call"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => window.open('tel:+919999999999', '_self')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
-                                Check Name
-                            </button>
+                            <button onClick={() => window.open('tel:+919910243444', '_self')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Check Now</button>
                         </motion.div>
 
                         {/* Standard - Most Common */}
@@ -220,24 +266,29 @@ const CompanyNameChangePage = ({ isLoggedIn }) => {
                             className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
                             <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
-                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
-                                Most Popular
-                            </div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Recommended</div>
 
                             <h3 className="text-lg font-bold text-white mb-2 mt-1">Standard</h3>
+                            <p className="text-gray-400 text-sm mb-6">Complete Name Filing.</p>
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="text-3xl font-black text-white">₹5,999</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100/10 px-2 py-1 rounded">+ Govt Fees</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase bg-white/10 px-2 py-1 rounded">MOST POPULAR</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1 text-gray-200">
-                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> RUN Application</li>
-                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> MGT-14 & INC-24</li>
-                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> New COI</li>
+                                {[
+                                    "RUN Name Reservation",
+                                    "MGT-14 (EGM Resolution)",
+                                    "INC-24 Filing (Central)",
+                                    "New COI Generation",
+                                    "Altered MOA/AOA Set"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">
-                                Select Standard
-                            </button>
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Select Standard</button>
                         </motion.div>
 
                         {/* Premium */}
@@ -246,22 +297,29 @@ const CompanyNameChangePage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                            className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-lg font-bold text-navy mb-2">Premium</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Rebranding Kit</h3>
+                            <p className="text-slate-500 text-sm mb-6">Complete Legal Updates.</p>
                             <div className="flex items-center gap-2 mb-4">
-                                <span className="text-3xl font-black text-navy">₹8,999</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹8,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ GOVT FEES</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1 text-slate-700">
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Name Change Service</li>
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> PAN/TAN Update</li>
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> GST Update</li>
+                                {[
+                                    "Everything in Standard",
+                                    "PAN Card Name Update",
+                                    "TAN Card Name Update",
+                                    "GST Portal Amendment",
+                                    "Priority Service Support"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
-                                Select Premium
-                            </button>
+                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Premium</button>
                         </motion.div>
                     </div>
                 </div>

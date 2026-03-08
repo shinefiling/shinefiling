@@ -45,6 +45,7 @@ public class NotificationService {
         n.setReferenceId(refId);
         n.setReferenceType("ADMIN_ALERT");
         notificationRepository.save(n);
+        System.out.println("Admin Notification Saved: " + title);
     }
 
     // Actually, finding admins is better for specific persistence
@@ -79,6 +80,8 @@ public class NotificationService {
     }
 
     public List<Notification> getUnreadSystemNotifications() {
-        return notificationRepository.findByUserIsNullAndIsReadFalseOrderByCreatedAtDesc();
+        List<Notification> notifs = notificationRepository.findByUserIsNullAndIsReadFalseOrderByCreatedAtDesc();
+        System.out.println("Fetched System Unread Notifs Count: " + (notifs != null ? notifs.size() : 0));
+        return notifs;
     }
 }

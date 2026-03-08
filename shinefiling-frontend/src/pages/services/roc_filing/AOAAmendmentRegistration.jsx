@@ -9,14 +9,14 @@ import {
 import { uploadFile, submitMoaAoaAmendment } from '../../../api';
 
 const validatePlan = (plan) => {
-    return ['basic', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'standard';
+    return ['consultation', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'standard';
 };
 
 const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
     const plans = {
-        basic: { price: 999, title: 'Consultation', icon: Info },
-        standard: { price: 2999, title: 'Clause Amendment (AOA)', icon: BookOpen },
-        premium: { price: 3999, title: 'AOA Adoption (New Table F)', icon: Briefcase }
+        consultation: { price: 999, title: 'Expert Advisory' },
+        standard: { price: 2999, title: 'Clause Update' },
+        premium: { price: 3999, title: 'New Adoption' }
     };
 
     const [searchParams] = useSearchParams();
@@ -34,6 +34,8 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
     }, [planParam, planProp, selectedPlan]);
 
     const [formData, setFormData] = useState({
+        userEmail: '',
+        userPhone: '',
         companyName: '',
         cin: '',
         amendmentType: 'AOA',
@@ -45,7 +47,9 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
 
     const [uploadedFiles, setUploadedFiles] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [automationPayload, setAutomationPayload] = useState(null);
     const [errors, setErrors] = useState({});
 
     const billDetails = useMemo(() => {
@@ -74,6 +78,11 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
         const newErrors = {};
         let isValid = true;
         if (step === 1) {
+            const storedUser = localStorage.getItem('user');
+            if (!isLoggedIn && !storedUser) {
+                if (!formData.userEmail) { newErrors.userEmail = "Required"; isValid = false; }
+                if (!formData.userPhone) { newErrors.userPhone = "Required"; isValid = false; }
+            }
             if (!formData.companyName) { newErrors.companyName = "Required"; isValid = false; }
             if (!formData.cin) { newErrors.cin = "Required"; isValid = false; }
             if (!formData.reasonForAmendment) { newErrors.reasonForAmendment = "Required"; isValid = false; }
@@ -87,7 +96,7 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
 
     const handleNext = () => {
         if (validateStep(currentStep)) {
-            setCurrentStep(prev => Math.min(4, prev + 1));
+            setCurrentStep(prev => Math.min(5, prev + 1));
         }
     };
 
@@ -112,13 +121,15 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
             const finalPayload = {
                 submissionId: `ROC-AOA-${Date.now()}`,
                 plan: selectedPlan,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.userEmail,
+                userPhone: JSON.parse(localStorage.getItem('user'))?.phone || formData.userPhone,
                 formData: formData,
                 documents: docsList,
                 amountPaid: billDetails.total,
                 status: "PAYMENT_SUCCESSFUL"
             };
-            await submitMoaAoaAmendment(finalPayload);
+            const response = await submitMoaAoaAmendment(finalPayload);
+            setAutomationPayload(response);
             setIsSuccess(true);
         } catch (error) {
             alert("Submission error: " + error.message);
@@ -131,24 +142,23 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
         switch (currentStep) {
             case 1:
                 return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <Building2 size={16} className="text-[#ED6E3F]" /> COMPLIANCE SETUP
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Company CIN</label>
-                                    <input type="text" name="cin" value={formData.cin} onChange={handleInputChange} placeholder="U12345MH..." maxLength={21} className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl font-mono uppercase text-sm" />
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            {(!isLoggedIn && !localStorage.getItem('user')) && (
+                                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3 pb-6 border-b border-gray-100">
+                                    <h3 className="md:col-span-2 font-bold text-slate-800 mb-1 text-sm flex items-center gap-2"><User size={16} /> CONTACT DETAILS</h3>
+                                    <input name="userEmail" value={formData.userEmail} onChange={handleInputChange} placeholder="Email Address" className={`p-2 text-sm border rounded-lg ${errors.userEmail ? 'border-red-500' : ''}`} />
+                                    <input name="userPhone" value={formData.userPhone} onChange={handleInputChange} placeholder="Phone Number" className={`p-2 text-sm border rounded-lg ${errors.userPhone ? 'border-red-500' : ''}`} />
                                 </div>
+                            )}
+                            <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><Building2 size={16} /> COMPLIANCE SETUP</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <input name="cin" value={formData.cin} onChange={handleInputChange} placeholder="Company CIN" className={`md:col-span-2 p-2 text-sm border rounded-lg ${errors.cin ? 'border-red-500' : ''}`} />
+                                <input name="companyName" value={formData.companyName} onChange={handleInputChange} placeholder="Filing Company Name" className={`md:col-span-2 p-2 text-sm border rounded-lg ${errors.companyName ? 'border-red-500' : ''}`} />
                                 <div className="space-y-1 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Filing Company</label>
-                                    <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} placeholder="Full Registered Name" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl font-bold text-sm" />
-                                </div>
-                                <div className="space-y-1 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Reason for Amendment</label>
-                                    <select name="reasonForAmendment" value={formData.reasonForAmendment} onChange={handleInputChange} className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-sm font-bold">
-                                        <option value="">-- SELECT REASON --</option>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Reason for Amendment</p>
+                                    <select name="reasonForAmendment" value={formData.reasonForAmendment} onChange={handleInputChange} className="w-full p-2 text-sm border rounded-lg bg-white">
+                                        <option value="">-- Select Reason --</option>
                                         <option value="Change Share Transfer Rules">Change Share Transfer Rules</option>
                                         <option value="Change Board Meeting Rules">Change Board Meeting Rules</option>
                                         <option value="Adopt New AOA (Table F)">Adopt New AOA (Table F)</option>
@@ -163,22 +173,20 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
 
             case 2:
                 return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <BookOpen size={16} className="text-[#ED6E3F]" /> CLAUSE SPECIFICS
-                            </h3>
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><BookOpen size={16} /> CLAUSE SPECIFICS</h3>
                             <div className="space-y-4">
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Existing Clause (Reference)</label>
-                                    <textarea name="existingClause" value={formData.existingClause} onChange={handleInputChange} rows={3} placeholder="Copy paste the existing clause from AOA..." className="w-full p-4 bg-slate-50 border border-gray-200 rounded-2xl text-[11px] font-medium leading-relaxed" />
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Existing Clause (Reference)</p>
+                                    <textarea name="existingClause" value={formData.existingClause} onChange={handleInputChange} rows={3} placeholder="Paste current AOA clause here..." className="w-full p-3 text-sm border rounded-lg bg-gray-50 italic" />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Proposed New Clause</label>
-                                    <textarea name="proposedClause" value={formData.proposedClause} onChange={handleInputChange} rows={4} placeholder="Draft the new clause..." className="w-full p-4 bg-navy/5 border border-navy/10 rounded-2xl text-[11px] font-black text-navy leading-relaxed" />
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Proposed New Clause</p>
+                                    <textarea name="proposedClause" value={formData.proposedClause} onChange={handleInputChange} rows={4} placeholder="Type new clause text here..." className="w-full p-3 text-sm border-2 border-[#043E52]/10 rounded-lg bg-white font-medium" />
                                 </div>
-                                <div className="p-4 bg-blue-50 text-blue-800 text-xs rounded-xl border border-blue-100 font-medium">
-                                    <strong>Note:</strong> Any clause restricting share transfer must clearly specify the conditions. AOA cannot completely ban share transfers in a Private Limited Company.
+                                <div className="p-3 bg-blue-50 text-blue-800 text-[10px] rounded-lg border border-blue-100 font-medium italic">
+                                    AOA cannot completely ban share transfers in a Private Limited Company.
                                 </div>
                             </div>
                         </div>
@@ -188,30 +196,16 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
             case 3:
                 return (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm font-poppins">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <ClipboardList size={16} className="text-[#ED6E3F]" /> UPLOAD DOCUMENTS
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.special_resolution ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
-                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><FileText size={24} /></div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">Special Resolution</p>
-                                    <label className="cursor-pointer">
-                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${uploadedFiles.special_resolution ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
-                                            {uploadedFiles.special_resolution ? 'Swap File' : 'Upload Copy'}
-                                        </span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'special_resolution')} />
-                                    </label>
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><ClipboardList size={16} /> UPLOAD DOCUMENTS</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="border border-dashed p-3 rounded-lg flex justify-between items-center bg-gray-50">
+                                    <span className="text-xs text-gray-600">Special Resolution</span>
+                                    <input type="file" onChange={(e) => handleFileUpload(e, 'special_resolution')} className="text-[10px] w-24" />
                                 </div>
-                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.existing_aoa ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
-                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><Briefcase size={24} /></div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">Existing AOA</p>
-                                    <label className="cursor-pointer">
-                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${uploadedFiles.existing_aoa ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
-                                            {uploadedFiles.existing_aoa ? 'Swap File' : 'Upload Copy'}
-                                        </span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'existing_aoa')} />
-                                    </label>
+                                <div className="border border-dashed p-3 rounded-lg flex justify-between items-center bg-gray-50">
+                                    <span className="text-xs text-gray-600">Existing AOA</span>
+                                    <input type="file" onChange={(e) => handleFileUpload(e, 'existing_aoa')} className="text-[10px] w-24" />
                                 </div>
                             </div>
                         </div>
@@ -220,42 +214,41 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
 
             case 4:
                 return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
-                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 text-center relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                            <div className="w-20 h-20 bg-orange-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-orange-600 shadow-3xl shadow-orange-500/10 rotate-3">
-                                <CreditCard size={32} />
-                            </div>
-                            <h2 className="text-2xl font-black text-navy mb-2 tracking-tight uppercase italic">Finalize Amendment</h2>
-                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-8 opacity-60 italic underline decoration-orange-500 underline-offset-4">Legal Draft & Filing Setup</p>
-
-                            <div className="bg-slate-50 p-8 rounded-3xl mb-8 space-y-4 text-sm border-2 border-white shadow-inner">
-                                <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    <span>Plan</span>
-                                    <span className="px-4 py-1.5 bg-navy text-white rounded-full italic">{plans[selectedPlan].title}</span>
-                                </div>
-                                <div className="h-px bg-slate-200"></div>
-                                <div className="flex justify-between text-2xl font-black text-navy italic underline decoration-[#ED6E3F] decoration-4 underline-offset-8">
-                                    <span className="text-[10px] self-end mb-1 text-slate-400 not-italic font-bold">TOTAL</span>
-                                    <span>₹{billDetails.total.toLocaleString()}</span>
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={submitApplication}
-                                disabled={isSubmitting}
-                                className="w-full py-5 bg-navy text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-3xl shadow-navy/30 hover:bg-black transition-all flex items-center justify-center gap-3 italic"
-                            >
-                                {isSubmitting ? 'PROCESSING...' : 'AUTHORIZE AOA CHANGE'}
-                                {!isSubmitting && <ArrowRight size={20} />}
-                            </button>
+                    <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                        <h2 className="text-xl font-bold text-navy mb-4">Confirm Details</h2>
+                        <div className="p-4 bg-gray-50 rounded-lg space-y-2 text-sm">
+                            <div className="flex justify-between"><span>Plan</span><span className="font-bold text-navy">{plans[selectedPlan]?.title}</span></div>
+                            <div className="flex justify-between"><span>Company</span><span className="font-bold">{formData.companyName}</span></div>
+                            <div className="flex justify-between"><span>Amendment</span><span className="font-bold text-orange-600">{formData.amendmentType}</span></div>
+                            <div className="flex justify-between"><span>Reason</span><span className="font-bold">{formData.reasonForAmendment}</span></div>
                         </div>
                     </div>
                 );
 
+            case 5:
+                return (
+                    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                        <IndianRupee size={32} className="mx-auto mb-4 text-green-600" />
+                        <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                        <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2">
+                            <div className="flex justify-between text-sm"><span>Service Fee</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFee.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
+                        </div>
+                        <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center">
+                            <input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} />
+                            I Accept Terms & Conditions
+                        </label>
+                        <button onClick={submitApplication} disabled={!isTermsAccepted || isSubmitting} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50">
+                            {isSubmitting ? 'Processing...' : 'Pay & Submit'}
+                        </button>
+                    </div>
+                );
             default: return null;
         }
-    }
+    };
 
     // --- MODAL LAYOUT: SPLIT VIEW (Left Sidebar + Right Content) ---
     return (
@@ -267,7 +260,7 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
 
                 <div className="relative z-10 mb-8">
                     <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
-                        <BookOpen className="text-[#ED6E3F]" size={20} />
+                        <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
                         AOA Amendment
                     </h1>
                     <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
@@ -300,7 +293,7 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
 
                 {/* VERTICAL STEPPER */}
                 <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
-                    {['Entity Sync', 'Clause Specifics', 'Upload Docs', 'Payment'].map((step, i) => (
+                    {['Entity Sync', 'Clause Specifics', 'Upload Docs', 'Review', 'Payment'].map((step, i) => (
                         <div key={i}
                             onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
                             className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
@@ -346,8 +339,9 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
                         <h2 className="hidden md:block font-bold text-slate-800 text-lg">
                             {currentStep === 1 && "Amendment Details"}
                             {currentStep === 2 && "Textual Revision"}
-                            {currentStep === 3 && "Document Uploads"}
-                            {currentStep === 4 && "Complete Payment"}
+                            {currentStep === 3 && "Document Evidence"}
+                            {currentStep === 4 && "Review Application"}
+                            {currentStep === 5 && "Complete Payment"}
                         </h2>
                     </div>
 
@@ -362,8 +356,8 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
                         <div className="text-center py-10">
                             <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
                             <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
-                            <p className="text-gray-500 mt-2">Check dashboard for status updates.</p>
-                            <button onClick={onClose || (() => navigate(-1))} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Proceed to Dashboard</button>
+                            <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                            <button onClick={onClose || (() => navigate(-1))} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
                         </div>
                     ) : (
                         renderStepContent()
@@ -380,7 +374,7 @@ const AOAAmendmentRegistration = ({ isLoggedIn, isModal = false, planProp, onClo
                         >
                             Back
                         </button>
-                        {currentStep < 4 && (
+                        {currentStep < 5 && (
                             <button
                                 onClick={handleNext}
                                 className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"

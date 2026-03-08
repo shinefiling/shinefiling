@@ -10,7 +10,7 @@ const CompanyLLPDetailCorrectionRegistration = ({ isLoggedIn, isModal = false, o
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [plan, setPlan] = useState(planProp || 'standard');
+    const [plan, setPlan] = useState(planProp || 'office_shift');
 
     // Protect Route
     useEffect(() => {
@@ -31,7 +31,7 @@ const CompanyLLPDetailCorrectionRegistration = ({ isLoggedIn, isModal = false, o
             setPlan(planProp.toLowerCase());
         } else {
             const planParam = searchParams.get('plan');
-            if (planParam && ['capital', 'standard', 'name'].includes(planParam.toLowerCase())) {
+            if (planParam && ['capital', 'office_shift', 'name'].includes(planParam.toLowerCase())) {
                 setPlan(planParam.toLowerCase());
             }
         }
@@ -55,13 +55,13 @@ const CompanyLLPDetailCorrectionRegistration = ({ isLoggedIn, isModal = false, o
 
     const pricing = {
         'capital': { serviceFee: 2499, title: "Capital Increase" },
-        'standard': { serviceFee: 3999, title: "Office Shift / Standard" },
+        'office_shift': { serviceFee: 3999, title: "Office Shift" },
         'name': { serviceFee: 7999, title: "Name Change" }
     };
 
     // Memoize bill details
     const billDetails = useMemo(() => {
-        const selectedPricing = pricing[plan] || pricing.standard;
+        const selectedPricing = pricing[plan] || pricing.office_shift;
         const basePrice = selectedPricing.serviceFee;
 
         // User Request: Total extra is 15% split into Platform Fee, Tax, and GST
@@ -299,7 +299,7 @@ const CompanyLLPDetailCorrectionRegistration = ({ isLoggedIn, isModal = false, o
 
                         <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2 text-left">
                             <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
-                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn.toLocaleString()}</span></div>
                             <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
                             <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
                             <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>

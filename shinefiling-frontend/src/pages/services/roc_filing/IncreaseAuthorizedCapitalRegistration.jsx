@@ -1,22 +1,43 @@
 ﻿
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-    CheckCircle, Upload, Calendar, FileText,
+    CheckCircle, Upload, Calendar, FileText, User,
     ArrowLeft, ArrowRight, IndianRupee, Briefcase, Building2, TrendingUp, Users, Scale,
     X, Info, Shield, Zap, Search, ClipboardList, Clock, CreditCard
 } from 'lucide-react';
 import { uploadFile, submitIncreaseAuthorizedCapital } from '../../../api';
 
+// --- CONSTANTS & HELPERS ---
 const validatePlan = (plan) => {
-    return ['standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'standard';
+    return ['basic', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'standard';
 };
+
+const PLATFORM_FEE_RATE = 0.03;
+const TAX_RATE = 0.03;
+const GST_RATE = 0.09;
 
 const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
     const plans = {
-        standard: { price: 2999, title: 'SH-7 Filing', icon: Zap },
-        premium: { price: 5999, title: 'Fund Raising Bundle', icon: Briefcase }
+        basic: {
+            price: 1999,
+            title: 'Basic Filing',
+            features: ["SH-7 Filing Support", "MOA Alteration Template", "Standard ROC Upload", "SRN Receipt Generation"],
+            color: 'bg-slate-50 border-slate-200'
+        },
+        standard: {
+            price: 2999,
+            title: 'Professional Plan',
+            features: ["Custom MOA Drafting", "Board Resolution Prep", "Stamp Duty Assistance", "EGM Notice Drafting", "Priority ROC Filing"],
+            color: 'bg-white border-slate-200'
+        },
+        premium: {
+            price: 5999,
+            title: 'Fund Raising Kit',
+            features: ["Everything in Professional", "Share Allotment (PAS-3)", "Share Certificate Prep", "Demat Coordination Aid", "Dedicated CS Advisory"],
+            recommended: true,
+            color: 'bg-indigo-50 border-indigo-200'
+        }
     };
 
     const [searchParams] = useSearchParams();
@@ -26,6 +47,7 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn, isModal = false, pl
     const [currentStep, setCurrentStep] = useState(1);
     const [selectedPlan, setSelectedPlan] = useState(() => validatePlan(planProp || planParam));
 
+    // Sync plan if props change
     useEffect(() => {
         const targetPlan = validatePlan(planProp || planParam);
         if (targetPlan !== selectedPlan) {
@@ -34,6 +56,8 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn, isModal = false, pl
     }, [planParam, planProp, selectedPlan]);
 
     const [formData, setFormData] = useState({
+        userEmail: '',
+        userPhone: '',
         companyName: '',
         cin: '',
         existingCapital: '',
@@ -43,25 +67,30 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn, isModal = false, pl
 
     const [uploadedFiles, setUploadedFiles] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [automationPayload, setAutomationPayload] = useState(null);
     const [errors, setErrors] = useState({});
 
+    // Memoize bill details
     const billDetails = useMemo(() => {
         const plan = plans[selectedPlan] || plans.standard;
         const basePrice = plan.price;
-        const platformFee = Math.round(basePrice * 0.03);
-        const tax = Math.round(basePrice * 0.03);
-        const gst = Math.round(basePrice * 0.09);
+
+        const platformFee = Math.round(basePrice * PLATFORM_FEE_RATE);
+        const tax = Math.round(basePrice * TAX_RATE);
+        const gst = Math.round(basePrice * GST_RATE);
 
         return {
             base: basePrice,
-            platformFee,
-            tax,
-            gst,
+            platformFee: platformFee,
+            tax: tax,
+            gst: gst,
             total: basePrice + platformFee + tax + gst
         };
     }, [selectedPlan]);
 
+    // Input Handling
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -73,6 +102,12 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn, isModal = false, pl
         let isValid = true;
 
         if (step === 1) {
+            const storedUser = localStorage.getItem('user');
+            const isReallyLoggedIn = isLoggedIn || !!storedUser;
+            if (!isReallyLoggedIn) {
+                if (!formData.userEmail) { newErrors.userEmail = "Required"; isValid = false; }
+                if (!formData.userPhone) { newErrors.userPhone = "Required"; isValid = false; }
+            }
             if (!formData.companyName) { newErrors.companyName = "Required"; isValid = false; }
             if (!formData.cin) { newErrors.cin = "Required"; isValid = false; }
             if (!formData.existingCapital) { newErrors.existingCapital = "Required"; isValid = false; }
@@ -80,7 +115,8 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn, isModal = false, pl
             if (parseFloat(formData.newCapital) <= parseFloat(formData.existingCapital)) {
                 newErrors.newCapital = "Must be > existing"; isValid = false;
             }
-        } else if (step === 2) {
+        }
+        if (step === 2) {
             if (!formData.meetingDate) { newErrors.meetingDate = "Required"; isValid = false; }
         }
 
@@ -89,9 +125,7 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn, isModal = false, pl
     };
 
     const handleNext = () => {
-        if (validateStep(currentStep)) {
-            setCurrentStep(prev => Math.min(4, prev + 1));
-        }
+        if (validateStep(currentStep)) setCurrentStep(prev => Math.min(5, prev + 1));
     };
 
     const handleFileUpload = async (e, key) => {
@@ -115,16 +149,18 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn, isModal = false, pl
             const finalPayload = {
                 submissionId: `ROCCAP-${Date.now()}`,
                 plan: selectedPlan,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.userEmail,
+                userPhone: JSON.parse(localStorage.getItem('user'))?.phone || formData.userPhone,
                 formData: formData,
                 documents: docsList,
-                amountPaid: billDetails.total,
+                paymentDetails: billDetails,
                 status: "PAYMENT_SUCCESSFUL"
             };
-            await submitIncreaseAuthorizedCapital(finalPayload);
+            const response = await submitIncreaseAuthorizedCapital(finalPayload);
+            setAutomationPayload(response);
             setIsSuccess(true);
         } catch (error) {
-            alert("Submission error: " + error.message);
+            alert("Error: " + error.message);
         } finally {
             setIsSubmitting(false);
         }
@@ -132,266 +168,229 @@ const IncreaseAuthorizedCapitalRegistration = ({ isLoggedIn, isModal = false, pl
 
     const renderStepContent = () => {
         switch (currentStep) {
-            case 1: // Capital Structure
-                return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <TrendingUp size={16} className="text-[#ED6E3F]" /> CAPITAL CONFIGURATION
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Company CIN</label>
-                                    <input type="text" name="cin" value={formData.cin} onChange={handleInputChange} placeholder="U12345MH2024PTC123456" maxLength={21} className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl font-mono tracking-widest uppercase text-sm" />
-                                </div>
-                                <div className="space-y-1 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Company Name</label>
-                                    <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} placeholder="Full Name as per MCA" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl font-bold text-sm" />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Existing Auth Capital (₹)</label>
-                                    <input type="number" name="existingCapital" value={formData.existingCapital} onChange={handleInputChange} placeholder="Current Capital" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-sm font-bold" />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Proposed New Capital (₹)</label>
-                                    <input type="number" name="newCapital" value={formData.newCapital} onChange={handleInputChange} placeholder="Target Capital" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-sm font-bold" />
-                                </div>
-
-                                {formData.newCapital && formData.existingCapital && (
-                                    <div className="md:col-span-2 p-4 bg-orange-50 rounded-xl border border-orange-100 flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <Scale size={18} className="text-orange-600" />
-                                            <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest italic">Net Injection: ₹{(formData.newCapital - formData.existingCapital).toLocaleString()}</span>
-                                        </div>
+            case 1: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        {(!isLoggedIn && !localStorage.getItem('user')) && (
+                            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3 pb-6 border-b border-gray-100">
+                                <h3 className="md:col-span-2 font-bold text-slate-800 mb-1 text-sm flex items-center gap-2"><User size={16} /> CONTACT DETAILS</h3>
+                                <input name="userEmail" value={formData.userEmail} onChange={handleInputChange} placeholder="Your Email Address" className={`p-2 text-sm border rounded-lg ${errors.userEmail ? 'border-red-500' : ''}`} />
+                                <input name="userPhone" value={formData.userPhone} onChange={handleInputChange} placeholder="Your Phone Number" className={`p-2 text-sm border rounded-lg ${errors.userPhone ? 'border-red-500' : ''}`} />
+                            </div>
+                        )}
+                        <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><Building2 size={16} /> COMPANY & CAPITAL</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input name="companyName" value={formData.companyName} onChange={handleInputChange} placeholder="Company Name" className={`md:col-span-2 p-2 text-sm border rounded-lg ${errors.companyName ? 'border-red-500' : ''}`} />
+                            <input name="cin" value={formData.cin} onChange={handleInputChange} placeholder="Company CIN" className={`p-2 text-sm border rounded-lg ${errors.cin ? 'border-red-500' : ''}`} />
+                            <div className="hidden md:block"></div>
+                            <input type="number" name="existingCapital" value={formData.existingCapital} onChange={handleInputChange} placeholder="Existing Authorized Capital (₹)" className={`p-2 text-sm border rounded-lg ${errors.existingCapital ? 'border-red-500' : ''}`} />
+                            <input type="number" name="newCapital" value={formData.newCapital} onChange={handleInputChange} placeholder="Proposed New Capital (₹)" className={`p-2 text-sm border rounded-lg ${errors.newCapital ? 'border-red-500' : ''}`} />
+                            {formData.newCapital && formData.existingCapital && (
+                                <div className="md:col-span-2 p-3 bg-orange-50 rounded-lg border border-orange-100 flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-[#ED6E3F]">
+                                        <Scale size={16} />
+                                        <span className="text-xs font-bold">Net Injection: ₹{(formData.newCapital - formData.existingCapital).toLocaleString()}</span>
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </div>
                     </div>
-                );
-
-            case 2: // Approvals
-                return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <Users size={16} className="text-[#ED6E3F]" /> SHAREHOLDER COMPLIANCE
-                            </h3>
+                </div>
+            );
+            case 2: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><Users size={16} /> MEETING DETAILS</h3>
+                        <div className="space-y-3">
                             <div className="space-y-1">
-                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Date of EGM / Special Resolution</label>
-                                <input type="date" name="meetingDate" value={formData.meetingDate} onChange={handleInputChange} className="w-full p-4 bg-slate-50 border border-gray-200 rounded-2xl text-sm font-black" />
-                                <p className="text-[8px] text-gray-400 font-bold uppercase tracking-[0.2em] mt-3 px-1 italic">The date on which shareholders authorized the MOA alteration.</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date of EGM / Special Resolution</p>
+                                <input type="date" name="meetingDate" value={formData.meetingDate} onChange={handleInputChange} className={`w-full p-2 text-sm border rounded-lg ${errors.meetingDate ? 'border-red-500' : ''}`} />
                             </div>
+                            <p className="text-[10px] text-gray-500 italic">The date on which shareholders authorized the MOA alteration.</p>
                         </div>
-                    </div>
-                );
-
-            case 3: // Uploads
-                return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <ClipboardList size={16} className="text-[#ED6E3F]" /> FILING EVIDENCE
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.resolution ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
-                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><FileText size={24} /></div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-700 italic">Certified Board Resolution</p>
-                                    <label className="cursor-pointer">
-                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-md transition-all ${uploadedFiles.resolution ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
-                                            {uploadedFiles.resolution ? 'Change File' : 'Upload Copy'}
-                                        </span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'resolution')} />
-                                    </label>
-                                </div>
-                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.moa ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
-                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><Scale size={24} /></div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-700 italic">Altered MOA (Draft)</p>
-                                    <label className="cursor-pointer">
-                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-md transition-all ${uploadedFiles.moa ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
-                                            {uploadedFiles.moa ? 'Change File' : 'Upload MOA'}
-                                        </span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'moa')} />
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-
-            case 4: // Payment
-                return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 text-center relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                            <div className="w-20 h-20 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-orange-600 shadow-lg shadow-orange-500/10 rotate-2">
-                                <CreditCard size={32} />
-                            </div>
-                            <h2 className="text-2xl font-black text-navy mb-2 tracking-tight uppercase italic">Compliance Fee</h2>
-                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-8 opacity-60 italic underline decoration-orange-500 underline-offset-4">SH-7 Professional Service Charge</p>
-
-                            <div className="bg-slate-50 p-8 rounded-3xl mb-8 space-y-4 font-poppins text-sm border-2 border-white">
-                                <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    <span>SERVICE TIER</span>
-                                    <span className="px-4 py-1.5 bg-navy text-white rounded-full italic">{plans[selectedPlan].title}</span>
-                                </div>
-                                <div className="h-px bg-slate-200"></div>
-                                <div className="flex justify-between text-2xl font-black text-navy italic underline decoration-[#ED6E3F] decoration-4 underline-offset-8">
-                                    <span className="text-[10px] self-end mb-1 text-slate-400 not-italic font-bold">TOTAL PAYABLE</span>
-                                    <span>₹{billDetails.total.toLocaleString()}</span>
-                                </div>
-                                <div className="text-[8px] text-gray-400 font-bold uppercase tracking-widest text-left pt-2 opacity-50">Note: Govt ROC Fees will be calculated separately based on capital slab.</div>
-                            </div>
-
-                            <button
-                                onClick={submitApplication}
-                                disabled={isSubmitting}
-                                className="w-full py-5 bg-navy text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-navy/30 hover:bg-black transition-all flex items-center justify-center gap-3 italic"
-                            >
-                                {isSubmitting ? 'PROCESSING CAPITAL CHANGE...' : 'AUTHORIZE SH-7 FILING'}
-                                {!isSubmitting && <ArrowRight size={20} />}
-                            </button>
-                        </div>
-                    </div>
-                );
-
-            default: return null;
-        }
-    }
-
-    // --- MODAL LAYOUT: SPLIT VIEW (Left Sidebar + Right Content) ---
-    return (
-        <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
-            {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
-            <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
-                {/* Background Pattern */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
-
-                <div className="relative z-10 mb-8">
-                    <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
-                        <TrendingUp className="text-[#ED6E3F]" size={20} />
-                        Increase Capital
-                    </h1>
-                    <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
-
-                        <div className="relative z-10">
-                            <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
-                            <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
-                        </div>
-
-                        <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
-                            <div className="flex justify-between items-center text-xs group">
-                                <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
-                                <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between items-center text-xs group">
-                                <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
-                                <span className="text-white font-medium font-mono">₹{Math.max(0, billDetails.total - billDetails.base).toLocaleString()}</span>
-                            </div>
-                            <div className="h-px bg-white/10 my-2"></div>
-                            <div className="flex justify-between items-end">
-                                <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
-                                <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
-                            </div>
-                        </div>
-
-                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
                     </div>
                 </div>
-
-                {/* VERTICAL STEPPER */}
-                <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
-                    {['Capital Info', 'Approvals', 'Documents', 'Payment'].map((step, i) => (
-                        <div key={i}
-                            onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
-                            className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
-                        >
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
-                                {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
-                            </div>
-                            <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+            );
+            case 3: return (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><ClipboardList size={16} /> FILING DOCUMENTS</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {[
+                                { label: 'Board Resolution', key: 'resolution_doc' },
+                                { label: 'Altered MOA', key: 'moa_doc' },
+                                { label: 'EGM Notice', key: 'egm_doc' }
+                            ].map((doc, i) => (
+                                <div key={i} className="border border-dashed p-3 rounded-lg flex justify-between items-center bg-gray-50">
+                                    <span className="text-xs text-gray-600">{doc.label}</span>
+                                    <input type="file" onChange={(e) => handleFileUpload(e, doc.key)} className="text-[10px] w-24" />
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* RIGHT CONTENT: FORM */}
-            <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
-                {/* Header Bar */}
-                <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
-                    <div className="flex flex-col justify-center">
-                        {/* Mobile: Detailed Service & Price Info */}
-                        <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
-                            <div className="flex items-center gap-2 truncate">
-                                <span className="font-bold text-slate-800 text-sm truncate">Increase Capital</span>
-                            </div>
-                            <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
-                                <div className="flex flex-col leading-none">
-                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
-                                    <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
-                                </div>
-                                <div className="w-px h-5 bg-gray-200"></div>
-                                <div className="flex flex-col leading-none">
-                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
-                                    <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.base) / 1000).toFixed(1)}k</span>
-                                </div>
-                                <div className="w-px h-5 bg-gray-200"></div>
-                                <div className="flex flex-col leading-none">
-                                    <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
-                                    <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Desktop: Step Title */}
-                        <h2 className="hidden md:block font-bold text-slate-800 text-lg">
-                            {currentStep === 1 && "Capital Structure"}
-                            {currentStep === 2 && "Meeting Verification"}
-                            {currentStep === 3 && "Document Evidence"}
-                            {currentStep === 4 && "Complete Payment"}
-                        </h2>
                     </div>
-
-                    <button onClick={onClose || (() => navigate(-1))} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
-                        <X size={20} />
+                </div>
+            );
+            case 4: return (
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                    <h2 className="text-xl font-bold text-navy mb-4">Confirm Details</h2>
+                    <div className="p-4 bg-gray-50 rounded-lg space-y-2 text-sm">
+                        <div className="flex justify-between"><span>Plan</span><span className="font-bold text-navy">{plans[selectedPlan]?.title}</span></div>
+                        <div className="flex justify-between"><span>Company</span><span className="font-bold">{formData.companyName}</span></div>
+                        <div className="flex justify-between"><span>Existing Capital</span><span className="font-bold">₹{parseFloat(formData.existingCapital || 0).toLocaleString()}</span></div>
+                        <div className="flex justify-between"><span>Proposed Capital</span><span className="font-bold text-green-600 font-mono">₹{parseFloat(formData.newCapital || 0).toLocaleString()}</span></div>
+                        <div className="flex justify-between"><span>Meeting Date</span><span className="font-bold">{formData.meetingDate}</span></div>
+                    </div>
+                </div>
+            );
+            case 5: return (
+                <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                    <IndianRupee size={32} className="mx-auto mb-4 text-green-600" />
+                    <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                    <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2">
+                        <div className="flex justify-between text-sm"><span>Service Fee</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFee.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total Amount</span><span className="text-green-600">₹{billDetails.total.toLocaleString()}</span></div>
+                    </div>
+                    <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center">
+                        <input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} /> I Accept Terms & Conditions
+                    </label>
+                    <button onClick={submitApplication} disabled={!isTermsAccepted || isSubmitting} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50">
+                        {isSubmitting ? 'Processing...' : 'Pay & Submit'}
                     </button>
                 </div>
+            );
+            default: return null;
+        }
+    };
 
-                {/* Scrollable Area */}
-                <div className="flex-1 overflow-y-auto p-4 md:p-8">
-                    {isSuccess ? (
-                        <div className="text-center py-10">
-                            <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
-                            <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
-                            <p className="text-gray-500 mt-2">Check dashboard for status updates.</p>
-                            <button onClick={onClose || (() => navigate(-1))} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Proceed to Dashboard</button>
+    if (isModal) {
+        return (
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            Increase Capital
+                        </h1>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="text-gray-300">Service Fee</span>
+                                    <span className="text-white font-medium">₹{billDetails.base.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="text-gray-300">Fees & Taxes</span>
+                                    <span className="text-white font-medium">₹{(billDetails.total - billDetails.base).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
+                                </div>
+                            </div>
                         </div>
-                    ) : (
-                        renderStepContent()
-                    )}
+                    </div>
+
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {['Capital Info', 'Meetings', 'Documents', 'Review', 'Payment'].map((step, i) => (
+                            <div key={i}
+                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                            >
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
-                {/* Sticky Footer */}
-                {!isSuccess && (
-                    <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
-                        <button
-                            onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
-                            disabled={currentStep === 1}
-                            className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
-                        >
-                            Back
+                {/* RIGHT CONTENT */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <span className="font-bold text-slate-800 text-sm truncate">Increase Capital</span>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Capital Information"}
+                                {currentStep === 2 && "Meeting Details"}
+                                {currentStep === 3 && "Upload Documents"}
+                                {currentStep === 4 && "Review Application"}
+                                {currentStep === 5 && "Complete Payment"}
+                            </h2>
+                        </div>
+                        <button onClick={onClose || (() => navigate(-1))} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                            <X size={20} />
                         </button>
-                        {currentStep < 4 && (
-                            <button
-                                onClick={handleNext}
-                                className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
-                            >
-                                Save & Continue <ArrowRight size={16} />
-                            </button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                        {isSuccess ? (
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                                <button onClick={onClose || (() => navigate(-1))} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
+                            </div>
+                        ) : (
+                            renderStepContent()
                         )}
                     </div>
-                )}
+
+                    {!isSuccess && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30">Back</button>
+                            {currentStep < 5 && (
+                                <button onClick={handleNext} className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold hover:-translate-y-0.5 transition flex items-center gap-2 text-sm shadow-lg shadow-orange-500/20">
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen pb-20 pt-24 px-4 bg-[#F8F9FA]">
+            <div className="max-w-6xl mx-auto">
+                <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-gray-500 font-bold text-xs uppercase"><ArrowLeft size={14} /> Back</button>
+                <div className="flex gap-8">
+                    <div className="w-72 hidden lg:block space-y-4">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
+                            {['Capital Info', 'Meetings', 'Documents', 'Review', 'Payment'].map((s, i) => (
+                                <div key={i} className={`p-2 rounded ${currentStep === i + 1 ? 'bg-[#043E52] text-white font-bold' : 'text-gray-500'}`}>{s}</div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex-1">
+                        {renderStepContent()}
+                        {!isSuccess && (
+                            <div className="mt-6 flex justify-between items-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                                <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-2 rounded-lg font-bold text-gray-500 hover:bg-gray-50 disabled:opacity-30">Back</button>
+                                <button onClick={handleNext} className="bg-[#ED6E3F] text-white px-8 py-2.5 rounded-xl font-bold shadow-lg shadow-orange-500/10 flex items-center gap-2">Next Step <ArrowRight size={18} /></button>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );

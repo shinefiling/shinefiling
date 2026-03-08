@@ -257,28 +257,28 @@ const PanCorrection = ({ isLoggedIn }) => {
                         <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8 items-center">
+                    <div className="grid md:grid-cols-3 gap-8">
                         {/* PLAN 1: REPRINT */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Reprint Only</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Reprint Only</h3>
                             <p className="text-slate-500 text-sm mb-6">Lost Card? Get Duplicate.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹199</span>
-                                <span className="text-slate-400 line-through text-sm">₹300</span>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹199</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">₹300</span>
                             </div>
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Physical Card Delivery</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> No Changes in Data</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Track Status</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> No Corrections</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('reprint')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Reprint</button>
+                            <button onClick={() => handlePlanSelect('reprint')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Reprint</button>
                         </motion.div>
 
                         {/* PLAN 2: CORRECTION - POPULAR */}
@@ -287,25 +287,25 @@ const PanCorrection = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Data Correction</h3>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Data Correction</h3>
                             <p className="text-gray-400 text-sm mb-6">Name, DOB, Photo, Fathers Name.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹299</span>
-                                <span className="text-gray-500 line-through text-sm">₹500</span>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹299</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹500</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Update Photo & Sign</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Spelling Corrections</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Date of Birth Fix</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> New Card Delivery</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('correction')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Correction</button>
+                            <button onClick={() => handlePlanSelect('correction')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Select Correction</button>
                         </motion.div>
 
                         {/* PLAN 3: MAJOR CHANGE */}
@@ -314,22 +314,22 @@ const PanCorrection = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Major Name Change</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Major Name Change</h3>
                             <p className="text-slate-500 text-sm mb-6">Marriage / Gazette.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹999</span>
-                                <span className="text-slate-400 line-through text-sm">₹1,500</span>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy">₹999</span>
+                                <span className="text-slate-400 line-through text-xs">₹1,500</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Complete Name Change</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Gazette Guidance</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Affidavit Drafting</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Guaranteed Approval</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('major')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Major</button>
+                            <button onClick={() => handlePlanSelect('major')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Major</button>
                         </motion.div>
                     </div>
                 </div>

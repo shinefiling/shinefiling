@@ -117,41 +117,178 @@ const BarLiquorLicensePage = ({ isLoggedIn }) => {
                             </div>
                         </div>
 
-                        {/* Pricing Card - Floating Glass Effect */}
+                        {/* Trust Card - Official Registration */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Excise Support</div>
-                                <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">License Assistance</h3>
-                                    <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹24,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ License</span>
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+                                <div className="flex flex-col items-center justify-center text-center mb-5 mt-2">
+                                    <div className="mb-3 relative">
+                                        <div className="w-14 h-14 rounded-full bg-bronze/10 flex items-center justify-center">
+                                            <Wine size={28} className="text-bronze fill-bronze/20" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle size={14} className="text-green-500 fill-white" />
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">Official <br />Liquor License</h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">State Excise Department</p>
                                 </div>
-                                <div className="space-y-4 mb-8">
-                                    {["Location Feasibility Check", "Excise Application Filing", "Police Verification Support", "Layout Plan Approval", "Dept Liaison"].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                                            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
-                                            <span className="leading-snug">{item}</span>
+                                <div className="h-px w-full bg-slate-100 mb-5"></div>
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    <div className="text-center relative">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <ShieldCheck size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Legit</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Legal <br />Status</p>
+                                        <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Clock size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">1 Yr</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Annual <br />Validity</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-3 mb-6 pl-2">
+                                    {[
+                                        "Excise Portal Filing",
+                                        "Layout Plan Support",
+                                        "Department Liaison"
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="bg-green-100 rounded-full p-1 shrink-0">
+                                                <CheckCircle size={12} className="text-green-600" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-xs tracking-wide">{item}</span>
                                         </div>
                                     ))}
                                 </div>
                                 <button
                                     onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
-                                    className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >View Plans <ArrowRight size={18} /></button>
+                                    className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                >
+                                    Get License <ArrowRight size={16} />
+                                </button>
+                                <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">Compare all plans below</p>
                             </div>
                         </motion.div>
-
                     </div>
                 </div>
             </div>
+
+            {/* --- PRICING SECTION --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-5xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Plan</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Transparent Pricing Plans</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                        <p className="mt-4 text-slate-500 max-w-2xl mx-auto">
+                            End-to-end support for FL-2, FL-3, and Retail Liquor permits.
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {/* Advisory */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">Advisory</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹4,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">EXPERT REVIEW</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1 text-slate-700">
+                                {[
+                                    "Location Feasibility",
+                                    "Document Verification",
+                                    "Distance Norms Check",
+                                    "Excise Process Guide",
+                                    "Financial Pre-requisites"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => window.open('tel:+919910243444', '_self')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Choose Advisory</button>
+                        </motion.div>
+
+                        {/* Standard - New License (Recommended) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Recommended</div>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">New License Filing</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹24,999</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase bg-white/10 px-2 py-1 rounded">STATE PERMIT</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                <li className="text-xs font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Advisory +</li>
+                                {[
+                                    "Excise Portal Application",
+                                    "Structural Change Guidance",
+                                    "Police Verification Aid",
+                                    "Layout Plan Approval",
+                                    "Official Dept Liaison"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('new_license')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm uppercase tracking-wider">Select New License</button>
+                        </motion.div>
+
+                        {/* Premium - Renewal */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">License Renewal</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹9,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">ANNUAL UPDATE</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1 text-slate-700">
+                                <li className="text-xs font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">For Existing Holders +</li>
+                                {[
+                                    "Renewal Form Filing",
+                                    "Stock Audit Check",
+                                    "Tax Clearance Support",
+                                    "Fee Challan Preparation",
+                                    "Prompt Certificate Issue"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('renewal')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm uppercase">Select Renewal</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
 
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -203,39 +340,6 @@ const BarLiquorLicensePage = ({ isLoggedIn }) => {
                                 </div>
                             </li>
                         </ul>
-                    </section>
-
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans">
-                        <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard - Consultation */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Comprehensive</div>
-                                <h3 className="text-xl font-bold text-white mb-2">License Filing</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹24,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees (Actuals)</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Application Drafting</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Layout Approval Support</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Dept End-to-End Liaison</li>
-                                </ul>
-                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Assist</button>
-                            </div>
-
-                            {/* Renewal */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Renewal</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹9,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Renewal Filing</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Tax Clearance Assist</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Update Validty</li>
-                                </ul>
-                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Renewal</button>
-                            </div>
-                        </div>
                     </section>
 
                     {/* FAQs */}

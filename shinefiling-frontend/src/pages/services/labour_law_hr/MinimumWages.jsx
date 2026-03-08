@@ -185,44 +185,97 @@ const MinimumWages = ({ isLoggedIn }) => {
                         <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
                         <div className="grid md:grid-cols-3 gap-6">
                             {/* Notice Reply */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Notice Reply</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹999</div>
-                                <p className="text-xs text-slate-400 mb-6">Per Notice</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Legal Drafting</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Representation</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Defense Strategy</li>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.1 }}
+                                className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                            >
+                                <h3 className="text-lg font-bold text-navy mb-2">Notice Reply</h3>
+                                <p className="text-slate-500 text-sm mb-6">Expert Legal Drafting.</p>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹999</span>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">PER NOTICE</span>
+                                </div>
+
+                                <ul className="space-y-3 mb-6 flex-1">
+                                    {[
+                                        "Legal Drafting",
+                                        "Representation Support",
+                                        "Defense Strategy",
+                                        "Penalty Mitigation"
+                                    ].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm">
+                                            <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                        </li>
+                                    ))}
                                 </ul>
-                                <button onClick={() => handlePlanSelect('notice')} className="w-full py-3 rounded-xl border-2 border-[#043E52] text-navy font-bold hover:bg-navy hover:text-white transition">Get Help</button>
-                            </div>
+                                <button onClick={() => handlePlanSelect('notice')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Get Help</button>
+                            </motion.div>
 
                             {/* Subscription */}
-                            <div className="bg-[#043E52] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Annual</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Subscription</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹4,999</div>
-                                <p className="text-xs text-gray-400 mb-6">/ Year</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Rate Revision Alerts</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Quarterly Audits</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Priority Support</li>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2 }}
+                                className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
+                            >
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                                <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Strongly Recommended</div>
+
+                                <h3 className="text-lg font-bold text-white mb-2 mt-1">Annual Retainer</h3>
+                                <p className="text-gray-400 text-sm mb-6">Continuous Monitoring.</p>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="text-3xl font-black text-white">₹4,999</span>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase bg-white/10 px-2 py-1 rounded">YEARLY</span>
+                                </div>
+
+                                <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                    {[
+                                        "Rate Revision Alerts",
+                                        "Quarterly Audits",
+                                        "Priority Support",
+                                        "Compliance Report"
+                                    ].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm">
+                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                        </li>
+                                    ))}
                                 </ul>
-                                <button onClick={() => document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Subscribe</button>
-                            </div>
+                                <button onClick={() => handlePlanSelect('subscription')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Subscribe Now</button>
+                            </motion.div>
 
                             {/* Audit */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Wage Audit</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹1,999</div>
-                                <p className="text-xs text-slate-400 mb-6">One Time</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Detailed Wage Sheet Audit</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Gap Analysis</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Compliance Report</li>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.3 }}
+                                className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                            >
+                                <h3 className="text-lg font-bold text-navy mb-2">Wage Audit</h3>
+                                <p className="text-slate-500 text-sm mb-6">Ad-hoc Compliance Check.</p>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹1,999</span>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">AUDIT</span>
+                                </div>
+
+                                <ul className="space-y-3 mb-6 flex-1">
+                                    {[
+                                        "Detailed Audit",
+                                        "Gap Analysis",
+                                        "Compliance Report",
+                                        "Risk Assessment"
+                                    ].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm">
+                                            <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                        </li>
+                                    ))}
                                 </ul>
-                                <button onClick={() => handlePlanSelect('audit')} className="w-full py-3 rounded-xl border-2 border-[#043E52] text-navy font-bold hover:bg-navy hover:text-white transition">Select Audit</button>
-                            </div>
+                                <button onClick={() => handlePlanSelect('audit')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Audit</button>
+                            </motion.div>
                         </div>
                     </section>
 
@@ -273,7 +326,7 @@ const MinimumWages = ({ isLoggedIn }) => {
                 </div>
 
             </div>
-        
+
             <AnimatePresence>
                 {showRegisterModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
@@ -302,7 +355,7 @@ const MinimumWages = ({ isLoggedIn }) => {
                     setShowRegisterModal(true);
                 }}
             />
-</div>
+        </div>
     );
 };
 

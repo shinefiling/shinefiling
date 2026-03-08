@@ -2,7 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Briefcase, Calendar, CheckCircle, ChevronRight, Clock,
-    DollarSign, FileText, Filter, MoreVertical, Plus, Search,
+    IndianRupee, FileText, Filter, MoreVertical, Plus, Search,
     TrendingUp, User, X, Zap, Shield, List, Eye
 } from 'lucide-react';
 import { getOpenBiddingRequests, submitCaBid, getCaBids } from '../../../api';
@@ -167,7 +167,7 @@ const CaOpportunities = ({ setActiveTab }) => {
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                                            <DollarSign size={14} className="text-emerald-500" />
+                                            <IndianRupee size={14} className="text-emerald-500" />
                                             <span>Max Budget: <span className="font-bold text-slate-800 dark:text-white">₹{op.boundAmount?.toLocaleString()}</span></span>
                                         </div>
                                         <div className="pt-3 border-t border-slate-100 dark:border-slate-700">

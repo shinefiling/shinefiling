@@ -9,7 +9,6 @@ const MODULES = [
     { id: 'order_mgmt', label: 'Orders & Applications' },
     { id: 'financials', label: 'Financials & Payments' },
     { id: 'reports', label: 'Reports & Analytics' },
-    { id: 'ai_mgmt', label: 'Automation & AI' },
     { id: 'file_manager', label: 'File Manager (Server)' },
     { id: 'content_mod', label: 'Content Moderation' },
     { id: 'logs', label: 'Audit Logs & Security' },

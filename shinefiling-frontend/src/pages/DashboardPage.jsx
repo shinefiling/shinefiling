@@ -231,12 +231,11 @@ const DashboardPage = ({ onLogout }) => {
                         transition={{ duration: 0.3, ease: 'easeOut' }}
                         className={`fixed inset-y-0 left-0 w-[280px] bg-white dark:bg-[#043E52] z-50 flex flex-col shadow-xl md:shadow-md border-r border-slate-200 dark:border-white/5 ${isSidebarOpen ? 'block' : 'hidden md:flex'}`}
                     >
-                        <div className="h-20 flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5">
-                            <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.href = '/'}>
-                                <img src="/logo.png" alt="ShineFiling" className="h-8 w-auto object-contain" />
-                                <span className="text-xl font-bold tracking-tight text-[#043E52] dark:text-white">Shine<span className="text-[#ED6E3F]">Filing</span></span>
+                        <div className="h-32 flex items-center justify-center px-6 border-b border-slate-100 dark:border-white/5 relative">
+                            <div className="flex items-center cursor-pointer" onClick={() => window.location.href = '/'}>
+                                <img src="/logo.png" alt="ShineFiling" className="h-24 w-auto object-contain" />
                             </div>
-                            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-[#ED6E3F]"><X size={20} /></button>
+                            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden absolute right-4 text-slate-400 hover:text-[#ED6E3F]"><X size={20} /></button>
                         </div>
 
                         <div className="flex-1 overflow-y-auto py-6 space-y-1 no-scrollbar">

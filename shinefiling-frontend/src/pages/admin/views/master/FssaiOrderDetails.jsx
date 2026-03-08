@@ -2,7 +2,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
-    FileText, CheckCircle, XCircle, Play, Download, Upload,
+    FileText, CheckCircle, XCircle, Upload,
     Calendar, AlertTriangle, ArrowLeft, Loader2, Shield,
     Building2, MapPin, User, Phone, Mail, Clock, FileCheck,
     ChevronRight, ExternalLink, RefreshCw, LayoutGrid
@@ -86,19 +86,6 @@ const FssaiOrderDetails = () => {
         }
     };
 
-    const handleStartAutomation = async () => {
-        setActionLoading(true);
-        try {
-            await axios.post(`${API_URL}/${orderId}/start-automation`);
-            fetchData();
-            alert("Automation engine started successfully.");
-        } catch (err) {
-            console.error(err);
-            alert("Failed to start automation");
-        } finally {
-            setActionLoading(false);
-        }
-    };
 
     const handleSubmitGovt = async () => {
         if (!govDetails.arn) return alert("Please enter ARN Number");
@@ -149,9 +136,8 @@ const FssaiOrderDetails = () => {
         </div>
     );
 
-    const allVerified = docs.every(d => d.status === 'VERIFIED');
-    const isReadyForAutomation = allVerified;
-    const isReadyForGovt = genDocs.length > 0;
+    const allVerified = docs.length > 0 && docs.every(d => d.status === 'VERIFIED');
+    const isReadyForGovt = allVerified;
 
     return (
         <div className="min-h-screen bg-[#F0F4F8] font-sans pb-12">
@@ -194,9 +180,8 @@ const FssaiOrderDetails = () => {
                             {[
                                 { id: 1, label: "Application", status: "completed" },
                                 { id: 2, label: "Verification", status: allVerified ? "completed" : "active" },
-                                { id: 3, label: "Automation", status: isReadyForGovt ? "completed" : (allVerified ? "active" : "pending") },
-                                { id: 4, label: "Govt Submission", status: order.status === 'GOVT_SUBMITTED' ? "completed" : (isReadyForGovt ? "active" : "pending") },
-                                { id: 5, label: "Completion", status: order.status === 'COMPLETED' ? "completed" : "pending" }
+                                { id: 3, label: "Govt Submission", status: order.status === 'GOVT_SUBMITTED' ? "completed" : (allVerified ? "active" : "pending") },
+                                { id: 4, label: "Completion", status: order.status === 'COMPLETED' ? "completed" : "pending" }
                             ].map((step, idx, arr) => (
                                 <div key={step.id} className="flex items-center flex-1 last:flex-none">
                                     <div className="flex flex-col items-center relative z-10">
@@ -258,40 +243,6 @@ const FssaiOrderDetails = () => {
                                 </div>
                             </div>
 
-                            {/* Automation Section */}
-                            <div className={`bg-white p-6 rounded-2xl border ${!allVerified ? 'border-dashed border-slate-300' : 'border-[#ED6E3F]/20 bg-[#FDFBF7]'}`}>
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="font-bold text-[#043E52] flex items-center gap-2">
-                                        <Play className={isReadyForAutomation ? "text-[#ED6E3F]" : "text-slate-300"} size={20} />
-                                        Automation & Filing
-                                    </h3>
-                                    {!allVerified && <span className="text-xs text-orange-500 font-bold bg-orange-50 px-2 py-1 rounded">Verify all docs first</span>}
-                                </div>
-
-                                {genDocs.length > 0 ? (
-                                    <div className="space-y-3">
-                                        <div className="flex items-center p-3 bg-white rounded-lg border border-indigo-100 shadow-sm">
-                                            <div className="w-10 h-10 rounded-lg bg-red-50 text-red-500 flex items-center justify-center mr-3"><FileText size={20} /></div>
-                                            <div className="flex-1">
-                                                <p className="font-bold text-slate-700 text-sm">Form A / B (Generated)</p>
-                                                <p className="text-[10px] text-slate-400">Ready for submission</p>
-                                            </div>
-                                            <button onClick={() => downloadFile('#')} className="text-indigo-600 hover:bg-indigo-50 p-2 rounded-lg"><Download size={18} /></button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-8">
-                                        <p className="text-[#3D4D55] text-sm mb-4">Once documents are verified, start automation to generate Form A/B.</p>
-                                        <button
-                                            disabled={!allVerified || actionLoading}
-                                            onClick={handleStartAutomation}
-                                            className="px-6 py-2.5 bg-[#043E52] text-white font-bold rounded-xl shadow-lg shadow-[#043E52]/20 hover:bg-[#ED6E3F] transition disabled:opacity-50 disabled:shadow-none"
-                                        >
-                                            {actionLoading ? <Loader2 className="animate-spin" /> : "Start Automation Engine"}
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
                         </div>
                     )}
 

@@ -237,33 +237,28 @@ const CopyrightRegistrationPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Consultation</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Consultation</h3>
                             <p className="text-slate-500 text-sm mb-6">Review & Classification.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹999</span>
-                                <span className="text-slate-400 line-through text-sm">₹1,500</span>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">₹1,500</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 {[
                                     "Copyrightability Assessment",
                                     "Work Classification",
                                     "Document Verification",
                                     "Expert Advice"
                                 ].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
-                                <li className="flex items-center gap-3 text-sm text-slate-400">
-                                    <Zap size={16} className="shrink-0" /> No Filing
-                                </li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('consultation')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
-                                Book Consult
-                            </button>
+                            <button onClick={() => handlePlanSelect('consultation')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Book Consult</button>
                         </motion.div>
 
                         {/* PLAN 2: STANDARD (POPULAR) */}
@@ -272,37 +267,32 @@ const CopyrightRegistrationPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
-                                Most Common
-                            </div>
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Common</div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Literary / Artistic</h3>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Literary / Artistic</h3>
                             <p className="text-gray-400 text-sm mb-6">Books, Art, Software, Logos.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹2,999</span>
-                                <span className="text-gray-500 line-through text-sm">₹5,000</span>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹2,999</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹5,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
                                 {[
                                     "Filing Form XIV",
                                     "Statement of Particulars",
-                                    "Statement of Further Particulars",
+                                    "Further Particulars",
                                     "Copyright Diary No.",
-                                    "Priority Filing Team",
-                                    "Govt Fee Extra"
+                                    "Priority Filing Team"
                                 ].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-200">
-                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> {feat}
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard_copyright')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">
-                                Select & File
-                            </button>
+                            <button onClick={() => handlePlanSelect('standard_copyright')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Select & File</button>
                         </motion.div>
 
                         {/* PLAN 3: COMPLEX */}
@@ -311,32 +301,29 @@ const CopyrightRegistrationPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-bronze/30 transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Sound / Cinema</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Sound / Cinema</h3>
                             <p className="text-slate-500 text-sm mb-6">Films & Music Recordings.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹6,999</span>
-                                <span className="text-slate-400 line-through text-sm">₹12,000</span>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy border-b-2 border-slate-100">₹6,999</span>
+                                <span className="text-slate-400 line-through text-xs">₹12,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 {[
                                     "Complex Form Processing",
-                                    "Sample Submission Support",
+                                    "Sample Submission",
                                     "NOC Drafting",
                                     "Registry Liaison",
-                                    "Expedited Handling",
-                                    "Govt Fee Extra"
+                                    "Expedited Handling"
                                 ].map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
-                                        <CheckCircle size={16} className="text-green-500 shrink-0" /> {feat}
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
                                     </li>
                                 ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('sound_cinema')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">
-                                Select Media
-                            </button>
+                            <button onClick={() => handlePlanSelect('sound_cinema')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Media</button>
                         </motion.div>
                     </div>
                 </div>

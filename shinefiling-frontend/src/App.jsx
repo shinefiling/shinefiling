@@ -6,6 +6,9 @@ import ServicesPage from './pages/ServicesPage';
 import AboutUsPage from './pages/AboutUsPage';
 import CareersPage from './pages/CareersPage';
 import ContactUsPage from './pages/ContactUsPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
+import RefundPage from './pages/RefundPage';
 import AuthContext from './context/AuthContext';
 
 // --- SEPARATE SERVICE PAGES ---
@@ -283,7 +286,14 @@ import FssaiOrderDetails from './pages/admin/views/master/FssaiOrderDetails';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Loader from './components/Loader';
-import ChatWidget from './components/ChatWidget';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
 
 const App = () => {
   // Lazy Init to prevent flash of login redirect
@@ -363,6 +373,7 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={{ user, login: handleLogin, logout: handleLogout, isLoggedIn }}>
+      <ScrollToTop />
       {initialLoading && <Loader text="Loading ShineFiling..." fullScreen={true} />}
       {!initialLoading && (
         <div className="flex flex-col min-h-screen">
@@ -373,6 +384,9 @@ const App = () => {
               <Route path="/about-us" element={<AboutUsPage />} />
               <Route path="/contact-us" element={<ContactUsPage />} />
               <Route path="/careers" element={<CareersPage />} />
+              <Route path="/terms-and-conditions" element={<TermsPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPage />} />
+              <Route path="/refund-policy" element={<RefundPage />} />
 
               {/* Auth Redirects */}
               <Route path="/login" element={<Navigate to="/?login=true" replace />} />
@@ -687,13 +701,6 @@ const App = () => {
             </Routes>
           </div>
           {!shouldHideNavAndFooter && <Footer />}
-          {/* Global Chat Widget - Hidden for Admins & on Admin Routes */}
-          {!location.pathname.startsWith('/admin') && user?.role !== 'SUPER_ADMIN' && (
-            <ChatWidget
-              role={user?.role === 'AGENT' ? 'AGENT' : 'CLIENT'}
-              userName={user?.fullName || 'Guest'}
-            />
-          )}
         </div>
       )}
     </AuthContext.Provider>

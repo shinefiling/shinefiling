@@ -263,22 +263,22 @@ const DINDSCCorrection = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">DSC Renewal</h3>
-                            <p className="text-slate-500 text-sm mb-6">Class 3 Signing.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹1,499</span>
-                                <span className="text-slate-400 line-through text-sm">₹2,500</span>
+                            <h3 className="text-lg font-bold text-navy mb-2">DIN/DSC Update</h3>
+                            <p className="text-slate-500 text-sm mb-6">Contact Details.</p>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">₹1,500</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> 2 Years Validity</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> USB Token Included</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Video Verification</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Free Delivery</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('dsc')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select DSC</button>
+                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Basic</button>
                         </motion.div>
 
                         {/* PLAN 2: KYC - POPULAR */}
@@ -287,25 +287,25 @@ const DINDSCCorrection = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">DIR-3 KYC</h3>
-                            <p className="text-gray-400 text-sm mb-6">Annual Director Filing.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹999</span>
-                                <span className="text-gray-500 line-through text-sm">₹2,000</span>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">DIN KYC</h3>
+                            <p className="text-gray-400 text-sm mb-6">Annual Reactivation.</p>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹1,499</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹2,500</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Web KYC Filing</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Email/Mobile Update</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> CA Certification</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Avoid 5000 Penalty</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('kyc')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select KYC</button>
+                            <button onClick={() => handlePlanSelect('kyc')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Select KYC</button>
                         </motion.div>
 
                         {/* PLAN 3: COMBO */}
@@ -314,22 +314,22 @@ const DINDSCCorrection = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Combo Pack</h3>
-                            <p className="text-slate-500 text-sm mb-6">DSC + KYC Filing.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹2,299</span>
-                                <span className="text-slate-400 line-through text-sm">₹4,500</span>
+                            <h3 className="text-lg font-bold text-navy mb-2">Full Modification</h3>
+                            <p className="text-slate-500 text-sm mb-6">Name / Address Change.</p>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy">₹2,499</span>
+                                <span className="text-slate-400 line-through text-xs">₹4,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> New Class 3 DSC (2 Yrs)</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> DIR-3 KYC Filing</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Priority Processing</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Best Value Deal</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('combo')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Combo</button>
+                            <button onClick={() => handlePlanSelect('modification')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Modification</button>
                         </motion.div>
                     </div>
                 </div>

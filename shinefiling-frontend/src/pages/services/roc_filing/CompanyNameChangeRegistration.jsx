@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -14,8 +14,8 @@ const validatePlan = (plan) => {
 
 const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
     const plans = {
-        standard: { price: 5999, title: 'Identity Refresh', icon: Award },
-        premium: { price: 8999, title: 'Full Brand Overhaul', icon: Briefcase }
+        standard: { price: 5999, title: 'Standard Plan' },
+        premium: { price: 8999, title: 'Rebranding Kit' }
     };
 
     const [searchParams] = useSearchParams();
@@ -33,6 +33,8 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
     }, [planParam, planProp, selectedPlan]);
 
     const [formData, setFormData] = useState({
+        userEmail: '',
+        userPhone: '',
         companyName: '',
         cin: '',
         reasonForChange: '',
@@ -43,7 +45,9 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
 
     const [uploadedFiles, setUploadedFiles] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [automationPayload, setAutomationPayload] = useState(null);
     const [errors, setErrors] = useState({});
 
     const billDetails = useMemo(() => {
@@ -72,6 +76,11 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
         const newErrors = {};
         let isValid = true;
         if (step === 1) {
+            const storedUser = localStorage.getItem('user');
+            if (!isLoggedIn && !storedUser) {
+                if (!formData.userEmail) { newErrors.userEmail = "Required"; isValid = false; }
+                if (!formData.userPhone) { newErrors.userPhone = "Required"; isValid = false; }
+            }
             if (!formData.companyName) { newErrors.companyName = "Required"; isValid = false; }
             if (!formData.cin) { newErrors.cin = "Required"; isValid = false; }
             if (!formData.reasonForChange) { newErrors.reasonForChange = "Required"; isValid = false; }
@@ -84,7 +93,7 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
 
     const handleNext = () => {
         if (validateStep(currentStep)) {
-            setCurrentStep(prev => Math.min(4, prev + 1));
+            setCurrentStep(prev => Math.min(5, prev + 1));
         }
     };
 
@@ -109,13 +118,15 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
             const finalPayload = {
                 submissionId: `RUN-APP-${Date.now()}`,
                 plan: selectedPlan,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.userEmail,
+                userPhone: JSON.parse(localStorage.getItem('user'))?.phone || formData.userPhone,
                 formData: formData,
                 documents: docsList,
                 amountPaid: billDetails.total,
                 status: "PAYMENT_SUCCESSFUL"
             };
-            await submitCompanyNameChange(finalPayload);
+            const response = await submitCompanyNameChange(finalPayload);
+            setAutomationPayload(response);
             setIsSuccess(true);
         } catch (error) {
             alert("Submission error: " + error.message);
@@ -128,24 +139,23 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
         switch (currentStep) {
             case 1:
                 return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <Building2 size={16} className="text-[#ED6E3F]" /> CURRENT IDENTITY
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Active CIN</label>
-                                    <input type="text" name="cin" value={formData.cin} onChange={handleInputChange} placeholder="U12345MH..." maxLength={21} className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl font-mono uppercase text-sm" />
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            {(!isLoggedIn && !localStorage.getItem('user')) && (
+                                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3 pb-6 border-b border-gray-100">
+                                    <h3 className="md:col-span-2 font-bold text-slate-800 mb-1 text-sm flex items-center gap-2"><User size={16} /> CONTACT DETAILS</h3>
+                                    <input name="userEmail" value={formData.userEmail} onChange={handleInputChange} placeholder="Email Address" className={`p-2 text-sm border rounded-lg ${errors.userEmail ? 'border-red-500' : ''}`} />
+                                    <input name="userPhone" value={formData.userPhone} onChange={handleInputChange} placeholder="Phone Number" className={`p-2 text-sm border rounded-lg ${errors.userPhone ? 'border-red-500' : ''}`} />
                                 </div>
+                            )}
+                            <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><Building2 size={16} /> CURRENT IDENTITY</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <input name="cin" value={formData.cin} onChange={handleInputChange} placeholder="Active CIN" className={`md:col-span-2 p-2 text-sm border rounded-lg ${errors.cin ? 'border-red-500' : ''}`} />
+                                <input name="companyName" value={formData.companyName} onChange={handleInputChange} placeholder="Existing Company Name" className={`md:col-span-2 p-2 text-sm border rounded-lg ${errors.companyName ? 'border-red-500' : ''}`} />
                                 <div className="space-y-1 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Existing Company Name</label>
-                                    <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} placeholder="As per current records" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl font-bold text-sm" />
-                                </div>
-                                <div className="space-y-1 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Rationale for Rebrand</label>
-                                    <select name="reasonForChange" value={formData.reasonForChange} onChange={handleInputChange} className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-sm font-bold">
-                                        <option value="">-- SELECT REASON --</option>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Rationale for Rebrand</p>
+                                    <select name="reasonForChange" value={formData.reasonForChange} onChange={handleInputChange} className="w-full p-2 text-sm border rounded-lg bg-white">
+                                        <option value="">-- Select Reason --</option>
                                         <option value="Voluntary Rebranding">Market Refresh / Rebranding</option>
                                         <option value="Change in Activity">Pivoting Business Direction</option>
                                         <option value="New Management">Strategic Ownership Shift</option>
@@ -159,26 +169,21 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
 
             case 2:
                 return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <Award size={16} className="text-[#ED6E3F]" /> NOMENCLATURE PREFERENCE
-                            </h3>
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><Award size={16} /> NOMENCLATURE PREFERENCE</h3>
                             <div className="space-y-4">
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Choice Alpha (Primary)</label>
-                                    <input type="text" name="proposedName1" value={formData.proposedName1} onChange={handleInputChange} placeholder="Preferred Target Name" className="w-full p-4 bg-navy/5 border border-navy/10 rounded-2xl text-[11px] font-black text-navy uppercase tracking-widest" />
-                                    <p className="text-[10px] text-gray-400 px-1 mt-1">Must terminate with 'Private Limited' or 'Limited'.</p>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Choice Alpha (Primary)</p>
+                                    <input name="proposedName1" value={formData.proposedName1} onChange={handleInputChange} placeholder="Preferred Target Name" className="w-full p-2 text-sm border-2 border-[#043E52]/10 rounded-lg bg-white uppercase font-bold" />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Choice Beta (Fallback)</label>
-                                    <input type="text" name="proposedName2" value={formData.proposedName2} onChange={handleInputChange} placeholder="Secondary Alternative" className="w-full p-4 bg-slate-50 border border-gray-200 rounded-2xl text-[11px] font-bold text-slate-500 uppercase tracking-widest" />
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Choice Beta (Fallback)</p>
+                                    <input name="proposedName2" value={formData.proposedName2} onChange={handleInputChange} placeholder="Secondary Alternative" className="w-full p-2 text-sm border rounded-lg bg-gray-50 uppercase" />
                                 </div>
-                                <div className="p-4 bg-orange-50 rounded-xl border border-orange-100 flex items-start gap-3">
-                                    <AlertTriangle size={18} className="text-orange-600 mt-0.5" />
-                                    <p className="text-xs font-medium text-orange-700 leading-relaxed uppercase tracking-wider">
-                                        Note: We execute RUN Filing to secure the name. If ROC rejects both, additional cycles may apply.
-                                    </p>
+                                <div className="p-3 bg-orange-50 rounded-lg border border-orange-100 flex items-center gap-2 text-orange-700">
+                                    <AlertTriangle size={14} />
+                                    <p className="text-[10px] uppercase font-bold">Must terminate with 'Private Limited' or 'Limited'.</p>
                                 </div>
                             </div>
                         </div>
@@ -188,30 +193,16 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
             case 3:
                 return (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm font-poppins text-navy">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <ClipboardList size={16} className="text-[#ED6E3F]" /> STATUTORY ARTIFACTS
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.resolution ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
-                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><FileText size={24} /></div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest">Board Authorization</p>
-                                    <label className="cursor-pointer">
-                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${uploadedFiles.resolution ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
-                                            {uploadedFiles.resolution ? 'Active' : 'Upload CTC'}
-                                        </span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'resolution')} />
-                                    </label>
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><ClipboardList size={16} /> STATUTORY ARTIFACTS</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="border border-dashed p-3 rounded-lg flex justify-between items-center bg-gray-50">
+                                    <span className="text-xs text-gray-600">Board Authorization</span>
+                                    <input type="file" onChange={(e) => handleFileUpload(e, 'resolution')} className="text-[10px] w-24" />
                                 </div>
-                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.trademark ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
-                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><Shield size={24} /></div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest">Trademark NOC (If Any)</p>
-                                    <label className="cursor-pointer">
-                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${uploadedFiles.trademark ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
-                                            {uploadedFiles.trademark ? 'Active' : 'Upload Copy'}
-                                        </span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'trademark')} />
-                                    </label>
+                                <div className="border border-dashed p-3 rounded-lg flex justify-between items-center bg-gray-50">
+                                    <span className="text-xs text-gray-600">Trademark NOC</span>
+                                    <input type="file" onChange={(e) => handleFileUpload(e, 'trademark')} className="text-[10px] w-24" />
                                 </div>
                             </div>
                         </div>
@@ -220,42 +211,41 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
 
             case 4:
                 return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
-                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 text-center relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                            <div className="w-20 h-20 bg-orange-50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 text-orange-600 shadow-3xl shadow-orange-500/10 rotate-3">
-                                <CreditCard size={32} />
-                            </div>
-                            <h2 className="text-2xl font-black text-navy mb-2 tracking-tight uppercase">Identity Settlement</h2>
-                            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-8 opacity-60">INC-24 & RUN Statutory Service Charge</p>
-
-                            <div className="bg-slate-50 p-8 rounded-3xl mb-8 space-y-4 text-sm border-2 border-white shadow-inner">
-                                <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    <span>Plan Category</span>
-                                    <span className="px-4 py-1.5 bg-navy text-white rounded-full">{plans[selectedPlan].title}</span>
-                                </div>
-                                <div className="h-px bg-slate-200"></div>
-                                <div className="flex justify-between text-2xl font-black text-navy">
-                                    <span className="text-[10px] self-end mb-1 text-slate-400 font-bold">DISPATCH TOTAL</span>
-                                    <span>₹{billDetails.total.toLocaleString()}</span>
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={submitApplication}
-                                disabled={isSubmitting}
-                                className="w-full py-5 bg-navy text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-3xl shadow-navy/30 hover:bg-black transition-all flex items-center justify-center gap-3"
-                            >
-                                {isSubmitting ? 'PROCESSING REBRAND...' : 'AUTHORIZE NAME EVOLUTION'}
-                                {!isSubmitting && <ArrowRight size={20} />}
-                            </button>
+                    <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                        <h2 className="text-xl font-bold text-navy mb-4">Confirm Details</h2>
+                        <div className="p-4 bg-gray-50 rounded-lg space-y-2 text-sm">
+                            <div className="flex justify-between"><span>Plan</span><span className="font-bold text-navy">{plans[selectedPlan]?.title}</span></div>
+                            <div className="flex justify-between"><span>Company</span><span className="font-bold">{formData.companyName}</span></div>
+                            <div className="flex justify-between"><span>Proposed Name</span><span className="font-bold text-orange-600">{formData.proposedName1}</span></div>
+                            <div className="flex justify-between"><span>Reason</span><span className="font-bold">{formData.reasonForChange}</span></div>
                         </div>
                     </div>
                 );
 
+            case 5:
+                return (
+                    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                        <IndianRupee size={32} className="mx-auto mb-4 text-green-600" />
+                        <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                        <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2">
+                            <div className="flex justify-between text-sm"><span>Service Fee</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFee.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
+                        </div>
+                        <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center">
+                            <input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} />
+                            I Accept Terms & Conditions
+                        </label>
+                        <button onClick={submitApplication} disabled={!isTermsAccepted || isSubmitting} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50">
+                            {isSubmitting ? 'Processing...' : 'Pay & Submit'}
+                        </button>
+                    </div>
+                );
             default: return null;
         }
-    }
+    };
 
     // --- MODAL LAYOUT: SPLIT VIEW (Left Sidebar + Right Content) ---
     return (
@@ -267,7 +257,7 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
 
                 <div className="relative z-10 mb-8">
                     <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
-                        <Award className="text-[#ED6E3F]" size={20} />
+                        <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
                         Name Change
                     </h1>
                     <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
@@ -300,7 +290,7 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
 
                 {/* VERTICAL STEPPER */}
                 <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
-                    {['Entity Context', 'Naming Options', 'Documents', 'Payment'].map((step, i) => (
+                    {['Entity Context', 'Naming Options', 'Documents', 'Review', 'Payment'].map((step, i) => (
                         <div key={i}
                             onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
                             className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
@@ -346,8 +336,9 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
                         <h2 className="hidden md:block font-bold text-slate-800 text-lg">
                             {currentStep === 1 && "Identity Context"}
                             {currentStep === 2 && "Naming Blueprint"}
-                            {currentStep === 3 && "Verified Documents"}
-                            {currentStep === 4 && "Complete Payment"}
+                            {currentStep === 3 && "Document Evidence"}
+                            {currentStep === 4 && "Review Application"}
+                            {currentStep === 5 && "Complete Payment"}
                         </h2>
                     </div>
 
@@ -362,8 +353,8 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
                         <div className="text-center py-10">
                             <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
                             <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
-                            <p className="text-gray-500 mt-2">Check dashboard for status updates.</p>
-                            <button onClick={onClose || (() => navigate(-1))} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Proceed to Dashboard</button>
+                            <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                            <button onClick={onClose || (() => navigate(-1))} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
                         </div>
                     ) : (
                         renderStepContent()
@@ -380,7 +371,7 @@ const CompanyNameChangeRegistration = ({ isLoggedIn, isModal = false, planProp, 
                         >
                             Back
                         </button>
-                        {currentStep < 4 && (
+                        {currentStep < 5 && (
                             <button
                                 onClick={handleNext}
                                 className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"

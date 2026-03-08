@@ -3,15 +3,15 @@ package com.shinefiling.common.controller;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
-import com.shinefiling.licenses.model.FssaiApplication;
-import com.shinefiling.licenses.service.FssaiService;
-
+import com.shinefiling.common.model.ServiceRequest;
+import com.shinefiling.common.repository.ServiceRequestRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/payment")
@@ -19,10 +19,10 @@ import java.util.Map;
 public class PaymentController {
 
     @Autowired
-    private FssaiService fssaiService;
+    private ServiceRequestRepository serviceRequestRepository;
 
     private final String KEY_ID = "rzp_test_v9bZpQvmrVnUzZ";
-    private final String KEY_SECRET = "7WK71mMmiIYb4ZLi4Mcw1eDl"; // Using provided keys
+    private final String KEY_SECRET = "7WK71mMmiIYb4ZLi4Mcw1eDl";
 
     @PostMapping("/create-order")
     public ResponseEntity<?> createOrder(@RequestBody Map<String, Object> data) {
@@ -38,7 +38,7 @@ public class PaymentController {
 
             Order order = razorpay.orders.create(orderRequest);
 
-            return ResponseEntity.ok(order.toString()); // Returns the full order object as string JSON
+            return ResponseEntity.ok(order.toString());
 
         } catch (RazorpayException e) {
             return ResponseEntity.badRequest().body("Error creating Razorpay order: " + e.getMessage());
@@ -49,9 +49,21 @@ public class PaymentController {
 
     @GetMapping("/invoice/{submissionId}")
     public ResponseEntity<?> getInvoice(@PathVariable String submissionId) {
-        FssaiApplication app = fssaiService.getApplication(submissionId);
-        if (app == null)
+        // Handle submissionId which might be ORD-ID or just ID
+        Long id = null;
+        try {
+            id = Long.parseLong(submissionId.replace("ORD-", ""));
+        } catch (Exception e) {
+        }
+
+        if (id == null)
             return ResponseEntity.notFound().build();
+
+        Optional<ServiceRequest> opt = serviceRequestRepository.findById(id);
+        if (!opt.isPresent())
+            return ResponseEntity.notFound().build();
+
+        ServiceRequest app = opt.get();
 
         String html = "<html><head><title>Invoice " + submissionId + "</title>"
                 + "<style>body{font-family:Arial,sans-serif;padding:40px;max-width:800px;margin:auto;}"
@@ -68,37 +80,35 @@ public class PaymentController {
                 + "<div class='invoice-details'>"
                 + "<h1>INVOICE</h1>"
                 + "<p>Date: "
-                + (app.getUpdatedAt() != null ? app.getUpdatedAt().toLocalDate() : java.time.LocalDate.now())
+                + (app.getCreatedAt() != null ? app.getCreatedAt().toLocalDate() : java.time.LocalDate.now())
                 + "</p>"
-                + "<p>Invoice #: " + submissionId + "</p>"
+                + "<p>Invoice #: ORD-" + app.getId() + "</p>"
                 + "</div>"
                 + "</div>"
 
                 + "<div class='bill-to'>"
                 + "<h3>Bill To:</h3>"
-                + "<p>" + (app.getApplicantName() != null ? app.getApplicantName() : "Valued Customer") + "</p>"
-                + "<p>" + (app.getBusinessName() != null ? app.getBusinessName() : "") + "</p>"
-                + "<p>" + (app.getAddress() != null ? app.getAddress() : "") + "</p>"
-                + "<p>" + (app.getEmail() != null ? app.getEmail() : "") + "</p>"
+                + "<p>" + (app.getUser() != null ? app.getUser().getFullName() : "Valued Customer") + "</p>"
+                + "<p>" + (app.getUser() != null ? app.getUser().getEmail() : "") + "</p>"
                 + "</div>"
 
                 + "<table style='margin-top:30px;'>"
                 + "<thead><tr style='background:#f9f9f9;'><th>Description</th><th>Qty</th><th>Price</th></tr></thead>"
                 + "<tbody>"
-                + "<tr><td>FSSAI Registration - " + app.getLicenseType() + "</td><td>1</td><td>₹" + app.getAmountPaid()
+                + "<tr><td>" + app.getServiceName() + " Filing</td><td>1</td><td>₹" + app.getAmount()
                 + "</td></tr>"
                 + "</tbody>"
                 + "</table>"
 
                 + "<div class='total'>"
-                + "<p>Grand Total: ₹" + app.getAmountPaid() + "</p>"
+                + "<p>Grand Total: ₹" + app.getAmount() + "</p>"
                 + "</div>"
 
                 + "<div class='footer'>"
                 + "<p>Thank you for your business!</p>"
                 + "<p>ShineFiling Inc, 123 Business Park, Chennai, India</p>"
                 + "</div>"
-                + "<script>window.print();</script>" // Auto print
+                + "<script>window.print();</script>"
                 + "</body></html>";
 
         return ResponseEntity.ok().header("Content-Type", "text/html").body(html);

@@ -222,22 +222,28 @@ const ChangeRegisteredOfficePage = ({ isLoggedIn, onLogout }) => {
                             className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
                             <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
-                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Recommended</div>
 
                             <h3 className="text-lg font-bold text-white mb-2 mt-1">Local Shift</h3>
+                            <p className="text-gray-400 text-sm mb-6">Within Same City/Town.</p>
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="text-3xl font-black text-white">₹1,999</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100/10 px-2 py-1 rounded">+ Govt Fees</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase bg-white/10 px-2 py-1 rounded">MOST POPULAR</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1 text-gray-200">
-                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Same City/Town</li>
-                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Form INC-22 Filing</li>
-                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Document Verification</li>
+                                {[
+                                    "Same City/Town",
+                                    "Form INC-22 Filing",
+                                    "Document Verification",
+                                    "Board Resolution"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('same_city')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">
-                                Select Local
-                            </button>
+                            <button onClick={() => handlePlanSelect('same_city')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Select Local</button>
                         </motion.div>
 
                         {/* SAME ROC */}
@@ -246,22 +252,28 @@ const ChangeRegisteredOfficePage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                            className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
                             <h3 className="text-lg font-bold text-navy mb-2">State Shift</h3>
+                            <p className="text-slate-500 text-sm mb-6">Different City (Same State).</p>
                             <div className="flex items-center gap-2 mb-4">
-                                <span className="text-3xl font-black text-navy">₹4,999</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹4,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ GOVT FEES</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1 text-slate-700">
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Different City</li>
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Special Resolution</li>
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Form MGT-14 + INC-22</li>
+                                {[
+                                    "Different City Shift",
+                                    "Special Resolution",
+                                    "Form MGT-14 + INC-22",
+                                    "RD Approval Support"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('same_roc')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
-                                Select State
-                            </button>
+                            <button onClick={() => handlePlanSelect('same_roc')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select State</button>
                         </motion.div>
 
                         {/* DIFFERENT STATE */}
@@ -270,22 +282,28 @@ const ChangeRegisteredOfficePage = ({ isLoggedIn, onLogout }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                            className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
                             <h3 className="text-lg font-bold text-navy mb-2">Inter-State</h3>
+                            <p className="text-slate-500 text-sm mb-6">Regional Director Approval.</p>
                             <div className="flex items-center gap-2 mb-4">
-                                <span className="text-3xl font-black text-navy">₹19,999</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees & Ads</span>
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹19,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ ADS & FEES</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1 text-slate-700">
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> RD Approval</li>
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Form INC-23</li>
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Newspaper Ads</li>
+                                {[
+                                    "Regional RD Approval",
+                                    "Form INC-23 Filing",
+                                    "Newspaper Ads Prep",
+                                    "MOA Clause Change"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('diff_state')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
-                                Select Inter-State
-                            </button>
+                            <button onClick={() => handlePlanSelect('diff_state')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Inter-State</button>
                         </motion.div>
                     </div>
                 </div>
@@ -328,7 +346,7 @@ const ChangeRegisteredOfficePage = ({ isLoggedIn, onLogout }) => {
                             </div>
                         </div>
                     </section>
-                    <p className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+                    <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
                         <h3 className="text-xl font-bold text-navy mb-4">Process for Inter-State Shifting</h3>
                         <ul className="space-y-4">
                             {[
@@ -343,7 +361,7 @@ const ChangeRegisteredOfficePage = ({ isLoggedIn, onLogout }) => {
                                 </li>
                             ))}
                         </ul>
-                    </p>
+                    </div>
 
                     <section className="mb-20">
                         <h2 className="text-3xl font-bold text-navy mb-8">What You Will Receive</h2>

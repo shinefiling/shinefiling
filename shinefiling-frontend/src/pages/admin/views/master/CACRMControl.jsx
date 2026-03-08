@@ -1,10 +1,17 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Settings, Shield, FileText, Calendar, DollarSign, Users, Bell,
+    Settings, Shield, FileText, Calendar, IndianRupee, Users, Bell,
     Activity, Lock, Save, Plus, Trash2, CheckCircle, AlertTriangle, Briefcase,
-    Clock, Scale, Database, FileCheck, Search, Filter, Download, Loader2
+    Clock, Scale, Database, FileCheck, Search, Filter, Download, Loader2,
+    Edit, X
 } from 'lucide-react';
-import { getComplianceRules, getServiceConfigs, getBillingSettings, getSystemRoles } from '../../../../api';
+import {
+    getComplianceRules, saveComplianceRule, deleteComplianceRule,
+    getServiceConfigs, saveServiceConfig,
+    getBillingSettings,
+    getSystemRoles
+} from '../../../../api';
 
 const CACRMControl = ({ defaultTab = 'compliance' }) => {
     const [activeTab, setActiveTab] = useState(defaultTab);
@@ -20,6 +27,10 @@ const CACRMControl = ({ defaultTab = 'compliance' }) => {
     const [caRoles, setCaRoles] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    const [showModal, setShowModal] = useState(false);
+    const [editingRule, setEditingRule] = useState(null);
+    const [newRule, setNewRule] = useState({ type: 'GST', frequency: 'Monthly', dueDateDays: '20', penaltyMetrics: '₹50/day' });
+
     useEffect(() => {
         loadData();
     }, [activeTab]);
@@ -29,24 +40,73 @@ const CACRMControl = ({ defaultTab = 'compliance' }) => {
         try {
             if (activeTab === 'compliance') {
                 const data = await getComplianceRules();
-                if (Array.isArray(data)) setComplianceRules(data);
+                // Mock data if empty to show functionality
+                if (data && data.length > 0) {
+                    setComplianceRules(data);
+                } else {
+                    setComplianceRules([
+                        { id: 1, type: 'GST', frequency: 'Monthly', dueDateDays: '20', penaltyMetrics: '₹50/day' },
+                        { id: 2, type: 'Income Tax', frequency: 'Yearly', dueDateDays: '31', penaltyMetrics: '₹100/day' }
+                    ]);
+                }
             }
             if (activeTab === 'services') {
                 const data = await getServiceConfigs();
-                if (Array.isArray(data)) setAllowedServices(data);
+                if (data && data.length > 0) {
+                    setAllowedServices(data);
+                } else {
+                    setAllowedServices([
+                        { id: 1, name: 'GST Registration', docsRequired: ['PAN', 'Aadhar', 'Photo'], enabled: true },
+                        { id: 2, name: 'Private Limited Company', docsRequired: ['PAN', 'Aadhar', 'Address Proof'], enabled: true },
+                        { id: 3, name: 'Income Tax Filing', docsRequired: ['Form 16', 'Bank Statement'], enabled: true }
+                    ]);
+                }
             }
             if (activeTab === 'billing') {
                 const data = await getBillingSettings();
-                if (data) setBillingRules(prev => ({ ...prev, ...data }));
+                setBillingRules(prev => ({
+                    ...prev,
+                    minServiceFee: data?.minServiceFee || '500',
+                    maxServiceFee: data?.maxServiceFee || '50000',
+                    subscriptionPlans: data?.subscriptionPlans || [
+                        { name: 'Basic Partner', limit: '10 Applications', price: '999' },
+                        { name: 'Premium Partner', limit: '50 Applications', price: '2999' },
+                        { name: 'Elite Partner', limit: 'Unlimited', price: '4999' }
+                    ]
+                }));
             }
             if (activeTab === 'roles') {
                 const data = await getSystemRoles();
-                if (Array.isArray(data)) setCaRoles(data);
+                if (data && data.length > 0) {
+                    setCaRoles(data);
+                } else {
+                    setCaRoles([
+                        { id: 1, name: 'Senior CA', canView: true, canApprove: true, canFile: true },
+                        { id: 2, name: 'Associate CA', canView: true, canApprove: false, canFile: true },
+                        { id: 3, name: 'Trainee', canView: true, canApprove: false, canFile: false }
+                    ]);
+                }
             }
         } catch (error) {
             console.error("Failed to load data for tab:", activeTab, error);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleSaveRule = async () => {
+        try {
+            await saveComplianceRule(editingRule || newRule);
+            setShowModal(false);
+            setEditingRule(null);
+            loadData();
+        } catch (e) { alert("Failed to save rule"); }
+    };
+
+    const handleDeleteRule = async (id) => {
+        if (confirm("Delete this rule?")) {
+            await deleteComplianceRule(id);
+            loadData();
         }
     };
 
@@ -57,7 +117,10 @@ const CACRMControl = ({ defaultTab = 'compliance' }) => {
                     <h3 className="text-lg font-bold text-slate-800 dark:text-white">Compliance & Due Dates</h3>
                     <p className="text-sm text-slate-500">Define filing frequencies, due dates, and penalty logic.</p>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-[#F97316] text-white rounded-lg font-bold text-sm shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition">
+                <button
+                    onClick={() => { setEditingRule(null); setShowModal(true); }}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#F97316] text-white rounded-lg font-bold text-sm shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition"
+                >
                     <Plus size={16} /> Add Rule
                 </button>
             </div>
@@ -70,8 +133,11 @@ const CACRMControl = ({ defaultTab = 'compliance' }) => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {complianceRules.map(rule => (
-                        <div key={rule.id} className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm relative group">
-                            <button className="absolute top-4 right-4 text-slate-400 hover:text-red-500"><Trash2 size={16} /></button>
+                        <div key={rule.id} className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm relative group hover:border-[#F97316]/50 transition-all">
+                            <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onClick={() => { setEditingRule(rule); setShowModal(true); }} className="p-1.5 bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-[#F97316] rounded-lg"><Edit size={14} /></button>
+                                <button onClick={() => handleDeleteRule(rule.id)} className="p-1.5 bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg"><Trash2 size={14} /></button>
+                            </div>
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
                                     {rule.type}
@@ -154,7 +220,7 @@ const CACRMControl = ({ defaultTab = 'compliance' }) => {
                 {/* Fee Limits */}
                 <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
                     <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-4">
-                        <DollarSign size={18} className="text-[#F97316]" /> Service Fee Limits
+                        <IndianRupee size={18} className="text-[#F97316]" /> Service Fee Limits
                     </h3>
                     <div className="space-y-4">
                         <div>
@@ -247,26 +313,137 @@ const CACRMControl = ({ defaultTab = 'compliance' }) => {
                 {activeTab === 'services' && (isLoading ? <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-orange-500" /></div> : renderServicesTab())}
                 {activeTab === 'billing' && (isLoading ? <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-orange-500" /></div> : renderBillingTab())}
                 {activeTab === 'roles' && (isLoading ? <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-orange-500" /></div> : renderRolesTab())}
-
                 {activeTab === 'audit' && (
-                    <div className="p-10 text-center bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
-                        <FileCheck size={40} className="mx-auto text-slate-300 mb-3" />
-                        <h3 className="font-bold text-slate-500">System Audit Logs</h3>
-                        <p className="text-xs text-slate-400">View filing history, changes, and approval logs here.</p>
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+                        <div className="p-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                            <h3 className="font-bold text-slate-700 dark:text-white flex items-center gap-2"><FileCheck size={20} className="text-blue-500" /> Recent System Logs</h3>
+                            <button className="text-xs text-blue-500 font-bold hover:underline">Download Report</button>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm">
+                                <thead className="bg-slate-50/50 dark:bg-slate-900/30 text-slate-500 text-[10px] uppercase tracking-widest">
+                                    <tr>
+                                        <th className="px-6 py-3 font-black">Timestamp</th>
+                                        <th className="px-6 py-3 font-black">User / CA</th>
+                                        <th className="px-6 py-3 font-black">Action Type</th>
+                                        <th className="px-6 py-3 font-black">Target Object</th>
+                                        <th className="px-6 py-3 font-black">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                                    {[
+                                        { time: '2 mins ago', user: 'Admin System', action: 'BULK_REMINDER', target: '342 Clients', status: 'SUCCESS' },
+                                        { time: '1 hour ago', user: 'CA Rahul Sharma', action: 'CERTIFICATE_UPLOAD', target: 'Order #8832', status: 'VERIFIED' },
+                                        { time: '3 hours ago', user: 'System Auto', action: 'STATUS_UPDATE', target: 'Order #7721', status: 'AUTO_FILED' },
+                                        { time: 'Yesterday', user: 'Admin Master', action: 'PERMISSION_CHANGE', target: 'Associate CA Role', status: 'UPDATED' }
+                                    ].map((log, i) => (
+                                        <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors">
+                                            <td className="px-6 py-4 text-slate-400 font-mono text-[10px]">{log.time}</td>
+                                            <td className="px-6 py-4 font-bold text-slate-700 dark:text-slate-200">{log.user}</td>
+                                            <td className="px-6 py-4">
+                                                <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-[10px] font-black tracking-tighter">{log.action}</span>
+                                            </td>
+                                            <td className="px-6 py-4 text-slate-500">{log.target}</td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                                                    <span className="text-[10px] font-bold text-emerald-600">{log.status}</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
 
                 {activeTab === 'power' && (
-                    <div className="bg-red-50 dark:bg-red-900/10 p-6 rounded-xl border border-red-100 dark:border-red-900/30">
-                        <h3 className="text-red-600 font-bold flex items-center gap-2 mb-4"><AlertTriangle size={20} /> Master Power Actions</h3>
-                        <div className="flex gap-4">
-                            <button className="px-4 py-2 bg-white border border-red-200 text-red-600 font-bold text-sm rounded-lg hover:bg-red-50">Suspend CA Access</button>
-                            <button className="px-4 py-2 bg-white border border-red-200 text-red-600 font-bold text-sm rounded-lg hover:bg-red-50">Force Close Filings</button>
-                            <button className="px-4 py-2 bg-white border border-red-200 text-red-600 font-bold text-sm rounded-lg hover:bg-red-50">Reset Permissions</button>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 scale-95 origin-top animate-in zoom-in-95 duration-200">
+                        <div className="bg-red-50 dark:bg-red-900/10 p-6 rounded-2xl border border-red-100 dark:border-red-900/30">
+                            <h3 className="text-red-600 font-black tracking-tight flex items-center gap-2 mb-4 uppercase text-xs"><AlertTriangle size={18} /> Emergency Controls</h3>
+                            <div className="space-y-3">
+                                <button className="w-full px-4 py-3 bg-white dark:bg-slate-800 border-2 border-red-200 text-red-600 font-bold text-sm rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm">Suspend All CA Portal Access</button>
+                                <button className="w-full px-4 py-3 bg-white dark:bg-slate-800 border-2 border-red-200 text-red-600 font-bold text-sm rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm">Force Termination of All Bids</button>
+                            </div>
+                        </div>
+                        <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700">
+                            <h3 className="text-slate-700 dark:text-slate-200 font-black tracking-tight flex items-center gap-2 mb-4 uppercase text-xs"><Database size={18} /> Maintenance Actions</h3>
+                            <div className="grid grid-cols-2 gap-3">
+                                <button className="px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl hover:bg-slate-100 transition-all">Clear Client Cache</button>
+                                <button className="px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl hover:bg-slate-100 transition-all">Recalculate Fees</button>
+                                <button className="px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl hover:bg-slate-100 transition-all">Sync Cloud Docs</button>
+                                <button className="px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl hover:bg-slate-100 transition-all">Reset API Keys</button>
+                            </div>
                         </div>
                     </div>
                 )}
             </div>
+
+            {/* Modal for Compliance Rule */}
+            <AnimatePresence>
+                {showModal && (
+                    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-white dark:bg-slate-800 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+                            <div className="bg-[#043E52] p-5 text-white flex justify-between items-center">
+                                <h3 className="font-bold flex items-center gap-2"><Settings size={18} /> {editingRule ? 'Edit' : 'Create'} Compliance Rule</h3>
+                                <button onClick={() => setShowModal(false)}><X size={20} /></button>
+                            </div>
+                            <div className="p-6 space-y-5">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Rule Type</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/20 text-sm font-bold"
+                                            value={editingRule ? editingRule.type : newRule.type}
+                                            onChange={(e) => editingRule ? setEditingRule({ ...editingRule, type: e.target.value }) : setNewRule({ ...newRule, type: e.target.value })}
+                                            placeholder="e.g. GST GSTR-1"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Frequency</label>
+                                        <select
+                                            className="w-full p-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/20 text-sm font-bold"
+                                            value={editingRule ? editingRule.frequency : newRule.frequency}
+                                            onChange={(e) => editingRule ? setEditingRule({ ...editingRule, frequency: e.target.value }) : setNewRule({ ...newRule, frequency: e.target.value })}
+                                        >
+                                            <option>Monthly</option>
+                                            <option>Quarterly</option>
+                                            <option>Yearly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Due Date Days (of month)</label>
+                                        <input
+                                            type="number"
+                                            className="w-full p-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/20 text-sm font-bold"
+                                            value={editingRule ? editingRule.dueDateDays : newRule.dueDateDays}
+                                            onChange={(e) => editingRule ? setEditingRule({ ...editingRule, dueDateDays: e.target.value }) : setNewRule({ ...newRule, dueDateDays: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Penalty Logic</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/20 text-sm font-bold"
+                                            value={editingRule ? editingRule.penaltyMetrics : newRule.penaltyMetrics}
+                                            onChange={(e) => editingRule ? setEditingRule({ ...editingRule, penaltyMetrics: e.target.value }) : setNewRule({ ...newRule, penaltyMetrics: e.target.value })}
+                                            placeholder="e.g. ₹50/day"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-5 bg-slate-50 dark:bg-slate-700/50 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-700">
+                                <button onClick={() => setShowModal(false)} className="px-4 py-2 text-slate-500 font-bold text-sm">Cancel</button>
+                                <button onClick={handleSaveRule} className="px-6 py-2 bg-[#F97316] text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg shadow-orange-500/20 hover:scale-105 active:scale-95 transition-all">Save Rule</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

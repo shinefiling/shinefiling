@@ -11,7 +11,7 @@ const LLPClosureRegistration = ({ isLoggedIn, isModal = false, onClose, planProp
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    const [selectedPlan, setSelectedPlan] = useState(planProp || 'close');
+    const [selectedPlan, setSelectedPlan] = useState(planProp || 'standard');
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -36,14 +36,7 @@ const LLPClosureRegistration = ({ isLoggedIn, isModal = false, onClose, planProp
             features: ["Compliance Status Check", "Liability Assessment", "Closure Roadmap"],
             color: 'bg-white border-slate-200'
         },
-        close: {
-            price: 4999,
-            title: 'LLP Strike Off',
-            features: ["Filing Form 24", "Affidavit Drafting", "Consent Letters", "Indemnity Bonds"],
-            recommended: true,
-            color: 'bg-[#043E52] text-white border-gray-700'
-        },
-        standard: { // Added alias for standard -> close compatibility if needed, or separate
+        standard: {
             price: 4999,
             title: 'LLP Strike Off',
             features: ["Filing Form 24", "Affidavit Drafting", "Consent Letters", "Indemnity Bonds"],
@@ -60,7 +53,7 @@ const LLPClosureRegistration = ({ isLoggedIn, isModal = false, onClose, planProp
 
     // Memoize bill details
     const billDetails = useMemo(() => {
-        const selectedPricing = plans[selectedPlan] || plans.close;
+        const selectedPricing = plans[selectedPlan] || plans.standard;
         const basePrice = selectedPricing.price;
 
         // User Request: Total extra is 15% split into Platform Fee, Tax, and GST
@@ -89,14 +82,12 @@ const LLPClosureRegistration = ({ isLoggedIn, isModal = false, onClose, planProp
     useEffect(() => {
         if (planProp) {
             let p = planProp.toLowerCase();
-            if (p === 'standard') p = 'close';
             setSelectedPlan(p);
         } else {
             const planParam = searchParams.get('plan');
             if (planParam) {
                 let p = planParam.toLowerCase();
-                if (p === 'standard') p = 'close';
-                if (['consult', 'close', 'complex'].includes(p)) {
+                if (['consult', 'standard', 'complex'].includes(p)) {
                     setSelectedPlan(p);
                 }
             }
@@ -291,7 +282,7 @@ const LLPClosureRegistration = ({ isLoggedIn, isModal = false, onClose, planProp
 
                         <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2 text-left">
                             <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
-                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn.toLocaleString()}</span></div>
                             <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
                             <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
                             <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>

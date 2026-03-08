@@ -96,12 +96,16 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
         const plan = plans[planKey];
         const basePrice = plan.price;
 
-        const gstAmount = Math.round(basePrice * 0.18); // Standard 18% GST
+        const platformFee = Math.round(basePrice * 0.03); // 3%
+        const tax = Math.round(basePrice * 0.03); // 3%
+        const gst = Math.round(basePrice * 0.09); // 9%
 
         return {
             base: basePrice,
-            gst: gstAmount,
-            total: basePrice + gstAmount
+            platformFn: platformFee,
+            tax: tax,
+            gst: gst,
+            total: basePrice + platformFee + tax + gst
         };
     }, [selectedPlan]);
 
@@ -348,7 +352,9 @@ const LlpRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => 
                         <h2 className="text-3xl font-bold text-navy mb-2">Payment Summary</h2>
                         <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200 space-y-2">
                             <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
-                            <div className="flex justify-between text-sm text-gray-600"><span>GST (18%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee</span><span className="font-bold">₹{billDetails.platformFn.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Tax</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
                             <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
                         </div>
                         <button onClick={handleSubmit} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">

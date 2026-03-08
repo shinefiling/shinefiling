@@ -129,9 +129,9 @@ const TaxAuditRegistration = ({ initialPlan = 'standard', onClose }) => {
 
                             <div className="grid md:grid-cols-3 gap-8">
                                 {[
-                                    { id: 'basic', name: 'Turnover < 2Cr', price: '4,999', features: ["Form 3CB/3CD", "Standard Scrutiny"] },
-                                    { id: 'standard', name: 'Turnover 2-5Cr', price: '9,999', features: ["Detailed Verification", "GST Recon Assist"] },
-                                    { id: 'premium', name: 'Turnover 5Cr+', price: '14,999', features: ["Complex Transactions", "Priority CA Filing"] }
+                                    { id: 'basic', name: 'Turnover < 2Cr', price: 4999, features: ["Form 3CB/3CD", "Standard Scrutiny"] },
+                                    { id: 'standard', name: 'Turnover 2-5Cr', price: 9999, features: ["Detailed Verification", "GST Recon Assist"] },
+                                    { id: 'premium', name: 'Turnover 5Cr+', price: 14999, features: ["Complex Transactions", "Priority CA Filing"] }
                                 ].map(p => (
                                     <div
                                         key={p.id}
@@ -141,7 +141,7 @@ const TaxAuditRegistration = ({ initialPlan = 'standard', onClose }) => {
                                         {selectedPlan === p.id && <div className="absolute top-0 right-0 bg-red-500 text-white p-3 rounded-bl-3xl"><CheckCircle size={20} /></div>}
                                         <h4 className={`text-xl font-black mb-1 uppercase italic ${selectedPlan === p.id ? 'text-red-900' : 'text-slate-400'}`}>{p.name}</h4>
                                         <div className="flex items-baseline gap-1 mb-8">
-                                            <span className="text-4xl font-black italic tracking-tighter tracking-tighter">₹{p.price}</span>
+                                            <span className="text-4xl font-black italic tracking-tighter tracking-tighter">₹{p.price.toLocaleString()}</span>
                                             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">+ GST</span>
                                         </div>
                                         <div className="space-y-3">
@@ -320,7 +320,7 @@ const TaxAuditRegistration = ({ initialPlan = 'standard', onClose }) => {
                                     <div className="bg-white/10 backdrop-blur-3xl rounded-[40px] p-10 flex flex-col justify-center border border-white/10 text-left">
                                         <p className="text-red-400 text-[10px] font-black uppercase tracking-widest mb-2 italic">Audit Fee (Statutory)</p>
                                         <div className="flex items-baseline gap-2 mb-6">
-                                            <span className="text-7xl font-black italic tracking-tighter tracking-tighter">₹{selectedPlan === 'basic' ? '4,999' : selectedPlan === 'standard' ? '9,999' : '14,999'}</span>
+                                            <span className="text-7xl font-black italic tracking-tighter tracking-tighter">₹{(selectedPlan === 'basic' ? 4999 : selectedPlan === 'standard' ? 9999 : 14999).toLocaleString()}</span>
                                             <span className="text-red-300 font-bold text-xl uppercase tracking-tighter italic">+ GST</span>
                                         </div>
                                         <div className="w-full h-px bg-white/20 mb-6"></div>

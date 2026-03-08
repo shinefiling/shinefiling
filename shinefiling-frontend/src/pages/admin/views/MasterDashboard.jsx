@@ -26,6 +26,7 @@ import AgentApprovals from './master/AgentApprovals';
 import CareersControl from './master/CareersControl';
 import DashboardOverview from './master/DashboardOverview';
 import CACRMControl from './master/CACRMControl';
+import AuditLogs from './master/AuditLogs';
 
 // --- MAIN ORCHESTRATOR ---
 const MasterDashboard = ({ activeTab, onNavigate, user }) => {

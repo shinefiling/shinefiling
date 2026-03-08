@@ -5,7 +5,7 @@ import {
     LayoutDashboard, FileText, Users, DollarSign, Settings,
     MessageSquare, LogOut, Menu, X, Sun, Moon, Bell, CheckCircle, Upload, Crown, ChevronRight, Briefcase, IndianRupee
 } from 'lucide-react';
-import { getAgentApplications } from '../../api';
+import { getAgentApplications, getNotifications, markNotificationRead } from '../../api';
 
 // Import Views
 import AgentOverview from './views/AgentOverview';
@@ -21,6 +21,7 @@ const AgentDashboard = ({ onLogout }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user') || '{}'));
     const [tasks, setTasks] = useState([]);
+    const [notifications, setNotifications] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [stats, setStats] = useState({ walletBalance: 0, totalEarnings: 0, pending: 0 });
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -45,6 +46,7 @@ const AgentDashboard = ({ onLogout }) => {
                 { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
                 { id: 'create_app', label: 'Create Application', icon: Upload },
                 { id: 'applications', label: 'My Applications', icon: FileText },
+                { id: 'notifications', label: 'Notifications', icon: Bell },
             ]
         },
         {
@@ -67,15 +69,19 @@ const AgentDashboard = ({ onLogout }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await getAgentApplications(user.id);
-                setTasks(data || []);
+                const [appData, notifData] = await Promise.all([
+                    getAgentApplications(user.id),
+                    getNotifications(user.email)
+                ]);
+                setTasks(appData || []);
+                setNotifications(notifData || []);
 
                 // Mock Stats Calculation
-                const earnings = (data || []).filter(t => t.status === 'COMPLETED').length * 500;
+                const earnings = (appData || []).filter(t => t.status === 'COMPLETED').length * 500;
                 setStats({
                     walletBalance: earnings,
                     totalEarnings: earnings,
-                    pending: (data || []).filter(t => t.status !== 'COMPLETED').length
+                    pending: (appData || []).filter(t => t.status !== 'COMPLETED').length
                 });
             } catch (error) {
                 console.error("Failed to fetch agent data", error);
@@ -84,12 +90,16 @@ const AgentDashboard = ({ onLogout }) => {
             }
         };
 
-        if (user.id) fetchData();
+        if (user.id) {
+            fetchData();
+            const interval = setInterval(fetchData, 30000); // Poll every 30s
+            return () => clearInterval(interval);
+        }
 
         if (!user.kycStatus || user.kycStatus === 'PENDING' || user.kycStatus === 'REJECTED') {
             if (user.kycStatus === 'REJECTED') setShowKycModal(true);
         }
-    }, [user.id]);
+    }, [user.id, user.email]);
 
     // Theme Toggle
     useEffect(() => {
@@ -224,6 +234,57 @@ const AgentDashboard = ({ onLogout }) => {
                     <div className="max-w-7xl mx-auto pb-20 md:pb-0">
                         <AnimatePresence mode="wait">
                             <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                                {activeTab === 'notifications' && (
+                                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                        <div className="flex justify-between items-center">
+                                            <h2 className="text-2xl font-bold text-slate-800 dark:text-white font-roboto">Notifications Center</h2>
+                                            {notifications.some(n => !n.read) && <span className="px-3 py-1 bg-red-500 text-white text-[10px] font-bold rounded-full">New Alerts</span>}
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            {notifications.length > 0 ? (
+                                                notifications.map(n => (
+                                                    <div key={n.id} className={`p-5 rounded-3xl border transition-all duration-300 ${n.read ? 'bg-white/40 dark:bg-slate-900/10 border-slate-100 dark:border-slate-800 opacity-80' : 'bg-white dark:bg-[#043E52] border-[#ED6E3F]/30 shadow-lg shadow-orange-500/5'}`}>
+                                                        <div className="flex items-center gap-5">
+                                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${n.type === 'KYC_STATUS' ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-500' : 'bg-orange-50 dark:bg-orange-950/40 text-[#ED6E3F]'}`}>
+                                                                {n.type === 'KYC_STATUS' ? <Crown size={22} /> : <Bell size={22} />}
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <div className="flex justify-between items-start">
+                                                                    <p className={`text-base font-bold ${n.read ? 'text-slate-600 dark:text-slate-400' : 'text-slate-900 dark:text-white'}`}>{n.title}</p>
+                                                                    <span className="text-[10px] font-bold text-slate-400 font-mono">{new Date(n.createdAt).toLocaleDateString()}</span>
+                                                                </div>
+                                                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{n.message}</p>
+                                                            </div>
+                                                            {!n.read && (
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        await markNotificationRead(n.id);
+                                                                        // Force local refresh without full poll if possible, but poll is safer
+                                                                        const updated = await getNotifications(user.email);
+                                                                        setNotifications(updated || []);
+                                                                    }}
+                                                                    className="p-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl text-slate-400 hover:text-[#ED6E3F] hover:bg-orange-50 dark:hover:bg-orange-950/20 transition-all"
+                                                                    title="Mark as read"
+                                                                >
+                                                                    <CheckCircle size={18} />
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="bg-white dark:bg-[#043E52] rounded-[40px] p-24 text-center border border-slate-100 dark:border-slate-800 shadow-sm">
+                                                    <div className="w-24 h-24 bg-slate-50 dark:bg-slate-900/50 rounded-full flex items-center justify-center mx-auto mb-8 opacity-20">
+                                                        <Bell size={48} className="text-slate-400" />
+                                                    </div>
+                                                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">All Clear!</h3>
+                                                    <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs mx-auto">You've caught up with everything. New updates will appear here as soon as they arrive.</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                                 {activeTab === 'overview' && <AgentOverview stats={stats} tasks={tasks} user={user} setActiveTab={setActiveTab} />}
                                 {activeTab === 'create_app' && <AgentNewApplication setActiveTab={setActiveTab} />}
                                 {activeTab === 'applications' && <AgentApplications tasks={tasks} loading={isLoading} />}

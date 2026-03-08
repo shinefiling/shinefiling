@@ -10,14 +10,14 @@ import {
 import { uploadFile, submitShareTransfer } from '../../../api';
 
 const validatePlan = (plan) => {
-    return ['basic', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'standard';
+    return ['consultation', 'standard', 'premium'].includes(plan?.toLowerCase()) ? plan.toLowerCase() : 'standard';
 };
 
 const ShareTransferRegistration = ({ isLoggedIn, isModal = false, planProp, onClose }) => {
     const plans = {
-        basic: { price: 999, title: 'Expert Consult', icon: Info },
-        standard: { price: 2499, title: 'Single Transfer', icon: Zap },
-        premium: { price: 4999, title: 'Bulk Execution', icon: Briefcase }
+        consultation: { price: 999, title: 'Expert Consult' },
+        standard: { price: 2499, title: 'Single Transfer' },
+        premium: { price: 4999, title: 'Bulk Execution' }
     };
 
     const [searchParams] = useSearchParams();
@@ -35,6 +35,8 @@ const ShareTransferRegistration = ({ isLoggedIn, isModal = false, planProp, onCl
     }, [planParam, planProp, selectedPlan]);
 
     const [formData, setFormData] = useState({
+        userEmail: '',
+        userPhone: '',
         companyName: '',
         transferDate: '',
         numberOfShares: '',
@@ -49,7 +51,9 @@ const ShareTransferRegistration = ({ isLoggedIn, isModal = false, planProp, onCl
 
     const [uploadedFiles, setUploadedFiles] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [automationPayload, setAutomationPayload] = useState(null);
     const [errors, setErrors] = useState({});
 
     const billDetails = useMemo(() => {
@@ -78,6 +82,11 @@ const ShareTransferRegistration = ({ isLoggedIn, isModal = false, planProp, onCl
         const newErrors = {};
         let isValid = true;
         if (step === 1) {
+            const storedUser = localStorage.getItem('user');
+            if (!isLoggedIn && !storedUser) {
+                if (!formData.userEmail) { newErrors.userEmail = "Required"; isValid = false; }
+                if (!formData.userPhone) { newErrors.userPhone = "Required"; isValid = false; }
+            }
             if (!formData.companyName) { newErrors.companyName = "Required"; isValid = false; }
             if (!formData.numberOfShares) { newErrors.numberOfShares = "Required"; isValid = false; }
         } else if (step === 2) {
@@ -90,7 +99,7 @@ const ShareTransferRegistration = ({ isLoggedIn, isModal = false, planProp, onCl
 
     const handleNext = () => {
         if (validateStep(currentStep)) {
-            setCurrentStep(prev => Math.min(4, prev + 1));
+            setCurrentStep(prev => Math.min(5, prev + 1));
         }
     };
 
@@ -116,14 +125,16 @@ const ShareTransferRegistration = ({ isLoggedIn, isModal = false, planProp, onCl
             const finalPayload = {
                 submissionId: `ROCSHARE-${Date.now()}`,
                 plan: selectedPlan,
-                userEmail: JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com',
+                userEmail: JSON.parse(localStorage.getItem('user'))?.email || formData.userEmail,
+                userPhone: JSON.parse(localStorage.getItem('user'))?.phone || formData.userPhone,
                 formData: formData,
                 documents: docsList,
                 amountPaid: billDetails.total,
                 considerationAmount: consideration,
                 status: "PAYMENT_SUCCESSFUL"
             };
-            await submitShareTransfer(finalPayload);
+            const response = await submitShareTransfer(finalPayload);
+            setAutomationPayload(response);
             setIsSuccess(true);
         } catch (error) {
             alert("Submission error: " + error.message);
@@ -134,34 +145,31 @@ const ShareTransferRegistration = ({ isLoggedIn, isModal = false, planProp, onCl
 
     const renderStepContent = () => {
         switch (currentStep) {
-            case 1: // Transfer Details
+            case 1:
                 return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <TrendingUp size={16} className="text-[#ED6E3F]" /> SHARE ALLOTMENT CONTEXT
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            {(!isLoggedIn && !localStorage.getItem('user')) && (
+                                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3 pb-6 border-b border-gray-100">
+                                    <h3 className="md:col-span-2 font-bold text-slate-800 mb-1 text-sm flex items-center gap-2"><User size={16} /> CONTACT DETAILS</h3>
+                                    <input name="userEmail" value={formData.userEmail} onChange={handleInputChange} placeholder="Email Address" className={`p-2 text-sm border rounded-lg ${errors.userEmail ? 'border-red-500' : ''}`} />
+                                    <input name="userPhone" value={formData.userPhone} onChange={handleInputChange} placeholder="Phone Number" className={`p-2 text-sm border rounded-lg ${errors.userPhone ? 'border-red-500' : ''}`} />
+                                </div>
+                            )}
+                            <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><TrendingUp size={16} /> TRANSFER DETAILS</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <input name="companyName" value={formData.companyName} onChange={handleInputChange} placeholder="Filing Company Name" className={`md:col-span-2 p-2 text-sm border rounded-lg ${errors.companyName ? 'border-red-500' : ''}`} />
+                                <input type="number" name="numberOfShares" value={formData.numberOfShares} onChange={handleInputChange} placeholder="Quantity of Shares" className={`p-2 text-sm border rounded-lg ${errors.numberOfShares ? 'border-red-500' : ''}`} />
+                                <input type="number" name="pricePerShare" value={formData.pricePerShare} onChange={handleInputChange} placeholder="Price per Share (₹)" className="p-2 text-sm border rounded-lg" />
                                 <div className="space-y-1 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Filing Company</label>
-                                    <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} placeholder="Full Registered Name" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl font-bold text-sm" />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Qty of Shares</label>
-                                    <input type="number" name="numberOfShares" value={formData.numberOfShares} onChange={handleInputChange} placeholder="0" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-sm font-black" />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Price per Share (₹)</label>
-                                    <input type="number" name="pricePerShare" value={formData.pricePerShare} onChange={handleInputChange} placeholder="0.00" className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-sm font-black" />
-                                </div>
-                                <div className="space-y-1 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Deed Execution Date</label>
-                                    <input type="date" name="transferDate" value={formData.transferDate} onChange={handleInputChange} className="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-sm font-bold" />
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Deed Execution Date</p>
+                                    <input type="date" name="transferDate" value={formData.transferDate} onChange={handleInputChange} className="w-full p-2 text-sm border rounded-lg" />
                                 </div>
 
                                 {formData.numberOfShares && (
-                                    <div className="md:col-span-2 p-4 bg-orange-50 rounded-xl border border-orange-100 text-[10px] font-black text-orange-600 uppercase tracking-widest flex items-center gap-2 italic">
-                                        <Briefcase size={14} /> Est. Transfer Value: ₹{((formData.numberOfShares || 0) * (formData.pricePerShare || 0)).toLocaleString()}
+                                    <div className="md:col-span-2 p-3 bg-orange-50 rounded-lg border border-orange-100 flex items-center gap-2 text-[#ED6E3F]">
+                                        <Briefcase size={14} />
+                                        <span className="text-xs font-bold uppercase tracking-wider">Est. Value: ₹{((formData.numberOfShares || 0) * (formData.pricePerShare || 0)).toLocaleString()}</span>
                                     </div>
                                 )}
                             </div>
@@ -169,168 +177,244 @@ const ShareTransferRegistration = ({ isLoggedIn, isModal = false, planProp, onCl
                     </div>
                 );
 
-            case 2: // Parties
-                return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <Users size={16} className="text-[#ED6E3F]" /> TRANSFECTOR PROFILES
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-4 p-5 bg-slate-50 rounded-2xl border border-slate-100">
-                                    <h4 className="text-[10px] font-black text-red-500 uppercase tracking-widest">The Transferor</h4>
-                                    <input type="text" name="transferorName" value={formData.transferorName} onChange={handleInputChange} placeholder="Seller Name" className="w-full p-3 bg-white border border-gray-200 rounded-xl text-xs font-bold" />
-                                    <input type="text" name="transferorPan" value={formData.transferorPan} onChange={handleInputChange} placeholder="Seller PAN" maxLength={10} className="w-full p-3 bg-white border border-gray-200 rounded-xl text-xs font-mono uppercase" />
-                                </div>
-                                <div className="space-y-4 p-5 bg-slate-50 rounded-2xl border border-slate-100">
-                                    <h4 className="text-[10px] font-black text-green-600 uppercase tracking-widest">The Transferee</h4>
-                                    <input type="text" name="transfereeName" value={formData.transfereeName} onChange={handleInputChange} placeholder="Buyer Name" className="w-full p-3 bg-white border border-gray-200 rounded-xl text-xs font-bold" />
-                                    <input type="text" name="transfereePan" value={formData.transfereePan} onChange={handleInputChange} placeholder="Buyer PAN" maxLength={10} className="w-full p-3 bg-white border border-gray-200 rounded-xl text-xs font-mono uppercase" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-
-            case 3: // Uploads
+            case 2:
                 return (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-navy font-poppins">
-                            <h3 className="font-bold text-slate-800 mb-6 text-sm flex items-center gap-2">
-                                <ClipboardList size={16} className="text-[#ED6E3F]" /> SH-4 DOCUMENTATION
-                            </h3>
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><Users size={16} /> PARTIES INVOLVED</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.certificate ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
-                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><FileText size={24} /></div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-700 italic">Share Certificate</p>
-                                    <label className="cursor-pointer">
-                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${uploadedFiles.certificate ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
-                                            {uploadedFiles.certificate ? 'Change File' : 'Upload Copy'}
-                                        </span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'certificate')} />
-                                    </label>
+                                <div className="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                    <h4 className="text-[10px] font-black text-red-500 uppercase tracking-widest">TRANSFEROR (SELLER)</h4>
+                                    <input name="transferorName" value={formData.transferorName} onChange={handleInputChange} placeholder="Full Name" className={`w-full p-2 text-sm border rounded-lg ${errors.transferorName ? 'border-red-500' : ''}`} />
+                                    <input name="transferorPan" value={formData.transferorPan} onChange={handleInputChange} placeholder="PAN Number" className="w-full p-2 text-sm border rounded-lg font-mono uppercase" />
                                 </div>
-                                <div className={`p-6 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-4 transition-all ${uploadedFiles.sh4 ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-orange-300'}`}>
-                                    <div className="p-4 rounded-xl bg-white shadow-sm text-slate-400"><Briefcase size={24} /></div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-700 italic">Draft SH-4 Deed</p>
-                                    <label className="cursor-pointer">
-                                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${uploadedFiles.sh4 ? 'bg-green-600 text-white' : 'bg-navy text-white'}`}>
-                                            {uploadedFiles.sh4 ? 'Change File' : 'Upload Draft'}
-                                        </span>
-                                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, 'sh4')} />
-                                    </label>
+                                <div className="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                    <h4 className="text-[10px] font-black text-green-600 uppercase tracking-widest">TRANSFEREE (BUYER)</h4>
+                                    <input name="transfereeName" value={formData.transfereeName} onChange={handleInputChange} placeholder="Full Name" className={`w-full p-2 text-sm border rounded-lg ${errors.transfereeName ? 'border-red-500' : ''}`} />
+                                    <input name="transfereePan" value={formData.transfereePan} onChange={handleInputChange} placeholder="PAN Number" className="w-full p-2 text-sm border rounded-lg font-mono uppercase" />
                                 </div>
                             </div>
                         </div>
                     </div>
                 );
 
-            case 4: // Payment
+            case 3:
                 return (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 font-poppins">
-                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 text-center relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                            <div className="w-20 h-20 bg-orange-50 rounded-[30px] flex items-center justify-center mx-auto mb-6 text-orange-600 shadow-3xl shadow-orange-500/10 rotate-3">
-                                <CreditCard size={32} />
-                            </div>
-                            <h2 className="text-2xl font-black text-navy mb-2 tracking-tight uppercase italic">Filing Dispatch</h2>
-                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-8 opacity-60 italic underline decoration-orange-500 underline-offset-4">SH-4 Execution Service Fee</p>
-
-                            <div className="bg-slate-50 p-8 rounded-3xl mb-8 space-y-4 text-sm border-2 border-white shadow-inner">
-                                <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    <span>Plan Tier</span>
-                                    <span className="px-4 py-1.5 bg-navy text-white rounded-full italic">{plans[selectedPlan].title}</span>
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><ClipboardList size={16} /> SH-4 DOCUMENTATION</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="border border-dashed p-3 rounded-lg flex justify-between items-center bg-gray-50">
+                                    <span className="text-xs text-gray-600">Share Certificate</span>
+                                    <input type="file" onChange={(e) => handleFileUpload(e, 'certificate')} className="text-[10px] w-24" />
                                 </div>
-                                <div className="h-px bg-slate-200"></div>
-                                <div className="flex justify-between text-2xl font-black text-navy italic underline decoration-[#ED6E3F] decoration-4 underline-offset-8">
-                                    <span className="text-[10px] self-end mb-1 text-slate-400 not-italic font-bold">SETTLEMENT</span>
-                                    <span>₹{billDetails.total.toLocaleString()}</span>
+                                <div className="border border-dashed p-3 rounded-lg flex justify-between items-center bg-gray-50">
+                                    <span className="text-xs text-gray-600">Draft SH-4 Deed</span>
+                                    <input type="file" onChange={(e) => handleFileUpload(e, 'sh4')} className="text-[10px] w-24" />
                                 </div>
                             </div>
-
-                            <button
-                                onClick={submitApplication}
-                                disabled={isSubmitting}
-                                className="w-full py-5 bg-navy text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-3xl shadow-navy/30 hover:bg-black transition-all flex items-center justify-center gap-3 italic"
-                            >
-                                {isSubmitting ? 'PROCESSING TRANSFER...' : 'AUTHENTICATE DEED FILING'}
-                                {!isSubmitting && <ArrowRight size={20} />}
-                            </button>
                         </div>
                     </div>
                 );
 
+            case 4:
+                return (
+                    <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                        <h2 className="text-xl font-bold text-navy mb-4">Confirm Details</h2>
+                        <div className="p-4 bg-gray-50 rounded-lg space-y-2 text-sm">
+                            <div className="flex justify-between"><span>Plan</span><span className="font-bold text-navy">{plans[selectedPlan]?.title}</span></div>
+                            <div className="flex justify-between"><span>Company</span><span className="font-bold">{formData.companyName}</span></div>
+                            <div className="flex justify-between"><span>Shares</span><span className="font-bold">{formData.numberOfShares}</span></div>
+                            <div className="flex justify-between"><span>Transferor</span><span className="font-bold">{formData.transferorName}</span></div>
+                            <div className="flex justify-between"><span>Transferee</span><span className="font-bold">{formData.transfereeName}</span></div>
+                        </div>
+                    </div>
+                );
+
+            case 5:
+                return (
+                    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center">
+                        <IndianRupee size={32} className="mx-auto mb-4 text-green-600" />
+                        <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
+                        <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2">
+                            <div className="flex justify-between text-sm"><span>Service Fee</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFee.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                            <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
+                        </div>
+                        <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center">
+                            <input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} />
+                            I Accept Terms & Conditions
+                        </label>
+                        <button onClick={submitApplication} disabled={!isTermsAccepted || isSubmitting} className="w-full py-3 bg-[#043E52] text-white font-bold rounded-xl disabled:opacity-50">
+                            {isSubmitting ? 'Processing...' : 'Pay & Submit'}
+                        </button>
+                    </div>
+                );
             default: return null;
         }
-    }
+    };
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div className="w-full max-w-6xl h-[90vh] bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
-                {/* LEFT SIDEBAR */}
-                <div className="hidden md:flex w-80 bg-[#043E52] text-white flex-col p-8 shrink-0 relative overflow-hidden font-poppins">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                    <div className="relative z-10 mb-12">
-                        <h1 className="font-black text-xl flex items-center gap-3 tracking-tighter uppercase italic text-white/90">
-                            <TrendingUp size={24} className="text-[#ED6E3F]" /> SHARE MOVE
+    // --- MODAL LAYOUT: SPLIT VIEW (Left Sidebar + Right Content) ---
+    if (isModal) {
+        return (
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            Share Transfer
                         </h1>
-                        <div className="mt-8 p-6 bg-[#064e66] rounded-3xl border border-white/10 shadow-inner relative overflow-hidden group">
-                            <p className="text-[10px] uppercase text-gray-400 tracking-[0.2em] font-black mb-2 opacity-70 italic">Filing Selection</p>
-                            <p className="font-black text-white text-xl tracking-tight mb-6 uppercase italic leading-tight">{plans[selectedPlan]?.title}</p>
-                            <div className="space-y-3 pt-5 border-t border-white/10 italic">
-                                <div className="flex justify-between items-center text-[11px] font-bold text-gray-400">
-                                    <span>Total Payable</span>
-                                    <span className="text-white font-mono font-black">₹{billDetails.total.toLocaleString()}</span>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{plans[selectedPlan]?.title}</p>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{billDetails.base.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Govt Fee & Taxes</span>
+                                    <span className="text-white font-medium font-mono">₹{Math.max(0, billDetails.total - billDetails.base).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Total Payable</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{billDetails.total.toLocaleString()}</span>
                                 </div>
                             </div>
+
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
                         </div>
                     </div>
 
-                    <div className="flex-1 space-y-3 relative z-10 overflow-y-auto custom-scrollbar">
-                        {['Transaction Context', 'Parties Details', 'Artifact Upload', 'Final Authorization'].map((step, i) => (
-                            <div key={i} className={`flex items-center gap-4 p-3 rounded-2xl transition-all ${currentStep === i + 1 ? 'bg-white/10 text-white shadow-xl' : 'text-blue-200/50 grayscale opacity-60'}`}>
-                                <div className={`w-8 h-8 rounded-2xl flex items-center justify-center text-[10px] font-black transition-all ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/10'}`}>
-                                    {currentStep > i + 1 ? <CheckCircle size={14} /> : i + 1}
+                    {/* VERTICAL STEPPER */}
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {['Transfer Info', 'Parties', 'Documents', 'Review', 'Payment'].map((step, i) => (
+                            <div key={i}
+                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                            >
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
                                 </div>
-                                <span className="text-[11px] font-black uppercase tracking-[0.1em]">{step}</span>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* RIGHT CONTENT */}
-                <div className="flex-1 flex flex-col h-full bg-[#fcfcfc]">
-                    <div className="h-20 bg-white border-b flex items-center justify-between px-8 py-2 shrink-0 z-20">
-                        <h2 className="hidden md:block font-black text-navy text-xl uppercase tracking-tighter flex items-center gap-3 underline decoration-orange-500 decoration-4 underline-offset-8 italic">
-                            {currentStep === 1 && "Transfer Matrix"}
-                            {currentStep === 2 && "Profiles Match"}
-                            {currentStep === 3 && "Legacy Validation"}
-                            {currentStep === 4 && "Queue Placement"}
-                        </h2>
-                        <button onClick={onClose || (() => navigate(-1))} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-slate-50 text-slate-400 hover:bg-black hover:text-white transition-all shadow-sm">
+                {/* RIGHT CONTENT: FORM */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    {/* Header Bar */}
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            {/* Mobile: Detailed Service & Price Info */}
+                            <div className="md:hidden flex flex-col gap-1 w-full max-w-[calc(100vw-80px)]">
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="font-bold text-slate-800 text-sm truncate">Share Transfer</span>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 w-fit">
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Service</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{(billDetails.base / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Govt Fee</span>
+                                        <span className="text-xs font-bold text-slate-700">₹{((billDetails.total - billDetails.base) / 1000).toFixed(1)}k</span>
+                                    </div>
+                                    <div className="w-px h-5 bg-gray-200"></div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[8px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Total</span>
+                                        <span className="text-xs font-bold text-green-600">₹{billDetails.total.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: Step Title */}
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Transfer Details"}
+                                {currentStep === 2 && "Parties Involved"}
+                                {currentStep === 3 && "Document Evidence"}
+                                {currentStep === 4 && "Review Application"}
+                                {currentStep === 5 && "Complete Payment"}
+                            </h2>
+                        </div>
+
+                        <button onClick={onClose || (() => navigate(-1))} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
                             <X size={20} />
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-6 md:p-12">
+                    {/* Scrollable Area */}
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
                         {isSuccess ? (
-                            <div className="max-w-2xl mx-auto text-center py-20 font-poppins">
-                                <CheckCircle size={60} className="text-green-500 mx-auto mb-8 shadow-3xl" />
-                                <h1 className="text-4xl font-black text-navy mb-4 tracking-tighter uppercase italic">Phase Complete!</h1>
-                                <p className="text-slate-500 font-bold text-sm uppercase tracking-widest opacity-60 mb-12 italic leading-relaxed">SUCCESSFULLY QUEUED TRANSFER FOR {formData.numberOfShares} SHARES IN {formData.companyName}.</p>
-                                <button onClick={() => navigate('/dashboard')} className="bg-navy text-white px-10 py-5 rounded-3xl font-black text-[11px] uppercase tracking-[0.3em] hover:bg-black transition-all shadow-3xl">Go to Vault</button>
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">Application Submitted!</h2>
+                                <p className="text-gray-500 mt-2">Order ID: {automationPayload?.submissionId}</p>
+                                <button onClick={onClose || (() => navigate(-1))} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
                             </div>
                         ) : (
-                            <div className="max-w-4xl mx-auto h-full flex flex-col text-navy">
-                                <div className="flex-1">{renderStepContent()}</div>
-                                <div className="mt-12 flex justify-between items-center pt-8 border-t border-slate-100 italic">
-                                    <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="text-slate-400 text-[10px] font-black uppercase tracking-widest disabled:opacity-0">Rollback Step</button>
-                                    {currentStep < 4 && (
-                                        <button onClick={handleNext} className="px-10 py-5 bg-[#ED6E3F] text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl shadow-orange-500/20 hover:scale-105 transition-all flex items-center gap-3">Save & Advance <ArrowRight size={18} /></button>
-                                    )}
-                                </div>
-                            </div>
+                            renderStepContent()
                         )}
+                    </div>
+
+                    {/* Sticky Footer */}
+                    {!isSuccess && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            {currentStep < 5 && (
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                                >
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // --- STANDARD FULL PAGE LAYOUT ---
+    return (
+        <div className="min-h-screen pb-20 pt-24 px-4 bg-[#F8F9FA]">
+            <div className="max-w-6xl mx-auto">
+                <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-gray-500 font-bold text-xs uppercase"><ArrowLeft size={14} /> Back</button>
+                <div className="flex gap-8">
+                    <div className="w-72 hidden lg:block space-y-4">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
+                            {['Transfer', 'Parties', 'Docs', 'Review', 'Payment'].map((s, i) => (
+                                <div key={i} className={`p-2 rounded ${currentStep === i + 1 ? 'bg-[#043E52] text-white' : 'text-gray-500'}`}>{s}</div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex-1">
+                        {renderStepContent()}
+                        <div className="mt-6 flex justify-between">
+                            <button onClick={() => setCurrentStep(p => p - 1)} disabled={currentStep === 1} className="px-6 py-2 rounded border">Back</button>
+                            <button onClick={handleNext} className="bg-[#ED6E3F] text-white px-6 py-2 rounded">Next</button>
+                        </div>
                     </div>
                 </div>
             </div>

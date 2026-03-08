@@ -28,6 +28,9 @@ public class CAController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private com.shinefiling.common.service.NotificationService notificationService;
+
     // Get Assigned Requests
     @GetMapping("/{caId}/requests")
     public ResponseEntity<?> getAssignedRequests(@PathVariable Long caId) {
@@ -55,9 +58,20 @@ public class CAController {
         if ("ACCEPTED".equalsIgnoreCase(status)) {
             request.setCaApprovalStatus("ACCEPTED");
             request.setStatus("IN_PROGRESS_CA");
+            if (notificationService != null) {
+                notificationService.notifyAdmins("CA_ACCEPT", "Order Accepted by CA",
+                        "CA " + request.getAssignedCa().getFullName() + " accepted " + request.getServiceName()
+                                + " (Order #" + requestId + ")",
+                        requestId.toString());
+            }
         } else if ("REJECTED".equalsIgnoreCase(status)) {
             request.setCaApprovalStatus("REJECTED");
-            // Maybe notify Super Admin
+            if (notificationService != null) {
+                notificationService.notifyAdmins("CA_REJECT", "Order Rejected by CA",
+                        "CA " + request.getAssignedCa().getFullName() + " rejected " + request.getServiceName()
+                                + " (Order #" + requestId + ")",
+                        requestId.toString());
+            }
         } else if ("COMPLETED_FINAL".equalsIgnoreCase(status)) {
             request.setStatus("COMPLETED");
             if (payload.containsKey("generatedDocuments")) {
@@ -65,6 +79,12 @@ public class CAController {
             }
             if (commissionService != null) {
                 commissionService.processCommission(request);
+            }
+            if (notificationService != null) {
+                notificationService.notifyAdmins("CA_COMPLETE", "Order Completed by CA",
+                        "CA " + request.getAssignedCa().getFullName() + " marked " + request.getServiceName()
+                                + " as COMPLETED (Order #" + requestId + ")",
+                        requestId.toString());
             }
         } else {
             return ResponseEntity.badRequest().body(Map.of("message", "Invalid status"));
@@ -158,6 +178,17 @@ public class CAController {
         bid.setStatus("PENDING");
 
         caBidRepository.save(bid);
+
+        if (notificationService != null) {
+            System.out.println(
+                    "Triggering Notification for CA Bid: CA=" + caUser.getFullName() + ", Request=" + requestId);
+            notificationService.notifyAdmins("CA_BID", "New Marketplace Bid Received",
+                    "CA " + caUser.getFullName() + " has submitted a bid of ₹" + bid.getBidAmount() + " for "
+                            + request.getServiceName(),
+                    request.getId().toString());
+        } else {
+            System.out.println("NotificationService is NULL in CAController!");
+        }
 
         return ResponseEntity.ok(Map.of("message", "Bid submitted successfully", "bid", bid));
     }

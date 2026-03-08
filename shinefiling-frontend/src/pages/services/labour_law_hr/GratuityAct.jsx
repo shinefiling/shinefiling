@@ -230,31 +230,67 @@ const GratuityAct = ({ isLoggedIn }) => {
                         <h2 className="text-3xl font-bold text-navy mb-8">Packages</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             {/* Standard */}
-                            <div className="bg-[#2B3446] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-4 flex flex-col">
-                                <div className="absolute top-0 right-0 bg-bronze text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Audit</div>
-                                <h3 className="text-xl font-bold text-white mb-2">Liability Audit</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹1,499</div>
-                                <p className="text-xs text-gray-400 mb-6">/ Report</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Liability Calculation</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Balance Sheet Reporting</li>
-                                    <li className="flex gap-3 text-sm text-gray-300"><CheckCircle size={16} className="text-bronze shrink-0" /> Compliance Check</li>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.1 }}
+                                className="bg-[#2B3446] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
+                            >
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                                <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Recommended</div>
+
+                                <h3 className="text-lg font-bold text-white mb-2 mt-1">Liability Audit</h3>
+                                <p className="text-gray-400 text-sm mb-6">Actuarial Valuation Support.</p>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="text-3xl font-black text-white">₹1,499</span>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase bg-white/10 px-2 py-1 rounded">AUDIT</span>
+                                </div>
+
+                                <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                    {[
+                                        "Liability Calculation",
+                                        "Balance Sheet Reporting",
+                                        "Compliance Check",
+                                        "Expert Consultation"
+                                    ].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm">
+                                            <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                        </li>
+                                    ))}
                                 </ul>
-                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold shadow-lg hover:shadow-yellow-500/20 transition">Select Audit</button>
-                            </div>
+                                <button onClick={() => handlePlanSelect('audit')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Select Audit</button>
+                            </motion.div>
 
                             {/* Registration */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">Trust Registration</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹2,999</div>
-                                <p className="text-xs text-slate-400 mb-6">One Time</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Trust Deed Drafting</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> LIC Policy Coordination</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Department Filing</li>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2 }}
+                                className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                            >
+                                <h3 className="text-lg font-bold text-navy mb-2">Trust Registration</h3>
+                                <p className="text-slate-500 text-sm mb-6">Statutory Trust Setup.</p>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹2,999</span>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">STARTUP</span>
+                                </div>
+
+                                <ul className="space-y-3 mb-6 flex-1">
+                                    {[
+                                        "Trust Deed Drafting",
+                                        "LIC Policy Coordination",
+                                        "Department Filing",
+                                        "Form 1 Preparation"
+                                    ].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm">
+                                            <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                        </li>
+                                    ))}
                                 </ul>
-                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Register Trust</button>
-                            </div>
+                                <button onClick={() => handlePlanSelect('registration')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Register Trust</button>
+                            </motion.div>
                         </div>
                     </section>
 

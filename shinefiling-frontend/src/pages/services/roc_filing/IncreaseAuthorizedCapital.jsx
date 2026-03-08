@@ -1,10 +1,16 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, CheckCircle, FileText, TrendingUp, Star, Users, Briefcase, BookOpen, Rocket, HelpCircle, ChevronRight, BarChart, Calculator, AlertTriangle, ArrowRight, Shield, Zap } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, FileText, TrendingUp, Star, Users, Briefcase, BookOpen, Rocket, HelpCircle, ChevronRight, BarChart, Calculator, AlertTriangle, ArrowRight, Shield, Zap, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import IncreaseAuthorizedCapitalRegistration from './IncreaseAuthorizedCapitalRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const IncreaseAuthorizedCapitalPage = ({ isLoggedIn }) => {
     const navigate = useNavigate();
+    const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState('standard');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -17,13 +23,46 @@ const IncreaseAuthorizedCapitalPage = ({ isLoggedIn }) => {
     ];
 
     const handlePlanSelect = (plan) => {
-        const url = `/services/roc-filing/increase-authorized-capital/register?plan=${plan}`;
-        if (isLoggedIn) navigate(url);
-        else navigate('/login', { state: { from: url } });
+        setSelectedPlan(plan);
+        if (isLoggedIn) {
+            setShowRegistrationModal(true);
+        } else {
+            setAuthMode('login');
+            setShowAuthModal(true);
+        }
     };
 
     return (
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
+            <AnimatePresence>
+                {showRegistrationModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <IncreaseAuthorizedCapitalRegistration
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                planProp={selectedPlan}
+                                onClose={() => setShowRegistrationModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegistrationModal(true);
+                }}
+            />
 
             {/* HERO SECTION */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -194,22 +233,28 @@ const IncreaseAuthorizedCapitalPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                            className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-lg font-bold text-navy mb-2">Basic Capital Increase</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Basic</h3>
+                            <p className="text-slate-500 text-sm mb-6">SH-7 Filing Only.</p>
                             <div className="flex items-center gap-2 mb-4">
-                                <span className="text-3xl font-black text-navy">₹1,999</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹1,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ GOVT FEES</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1 text-slate-700">
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> SH-7 Filing Only</li>
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> MOA Alteration Template</li>
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Standard Processing</li>
+                                {[
+                                    "SH-7 Filing Support",
+                                    "MOA Alteration Template",
+                                    "Standard ROC Upload",
+                                    "SRN Receipt Generation"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
-                                Select Basic
-                            </button>
+                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Basic</button>
                         </motion.div>
 
                         {/* Standard */}
@@ -221,23 +266,29 @@ const IncreaseAuthorizedCapitalPage = ({ isLoggedIn }) => {
                             className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
                             <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
-                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Recommended</div>
 
-                            <h3 className="text-lg font-bold text-white mb-2 mt-1">SH-7 Filing</h3>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Professional</h3>
+                            <p className="text-gray-400 text-sm mb-6">Complete MOA Update.</p>
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="text-3xl font-black text-white">₹2,999</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100/10 px-2 py-1 rounded">+ Govt Fees</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase bg-white/10 px-2 py-1 rounded">MOST POPULAR</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1 text-gray-200">
-                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> SH-7 Filing</li>
-                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Custom MOA Alteration</li>
-                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Board Resolutions Prep</li>
-                                <li className="flex gap-3 text-sm"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> Stamp Duty Help</li>
+                                {[
+                                    "Custom MOA Drafting",
+                                    "Board Resolution Prep",
+                                    "Stamp Duty Assistance",
+                                    "EGM Notice Drafting",
+                                    "Priority ROC Filing"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">
-                                Select Standard
-                            </button>
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Select Professional</button>
                         </motion.div>
 
                         {/* Premium */}
@@ -246,22 +297,29 @@ const IncreaseAuthorizedCapitalPage = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                            className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
                             <h3 className="text-lg font-bold text-navy mb-2">Fund Raising Kit</h3>
+                            <p className="text-slate-500 text-sm mb-6">End-to-End Share Issuance.</p>
                             <div className="flex items-center gap-2 mb-4">
-                                <span className="text-3xl font-black text-navy">₹5,999</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹5,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ GOVT FEES</span>
                             </div>
 
                             <ul className="space-y-3 mb-6 flex-1 text-slate-700">
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Capital Increase (SH-7)</li>
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Share Allotment (PAS-3)</li>
-                                <li className="flex gap-3 text-sm"><CheckCircle size={14} className="text-green-500 shrink-0" /> Priority Processing</li>
+                                {[
+                                    "Capital Increase (SH-7)",
+                                    "Share Allotment (PAS-3)",
+                                    "Share Certificate Prep",
+                                    "Demat Coordination Aid",
+                                    "Dedicated CS Advisory"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">
-                                Select Premium
-                            </button>
+                            <button onClick={() => handlePlanSelect('premium')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Fund Kit</button>
                         </motion.div>
                     </div>
                 </div>

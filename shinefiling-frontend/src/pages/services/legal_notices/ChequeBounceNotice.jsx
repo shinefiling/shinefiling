@@ -265,22 +265,22 @@ const ChequeBounceNotice = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Draft Only</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Draft Only</h3>
                             <p className="text-slate-500 text-sm mb-6">You print & post.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹999</span>
-                                <span className="text-slate-400 line-through text-sm">₹1,500</span>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">₹1,500</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Sec 138 Compliant Draft</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> PDF / Word Delivery</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Email Delivery</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-400"><X size={16} /> Not Signed by Lawyer</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Basic</button>
+                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Basic</button>
                         </motion.div>
 
                         {/* PLAN 2: STANDARD - POPULAR */}
@@ -289,25 +289,25 @@ const ChequeBounceNotice = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full"
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
-                            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
 
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Legal Notice</h3>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Legal Notice</h3>
                             <p className="text-gray-400 text-sm mb-6">Sent by Advocate.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-5xl font-black text-white">₹1,499</span>
-                                <span className="text-gray-500 line-through text-sm">₹2,500</span>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹1,499</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹2,500</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Lawyer Letterhead</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Regd. Post with AD</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Tracking Shared</li>
                                 <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={16} className="text-bronze" /> Strong Legal Wording</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105">Select Standard</button>
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Select Standard</button>
                         </motion.div>
 
                         {/* PLAN 3: PRIORITY */}
@@ -316,22 +316,22 @@ const ChequeBounceNotice = ({ isLoggedIn }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative group"
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
-                            <h3 className="text-xl font-bold text-navy mb-2">Priority / Bulk</h3>
+                            <h3 className="text-lg font-bold text-navy mb-2">Priority / Bulk</h3>
                             <p className="text-slate-500 text-sm mb-6">Deadline Approaching.</p>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-navy">₹2,499</span>
-                                <span className="text-slate-400 line-through text-sm">₹4,000</span>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy">₹2,499</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">₹4,000</span>
                             </div>
 
-                            <ul className="space-y-4 mb-8 flex-1">
+                            <ul className="space-y-3 mb-6 flex-1">
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Same Day Dispatch</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Speed Post</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Lawyer Consultation</li>
                                 <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> 2nd Reminder Notice Free</li>
                             </ul>
-                            <button onClick={() => handlePlanSelect('urgent')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Priority</button>
+                            <button onClick={() => handlePlanSelect('urgent')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Priority</button>
                         </motion.div>
                     </div>
                 </div>

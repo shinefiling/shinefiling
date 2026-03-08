@@ -135,12 +135,16 @@ const PartnershipRegistration = ({ isLoggedIn, isModal = false, planProp, onClos
         const plan = plans[planKey];
         const basePrice = plan.price;
 
-        const gst = Math.round(basePrice * 0.18);
+        const platformFee = Math.round(basePrice * 0.03); // 3%
+        const taxVal = Math.round(basePrice * 0.03); // 3%
+        const gst = Math.round(basePrice * 0.09); // 9%
 
         return {
             base: basePrice,
+            platformFn: platformFee,
+            tax: taxVal,
             gst: gst,
-            total: basePrice + gst
+            total: basePrice + platformFee + taxVal + gst
         };
     }, [selectedPlan]);
 
@@ -356,8 +360,16 @@ const PartnershipRegistration = ({ isLoggedIn, isModal = false, planProp, onClos
                                 <span>Base Price</span>
                                 <span className="font-bold">₹{billDetails.base.toLocaleString()}</span>
                             </div>
+                            <div className="flex justify-between text-sm mb-2 text-gray-600">
+                                <span>Platform Fee</span>
+                                <span className="font-bold">₹{billDetails.platformFn.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between text-sm mb-2 text-gray-600">
+                                <span>Tax</span>
+                                <span className="font-bold">₹{billDetails.tax.toLocaleString()}</span>
+                            </div>
                             <div className="flex justify-between text-sm mb-4 text-gray-600">
-                                <span>GST (18%)</span>
+                                <span>GST (9%)</span>
                                 <span className="font-bold">₹{billDetails.gst.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between items-end pt-4 border-t border-gray-200">

@@ -177,7 +177,7 @@ const ServiceRequestManager = () => {
                                             value={selectedCaId}
                                             onChange={e => setSelectedCaId(e.target.value)}
                                         >
-                                            <option value="">Select CA Partner...</option>
+                                            <option value="">Select CA CRM Partner...</option>
                                             {cas.map(ca => (
                                                 <option key={ca.id} value={ca.id}>{ca.fullName} ({ca.email})</option>
                                             ))}

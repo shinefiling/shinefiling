@@ -1373,261 +1373,20 @@ export const updateMSMERegistrationStatus = async (id, status) => {
 
 
 export const getUserApplications = async (email) => {
-    // Parallel fetch (Generic + 12 Specialized + 8 IP + 7 Labour Law + 6 Business Certifications + 9 Business Registration)
-    const [
-        genericRes, fssaiRes, tradeRes, factoryRes,
-        fireRes, iecRes, barRes, shopRes,
-        labourRes, drugRes, pollutionRes, gumasthaRes,
-        tmRegRes, tmObjRes, tmHearRes, tmAsnRes, tmRenRes,
-        cpyRes, patRes, desRes,
-        pfRes, esiRes, ptRes, lwfRes, graRes, bonusRes, mwRes,
-        msmeRes, isoRes, startupRes, dscRes, barCodeRes, tanPanRes,
-        // Agreements & Financial Services are now handled by Generic Service Request Controller
-        pvtRes,
-        panCorrRes, gstCorrRes, compCorrRes, dscCorrRes,
-        // New: Case/Closure
-        strikeRes, propCloseRes, fssaiCanRes, gstCanRes,
-        // New: Financial
-        valRes, pitchRes, cashRes, projRes, cmaRes, cfoRes
-    ] = await Promise.allSettled([
-        fetch(`${BASE_URL}/services/my-requests?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/fssai/my-requests?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/trade-license/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/factory-license/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/fire-noc/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/iec/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/bar-liquor/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/shop-establishment/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/labour-license/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/drug-license/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/pollution-control/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/gumastha-license/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-
-        fetch(`${BASE_URL}/trademark-registration/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/trademark-objection/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/trademark-hearing/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/trademark-assignment/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/trademark-renewal/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/copyright-registration/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/patent-filing/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/design-registration/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-
-        fetch(`${BASE_URL}/pf-registration/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/esi-registration/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/professional-tax/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/labour-welfare-fund/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/gratuity-act/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/bonus-act/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/minimum-wages/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-
-        fetch(`${BASE_URL}/service/msme-registration/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/iso-certification/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/startup-india/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/digital-signature/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/bar-code/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/tan-pan/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-
-        // Business Registration
-        fetch(`${BASE_URL}/service/private-limited-company/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-
-        // Legal Drafting
-        fetch(`${BASE_URL}/service/partnership-deed/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/founders-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/shareholders-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/employment-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/rent-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/franchise-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/nda/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/vendor-agreement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-
-        // Legal Notices
-        fetch(`${BASE_URL}/service/legal-notice/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/legal-notice-reply/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/cheque-bounce-notice/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/tax-notice-reply/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/roc-notice-reply/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-
-        // Correction Services
-        fetch(`${BASE_URL}/service/pan-correction/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/gst-amendment/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/company-llp-correction/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/din-dsc-correction/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-
-        // Closure Services
-        fetch(`${BASE_URL}/service/strike-off/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/proprietorship-closure/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/fssai-cancellation/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/gst-cancellation/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-
-        // Financial Services
-        fetch(`${BASE_URL}/service/business-valuation/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/startup-pitch-deck/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/cash-flow-statement/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/project-report/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/cma-data-preparation/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-        fetch(`${BASE_URL}/service/virtual-cfo/my-applications?email=${encodeURIComponent(email)}`, { headers: getAuthHeaders() }),
-    ]);
-
-    const orderMap = new Map();
-
-    const processRes = async (res, type, labelFn) => {
-        if (res.status === 'fulfilled' && res.value.ok) {
-            try {
-                const data = await res.value.json();
-                if (Array.isArray(data)) {
-                    data.forEach(item => {
-                        let parsedData = {};
-                        try {
-                            if (typeof item.formData === 'string') parsedData = JSON.parse(item.formData);
-                            else if (typeof item.formData === 'object') parsedData = item.formData;
-                        } catch (e) { }
-
-                        const mapped = {
-                            ...parsedData, // Spread inner form data (businessName, submissionId)
-                            ...item,       // Spread entity data (id, status, createdAt)
-                            id: parsedData.submissionId || item.submissionId || item.id,
-                            serviceName: labelFn(item),
-                            status: item.status,
-                            submittedAt: item.createdAt,
-                            client: item.applicantName || (item.user ? item.user.fullName : 'Guest'),
-                            service: type
-                        };
-                        const key = mapped.id;
-                        if (key) orderMap.set(key.toString(), mapped);
-                    });
-                }
-            } catch (e) { }
+    try {
+        const response = await fetch(`${BASE_URL}/services/my-requests?email=${encodeURIComponent(email)}`, {
+            headers: getAuthHeaders()
+        });
+        const data = await handleResponse(response);
+        if (Array.isArray(data)) {
+            // Sort by most recent
+            return data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
-    };
-
-    // 1. Generic
-    if (genericRes.status === 'fulfilled' && genericRes.value.ok) {
-        try {
-            const data = await genericRes.value.json();
-            if (Array.isArray(data)) {
-                data.forEach(item => {
-                    const sName = (item.service || item.serviceName || "").toLowerCase();
-                    const sId = (item.submissionId || item.id || "").toString().toUpperCase();
-
-                    if (sName.includes('fssai') || sId.includes('FSSAI')) return;
-                    if (sName.includes('trade license') || sId.startsWith('TL-')) return;
-                    if (sName.includes('factory license') || sId.startsWith('FL-')) return;
-                    if (sName.includes('fire noc') || sId.startsWith('FIRE-')) return;
-                    if (sId.startsWith('IEC-')) return;
-                    if (sId.startsWith('BAR-')) return;
-                    if (sId.startsWith('SHOP-')) return;
-                    if (sId.startsWith('LAB-')) return;
-                    if (sId.startsWith('DRUG-')) return;
-                    if (sId.startsWith('PCB-')) return;
-                    if (sId.startsWith('GUM-')) return;
-                    if (sId.startsWith('TM-')) return;
-                    if (sId.startsWith('CPY-')) return;
-                    if (sId.startsWith('PAT-')) return;
-                    if (sId.startsWith('DES-')) return;
-                    if (sName.includes('pf-') || sId.startsWith('PF-')) return;
-                    if (sName.includes('esi-') || sId.startsWith('ESI-')) return;
-                    if (sName.includes('private limited') || sName.includes('pvt ltd')) return; // Deduplicate Pvt Ltd
-                    if (sId.startsWith('PT-')) return;
-                    if (sId.startsWith('LWF-')) return;
-                    if (sId.startsWith('GRA-')) return;
-                    if (sId.startsWith('BONUS-')) return;
-                    if (sId.startsWith('MW-')) return;
-
-                    const key = item.submissionId || item.id;
-                    if (key) orderMap.set(key.toString(), item);
-                });
-            }
-        } catch (e) { }
+        return [];
+    } catch (error) {
+        console.warn('Error fetching all applications:', error);
+        return [];
     }
-
-    // 2. Specialized
-    await processRes(fssaiRes, 'FSSAI License', (f) => `FSSAI License(${f.licenseType})`);
-    await processRes(tradeRes, 'Trade License', (t) => `Trade License(${t.planType})`);
-    await processRes(factoryRes, 'Factory License', (f) => `Factory License(${f.planType})`);
-
-    await processRes(fireRes, 'Fire NOC', (f) => `Fire NOC(${f.planType})`);
-    await processRes(iecRes, 'IEC Registration', (i) => `IEC Registration(${i.planType})`);
-    await processRes(barRes, 'Bar License', (b) => `Bar / Liquor License(${b.licenseType})`);
-    await processRes(shopRes, 'Shop License', (s) => `Shop License(${s.category})`);
-
-    await processRes(labourRes, 'Labour License', (l) => `Labour License(${l.planType})`);
-    await processRes(drugRes, 'Drug License', (d) => `Drug License(${d.licenseType})`);
-    await processRes(pollutionRes, 'Pollution Control', (p) => `Pollution Control(${p.certificateType})`);
-    await processRes(gumasthaRes, 'Gumastha License', (g) => `Gumastha License`);
-
-    await processRes(tmRegRes, 'Trademark Registration', (t) => `Trademark Reg(${t.businessType})`);
-    await processRes(tmObjRes, 'Trademark Objection', (t) => `Trademark Objection(${t.applicationNumber})`);
-    await processRes(tmHearRes, 'Trademark Hearing', (t) => `Trademark Hearing(${t.applicationNumber})`);
-    await processRes(tmAsnRes, 'Trademark Assignment', (t) => `Trademark Assignment`);
-    await processRes(tmRenRes, 'Trademark Renewal', (t) => `Trademark Renewal`);
-    await processRes(cpyRes, 'Copyright Registration', (c) => `Copyright(${c.workCategory})`);
-    await processRes(patRes, 'Patent Filing', (p) => `Patent Filing(${p.filingType})`);
-    await processRes(desRes, 'Design Registration', (d) => `Design Reg(${d.designTitle})`);
-
-    await processRes(pfRes, 'PF Registration', (p) => `PF Registration`);
-    await processRes(esiRes, 'ESI Registration', (e) => `ESI Registration`);
-    await processRes(ptRes, 'Professional Tax', (p) => `Professional Tax`);
-    await processRes(lwfRes, 'Labour Welfare Fund', (l) => `Labour Welfare Fund`);
-    await processRes(graRes, 'Gratuity Act', (g) => `Gratuity Act`);
-    await processRes(bonusRes, 'Bonus Act', (b) => `Bonus Act`);
-    await processRes(mwRes, 'Minimum Wages', (m) => `Minimum Wages`);
-
-    await processRes(msmeRes, "MSME Registration", i => "MSME Registration");
-    await processRes(isoRes, "ISO Certification", i => `ISO ${i.standard || ''}`);
-    await processRes(startupRes, "Startup India", i => "Startup India Recognition");
-    await processRes(dscRes, "Digital Signature", i => `DSC - Class ${i.classType || '3'}`);
-    await processRes(barCodeRes, "Bar Code", i => "Bar Code Registration");
-    await processRes(tanPanRes, "TAN / PAN", i => `${i.applicationType || 'PAN/TAN'} Application`);
-
-    // await processRes(partnerRes, "Partnership Deed", i => "Partnership Deed Drafting");
-    // await processRes(founderRes, "Founders Agreement", i => "Founders Agreement Drafting");
-    // await processRes(shareRes, "Shareholders Agreement", i => "Shareholders Agreement Drafting");
-    // await processRes(employRes, "Employment Agreement", i => "Employment Agreement Drafting");
-    // await processRes(rentRes, "Rent Agreement", i => "Rent Agreement Drafting");
-    // await processRes(franchiseRes, "Franchise Agreement", i => "Franchise Agreement Drafting");
-    // await processRes(ndaRes, "NDA", i => "Non-Disclosure Agreement");
-    // await processRes(vendorRes, "Vendor Agreement", i => "Vendor Agreement Drafting");
-
-    // Genetic Financial Services
-    // await processRes(cmaRes, "CMA Data Preparation", i => "CMA Data Preparation");
-    // await processRes(projectRes, "Project Report", i => "Project Report (DPR)");
-    // await processRes(loanRes, "Bank Loan Documentation", i => "Bank Loan Documentation");
-    // await processRes(cashRes, "Cash Flow Compliance", i => "Cash Flow Compliance");
-    // await processRes(pitchRes, "Startup Pitch Deck", i => "Startup Pitch Deck");
-    // await processRes(valRes, "Business Valuation", i => "Business Valuation Report");
-
-    // Correction
-    await processRes(panCorrRes, "PAN Correction", i => "PAN Correction");
-    await processRes(gstCorrRes, "GST Amendment", i => "GST Amendment");
-    await processRes(compCorrRes, "Company/LLP Correction", i => "Company/LLP Correction");
-    await processRes(dscCorrRes, "DIN/DSC Correction", i => "DIN/DSC Correction");
-
-    // Closure
-    await processRes(strikeRes, "LLP Closure", i => "LLP Closure / Strike Off");
-    await processRes(propCloseRes, "Proprietorship Closure", i => "Proprietorship Closure");
-    await processRes(fssaiCanRes, "FSSAI Cancellation", i => "FSSAI Cancellation");
-    await processRes(gstCanRes, "GST Cancellation", i => "GST Cancellation");
-
-    // Financial
-    await processRes(valRes, "Business Valuation", i => "Business Valuation Report");
-    await processRes(pitchRes, "Startup Pitch Deck", i => "Startup Pitch Deck");
-    await processRes(cashRes, "Cash Flow Statement", i => "Cash Flow Statement");
-    await processRes(projRes, "Project Report", i => "Project Report (DPR)");
-    await processRes(cmaRes, "CMA Data Preparation", i => "CMA Data Preparation");
-    await processRes(cfoRes, "Virtual CFO Services", i => "Virtual CFO Services");
-
-    // Business Registration
-    await processRes(pvtRes, "Private Limited Company", i => "Private Limited Company");
-    // await processRes(opcRes, "One Person Company", i => "One Person Company");
-    // await processRes(llpRes, "Limited Liability Partnership", i => "Limited Liability Partnership");
-    // await processRes(firmRes, "Partnership Firm", i => "Partnership Firm");
-    // await processRes(soleRes, "Sole Proprietorship", i => "Sole Proprietorship");
-    // await processRes(sec8Res, "Section 8 Company", i => "Section 8 Company");
-    // await processRes(nidhiRes, "Nidhi Company", i => "Nidhi Company");
-    // await processRes(prodRes, "Producer Company", i => "Producer Company");
-    // await processRes(pubRes, "Public Limited Company", i => "Public Limited Company");
-
-    return Array.from(orderMap.values());
 };
 
 export const getAllApplications = async () => {
@@ -1762,6 +1521,13 @@ export const updateUserProfile = async (userId, profileData) => {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(profileData),
+    });
+    return handleResponse(response);
+};
+
+export const getUserById = async (userId) => {
+    const response = await fetch(`${BASE_URL}/users/${userId}`, {
+        headers: getAuthHeaders()
     });
     return handleResponse(response);
 };
@@ -2065,20 +1831,6 @@ export const verifyPrivateLimitedDocs = async (submissionId) => {
     return handleResponse(response);
 };
 
-export const startAutomation = async (orderId) => {
-    const response = await fetch(`${BASE_URL}/admin/orders/${orderId}/automation/start`, {
-        method: 'POST',
-        headers: getAuthHeaders()
-    });
-    return handleResponse(response);
-};
-
-export const getAutomationLogs = async (orderId) => {
-    const response = await fetch(`${BASE_URL}/admin/orders/${orderId}/automation/logs`, {
-        headers: getAuthHeaders()
-    });
-    return handleResponse(response);
-};
 
 // --- AI PROMPT MANAGEMENT ---
 
@@ -2146,7 +1898,7 @@ export const markNotificationRead = async (id) => {
 };
 
 export const markAllNotificationsRead = async (email) => {
-    const response = await fetch(`${BASE_URL} / notifications / mark - all - read ? email = ${encodeURIComponent(email)}`, {
+    const response = await fetch(`${BASE_URL}/notifications/mark-all-read?email=${encodeURIComponent(email)}`, {
         method: 'POST',
         headers: getAuthHeaders()
     });
@@ -2156,12 +1908,12 @@ export const markAllNotificationsRead = async (email) => {
 // --- NOTIFICATION TEMPLATES ---
 
 export const getTemplates = async () => {
-    const response = await fetch(`${BASE_URL} / templates`, { headers: getAuthHeaders() });
+    const response = await fetch(`${BASE_URL}/templates`, { headers: getAuthHeaders() });
     return handleResponse(response);
 };
 
 export const createTemplate = async (data) => {
-    const response = await fetch(`${BASE_URL} / templates`, {
+    const response = await fetch(`${BASE_URL}/templates`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(data)
@@ -2170,7 +1922,7 @@ export const createTemplate = async (data) => {
 };
 
 export const updateTemplate = async (id, data) => {
-    const response = await fetch(`${BASE_URL} / templates / ${id}`, {
+    const response = await fetch(`${BASE_URL}/templates/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(data)
@@ -2179,7 +1931,7 @@ export const updateTemplate = async (id, data) => {
 };
 
 export const deleteTemplate = async (id) => {
-    const response = await fetch(`${BASE_URL} / templates / ${id}`, {
+    const response = await fetch(`${BASE_URL}/templates/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
     });
@@ -2187,49 +1939,6 @@ export const deleteTemplate = async (id) => {
     return handleResponse(response);
 };
 
-
-// --- AUTOMATION MANAGEMENT ---
-
-export const getAutomationWorkflows = async () => {
-    try {
-        const response = await fetch(`${BASE_URL} / admin / automation / workflows`, {
-            headers: getAuthHeaders()
-        });
-        return await handleResponse(response);
-    } catch (e) {
-        console.warn("Failed to fetch automation workflows: " + e.message);
-        return [];
-    }
-};
-
-export const createAutomationWorkflow = async (data) => {
-    const response = await fetch(`${BASE_URL} / admin / automation / workflows`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(data)
-    });
-    return handleResponse(response);
-};
-
-export const updateAutomationWorkflow = async (id, data) => {
-    const response = await fetch(`${BASE_URL} / admin / automation / workflows / ${id}`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(data)
-    });
-    return handleResponse(response);
-};
-
-export const getAutomationSystemLogs = async () => {
-    try {
-        const response = await fetch(`${BASE_URL} / admin / automation / logs / system`, {
-            headers: getAuthHeaders()
-        });
-        return await handleResponse(response);
-    } catch (e) {
-        return [];
-    }
-};
 
 
 

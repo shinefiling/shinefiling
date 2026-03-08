@@ -1,8 +1,14 @@
 ﻿import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Instagram, Twitter, Linkedin, Facebook, MapPin, Phone, Mail, ChevronRight } from 'lucide-react';
+import { Instagram, Linkedin, Facebook, MapPin, Phone, Mail, ChevronRight } from 'lucide-react';
 import { SERVICE_DATA } from '../data/services';
 import AuthContext from '../context/AuthContext';
+
+const XIcon = ({ size = 18 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.064-6.932zm-1.294 19.497h2.039L6.482 3.239H4.293L17.607 20.65z" />
+    </svg>
+);
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
@@ -160,6 +166,18 @@ const Footer = () => {
     // Organized Columns Logic
     const columns = [
         {
+            title: "Company",
+            items: [
+                { label: "Home", to: "/" },
+                { label: "About Us", to: "/about-us" },
+                { label: "Career", to: "/careers" },
+                { label: "Contact", to: "/contact-us" },
+                { label: "Terms & Conditions", to: "/terms-and-conditions" },
+                { label: "Privacy Policy", to: "/privacy-policy" },
+                { label: "Refund Policy", to: "/refund-policy" }
+            ]
+        },
+        {
             title: "Start Business",
             items: [...SERVICE_DATA.business_reg.items, ...SERVICE_DATA.closure.items]
         },
@@ -182,7 +200,7 @@ const Footer = () => {
             {/* Subtle Gradient Overlay */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ED6E3F]/20 to-transparent"></div>
 
-            <div className="max-w-[1600px] mx-auto px-6 grid grid-cols-1 xl:grid-cols-12 gap-12 xl:gap-8 text-sm mb-20">
+            <div className="max-w-[1700px] mx-auto px-6 grid grid-cols-1 xl:grid-cols-12 gap-12 xl:gap-8 text-sm mb-20">
 
                 {/* BRAND COLUMN */}
                 <div className="xl:col-span-3 space-y-8">
@@ -190,13 +208,13 @@ const Footer = () => {
                         <img
                             src="/logo.png"
                             alt="ShineFiling"
-                            className="h-16 w-auto object-contain hover:opacity-90 transition-opacity"
+                            className="h-20 md:h-32 w-auto object-contain hover:opacity-90 transition-opacity"
                         />
                     </Link>
 
                     <div className="space-y-4">
                         <p className="text-slate-500 leading-relaxed text-sm font-light max-w-xs">
-                            Premium business registration, expert taxation, and comprehensive legal compliance. Simplifying the complexities of law so you can focus on building your empire.
+                            India's premier marketplace connecting businesses with elite freelance Chartered Accountants and legal professionals. Simplified compliance, expert-driven growth.
                         </p>
 
                         <div className="flex flex-col gap-3">
@@ -216,7 +234,7 @@ const Footer = () => {
                     </div>
 
                     <div className="flex gap-3">
-                        {[Instagram, Twitter, Linkedin, Facebook].map((Icon, i) => (
+                        {[Instagram, XIcon, Linkedin, Facebook].map((Icon, i) => (
                             <a
                                 key={i}
                                 href="#"
@@ -229,7 +247,7 @@ const Footer = () => {
                 </div>
 
                 {/* DYNAMIC COLUMNS */}
-                <div className="xl:col-span-9 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
+                <div className="xl:col-span-9 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-12">
                     {columns.map((col, idx) => (
                         <div key={idx} className="flex flex-col gap-6">
                             <h4 className="text-[#043E52] font-bold tracking-widest uppercase text-[11px] flex items-center gap-2 group">
@@ -238,11 +256,18 @@ const Footer = () => {
                             </h4>
                             <ul className="space-y-3.5">
                                 {col.items.slice(0, 15).map((item, i) => {
-                                    const slug = getServiceSlug(item);
-                                    const linkTo = slug.startsWith('http') ? slug : `/services/${slug}`;
+                                    let label, linkTo;
+                                    if (typeof item === 'object') {
+                                        label = item.label;
+                                        linkTo = item.to;
+                                    } else {
+                                        label = item;
+                                        const slug = getServiceSlug(item);
+                                        linkTo = slug.startsWith('http') ? slug : `/services/${slug}`;
+                                    }
                                     return (
                                         <li key={i}>
-                                            <FooterLink to={linkTo} label={item} />
+                                            <FooterLink to={linkTo} label={label} />
                                         </li>
                                     );
                                 })}
@@ -270,11 +295,6 @@ const Footer = () => {
                 <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-center items-center gap-6 text-xs text-slate-500 font-medium">
                     <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8">
                         <p>&copy; {currentYear} Newfu Technology Private Limited.</p>
-                        <div className="flex gap-6">
-                            <Link to="/terms" className="hover:text-[#ED6E3F] transition-colors">Terms</Link>
-                            <Link to="/privacy" className="hover:text-[#ED6E3F] transition-colors">Privacy</Link>
-                            <Link to="/refund" className="hover:text-[#ED6E3F] transition-colors">Refunds</Link>
-                        </div>
                     </div>
                 </div>
             </div>

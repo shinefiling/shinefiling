@@ -202,44 +202,94 @@ const PatentProvisionalFilingPage = ({ isLoggedIn }) => {
 
                     <div className="grid md:grid-cols-3 gap-8 items-center">
                         {/* Basic */}
-                        <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl relative group">
-                            <h3 className="text-xl font-bold text-navy mb-2">Filing Only</h3>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">Filing Only</h3>
                             <p className="text-slate-500 text-sm mb-6">If you have a draft ready.</p>
-                            <div className="text-4xl font-black text-navy mb-6">₹4,999</div>
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Form 1 Preparation</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Online Filing</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Receipt Generation</li>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹4,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">PRO</span>
+                            </div>
+
+                            <ul className="space-y-3 mb-6 flex-1">
+                                {[
+                                    "Form 1 Preparation",
+                                    "Online Filing",
+                                    "Receipt Generation"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('provisional_basic')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Basic</button>
-                        </div>
+                            <button onClick={() => handlePlanSelect('provisional_basic')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Basic</button>
+                        </motion.div>
 
                         {/* Standard */}
-                        <div className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Drafting + Filing</h3>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Popular Choice</div>
+
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Drafting + Filing</h3>
                             <p className="text-gray-400 text-sm mb-6">We write the technical spec.</p>
-                            <div className="text-5xl font-black text-white mb-6">₹8,999</div>
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Professional Drafting</li>
-                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Forms 1, 2, 3 Filing</li>
-                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Govt Fee Extra (approx ₹1600)</li>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹8,999</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase bg-white/10 px-2 py-1 rounded">VALUE</span>
+                            </div>
+
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                {[
+                                    "Professional Drafting",
+                                    "Forms 1, 2, 3 Filing",
+                                    "Govt Fee Advice"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('provisional_std')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg">File Provisional</button>
-                        </div>
+                            <button onClick={() => handlePlanSelect('provisional_std')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">File Provisional</button>
+                        </motion.div>
 
                         {/* Premier */}
-                        <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl relative group">
-                            <h3 className="text-xl font-bold text-navy mb-2">Search + File</h3>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">Search + File</h3>
                             <p className="text-slate-500 text-sm mb-6">Ensure it's unique first.</p>
-                            <div className="text-4xl font-black text-navy mb-6">₹13,999</div>
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Comprehensive Novelty Search</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Drafting + Filing</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Strategic Consultation</li>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy border-b-2 border-slate-100">₹13,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded ml-2">ELITE</span>
+                            </div>
+
+                            <ul className="space-y-3 mb-6 flex-1">
+                                {[
+                                    "Novelty Search",
+                                    "Drafting + Filing",
+                                    "Strategic Consultation"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('provisional_premium')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Premium</button>
-                        </div>
+                            <button onClick={() => handlePlanSelect('provisional_premium')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Premium</button>
+                        </motion.div>
                     </div>
                 </div>
             </section>

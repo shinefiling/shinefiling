@@ -1,26 +1,31 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     CheckCircle, Upload, FileText,
-    ArrowLeft, ArrowRight, IndianRupee, MapPin, Flame, Building, AlertTriangle
+    ArrowLeft, ArrowRight, IndianRupee, MapPin, Flame, Building, AlertTriangle, X, Shield, Check
 } from 'lucide-react';
 import { uploadFile, submitFireNoc } from '../../../api';
 
-const FireNocRegistration = ({ isLoggedIn }) => {
+const FireNocRegistration = ({ isLoggedIn, isModal = false, planProp = 'provisional', onClose }) => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(1);
+    const [selectedPlan] = useState(planProp);
 
-    // Protect Route
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        const isReallyLoggedIn = isLoggedIn || !!storedUser;
+    const pricing = {
+        advisory: { price: 1999, title: 'Expert Advisory' },
+        provisional: { price: 9999, title: 'Provisional NOC' },
+        final: { price: 14999, title: 'Final NOC' }
+    };
 
-        if (!isReallyLoggedIn) {
-            navigate('/login', { state: { from: `/services/licenses/fire-safety-noc/apply` } });
-        }
-    }, [isLoggedIn, navigate]);
+    const currentPricing = pricing[selectedPlan] || pricing.provisional;
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [apiError, setApiError] = useState(null);
+    const [errors, setErrors] = useState({});
+    const [uploadedFiles, setUploadedFiles] = useState({});
 
     const [formData, setFormData] = useState({
         buildingName: '',
@@ -39,13 +44,17 @@ const FireNocRegistration = ({ isLoggedIn }) => {
         hasEmergencyExits: false
     });
 
-    const [uploadedFiles, setUploadedFiles] = useState({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
-    const [apiError, setApiError] = useState(null);
-    const [errors, setErrors] = useState({});
+    const price = currentPricing.price;
 
-    const price = 14999;
+    // Protect Route
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        const isReallyLoggedIn = isLoggedIn || !!storedUser;
+
+        if (!isReallyLoggedIn && !isModal) {
+            navigate('/login', { state: { from: `/services/licenses/fire-safety-noc/apply` } });
+        }
+    }, [isLoggedIn, navigate, isModal]);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -67,13 +76,6 @@ const FireNocRegistration = ({ isLoggedIn }) => {
             if (!formData.heightInMeters) { newErrors.heightInMeters = "Height required"; isValid = false; }
             if (!formData.numberOfFloors) { newErrors.numberOfFloors = "Floors required"; isValid = false; }
             if (!formData.plotAreaSqMeters) { newErrors.plotAreaSqMeters = "Plot Area required"; isValid = false; }
-
-            // High-Rise warning (soft validation)
-            if (parseFloat(formData.heightInMeters) >= 15 && !formData.hasSprinklers) {
-                if (!window.confirm("High-Rise buildings (>15m) typically require Sprinklers. Continue without selecting them?")) {
-                    isValid = false;
-                }
-            }
         }
 
         setErrors(newErrors);
@@ -107,157 +109,6 @@ const FireNocRegistration = ({ isLoggedIn }) => {
         }
     };
 
-    const renderStepContent = () => {
-        switch (currentStep) {
-            case 1:
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
-                                <Building size={20} className="text-orange-600" /> BUILDING DETAILS
-                            </h3>
-
-                            <div className="grid md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">Building Name</label>
-                                    <input type="text" name="buildingName" value={formData.buildingName} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.buildingName ? 'border-red-500' : 'border-gray-200'}`} />
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">State</label>
-                                    <select name="state" value={formData.state} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.state ? 'border-red-500' : 'border-gray-200'}`}>
-                                        <option value="">Select State</option>
-                                        <option value="Maharashtra">Maharashtra</option>
-                                        <option value="Karnataka">Karnataka</option>
-                                        <option value="Delhi">Delhi</option>
-                                        <option value="Gujarat">Gujarat</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">Request Type</label>
-                                    <select name="requestType" value={formData.requestType} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200">
-                                        <option value="NEW">New NOC</option>
-                                        <option value="RENEWAL">Renewal</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">Building Type</label>
-                                    <select name="buildingType" value={formData.buildingType} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.buildingType ? 'border-red-500' : 'border-gray-200'}`}>
-                                        <option value="">Select</option>
-                                        <option value="COMMERCIAL">Commercial</option>
-                                        <option value="RESIDENTIAL_APT">Residential Apartment</option>
-                                        <option value="INDUSTRIAL">Industrial</option>
-                                        <option value="HOSPITAL">Hospital</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="text-xs font-bold text-gray-500 block mb-1">Site Address</label>
-                                <textarea name="address" rows="2" value={formData.address} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.address ? 'border-red-500' : 'border-gray-200'}`}></textarea>
-                            </div>
-                        </div>
-                    </div>
-                );
-
-            case 2:
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2">
-                                <Flame size={20} className="text-orange-600" /> DIMENSIONS & SAFETY
-                            </h3>
-
-                            <div className="grid md:grid-cols-3 gap-4 mb-4">
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">Height (m)</label>
-                                    <input type="number" step="0.1" name="heightInMeters" value={formData.heightInMeters} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.heightInMeters ? 'border-red-500' : 'border-gray-200'}`} />
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">No. of Floors</label>
-                                    <input type="number" name="numberOfFloors" value={formData.numberOfFloors} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.numberOfFloors ? 'border-red-500' : 'border-gray-200'}`} />
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 block mb-1">Plot Area (sq m)</label>
-                                    <input type="number" step="0.1" name="plotAreaSqMeters" value={formData.plotAreaSqMeters} onChange={handleInputChange} className={`w-full p-3 rounded-lg border ${errors.plotAreaSqMeters ? 'border-red-500' : 'border-gray-200'}`} />
-                                </div>
-                            </div>
-
-                            <div className="bg-red-50 p-4 rounded-xl border border-red-100">
-                                <h4 className="font-bold text-red-900 mb-2 text-xs uppercase">Safety Systems Installed</h4>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {['Extinguishers', 'Hydrants', 'Sprinklers', 'FireAlarm', 'EmergencyExits'].map(sys => (
-                                        <label key={sys} className="flex items-center gap-2 cursor-pointer">
-                                            <input type="checkbox" name={`has${sys}`} checked={formData[`has${sys}`]} onChange={handleInputChange} className="w-4 h-4 text-red-600 rounded" />
-                                            <span className="text-sm font-medium text-gray-700">{sys.replace(/([A-Z])/g, ' $1').trim()}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-
-            case 3:
-                return (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-[#2B3446] mb-4 flex items-center gap-2"><Upload size={20} className="text-orange-600" /> DOCUMENTS</h3>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {['BUILDING_PLAN', 'FIRE_LAYOUT', 'ELECTRIC_CERT'].map((docKey) => (
-                                    <div key={docKey} className="border border-dashed p-6 rounded-xl text-center group hover:border-orange-300 transition">
-                                        <label className="cursor-pointer block">
-                                            <div className="mb-2 mx-auto w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 group-hover:scale-110 transition">
-                                                <FileText size={24} />
-                                            </div>
-                                            <span className="font-bold text-gray-700 block mb-1 capitalize">{docKey.replace('_', ' ').toLowerCase()}</span>
-                                            <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, docKey)} accept=".pdf,.jpg" />
-                                            {uploadedFiles[docKey] ?
-                                                <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">{uploadedFiles[docKey].name}</span> :
-                                                <span className="inline-block px-4 py-2 bg-gray-900 text-white rounded-lg text-xs font-bold">Choose File</span>
-                                            }
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                );
-
-            case 4:
-                return (
-                    <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-in zoom-in-95 text-center">
-                        <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6 text-orange-600">
-                            <IndianRupee size={32} />
-                        </div>
-                        <h2 className="text-2xl font-black text-[#2B3446] mb-2">Payment Summary</h2>
-                        <p className="text-gray-500 mb-8">Professional Fee for Fire NOC</p>
-
-                        <div className="max-w-xs mx-auto bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="text-gray-500">Service Fee</span>
-                                <span className="text-3xl font-black text-[#2B3446]">₹{price.toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between items-end text-xs text-gray-400">
-                                <span>Govt Fee</span>
-                                <span>Actuals Extra</span>
-                            </div>
-                        </div>
-
-                        <button onClick={submitApplication} disabled={isSubmitting} className="w-full py-4 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-xl transition flex items-center justify-center gap-2">
-                            {isSubmitting ? 'Processing...' : 'Pay & Submit'}
-                            {!isSubmitting && <ArrowRight size={18} />}
-                        </button>
-                    </div>
-                );
-
-            default: return null;
-        }
-    };
-
     const submitApplication = async () => {
         setIsSubmitting(true);
         setApiError(null);
@@ -287,81 +138,319 @@ const FireNocRegistration = ({ isLoggedIn }) => {
                 documents: docsList
             };
 
-            const response = await submitFireNoc(finalPayload);
+            await submitFireNoc(finalPayload);
             setIsSuccess(true);
-
         } catch (error) {
-            console.error(error);
             setApiError(error.message);
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    return (
-        <div className="min-h-screen bg-[#FFFBF0] pb-20 pt-24 px-4 md:px-8">
-            {isSuccess ? (
-                <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-xl text-center">
-                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle size={48} className="text-green-600" />
-                    </div>
-                    <h1 className="text-3xl font-black text-[#2B3446] mb-4">Application Submitted!</h1>
-                    <p className="text-gray-500 mb-8">
-                        Your Fire NOC application for <b>{formData.buildingName}</b> has been received.
-                    </p>
-                    <button onClick={() => navigate('/dashboard')} className="bg-[#2B3446] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition">Go to Dashboard</button>
-                </div>
-            ) : (
-                <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 mb-4 font-bold text-xs uppercase hover:text-black transition"><ArrowLeft size={14} /> Back</button>
-                        <h1 className="text-3xl font-black text-[#2B3446]">Fire Safety NOC</h1>
-                        <p className="text-gray-500">Fire Department No Objection Certificate</p>
-                    </div>
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 1:
+                return (
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+                            <h3 className="text-sm font-bold text-navy uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <Building size={18} className="text-[#ED6E3F]" /> Building Profile
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2 md:col-span-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Building Name</label>
+                                    <input type="text" name="buildingName" value={formData.buildingName} onChange={handleInputChange} placeholder="e.g. Skyline Towers" className={`w-full p-4 bg-gray-50 border ${errors.buildingName ? 'border-red-400' : 'border-gray-100'} rounded-xl text-sm focus:bg-white focus:border-[#ED6E3F]/30 outline-none transition-all`} />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">State Jurisdiction</label>
+                                    <select name="state" value={formData.state} onChange={handleInputChange} className={`w-full p-4 bg-gray-50 border ${errors.state ? 'border-red-400' : 'border-gray-100'} rounded-xl text-sm outline-none appearance-none cursor-pointer focus:bg-white focus:border-[#ED6E3F]/30 transition-all`}>
+                                        <option value="">Select State</option>
+                                        <option value="Maharashtra">Maharashtra</option>
+                                        <option value="Karnataka">Karnataka</option>
+                                        <option value="Delhi">Delhi</option>
+                                        <option value="Gujarat">Gujarat</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Building Type</label>
+                                    <select name="buildingType" value={formData.buildingType} onChange={handleInputChange} className={`w-full p-4 bg-gray-50 border ${errors.buildingType ? 'border-red-400' : 'border-gray-100'} rounded-xl text-sm outline-none`}>
+                                        <option value="">Select Type</option>
+                                        <option value="COMMERCIAL">Commercial</option>
+                                        <option value="RESIDENTIAL_APT">Residential Apartment</option>
+                                        <option value="INDUSTRIAL">Industrial</option>
+                                        <option value="HOSPITAL">Hospital</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2 md:col-span-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Complete Site Address</label>
+                                    <textarea name="address" value={formData.address} onChange={handleInputChange} rows={3} placeholder="Full address with Pincode..." className={`w-full p-4 bg-gray-50 border ${errors.address ? 'border-red-500' : 'border-gray-100'} rounded-xl text-sm focus:bg-white focus:border-[#ED6E3F]/30 outline-none transition-all resize-none`} />
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                );
+            case 2:
+                return (
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="text-sm font-bold text-navy uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <Flame size={18} className="text-[#ED6E3F]" /> Infrastructure & Safety
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Height (Meters)</label>
+                                    <input type="number" step="0.1" name="heightInMeters" value={formData.heightInMeters} onChange={handleInputChange} className={`w-full p-4 bg-gray-50 border ${errors.heightInMeters ? 'border-red-400' : 'border-gray-100'} rounded-xl text-sm focus:bg-white focus:border-[#ED6E3F]/30 outline-none transition-all`} />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">No. of Floors</label>
+                                    <input type="number" name="numberOfFloors" value={formData.numberOfFloors} onChange={handleInputChange} className={`w-full p-4 bg-gray-50 border ${errors.numberOfFloors ? 'border-red-400' : 'border-gray-100'} rounded-xl text-sm focus:bg-white focus:border-[#ED6E3F]/30 outline-none transition-all`} />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Plot Area (Sq.m)</label>
+                                    <input type="number" step="0.1" name="plotAreaSqMeters" value={formData.plotAreaSqMeters} onChange={handleInputChange} className={`w-full p-4 bg-gray-50 border ${errors.plotAreaSqMeters ? 'border-red-400' : 'border-gray-100'} rounded-xl text-sm focus:bg-white focus:border-[#ED6E3F]/30 outline-none transition-all`} />
+                                </div>
+                            </div>
 
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="w-full lg:w-80 space-y-6">
-                            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                                {['Building Details', 'Safety Specs', 'Documents', 'Payment'].map((step, i) => (
-                                    <div key={i} className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-between ${currentStep === i + 1 ? 'bg-orange-50 border-orange-200 shadow-sm' : 'bg-transparent border-transparent opacity-60'}`}>
-                                        <div>
-                                            <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-wider">STEP {i + 1}</span>
-                                            <span className={`font-bold text-sm ${currentStep === i + 1 ? 'text-orange-700' : 'text-gray-600'}`}>{step}</span>
+                            <div className="bg-orange-50/30 p-6 rounded-2xl border border-orange-100/50">
+                                <h4 className="text-[10px] font-bold text-[#ED6E3F] uppercase tracking-widest mb-4">Safety Systems Checklist</h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {[
+                                        { id: 'hasExtinguishers', label: 'Extinguishers' },
+                                        { id: 'hasHydrants', label: 'Hydrants' },
+                                        { id: 'hasSprinklers', label: 'Sprinklers' },
+                                        { id: 'hasFireAlarm', label: 'Fire Alarm' },
+                                        { id: 'hasEmergencyExits', label: 'Emergency Exits' }
+                                    ].map(sys => (
+                                        <label key={sys.id} className="flex items-center gap-3 cursor-pointer group">
+                                            <input type="checkbox" name={sys.id} checked={formData[sys.id]} onChange={handleInputChange} className="w-4 h-4 rounded border-gray-300 text-[#ED6E3F] focus:ring-[#ED6E3F]" />
+                                            <span className="text-xs font-bold text-navy uppercase tracking-widest group-hover:text-[#ED6E3F] transition-colors">{sys.label}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                );
+            case 3:
+                return (
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+                        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="text-sm font-bold text-navy uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <Upload size={18} className="text-[#ED6E3F]" /> Compliance Vault
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {[
+                                    { id: 'BUILDING_PLAN', label: 'Building Plan', icon: FileText },
+                                    { id: 'FIRE_LAYOUT', label: 'Fire Layout', icon: Flame },
+                                    { id: 'ELECTRIC_CERT', label: 'Electric Audit', icon: Shield }
+                                ].map((doc) => (
+                                    <div key={doc.id} className={`p-6 rounded-xl border-2 border-dashed transition-all flex flex-col items-center gap-3 ${uploadedFiles[doc.id] ? 'bg-orange-50/30 border-orange-200' : 'bg-gray-50 border-gray-200 hover:border-[#ED6E3F]/50 group'}`}>
+                                        <div className={`w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center ${uploadedFiles[doc.id] ? 'text-green-500' : 'text-gray-400'}`}>
+                                            <doc.icon size={20} />
                                         </div>
-                                        {currentStep > i + 1 && <CheckCircle size={16} className="text-green-500" />}
+                                        <div className="text-center">
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-navy mb-0.5">{doc.label}</p>
+                                            <p className="text-[8px] text-gray-400 font-medium uppercase tracking-widest">PDF / JPG (Max 5MB)</p>
+                                        </div>
+                                        <label className="cursor-pointer">
+                                            <span className={`px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all ${uploadedFiles[doc.id] ? 'bg-green-600 text-white' : 'bg-navy text-white hover:bg-black'}`}>
+                                                {uploadedFiles[doc.id] ? 'Replace' : 'Upload'}
+                                            </span>
+                                            <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, doc.id)} accept=".pdf,.jpg" />
+                                        </label>
+                                        {uploadedFiles[doc.id] && (
+                                            <div className="flex items-center gap-1 text-[8px] font-bold text-green-700 uppercase tracking-widest">
+                                                <CheckCircle size={10} /> {uploadedFiles[doc.id].name}
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
-                            <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 text-xs text-orange-800">
-                                <strong>Selected Plan:</strong> <br />
-                                <span className="text-lg font-bold">Standard NOC</span>
-                                <div className="mt-2 text-xl font-black text-orange-900">₹{price.toLocaleString()}</div>
+                        </div>
+                    </motion.div>
+                );
+            case 4:
+                return (
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-md mx-auto font-poppins text-navy">
+                        <div className="bg-white p-10 rounded-3xl shadow-xl border border-gray-100 text-center relative overflow-hidden">
+                            <div className="w-20 h-20 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-8 text-[#ED6E3F] shadow-lg shadow-orange-500/10 rotate-12">
+                                <IndianRupee size={32} />
                             </div>
+
+                            <h2 className="text-2xl font-bold text-navy mb-2 tracking-tight uppercase">Checkout</h2>
+                            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-8">Fire Safety Audit Protocol</p>
+
+                            <div className="bg-gray-50 p-6 rounded-2xl mb-8 space-y-4 text-xs border border-gray-100 shadow-inner">
+                                <div className="flex justify-between items-center font-bold text-gray-400 uppercase tracking-widest">
+                                    <span>Professional Service</span>
+                                    <span className="text-navy">₹{price.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center font-bold text-gray-400 uppercase tracking-widest">
+                                    <span>Statutory Fees</span>
+                                    <span className="text-[#ED6E3F] text-[9px]">AS PER ACTUALS</span>
+                                </div>
+                                <div className="h-px bg-gray-200"></div>
+                                <div className="flex justify-between items-center text-3xl font-bold text-navy">
+                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest opacity-60">Total</span>
+                                    <span className="tracking-tighter">₹{price.toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={submitApplication}
+                                disabled={isSubmitting}
+                                className="w-full py-4 bg-navy text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg hover:bg-black transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3 group"
+                            >
+                                {isSubmitting ? 'Syncing...' : 'Initiate payment'}
+                                {!isSubmitting && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
+                            </button>
+                        </div>
+                    </motion.div>
+                );
+            default: return null;
+        }
+    };
+
+    // --- MODAL LAYOUT: SPLIT VIEW (Left Sidebar + Right Content) ---
+    if (isModal) {
+        return (
+            <div className="flex flex-col md:flex-row h-[85vh] overflow-hidden bg-white">
+                {/* LEFT SIDEBAR: DARK - Hidden on Mobile */}
+                <div className="hidden md:flex w-72 bg-[#043E52] text-white flex-col p-6 shrink-0 relative overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+
+                    <div className="relative z-10 mb-8">
+                        <h1 className="font-bold text-lg flex items-center gap-2 tracking-tight text-white">
+                            <Shield className="text-[#ED6E3F]" size={20} fill="#ED6E3F" stroke="none" />
+                            Fire Safety NOC
+                        </h1>
+                        <div className="mt-6 p-5 bg-[#064e66] rounded-2xl border border-white/10 shadow-xl space-y-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+
+                            <div className="relative z-10">
+                                <p className="text-[10px] uppercase text-gray-300 tracking-widest font-bold mb-1.5 opacity-80">Selected Plan</p>
+                                <p className="font-bold text-white text-lg tracking-tight mb-4">{currentPricing.title}</p>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Service Fee</span>
+                                    <span className="text-white font-medium font-mono">₹{price.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs group">
+                                    <span className="text-gray-300 group-hover:text-white transition-colors">Tax & GST</span>
+                                    <span className="text-white font-medium font-mono">₹{Math.round(price * 0.18).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-white/10 my-2"></div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[11px] font-bold text-[#ED6E3F] uppercase tracking-wider">Estimated Total</span>
+                                    <span className="text-xl font-bold text-white leading-none">₹{Math.round(price * 1.18).toLocaleString()}</span>
+                                </div>
+                            </div>
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ED6E3F] to-transparent opacity-50"></div>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                        {['Building Profile', 'Safety Specs', 'Document Vault', 'Review & Pay'].map((step, i) => (
+                            <div key={i}
+                                onClick={() => { if (currentStep > i + 1) setCurrentStep(i + 1) }}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all cursor-pointer ${currentStep === i + 1 ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5'}`}
+                            >
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${currentStep === i + 1 ? 'bg-[#ED6E3F] text-white' : currentStep > i + 1 ? 'bg-green-500 text-white' : 'bg-white/20 text-blue-200'}`}>
+                                    {currentStep > i + 1 ? <CheckCircle size={12} /> : i + 1}
+                                </div>
+                                <span className={`text-xs font-medium ${currentStep === i + 1 ? 'text-white font-bold' : ''}`}>{step}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* RIGHT CONTENT: FORM */}
+                <div className="flex-1 flex flex-col h-full relative bg-[#F8F9FA]">
+                    {/* Header Bar */}
+                    <div className="min-h-[64px] bg-white border-b flex items-center justify-between px-4 md:px-6 py-2 shrink-0 z-20">
+                        <div className="flex flex-col justify-center">
+                            <h2 className="hidden md:block font-bold text-slate-800 text-lg">
+                                {currentStep === 1 && "Basic Compliance"}
+                                {currentStep === 2 && "Structural Audit"}
+                                {currentStep === 3 && "Verified Documents"}
+                                {currentStep === 4 && "Final Summary"}
+                            </h2>
                         </div>
 
-                        <div className="flex-1">
-                            {renderStepContent()}
+                        <button onClick={onClose || (() => navigate(-1))} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition shrink-0 ml-4">
+                            <X size={20} />
+                        </button>
+                    </div>
 
-                            {apiError && (
-                                <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 flex items-center gap-2">
-                                    <AlertTriangle size={20} />
-                                    <span>{apiError}</span>
-                                </div>
+                    {/* Scrollable Area */}
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                        {apiError && (
+                            <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 text-xs font-bold uppercase tracking-widest flex items-center gap-3">
+                                <AlertTriangle size={16} /> {apiError}
+                            </div>
+                        )}
+
+                        {isSuccess ? (
+                            <div className="text-center py-10">
+                                <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-navy">NOC Application Filed!</h2>
+                                <p className="text-gray-500 mt-2">Your building data is now under assessment.</p>
+                                <button onClick={onClose || (() => navigate(-1))} className="mt-6 px-6 py-2 bg-navy text-white rounded-lg">Close</button>
+                            </div>
+                        ) : (
+                            renderStepContent()
+                        )}
+                    </div>
+
+                    {/* Sticky Footer */}
+                    {!isSuccess && (
+                        <div className="bg-white p-4 border-t flex justify-between items-center shrink-0 z-20">
+                            <button
+                                onClick={() => setCurrentStep(p => Math.max(1, p - 1))}
+                                disabled={currentStep === 1}
+                                className="px-6 py-2.5 rounded-xl font-bold text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-30"
+                            >
+                                Back
+                            </button>
+                            {currentStep < 4 && (
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2.5 bg-[#ED6E3F] text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition flex items-center gap-2 text-sm"
+                                >
+                                    Save & Continue <ArrowRight size={16} />
+                                </button>
                             )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
-                            {!isSuccess && currentStep < 4 && (
-                                <div className="mt-8 flex justify-between">
-                                    <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50">Back</button>
-
-                                    <button onClick={handleNext} className="px-8 py-3 bg-[#2B3446] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center gap-2">
-                                        Next Step <ArrowRight size={18} />
-                                    </button>
-                                </div>
-                            )}
+    return (
+        <div className="min-h-screen pb-20 pt-24 px-4 bg-[#F8F9FA]">
+            <div className="max-w-6xl mx-auto">
+                <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-gray-500 font-bold text-xs uppercase"><ArrowLeft size={14} /> Back</button>
+                <div className="flex gap-8">
+                    <div className="w-72 hidden lg:block space-y-4">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
+                            {['Building Profile', 'Infrastructure', 'Documents', 'Review'].map((s, i) => (
+                                <div key={i} className={`p-2 rounded ${currentStep === i + 1 ? 'bg-navy text-white' : 'text-gray-500'}`}>{s}</div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex-1">
+                        {renderStepContent()}
+                        <div className="mt-6 flex justify-between">
+                            <button onClick={() => setCurrentStep(p => Math.max(1, p - 1))} disabled={currentStep === 1} className="px-6 py-2 font-bold text-gray-500">Back</button>
+                            {currentStep < 4 && <button onClick={handleNext} className="bg-[#ED6E3F] text-white px-8 py-2 rounded-xl font-bold">Next</button>}
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

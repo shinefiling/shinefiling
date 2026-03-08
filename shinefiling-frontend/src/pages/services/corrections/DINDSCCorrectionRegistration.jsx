@@ -10,7 +10,7 @@ const DINDSCCorrectionRegistration = ({ isLoggedIn, isModal = false, onClose, pl
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [plan, setPlan] = useState(planProp || 'both');
+    const [plan, setPlan] = useState(planProp || 'kyc');
 
     // Protect Route
     useEffect(() => {
@@ -27,7 +27,7 @@ const DINDSCCorrectionRegistration = ({ isLoggedIn, isModal = false, onClose, pl
             setPlan(planProp.toLowerCase());
         } else {
             const planParam = searchParams.get('plan');
-            if (planParam && ['kyc', 'dsc', 'combo'].includes(planParam.toLowerCase())) {
+            if (planParam && ['basic', 'kyc', 'modification'].includes(planParam.toLowerCase())) {
                 setPlan(planParam.toLowerCase());
             }
         }
@@ -51,14 +51,14 @@ const DINDSCCorrectionRegistration = ({ isLoggedIn, isModal = false, onClose, pl
     const [errors, setErrors] = useState({});
 
     const pricing = {
-        'kyc': { serviceFee: 999, title: "DIR-3 KYC Filing" },
-        'dsc': { serviceFee: 1499, title: "DSC Re-issuance" },
-        'combo': { serviceFee: 2299, title: "KYC + DSC Combo" }
+        'basic': { serviceFee: 999, title: "DIN/DSC Update" },
+        'kyc': { serviceFee: 1499, title: "DIN KYC" },
+        'modification': { serviceFee: 2499, title: "Full Modification" }
     };
 
     // Memoize bill details
     const billDetails = useMemo(() => {
-        const selectedPricing = pricing[plan] || pricing.dsc;
+        const selectedPricing = pricing[plan] || pricing.kyc;
         const basePrice = selectedPricing.serviceFee;
 
         // User Request: Total extra is 15% split into Platform Fee, Tax, and GST
@@ -90,7 +90,7 @@ const DINDSCCorrectionRegistration = ({ isLoggedIn, isModal = false, onClose, pl
             if (!formData.email) { newErrors.email = "Email required"; isValid = false; }
             if (!formData.mobile) { newErrors.mobile = "Mobile required"; isValid = false; }
         } else if (step === 2) { // Info Details
-            if (plan !== 'dsc' && !formData.dinNumber) { newErrors.dinNumber = "DIN Number required"; isValid = false; }
+            if (plan !== 'basic' && !formData.dinNumber) { newErrors.dinNumber = "DIN Number required"; isValid = false; }
             if (!formData.panNumber) { newErrors.panNumber = "PAN Number required"; isValid = false; }
         }
 
@@ -196,7 +196,7 @@ const DINDSCCorrectionRegistration = ({ isLoggedIn, isModal = false, onClose, pl
                                     <label className="text-xs font-bold text-gray-500 mb-1 block">Aadhaar Number</label>
                                     <input type="text" name="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleInputChange} className="w-full p-3 rounded-lg border border-gray-200" maxLength={12} />
                                 </div>
-                                {plan !== 'dsc' && (
+                                {plan !== 'basic' && (
                                     <div className="md:col-span-2">
                                         <label className="text-xs font-bold text-gray-500 mb-1 block">DIN (Director Identification Number)</label>
                                         <input type="text" name="dinNumber" value={formData.dinNumber} onChange={handleInputChange} className={`w-full p-3 rounded-lg border uppercase ${errors.dinNumber ? 'border-red-500' : 'border-gray-200'}`} maxLength={8} />
@@ -250,7 +250,7 @@ const DINDSCCorrectionRegistration = ({ isLoggedIn, isModal = false, onClose, pl
                                 <p className="text-gray-400 font-bold text-[10px] uppercase mb-1">PAN Number</p>
                                 <p className="text-navy font-bold uppercase">{formData.panNumber}</p>
                             </div>
-                            {plan !== 'dsc' && (
+                            {plan !== 'basic' && (
                                 <div>
                                     <p className="text-gray-400 font-bold text-[10px] uppercase mb-1">DIN</p>
                                     <p className="text-navy font-bold">{formData.dinNumber}</p>
@@ -274,7 +274,7 @@ const DINDSCCorrectionRegistration = ({ isLoggedIn, isModal = false, onClose, pl
 
                         <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2 text-left">
                             <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
-                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn}</span></div>
+                            <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee (3%)</span><span className="font-bold">₹{billDetails.platformFn.toLocaleString()}</span></div>
                             <div className="flex justify-between text-sm text-gray-600"><span>Tax (3%)</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
                             <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
                             <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>

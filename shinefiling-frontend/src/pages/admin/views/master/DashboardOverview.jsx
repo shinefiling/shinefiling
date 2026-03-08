@@ -1,8 +1,9 @@
-﻿import React, { useMemo } from 'react';
+﻿import React, { useMemo, useState, useEffect } from 'react';
+import { getNotifications } from '../../../../api';
 import {
     Users, Briefcase, Calendar, CheckSquare, IndianRupee,
     TrendingUp, UserPlus, Clock, MoreVertical, Plus,
-    FileText, Settings, CreditCard, Activity, AlertCircle, Phone, Mail
+    FileText, Settings, CreditCard, Activity, AlertCircle, Phone, Mail, Scale
 } from 'lucide-react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
@@ -36,10 +37,32 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
     const hour = new Date().getHours();
     const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
 
+    const [realNotifications, setRealNotifications] = useState([]);
+
+    useEffect(() => {
+        const fetchAlerts = async () => {
+            if (user?.email) {
+                try {
+                    const data = await getNotifications(user.email);
+                    if (data && Array.isArray(data)) {
+                        setRealNotifications(data.filter(n => n.type === 'KYC_REVIEW' || n.type === 'SYSTEM_ALERT'));
+                    }
+                } catch (e) {
+                    console.error("Dashboard failed to fetch alerts", e);
+                }
+            }
+        };
+        fetchAlerts();
+        // Refresh every 30 seconds for real-time feel
+        const timer = setInterval(fetchAlerts, 30000);
+        return () => clearInterval(timer);
+    }, [user?.email]);
+
     // --- Dynamic Stats Calculation ---
     const stats = useMemo(() => {
         const clients = users.filter(u => u.role === 'USER');
-        const partners = users.filter(u => u.role !== 'USER' && u.role !== 'ADMIN');
+        const caPartners = users.filter(u => u.role === 'CA');
+        const agents = users.filter(u => u.role === 'AGENT');
         const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.price || o.amount) || 0), 0);
         const pending = orders.filter(o => ['Pending', 'Submitted', 'Processing'].includes(o.status || 'Pending'));
         const completed = orders.filter(o => ['Completed', 'Approved'].includes(o.status));
@@ -65,13 +88,28 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
         // Recent Orders (for Clock In/Out section)
         const recentOrders = [...orders].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
-        // Recent Activities (derived from orders)
-        const activities = orders.slice(0, 6).map(o => ({
+        // Recent Activities (derived from orders + real notifications)
+        const orderActivities = orders.slice(0, 4).map(o => ({
             name: o.client || 'Guest User',
             action: o.status === 'Pending' ? 'Created new order' : `Updated order to ${o.status}`,
             target: o.service,
-            time: new Date(o.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            time: new Date(o.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            timestamp: new Date(o.date).getTime(),
+            isOrder: true
         }));
+
+        const notificationActivities = realNotifications.slice(0, 4).map(n => ({
+            name: 'System Alert',
+            action: n.title,
+            target: n.message,
+            time: new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            timestamp: new Date(n.createdAt).getTime(),
+            isNotif: true
+        }));
+
+        const activities = [...orderActivities, ...notificationActivities]
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .slice(0, 6);
 
         // Upcoming Deadlines (derived from pending orders)
         const deadlines = pending.slice(0, 3).map(o => ({
@@ -83,7 +121,8 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
 
         return {
             totalClients: clients.length,
-            totalPartners: partners.length,
+            totalCAs: caPartners.length,
+            totalAgents: agents.length,
             totalOrders: orders.length,
             totalRevenue,
             pendingCount: pending.length,
@@ -109,7 +148,7 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
                     <div>
                         <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{greeting}, {user?.fullName || 'Master Admin'}! 👋</h1>
                         <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-                            You have <span className="text-orange-500 font-bold underline cursor-pointer" onClick={() => onNavigate && onNavigate('ops_orders')}>{stats.pendingCount} Pending Approvals</span> & <span className="text-orange-500 font-bold underline cursor-pointer" onClick={() => onNavigate && onNavigate('access_agents')}>{stats.totalPartners} Active Partners</span>
+                            You have <span className="text-orange-500 font-bold underline cursor-pointer" onClick={() => onNavigate && onNavigate('ops_orders')}>{stats.pendingCount} Pending Approvals</span>, <span className="text-orange-500 font-bold underline cursor-pointer" onClick={() => onNavigate && onNavigate('ca_list')}>{stats.totalCAs} CA Partners</span> & <span className="text-orange-500 font-bold underline cursor-pointer" onClick={() => onNavigate && onNavigate('agent_list')}>{stats.totalAgents} Agents</span>
                         </p>
                     </div>
                 </div>
@@ -186,12 +225,20 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
                     subtext="Potential clients"
                 />
                 <StatCard
-                    title="Active Partners"
-                    value={stats.totalPartners}
+                    title="CA CRM Partners"
+                    value={stats.totalCAs}
                     trend={0}
-                    icon={Users}
+                    icon={Scale}
                     colorClass="text-slate-700 bg-slate-700"
-                    subtext="CAs & Agents"
+                    subtext="Chartered Accountants"
+                />
+                <StatCard
+                    title="Agent CRM Partners"
+                    value={stats.totalAgents}
+                    trend={0}
+                    icon={Briefcase}
+                    colorClass="text-[#F97316] bg-[#F97316]"
+                    subtext="Field Agents & Associates"
                 />
             </div>
 
@@ -361,7 +408,7 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
                                         <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">{act.time}</span>
                                     </div>
                                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                        {act.action} <span className="text-orange-500">{act.target}</span>
+                                        {act.action} <span className={act.isNotif ? "text-blue-500 font-bold" : "text-orange-500"}>{act.target}</span>
                                     </p>
                                 </div>
                             </div>
@@ -372,7 +419,7 @@ const DashboardOverview = ({ user, orders = [], users = [], onNavigate, adminSta
                 {/* Birthdays -> Pending Approvals / Partners */}
                 <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 transition-colors duration-200">
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="font-bold text-slate-800 dark:text-slate-100">Recent Partners</h3>
+                        <h3 className="font-bold text-slate-800 dark:text-slate-100">Recent CRM Partners</h3>
                         <button onClick={() => onNavigate && onNavigate('access_agents')} className="text-xs text-slate-500 hover:text-slate-800 hover:underline">View All</button>
                     </div>
                     <div className="space-y-4">

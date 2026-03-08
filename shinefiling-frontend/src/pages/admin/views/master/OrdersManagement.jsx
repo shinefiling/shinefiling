@@ -678,10 +678,10 @@ const OrdersManagement = ({ orders = [] }) => {
             {/* ANALYTICS DASHBOARD ROW */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {/* 1. Revenue Card */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div className="bg-white dark:bg-[#1C3540] p-4 rounded-xl shadow-sm border border-gray-100 dark:border-[#2A4550] flex flex-col justify-between transition-colors">
                     <div>
-                        <p className="text-[10px] font-bold text-[#3D4D55] uppercase tracking-wide">Total Revenue</p>
-                        <h3 className="text-2xl font-extrabold text-[#043E52] mt-1">₹{analytics.revenue.toLocaleString()}</h3>
+                        <p className="text-[10px] font-bold text-[#3D4D55] dark:text-slate-400 uppercase tracking-wide">Total Revenue</p>
+                        <h3 className="text-2xl font-extrabold text-[#043E52] dark:text-white mt-1">₹{analytics.revenue.toLocaleString()}</h3>
                     </div>
                     <div className="mt-4">
                         <AreaChart data={analytics.trend} color="#10B981" height={40} />
@@ -689,27 +689,27 @@ const OrdersManagement = ({ orders = [] }) => {
                 </div>
 
                 {/* 2. Total Orders */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div className="bg-white dark:bg-[#1C3540] p-4 rounded-xl shadow-sm border border-gray-100 dark:border-[#2A4550] flex items-center justify-between transition-colors">
                     <div>
-                        <p className="text-[10px] font-bold text-[#3D4D55] uppercase">Total Orders</p>
-                        <h3 className="text-2xl font-extrabold text-[#043E52]">{analytics.total}</h3>
+                        <p className="text-[10px] font-bold text-[#3D4D55] dark:text-slate-400 uppercase">Total Orders</p>
+                        <h3 className="text-2xl font-extrabold text-[#043E52] dark:text-white">{analytics.total}</h3>
                         <p className="text-[10px] text-green-500 font-bold mt-1">+12% vs last week</p>
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-blue-50/50 flex items-center justify-center text-[#ED6E3F]">
+                    <div className="w-12 h-12 rounded-full bg-blue-50/50 dark:bg-slate-700/50 flex items-center justify-center text-[#ED6E3F]">
                         <FileText size={20} />
                     </div>
                 </div>
 
                 {/* 3. Status Distribution */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div className="bg-white dark:bg-[#1C3540] p-4 rounded-xl shadow-sm border border-gray-100 dark:border-[#2A4550] flex items-center gap-4 transition-colors">
                     <DonutChart data={analytics.statusDist} size={60} />
                     <div className="flex-1">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-2">Order Status</p>
+                        <p className="text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase mb-2">Order Status</p>
                         <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                             {analytics.statusDist.slice(0, 4).map((d, i) => (
                                 <div key={i} className="flex items-center gap-1 text-[10px]">
                                     <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: d.color }}></span>
-                                    <span className="text-gray-600 font-medium truncate">{d.label}</span>
+                                    <span className="text-gray-600 dark:text-slate-300 font-medium truncate">{d.label}</span>
                                 </div>
                             ))}
                         </div>
@@ -717,7 +717,7 @@ const OrdersManagement = ({ orders = [] }) => {
                 </div>
 
                 {/* 4. Action Card */}
-                <div className="bg-gradient-to-br from-[#043E52] to-[#1e2430] p-4 rounded-xl shadow-sm text-white flex flex-col justify-center items-center text-center">
+                <div className="bg-gradient-to-br from-[#043E52] to-[#1e2430] dark:from-[#0D1C22] dark:to-[#1a2b33] p-4 rounded-xl shadow-sm text-white flex flex-col justify-center items-center text-center transition-all">
                     <p className="text-xs font-bold text-white/60 uppercase">Pending Actions</p>
                     <h3 className="text-3xl font-extrabold mt-1 text-[#ED6E3F]">{analytics.pending}</h3>
                     <button className="mt-3 px-3 py-1 bg-[#ED6E3F] hover:bg-[#A57753] rounded-lg text-[10px] font-bold transition">Process Now</button>
@@ -732,18 +732,18 @@ const OrdersManagement = ({ orders = [] }) => {
                         placeholder="Search orders..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#ED6E3F]/20 focus:border-[#ED6E3F] w-full text-sm"
+                        className="pl-9 pr-4 py-2.5 border border-gray-200 dark:border-[#2A4550] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#ED6E3F]/20 focus:border-[#ED6E3F] w-full text-sm bg-white dark:bg-[#1C3540] text-slate-800 dark:text-white transition-colors"
                     />
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3D4D55]" />
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3D4D55] dark:text-slate-400" />
                 </div>
 
                 {/* Filter Tabs */}
-                <div className="flex bg-white p-1 rounded-xl border border-gray-200 overflow-x-auto w-full md:w-auto items-center max-w-full no-scrollbar">
+                <div className="flex bg-white dark:bg-[#1C3540] p-1 rounded-xl border border-gray-200 dark:border-[#2A4550] overflow-x-auto w-full md:w-auto items-center max-w-full no-scrollbar transition-colors">
                     {['ALL', 'CHAT_PENDING', 'PENDING', 'COMPLETED'].map(f => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
-                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${filter === f ? 'bg-[#FDFBF7] text-[#ED6E3F] border border-[#ED6E3F]/20 shadow-sm' : 'text-[#3D4D55] hover:text-[#043E52]'}`}
+                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${filter === f ? 'bg-[#FDFBF7] dark:bg-slate-700/50 text-[#ED6E3F] border border-[#ED6E3F]/20 shadow-sm' : 'text-[#3D4D55] dark:text-slate-400 hover:text-[#043E52] dark:hover:text-white'}`}
                         >
                             {f === 'CHAT_PENDING' ? 'PENDING REPLY' : f.replace('_', ' ')}
                         </button>
@@ -751,10 +751,10 @@ const OrdersManagement = ({ orders = [] }) => {
                 </div>
             </div>
 
-            <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="hidden md:block bg-white dark:bg-[#1C3540] rounded-2xl shadow-sm border border-gray-100 dark:border-[#2A4550] overflow-hidden transition-colors">
                 <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left text-sm whitespace-nowrap">
-                        <thead className="bg-[#F8FAFC] text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-gray-100">
+                        <thead className="bg-[#F8FAFC] dark:bg-[#0D1C22] text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-gray-100 dark:border-[#2A4550]">
                             <tr>
                                 <th className="px-6 py-4">Order ID / Date</th>
                                 <th className="px-6 py-4">Service Details</th>
@@ -765,52 +765,52 @@ const OrdersManagement = ({ orders = [] }) => {
                                 <th className="px-6 py-4 text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-gray-50 dark:divide-[#2A4550]">
                             {filteredOrders.length > 0 ? filteredOrders.map((o, i) => (
-                                <tr key={i} className="hover:bg-blue-50/50 transition duration-200 cursor-pointer group" onClick={() => setSelectedOrder(o)}>
+                                <tr key={i} className="hover:bg-blue-50/50 dark:hover:bg-slate-700/30 transition duration-200 cursor-pointer group" onClick={() => setSelectedOrder(o)}>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
                                             <span className="font-mono font-bold text-[#ED6E3F] text-xs">{o.submissionId}</span>
-                                            <span className="text-[10px] text-[#3D4D55] font-medium mt-0.5 flex items-center gap-1">
+                                            <span className="text-[10px] text-[#3D4D55] dark:text-slate-400 font-medium mt-0.5 flex items-center gap-1">
                                                 <Activity size={10} /> {new Date(o.createdAt || o.date || Date.now()).toLocaleDateString()}
                                             </span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-[#FDFBF7] text-[#ED6E3F] rounded-lg border border-[#ED6E3F]/20">
+                                            <div className="p-1.5 bg-[#FDFBF7] dark:bg-slate-800 text-[#ED6E3F] rounded-lg border border-[#ED6E3F]/20">
                                                 <FileText size={14} />
                                             </div>
                                             <div className="max-w-[180px]">
-                                                <div className="font-bold text-slate-700 text-xs truncate" title={o.service}>{o.service}</div>
-                                                <div className="text-[10px] text-gray-400 truncate">Standard Plan</div>
+                                                <div className="font-bold text-slate-700 dark:text-slate-200 text-xs truncate" title={o.service}>{o.service}</div>
+                                                <div className="text-[10px] text-gray-400 dark:text-slate-500 truncate">Standard Plan</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm ring-2 ring-white">
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm ring-2 ring-white dark:ring-slate-700">
                                                 {(o.client || 'U').charAt(0).toUpperCase()}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-slate-700">{o.client || 'Unknown Client'}</span>
-                                                <span className="text-[10px] text-gray-400">{o.email || 'N/A'}</span>
-                                                <span className="text-[9px] text-gray-400">{o.mobile || ''}</span>
+                                                <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{o.client || 'Unknown Client'}</span>
+                                                <span className="text-[10px] text-gray-400 dark:text-slate-500">{o.email || 'N/A'}</span>
+                                                <span className="text-[9px] text-gray-400 dark:text-slate-500">{o.mobile || ''}</span>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <span className="font-bold text-slate-700 text-xs">₹{(getOrderAmount(o)).toLocaleString()}</span>
+                                        <span className="font-bold text-slate-700 dark:text-slate-200 text-xs">₹{(getOrderAmount(o)).toLocaleString()}</span>
                                     </td>
                                     <td className="px-6 py-4 text-center">
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 text-[10px] font-bold uppercase">
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50 text-[10px] font-bold uppercase">
                                             <CheckCircle size={10} /> Paid
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${statusColors[o.status]
                                             ? statusColors[o.status].replace('bg-', 'bg-opacity-10 border-').replace('text-', 'text-')
-                                            : 'bg-gray-50 text-gray-500 border-gray-100'
+                                            : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-slate-400 border-gray-100 dark:border-slate-700'
                                             }`}>
                                             <span className={`w-1.5 h-1.5 rounded-full ${statusColors[o.status]?.includes('green') ? 'bg-green-500' : 'bg-current'}`}></span>
                                             {o.status?.replace(/_/g, ' ')}
@@ -820,21 +820,21 @@ const OrdersManagement = ({ orders = [] }) => {
                                         <div className="flex items-center justify-end gap-2 transition-opacity">
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); handleDeleteOrder(o.realId || o.id.replace('ORD-', '')); }}
-                                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                                                 title="Delete Order"
                                             >
                                                 <Trash2 size={16} />
                                             </button>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); openChat(o); }}
-                                                className={`p-2 rounded-lg transition-colors relative ${hasUnread(o) ? 'bg-red-50 text-red-600 animate-pulse' : 'text-indigo-500 hover:bg-indigo-50'}`}
+                                                className={`p-2 rounded-lg transition-colors relative ${hasUnread(o) ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 animate-pulse' : 'text-indigo-500 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'}`}
                                                 title="Chat with Client"
                                             >
                                                 <MessageCircle size={16} />
                                                 {hasUnread(o) && (
                                                     <span className="absolute -top-1 -right-1 flex h-4 w-4 z-20">
                                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                                        <span className="relative inline-flex rounded-full h-4 w-4 bg-red-600 text-[9px] text-white font-bold items-center justify-center border-2 border-white">
+                                                        <span className="relative inline-flex rounded-full h-4 w-4 bg-red-600 text-[9px] text-white font-bold items-center justify-center border-2 border-white dark:border-slate-800">
                                                             {getUnreadCount(o)}
                                                         </span>
                                                     </span>
@@ -850,7 +850,7 @@ const OrdersManagement = ({ orders = [] }) => {
                                                         setSelectedOrder(o);
                                                     }
                                                 }}
-                                                className="px-3 py-1.5 bg-[#043E52] text-white text-[10px] font-bold rounded-lg hover:bg-[#ED6E3F] transition-colors shadow-sm flex items-center gap-1"
+                                                className="px-3 py-1.5 bg-[#043E52] dark:bg-[#ED6E3F] text-white text-[10px] font-bold rounded-lg hover:bg-[#ED6E3F] dark:hover:bg-[#D55A2A] transition-colors shadow-sm flex items-center gap-1"
                                             >
                                                 Details <ChevronRight size={12} />
                                             </button>
@@ -859,9 +859,9 @@ const OrdersManagement = ({ orders = [] }) => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="7" className="px-6 py-16 text-center text-gray-400">
+                                    <td colSpan="7" className="px-6 py-16 text-center text-gray-400 dark:text-slate-500">
                                         <div className="flex flex-col items-center gap-3">
-                                            <div className="p-4 bg-gray-50 rounded-full"><Search size={24} className="opacity-20" /></div>
+                                            <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-full"><Search size={24} className="opacity-20" /></div>
                                             <p className="font-bold text-sm">No orders found matching your search.</p>
                                         </div>
                                     </td>
@@ -875,17 +875,17 @@ const OrdersManagement = ({ orders = [] }) => {
             {/* Mobile Card View */}
             <div className="md:hidden space-y-4">
                 {filteredOrders.length > 0 ? filteredOrders.map((o, i) => (
-                    <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 active:scale-[0.99] transition-transform" onClick={() => setSelectedOrder(o)}>
-                        <div className="flex justify-between items-start mb-4 border-b border-gray-50 pb-3">
+                    <div key={i} className="bg-white dark:bg-[#1C3540] rounded-xl shadow-sm border border-gray-100 dark:border-[#2A4550] p-4 active:scale-[0.99] transition-transform" onClick={() => setSelectedOrder(o)}>
+                        <div className="flex justify-between items-start mb-4 border-b border-gray-50 dark:border-[#2A4550] pb-3">
                             <div>
-                                <span className="font-mono font-bold text-blue-600 text-xs block">{o.submissionId}</span>
-                                <span className="text-[10px] text-gray-400 font-medium flex items-center gap-1 mt-1">
+                                <span className="font-mono font-bold text-blue-600 dark:text-blue-400 text-xs block">{o.submissionId}</span>
+                                <span className="text-[10px] text-gray-400 dark:text-slate-400 font-medium flex items-center gap-1 mt-1">
                                     <Activity size={10} /> {new Date(o.createdAt || o.date || Date.now()).toLocaleDateString()}
                                 </span>
                             </div>
                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${statusColors[o.status]
                                 ? statusColors[o.status].replace('bg-', 'bg-opacity-10 border-').replace('text-', 'text-')
-                                : 'bg-gray-50 text-gray-500 border-gray-100'
+                                : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-slate-400 border-gray-100 dark:border-slate-700'
                                 }`}>
                                 <span className={`w-1.5 h-1.5 rounded-full ${statusColors[o.status]?.includes('green') ? 'bg-green-500' : 'bg-current'}`}></span>
                                 {o.status?.replace(/_/g, ' ')}
@@ -894,12 +894,12 @@ const OrdersManagement = ({ orders = [] }) => {
 
                         <div className="space-y-3">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg shrink-0">
+                                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg shrink-0">
                                     <FileText size={16} />
                                 </div>
                                 <div className="overflow-hidden">
-                                    <div className="font-bold text-slate-700 text-xs truncate">{o.service}</div>
-                                    <div className="text-[10px] text-gray-400">Standard Plan</div>
+                                    <div className="font-bold text-slate-700 dark:text-slate-200 text-xs truncate">{o.service}</div>
+                                    <div className="text-[10px] text-gray-400 dark:text-slate-500">Standard Plan</div>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
@@ -907,32 +907,32 @@ const OrdersManagement = ({ orders = [] }) => {
                                     {(o.client || 'U').charAt(0).toUpperCase()}
                                 </div>
                                 <div className="overflow-hidden">
-                                    <div className="text-xs font-bold text-slate-700 truncate">{o.client || 'Unknown Client'}</div>
-                                    <div className="text-[10px] text-gray-400 truncate">{o.email || 'N/A'}</div>
+                                    <div className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{o.client || 'Unknown Client'}</div>
+                                    <div className="text-[10px] text-gray-400 dark:text-slate-500 truncate">{o.email || 'N/A'}</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between">
+                        <div className="mt-4 pt-3 border-t border-gray-50 dark:border-[#2A4550] flex items-center justify-between">
                             <div>
-                                <span className="block text-[10px] text-gray-400 font-bold uppercase">Amount</span>
-                                <span className="font-bold text-slate-700 text-sm">₹{(o.amount || 4999).toLocaleString()}</span>
+                                <span className="block text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase">Amount</span>
+                                <span className="font-bold text-slate-700 dark:text-slate-200 text-sm">₹{(o.amount || 4999).toLocaleString()}</span>
                             </div>
                             <div className="flex gap-2">
                                 <button
                                     onClick={(e) => { e.stopPropagation(); handleDeleteOrder(o.realId || o.id); }}
-                                    className="p-2 text-red-500 bg-red-50 rounded-lg"
+                                    className="p-2 text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-900/30 rounded-lg"
                                 >
                                     <Trash2 size={18} />
                                 </button>
                                 <button
                                     onClick={(e) => { e.stopPropagation(); openChat(o); }}
-                                    className="p-2 text-indigo-500 bg-indigo-50 rounded-lg"
+                                    className="p-2 text-indigo-500 hover:text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg"
                                 >
                                     <MessageCircle size={18} />
                                 </button>
                                 <button
-                                    className="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg flex items-center gap-1"
+                                    className="px-4 py-2 bg-slate-800 dark:bg-[#ED6E3F] text-white text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-[#A57753] dark:hover:bg-[#D55A2A] transition"
                                 >
                                     Details <ChevronRight size={14} />
                                 </button>
@@ -940,7 +940,7 @@ const OrdersManagement = ({ orders = [] }) => {
                         </div>
                     </div>
                 )) : (
-                    <div className="text-center py-10 text-gray-400 bg-white rounded-xl border border-dashed border-gray-200">
+                    <div className="text-center py-10 text-gray-400 dark:text-slate-500 bg-white dark:bg-[#1C3540] rounded-xl border border-dashed border-gray-200 dark:border-[#2A4550]">
                         <div className="flex flex-col items-center gap-2">
                             <Search size={20} className="opacity-20" />
                             <p className="font-bold text-xs">No orders found.</p>
@@ -965,42 +965,41 @@ const OrdersManagement = ({ orders = [] }) => {
                                 initial={{ scale: 0.98, opacity: 0, y: 10 }}
                                 animate={{ scale: 1, opacity: 1, y: 0 }}
                                 exit={{ scale: 0.98, opacity: 0, y: 10 }}
-                                className="relative bg-[#F8FAFC] rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden ring-1 ring-white/20"
+                                className="relative bg-[#F8FAFC] dark:bg-[#0D1C22] rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden ring-1 ring-white/20 dark:ring-[#2A4550]"
                             >
                                 {/* 1. HEADER */}
-                                <div className="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center shrink-0">
+                                <div className="bg-white dark:bg-[#152A33] border-b border-slate-200 dark:border-[#2A4550] px-6 py-4 flex justify-between items-center shrink-0">
                                     <div className="flex items-center gap-4">
-                                        <div className="p-3 bg-blue-50 text-blue-600 rounded-xl border border-blue-100">
+                                        <div className="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl border border-blue-100 dark:border-blue-800/50">
                                             <FileText size={24} />
                                         </div>
                                         <div>
-                                            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                                            <h2 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
                                                 Order #{selectedOrder.id.replace('ORD-', '')}
-                                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wide border ${statusColors[selectedOrder.status] ? statusColors[selectedOrder.status].replace('bg-', 'bg-opacity-10 border-').replace('text-', 'text-') : 'bg-gray-100 text-gray-500 border-gray-200'}`}>
+                                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wide border ${statusColors[selectedOrder.status] ? statusColors[selectedOrder.status].replace('bg-', 'bg-opacity-10 dark:bg-opacity-30 border-').replace('text-', 'text-') : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 border-gray-200 dark:border-slate-700'}`}>
                                                     {selectedOrder.status?.replace(/_/g, ' ')}
                                                 </span>
                                             </h2>
-                                            <p className="text-sm text-slate-500 font-medium flex items-center gap-2">
+                                            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium flex items-center gap-2">
                                                 {selectedOrder.service}
-                                                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                                                <span className="text-slate-400 text-xs">{new Date(selectedOrder.createdAt || selectedOrder.date).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
+                                                <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+                                                <span className="text-slate-400 dark:text-slate-500 text-xs">{new Date(selectedOrder.createdAt || selectedOrder.date).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="flex items-center gap-2">
-
-                                        <div className="h-6 w-px bg-slate-200 mx-1"></div>
+                                        <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
                                         <button
                                             onClick={refreshOrderDetails}
-                                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            className="p-2 text-slate-400 dark:text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                                             title="Refresh Data"
                                         >
                                             <RefreshCcw size={18} />
                                         </button>
                                         <button
                                             onClick={() => setSelectedOrder(null)}
-                                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            className="p-2 text-slate-400 dark:text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                                             title="Close"
                                         >
                                             <X size={20} />
@@ -1011,59 +1010,59 @@ const OrdersManagement = ({ orders = [] }) => {
                                 {/* 2. BODY CONTENT */}
                                 <div className="flex-1 flex overflow-hidden">
                                     {/* LEFT SIDEBAR (Metadata) */}
-                                    <div className="w-80 bg-white border-r border-slate-200 overflow-y-auto p-5 space-y-6 shrink-0 hidden lg:block custom-scrollbar">
+                                    <div className="w-80 bg-white dark:bg-[#152A33] border-r border-slate-200 dark:border-[#2A4550] overflow-y-auto p-5 space-y-6 shrink-0 hidden lg:block custom-scrollbar">
                                         {/* Client Card */}
-                                        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                            <h4 className="text-xs font-bold text-slate-400 uppercase mb-3 flex items-center justify-between">
+                                        <div className="bg-slate-50 dark:bg-[#1C3540] rounded-xl p-4 border border-slate-100 dark:border-[#2A4550]">
+                                            <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-3 flex items-center justify-between">
                                                 Client Profile
-                                                <button onClick={() => openChat(selectedOrder)} className="text-indigo-500 hover:bg-indigo-50 p-1 rounded"><MessageCircle size={14} /></button>
+                                                <button onClick={() => openChat(selectedOrder)} className="text-indigo-500 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 p-1 rounded"><MessageCircle size={14} /></button>
                                             </h4>
                                             <div className="flex items-center gap-3 mb-4">
-                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold shadow-sm">
+                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-sm">
                                                     {(selectedOrder.client || 'U').charAt(0).toUpperCase()}
                                                 </div>
                                                 <div className="overflow-hidden">
-                                                    <p className="font-bold text-slate-800 text-sm truncate" title={selectedOrder.client}>{selectedOrder.client || 'Guest User'}</p>
-                                                    <p className="text-xs text-slate-500 truncate">Customer ID: #{selectedOrder.userId || 'N/A'}</p>
+                                                    <p className="font-bold text-slate-800 dark:text-slate-200 text-sm truncate" title={selectedOrder.client}>{selectedOrder.client || 'Guest User'}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Customer ID: #{selectedOrder.userId || 'N/A'}</p>
                                                 </div>
                                             </div>
                                             <div className="space-y-2.5">
-                                                <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-slate-100">
-                                                    <Mail size={14} className="text-slate-400 shrink-0" />
-                                                    <span className="text-xs text-slate-600 font-medium truncate" title={selectedOrder.email}>{selectedOrder.email || 'No Email'}</span>
+                                                <div className="flex items-center gap-3 p-2 bg-white dark:bg-[#152A33] rounded-lg border border-slate-100 dark:border-[#2A4550]">
+                                                    <Mail size={14} className="text-slate-400 dark:text-slate-500 shrink-0" />
+                                                    <span className="text-xs text-slate-600 dark:text-slate-300 font-medium truncate" title={selectedOrder.email}>{selectedOrder.email || 'No Email'}</span>
                                                 </div>
-                                                <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-slate-100">
-                                                    <Phone size={14} className="text-slate-400 shrink-0" />
-                                                    <span className="text-xs text-slate-600 font-medium">{selectedOrder.mobile || 'No Mobile'}</span>
+                                                <div className="flex items-center gap-3 p-2 bg-white dark:bg-[#152A33] rounded-lg border border-slate-100 dark:border-[#2A4550]">
+                                                    <Phone size={14} className="text-slate-400 dark:text-slate-500 shrink-0" />
+                                                    <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">{selectedOrder.mobile || 'No Mobile'}</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Financials */}
                                         <div className="space-y-3">
-                                            <h4 className="text-xs font-bold text-slate-400 uppercase">Payment Details</h4>
-                                            <div className="p-4 rounded-xl border border-slate-100 bg-emerald-50/50 flex flex-col gap-2">
+                                            <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase">Payment Details</h4>
+                                            <div className="p-4 rounded-xl border border-slate-100 dark:border-[#2A4550] bg-emerald-50/50 dark:bg-emerald-900/20 flex flex-col gap-2">
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-xs text-slate-500 font-medium">Total Amount</span>
-                                                    <span className="text-sm font-bold text-slate-800">₹{(getOrderAmount(selectedOrder)).toLocaleString()}</span>
+                                                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Amount</span>
+                                                    <span className="text-sm font-bold text-slate-800 dark:text-emerald-400">₹{(getOrderAmount(selectedOrder)).toLocaleString()}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-xs text-slate-500 font-medium">Payment Status</span>
-                                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
+                                                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Payment Status</span>
+                                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/50">
                                                         <CheckCircle size={10} /> PAID
                                                     </span>
                                                 </div>
-                                                <div className="h-px bg-slate-200 my-1"></div>
+                                                <div className="h-px bg-slate-200 dark:bg-slate-700 my-1"></div>
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-xs text-slate-500 font-medium">Transaction ID</span>
-                                                    <span className="font-mono text-[10px] text-slate-400">{selectedOrder.paymentId || 'TXN_MOCK_12345'}</span>
+                                                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Transaction ID</span>
+                                                    <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">{selectedOrder.paymentId || 'TXN_MOCK_12345'}</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Quick Actions */}
                                         <div className="space-y-3">
-                                            <h4 className="text-xs font-bold text-slate-400 uppercase">Admin Actions</h4>
+                                            <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase">Admin Actions</h4>
 
                                             {/* CA BIDDING ACTIONS */}
                                             {(!selectedOrder.status || selectedOrder.status === 'PENDING' || selectedOrder.status === 'INITIATED') && (
@@ -1077,7 +1076,7 @@ const OrdersManagement = ({ orders = [] }) => {
                                                     </button>
                                                     <button
                                                         onClick={() => setIsAssignModalOpen(true)}
-                                                        className="w-full py-2.5 bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2"
+                                                        className="w-full py-2.5 bg-white dark:bg-[#1C3540] border border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2"
                                                     >
                                                         <User size={14} /> Directly Assign CA
                                                     </button>
@@ -1087,12 +1086,12 @@ const OrdersManagement = ({ orders = [] }) => {
 
                                             {(selectedOrder.status === 'OPEN_FOR_BIDDING' || selectedOrder.biddingStatus === 'OPEN') && (
                                                 <div className="space-y-2">
-                                                    <div className="p-2 bg-indigo-50 border border-indigo-100 rounded text-center text-[10px] text-indigo-700 font-bold animate-pulse">
+                                                    <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 rounded text-center text-[10px] text-indigo-700 dark:text-indigo-400 font-bold animate-pulse">
                                                         Bidding in Progress...
                                                     </div>
                                                     <button
                                                         onClick={handleViewBids}
-                                                        className="w-full py-2.5 bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2"
+                                                        className="w-full py-2.5 bg-white dark:bg-[#1C3540] border border-indigo-200 dark:border-indigo-800/50 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2"
                                                     >
                                                         <ShieldCheck size={14} /> View Received Bids
                                                     </button>
@@ -1103,14 +1102,14 @@ const OrdersManagement = ({ orders = [] }) => {
                                                 <button
                                                     onClick={() => handleUpdateStatus('COMPLETED')}
                                                     disabled={statusUpdating}
-                                                    className="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm"
+                                                    className="w-full py-2.5 bg-slate-800 dark:bg-emerald-600 hover:bg-slate-900 dark:hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm"
                                                 >
                                                     {statusUpdating ? <Loader2 className="animate-spin" size={14} /> : <CheckCircle size={14} />} Mark as Completed
                                                 </button>
                                             )}
                                             <button
                                                 onClick={() => handleDeleteOrder(selectedOrder.realId || selectedOrder.id.replace('ORD-', ''))}
-                                                className="w-full py-2.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2"
+                                                className="w-full py-2.5 bg-white dark:bg-[#1C3540] border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2"
                                             >
                                                 <Trash2 size={14} /> Delete Order
                                             </button>
@@ -1118,14 +1117,14 @@ const OrdersManagement = ({ orders = [] }) => {
                                     </div>
 
                                     {/* MAIN WORK AREA */}
-                                    <div className="flex-1 bg-slate-50/50 flex flex-col min-w-0">
+                                    <div className="flex-1 bg-slate-50/50 dark:bg-[rgba(13,28,34,0.5)] flex flex-col min-w-0">
                                         {/* Tabs */}
-                                        <div className="sticky top-0 z-30 bg-white border-b border-slate-200 px-6 pt-2 flex overflow-x-auto no-scrollbar shadow-sm shrink-0">
+                                        <div className="sticky top-0 z-30 bg-white dark:bg-[#152A33] border-b border-slate-200 dark:border-[#2A4550] px-6 pt-2 flex overflow-x-auto no-scrollbar shadow-sm shrink-0">
                                             <button
                                                 onClick={() => setMainTab('details')}
                                                 className={`px-5 py-3 text-sm font-bold whitespace-nowrap transition-all border-b-2 ${mainTab === 'details'
-                                                    ? 'text-indigo-600 border-indigo-600 bg-indigo-50/50 rounded-t-lg'
-                                                    : 'text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50 rounded-t-lg'
+                                                    ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-t-lg'
+                                                    : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-t-lg'
                                                     }`}
                                             >
                                                 <FileText size={16} className="inline-block mr-2" /> Application Details
@@ -1136,8 +1135,8 @@ const OrdersManagement = ({ orders = [] }) => {
                                                     handleViewBids(); // Load bids automatically when tab is opened
                                                 }}
                                                 className={`px-5 py-3 text-sm font-bold whitespace-nowrap transition-all border-b-2 ${mainTab === 'bidding'
-                                                    ? 'text-indigo-600 border-indigo-600 bg-indigo-50/50 rounded-t-lg'
-                                                    : 'text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50 rounded-t-lg'
+                                                    ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-t-lg'
+                                                    : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-t-lg'
                                                     }`}
                                             >
                                                 <ShieldCheck size={16} className="inline-block mr-2" /> CA Bidding & Assignment
@@ -1148,10 +1147,10 @@ const OrdersManagement = ({ orders = [] }) => {
                                             {mainTab === 'details' && (
                                                 <div className="space-y-8 max-w-4xl mx-auto animate-in fade-in duration-300">
                                                     {/* Data Key-Value Pairs */}
-                                                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                                                        <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                                                            <h3 className="font-bold text-slate-700 flex items-center gap-2">
-                                                                <Database size={16} className="text-slate-400" /> Application Data
+                                                    <div className="bg-white dark:bg-[#1C3540] rounded-xl shadow-sm border border-slate-200 dark:border-[#2A4550] overflow-hidden">
+                                                        <div className="px-6 py-4 border-b border-slate-100 dark:border-[#2A4550] flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+                                                            <h3 className="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                                                                <Database size={16} className="text-slate-400 dark:text-slate-500" /> Application Data
                                                             </h3>
                                                         </div>
                                                         <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
@@ -1171,15 +1170,15 @@ const OrdersManagement = ({ orders = [] }) => {
                                                                 const entries = Object.entries(objToRender).filter(([k, v]) => typeof v === 'string' || typeof v === 'number');
 
                                                                 if (entries.length === 0) {
-                                                                    return <div className="col-span-full text-center text-slate-400 text-sm italic py-4">No specific form data captured.</div>;
+                                                                    return <div className="col-span-full text-center text-slate-400 dark:text-slate-500 text-sm italic py-4">No specific form data captured.</div>;
                                                                 }
 
                                                                 return entries.map(([key, val]) => (
                                                                     <div key={key}>
-                                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1 block">
+                                                                        <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1 block">
                                                                             {key.replace(/([A-Z])/g, ' $1').trim()}
                                                                         </label>
-                                                                        <div className="text-sm font-semibold text-slate-800 break-words">{String(val)}</div>
+                                                                        <div className="text-sm font-semibold text-slate-800 dark:text-slate-200 break-words">{String(val)}</div>
                                                                     </div>
                                                                 ));
                                                             })()}
@@ -1189,10 +1188,10 @@ const OrdersManagement = ({ orders = [] }) => {
                                                     {/* Documents Section */}
                                                     <div className="grid grid-cols-1 gap-6">
                                                         {/* Uploaded Documents */}
-                                                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col">
-                                                            <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
-                                                                <h3 className="font-bold text-slate-700 flex items-center gap-2">
-                                                                    <Paperclip size={16} className="text-indigo-500" /> Client Uploads
+                                                        <div className="bg-white dark:bg-[#1C3540] rounded-xl shadow-sm border border-slate-200 dark:border-[#2A4550] flex flex-col">
+                                                            <div className="px-5 py-4 border-b border-slate-100 dark:border-[#2A4550] bg-slate-50/50 dark:bg-slate-800/50">
+                                                                <h3 className="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                                                                    <Paperclip size={16} className="text-indigo-500 dark:text-indigo-400" /> Client Uploads
                                                                 </h3>
                                                             </div>
                                                             <div className="p-5 flex-1">
@@ -1200,21 +1199,21 @@ const OrdersManagement = ({ orders = [] }) => {
                                                                     <ul className="space-y-3">
                                                                         {Object.entries(selectedOrder.uploadedDocuments).map(([docName, url]) => (
                                                                             <li key={docName} className="flex items-center group">
-                                                                                <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-500 mr-3 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                                                                                <div className="w-8 h-8 rounded bg-slate-100 dark:bg-[#152A33] flex items-center justify-center text-slate-500 dark:text-slate-400 mr-3 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                                                                                     <FileText size={16} />
                                                                                 </div>
                                                                                 <div className="flex-1 min-w-0 mr-4">
-                                                                                    <p className="text-xs font-bold text-slate-700 uppercase truncate">{docName.replace(/_/g, ' ')}</p>
-                                                                                    <p className="text-[10px] text-slate-400">PDF / Image</p>
+                                                                                    <p className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase truncate">{docName.replace(/_/g, ' ')}</p>
+                                                                                    <p className="text-[10px] text-slate-400 dark:text-slate-500">PDF / Image</p>
                                                                                 </div>
-                                                                                <a href={url} target="_blank" rel="noreferrer" className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent group-hover:border-indigo-100">
+                                                                                <a href={url} target="_blank" rel="noreferrer" className="p-2 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors border border-transparent group-hover:border-indigo-100 dark:group-hover:border-indigo-800/50">
                                                                                     <Eye size={16} />
                                                                                 </a>
                                                                             </li>
                                                                         ))}
                                                                     </ul>
                                                                 ) : (
-                                                                    <div className="flex flex-col items-center justify-center h-32 text-slate-400 border-2 border-dashed border-slate-100 rounded-xl">
+                                                                    <div className="flex flex-col items-center justify-center h-32 text-slate-400 dark:text-slate-500 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-xl">
                                                                         <Paperclip size={24} className="mb-2 opacity-20" />
                                                                         <span className="text-xs font-medium">No uploads found</span>
                                                                     </div>

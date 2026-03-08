@@ -1,5 +1,6 @@
 package com.shinefiling.common.controller;
 
+import com.shinefiling.common.service.NotificationService;
 import com.shinefiling.common.model.ServiceRequest;
 import com.shinefiling.common.model.User;
 import com.shinefiling.common.repository.ServiceRequestRepository;
@@ -8,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/super-admin")
@@ -23,6 +22,9 @@ public class SuperAdminController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     // Get All Requests (for Super Admin Dashboard)
     @GetMapping("/requests")
@@ -52,6 +54,18 @@ public class SuperAdminController {
         // So this amount is shown to CA.
 
         serviceRequestRepository.save(request);
+
+        // Notify CA if already assigned
+        if (request.getAssignedCa() != null) {
+            notificationService.createNotification(
+                    request.getAssignedCa(),
+                    "AMOUNT_BOUND",
+                    "Service Amount Fixed",
+                    "Admin has fixed the amount to ₹" + amount + " for " + request.getServiceName(),
+                    request.getId().toString(),
+                    "ORDER");
+        }
+
         return ResponseEntity.ok(Map.of("message", "Amount bound successfully", "request", request));
     }
 
@@ -113,6 +127,15 @@ public class SuperAdminController {
         caBidRepository.save(winningBid);
         serviceRequestRepository.save(request);
 
+        // Notify CA
+        notificationService.createNotification(
+                winningBid.getCa(),
+                "BID_ACCEPTED",
+                "Bid Accepted!",
+                "Your bid for " + request.getServiceName() + " has been accepted. You can start working now.",
+                request.getId().toString(),
+                "ORDER");
+
         // 3. Reject other bids
         List<com.shinefiling.common.model.CaBid> allBids = caBidRepository.findByServiceRequest(request);
         for (com.shinefiling.common.model.CaBid bid : allBids) {
@@ -152,6 +175,16 @@ public class SuperAdminController {
         request.setCaApprovalStatus("PENDING_APPROVAL"); // Reset CA approval status
 
         serviceRequestRepository.save(request);
+
+        // Notify CA
+        notificationService.createNotification(
+                caUser,
+                "NEW_ASSIGNMENT",
+                "New Task Assigned",
+                "Admin has assigned a new task: " + request.getServiceName(),
+                request.getId().toString(),
+                "ORDER");
+
         return ResponseEntity.ok(Map.of("message", "Assigned to CA successfully", "request", request));
     }
 

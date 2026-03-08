@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import {
     LayoutDashboard, Users, FileText, CheckCircle, CreditCard, Settings, LogOut,
     Search, Bell, ChevronDown, Filter, Eye, DollarSign, AlertTriangle, TrendingUp, Menu, X,
@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { getAllApplications } from '../api';
+import { getAllApplications, getUnreadSystemNotifications, markNotificationRead } from '../api';
 import { hasPermission } from '../utils/permissions';
 import MasterDashboard from './admin/views/MasterDashboard';
 import SubAdminDashboard from './admin/views/SubAdminDashboard';
@@ -29,7 +29,58 @@ const AdminDashboardPage = ({ onLogout, user }) => {
     });
 
     const currentUser = user || JSON.parse(localStorage.getItem('user') || '{}');
-    const role = (currentUser.email === 'admin@shinefiling.com') ? 'MASTER_ADMIN' : currentUser.role;
+    const role = (currentUser.email?.toLowerCase() === 'admin@shinefiling.com') ? 'MASTER_ADMIN' : currentUser.role;
+
+    const [notifications, setNotifications] = useState([]);
+    const prevNotifCount = useRef(0);
+    const audioRef = useRef(new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3'));
+
+    useEffect(() => {
+        const isAnyAdmin = role && (role.includes('ADMIN') || role === 'MASTER_ADMIN' || role === 'SUPER_ADMIN');
+        if (isAnyAdmin) {
+            fetchNotifications();
+            const interval = setInterval(fetchNotifications, 10000); // Poll every 10s
+            return () => clearInterval(interval);
+        }
+    }, [role]);
+
+    const fetchNotifications = async () => {
+        try {
+            const data = await getUnreadSystemNotifications();
+            const newNotifs = data || [];
+
+            // If new notifications arrived (count increased)
+            if (newNotifs.length > prevNotifCount.current) {
+                playNotificationSound();
+            }
+
+            prevNotifCount.current = newNotifs.length;
+            setNotifications(newNotifs);
+        } catch (e) {
+            console.error("Failed to fetch notifications", e);
+        }
+    };
+
+    const playNotificationSound = () => {
+        try {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch(e => {
+                console.warn("Autoplay blocked: Sound will play after user interaction", e);
+            });
+        } catch (err) {
+            console.error("Audio playback error", err);
+        }
+    };
+
+    const handleMarkRead = async (id) => {
+        try {
+            await markNotificationRead(id);
+            fetchNotifications();
+        } catch (e) {
+            console.error("Failed to mark notification read", e);
+        }
+    };
+
 
     useEffect(() => {
         if (isDarkMode) {
@@ -366,13 +417,56 @@ const AdminDashboardPage = ({ onLogout, user }) => {
 
                         <button onClick={() => setIsNotificationsOpen(!isNotificationsOpen)} className="relative p-2 rounded-full transition-colors text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700">
                             <Bell size={20} />
-                            <span className="absolute top-1.5 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></span>
+                            {notifications.length > 0 && (
+                                <span className="absolute top-1.5 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></span>
+                            )}
                         </button>
                         <AnimatePresence>
                             {isNotificationsOpen && (
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute right-16 top-16 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700 z-50 overflow-hidden">
-                                    <div className="p-4 border-b border-slate-100 dark:border-slate-700"><h4 className="font-bold">Notifications</h4></div>
-                                    <div className="p-4 text-sm text-slate-500 text-center">No new notifications</div>
+                                    <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                                        <h4 className="font-bold">Notifications ({notifications.length})</h4>
+                                        <button onClick={fetchNotifications} className="text-xs text-[#F97316] hover:underline font-bold">Refresh</button>
+                                    </div>
+                                    <div className="max-h-[400px] overflow-y-auto no-scrollbar">
+                                        {notifications.length > 0 ? (
+                                            notifications.map(n => (
+                                                <div key={n.id} className="p-4 border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors group">
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <span className="text-[10px] font-bold text-[#F97316] uppercase tracking-widest">{n.type?.replace('_', ' ')}</span>
+                                                        <span className="text-[9px] text-slate-400">{new Date(n.createdAt).toLocaleDateString()}</span>
+                                                    </div>
+                                                    <p className="text-sm font-bold text-slate-800 dark:text-white mb-0.5">{n.title}</p>
+                                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">{n.message}</p>
+                                                    <div className="mt-2 flex justify-end">
+                                                        <button
+                                                            onClick={() => handleMarkRead(n.id)}
+                                                            className="text-[10px] font-bold text-emerald-500 hover:text-emerald-600 uppercase tracking-widest flex items-center gap-1"
+                                                        >
+                                                            <CheckCircle size={10} /> Mark Read
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="p-8 text-sm text-slate-500 text-center flex flex-col items-center gap-3">
+                                                <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-900/50 flex items-center justify-center">
+                                                    <Bell size={24} className="text-slate-200" />
+                                                </div>
+                                                <p>No new notifications</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {notifications.length > 0 && (
+                                        <div className="p-3 bg-slate-50 dark:bg-slate-900/20 border-t border-slate-100 dark:border-slate-700 text-center">
+                                            <button
+                                                onClick={() => { setActiveTab('notifications'); setIsNotificationsOpen(false); }}
+                                                className="text-xs font-bold text-slate-500 hover:text-[#F97316]"
+                                            >
+                                                View All Activity
+                                            </button>
+                                        </div>
+                                    )}
                                 </motion.div>
                             )}
                         </AnimatePresence>

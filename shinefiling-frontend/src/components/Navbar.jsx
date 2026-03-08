@@ -337,20 +337,20 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
                                 </Link>
                             ))}
 
-                            {/* SERVICES MEGA MENU TRIGGER */}
+                            {/* BUSINESS SOLUTIONS MEGA MENU TRIGGER */}
                             <div
                                 className="h-full flex items-center"
-                                onMouseEnter={() => setHoveredMenu('SERVICES')}
+                                onMouseEnter={() => setHoveredMenu('SOLUTIONS')}
                                 onMouseLeave={() => setHoveredMenu(null)}
                             >
-                                <button className={`flex items-center gap-1 text-[12px] font-bold uppercase tracking-wide transition-all px-3 py-2 rounded-lg ${hoveredMenu === 'SERVICES' ? 'text-[#ED6E3F]' : ((scrolled || !isHome) ? 'text-[#043E52] hover:bg-slate-50' : 'text-white/90 hover:bg-white/10')}`}>
-                                    SERVICES
-                                    <ChevronDown size={12} className={`transform transition-transform duration-300 opacity-50 ${hoveredMenu === 'SERVICES' ? 'rotate-180 text-[#ED6E3F] opacity-100' : ''}`} />
+                                <button className={`flex items-center gap-1 text-[12px] font-bold uppercase tracking-wide transition-all px-3 py-2 rounded-lg ${hoveredMenu === 'SOLUTIONS' ? 'text-[#ED6E3F]' : ((scrolled || !isHome) ? 'text-[#043E52] hover:bg-slate-50' : 'text-white/90 hover:bg-white/10')}`}>
+                                    BUSINESS SOLUTIONS
+                                    <ChevronDown size={12} className={`transform transition-transform duration-300 opacity-50 ${hoveredMenu === 'SOLUTIONS' ? 'rotate-180 text-[#ED6E3F] opacity-100' : ''}`} />
                                 </button>
 
                                 {/* SIDE-BY-SIDE MEGA MENU */}
                                 <AnimatePresence>
-                                    {hoveredMenu === 'SERVICES' && (
+                                    {hoveredMenu === 'SOLUTIONS' && (
                                         <motion.div
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
@@ -729,7 +729,7 @@ const Navbar = ({ isLoggedIn, onLogout, onLogin, user }) => {
 
                                 {/* Services Accordion */}
                                 <div className="space-y-4 pt-2">
-                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Our Services</label>
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Our Solutions</label>
                                     <div className="space-y-2">
                                         {categories.map((catKey) => {
                                             const category = SERVICE_DATA[catKey];

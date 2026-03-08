@@ -1,17 +1,27 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Star, CheckCircle, FileText, Shield, Zap, HelpCircle, ChevronRight, TrendingUp, Users, BookOpen, Scale, Globe, Briefcase, Award, ArrowRight, Rocket, X, Factory, Building, Gavel } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import FactoryLicenseRegistration from './FactoryLicenseRegistration';
+import AuthModal from '../../../components/auth/AuthModal';
 
 const FactoryLicensePage = ({ isLoggedIn }) => {
     const navigate = useNavigate();
+    const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState('comprehensive');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const handlePlanSelect = (plan) => {
-        const url = `/services/licenses/factory-license/apply?plan=${plan}`;
-        if (isLoggedIn) navigate(url);
-        else navigate('/login', { state: { from: url } });
+        setSelectedPlan(plan);
+        if (isLoggedIn) {
+            setShowRegistrationModal(true);
+        } else {
+            setAuthMode('login');
+            setShowAuthModal(true);
+        }
     };
 
     const faqs = [
@@ -24,6 +34,35 @@ const FactoryLicensePage = ({ isLoggedIn }) => {
 
     return (
         <div className="min-h-screen bg-[#F2F1EF] text-navy font-sans pb-24">
+            <AnimatePresence>
+                {showRegistrationModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2rem] w-full max-w-7xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col"
+                        >
+                            <FactoryLicenseRegistration
+                                isLoggedIn={isLoggedIn}
+                                isModal={true}
+                                planProp={selectedPlan}
+                                onClose={() => setShowRegistrationModal(false)}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+                onAuthSuccess={() => {
+                    setShowAuthModal(false);
+                    setShowRegistrationModal(true);
+                }}
+            />
 
             {/* HERO SECTION - PREMIUM DARK THEME */}
             <div className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden">
@@ -118,41 +157,178 @@ const FactoryLicensePage = ({ isLoggedIn }) => {
                             </div>
                         </div>
 
-                        {/* Pricing Card - Floating Glass Effect */}
+                        {/* Trust Card - Official Registration */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="w-full md:w-[360px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl relative"
                         >
-                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 bg-navy text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider z-10">Complete Package</div>
-                                <div className="text-center mb-6">
-                                    <h3 className="text-navy font-bold text-xl mb-2">Plan + License</h3>
-                                    <div className="flex justify-center items-end gap-2 mb-2">
-                                        <h3 className="text-5xl font-black text-navy tracking-tight">₹14,999</h3>
-                                        <span className="text-lg text-slate-400 font-medium">/ 5 Years</span>
+                            <div className="bg-white rounded-[20px] p-6 overflow-hidden relative shadow-inner">
+                                <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
+                                <div className="flex flex-col items-center justify-center text-center mb-5 mt-2">
+                                    <div className="mb-3 relative">
+                                        <div className="w-14 h-14 rounded-full bg-bronze/10 flex items-center justify-center">
+                                            <Factory size={28} className="text-bronze fill-bronze/20" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle size={14} className="text-green-500 fill-white" />
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">+ Govt Fees</p>
+                                    <h3 className="text-navy font-bold text-2xl leading-tight">Official <br />Factory License</h3>
+                                    <p className="text-slate-500 font-medium text-[10px] mt-1 tracking-wide uppercase">Factories Act Compliance</p>
                                 </div>
-                                <div className="space-y-4 mb-8 flex-1">
-                                    {["Plan Approval (Blueprints)", "Stability Certificate", "License Application (Form 2)", "DISH Office Liaison", "Inspection Support"].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                                            <CheckCircle size={18} className="text-green-500 shrink-0 mt-0.5" />
-                                            <span className="leading-snug">{item}</span>
+                                <div className="h-px w-full bg-slate-100 mb-5"></div>
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    <div className="text-center relative">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Users size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Legal</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">Regulatory <br />Approved</p>
+                                        <div className="absolute right-0 top-2 bottom-2 w-px bg-slate-100"></div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="flex items-center justify-center gap-1 mb-1">
+                                            <Shield size={14} className="text-bronze" />
+                                            <span className="text-navy text-xl font-black tracking-tighter">Fast</span>
+                                        </div>
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase leading-tight">DISH <br />Liaison</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-3 mb-6 pl-2">
+                                    {[
+                                        "Site Plan Approval",
+                                        "Stability Cert Aid",
+                                        "Form 2 Submission"
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex items-center gap-3">
+                                            <div className="bg-green-100 rounded-full p-1 shrink-0">
+                                                <CheckCircle size={12} className="text-green-600" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-xs tracking-wide">{item}</span>
                                         </div>
                                     ))}
                                 </div>
                                 <button
                                     onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })}
-                                    className="w-full py-4 bg-navy hover:bg-black text-white font-bold text-lg rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                                >View Plans <ArrowRight size={18} /></button>
+                                    className="w-full py-3 bg-navy hover:bg-black text-white font-bold text-base rounded-xl shadow-lg shadow-navy/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                                >
+                                    Get Approval <ArrowRight size={16} />
+                                </button>
+                                <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">Compare all plans below</p>
                             </div>
                         </motion.div>
-
                     </div>
                 </div>
             </div>
+
+            {/* --- PRICING SECTION --- */}
+            <section id="pricing-plans" className="py-20 px-6 lg:px-12 bg-white relative overflow-hidden">
+                <div className="max-w-5xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Plan</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Transparent Pricing Plans</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
+                        <p className="mt-4 text-slate-500 max-w-2xl mx-auto">
+                            Ensure your manufacturing unit is fully compliant with the Factories Act, 1948.
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {/* Advisory */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">Advisory</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹1,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">EXPERT REVIEW</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1 text-slate-700">
+                                {[
+                                    "Unit Applicability Audit",
+                                    "Safety Measures Check",
+                                    "Ventilation Norm Guide",
+                                    "NOC Requirement Map",
+                                    "Penalty Assessment"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('advisory')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Choose Advisory</button>
+                        </motion.div>
+
+                        {/* Standard - Full Approval (Recommended) */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Recommended</div>
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Full Approval</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹14,999</span>
+                                <span className="text-xs font-bold text-gray-400 line-through">₹20,000</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                <li className="text-xs font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Advisory +</li>
+                                {[
+                                    "Site Plan Approval Filing",
+                                    "Stability Cert Liaison",
+                                    "Machinery Layout Prep",
+                                    "Form 2 Filing (License)",
+                                    "DISH Office Follow-up"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('comprehensive')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm uppercase tracking-wider">Start Approval</button>
+                        </motion.div>
+
+                        {/* License Only */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">License Only</h3>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy">₹7,999</span>
+                                <span className="text-slate-400 line-through text-xs">₹12,000</span>
+                            </div>
+                            <ul className="space-y-3 mb-6 flex-1 text-slate-700">
+                                <li className="text-xs font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">For Approved Plans +</li>
+                                {[
+                                    "Form 4 Application Filing",
+                                    "Document Re-Audit",
+                                    "Fee Challan Support",
+                                    "License Grant Tracking",
+                                    "Inspection Prep Guide"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => handlePlanSelect('basic')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm uppercase">Apply Basic</button>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
 
             {/* EXTENSIVE CONTENT SECTION */}
             <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -261,46 +437,6 @@ const FactoryLicensePage = ({ isLoggedIn }) => {
                                         </div>
                                     </div>
                                 ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* PRICING PLANS SECTION */}
-                    <section id="pricing-plans" className="bg-white relative overflow-hidden rounded-3xl p-8 border border-gray-100 shadow-sm mb-20">
-                        <div className="text-center mb-16">
-                            <span className="text-bronze font-bold tracking-widest uppercase text-xs mb-2 block">Choose Your Plan</span>
-                            <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6">Simple Pricing</h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-bronze to-transparent mx-auto"></div>
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Standard */}
-                            <div className="bg-[#043E52] rounded-3xl p-6 shadow-2xl relative overflow-hidden transform md:-translate-y-6 flex flex-col">
-                                {/* Top Gold Line */}
-                                <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C]"></div>
-                                <div className="absolute top-6 right-6 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
-                                <h3 className="text-xl font-bold text-white mb-2 mt-4">Plan + License</h3>
-                                <div className="text-4xl font-black text-white mb-1">₹14,999</div>
-                                <p className="text-xs text-gray-400 mb-6">+ Govt Fees (Actuals)</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Plan Submission</li>
-                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Stability Cert Support</li>
-                                    <li className="flex gap-3 text-sm text-gray-200"><div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={14} className="text-bronze" /></div> Final License Filing</li>
-                                </ul>
-                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white font-bold rounded-xl shadow-lg shadow-bronze/20 transition-all hover:scale-105">Select Comprehensive</button>
-                            </div>
-
-                            {/* Basic License Only */}
-                            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative group flex flex-col">
-                                <h3 className="text-xl font-bold text-navy mb-2">License Only</h3>
-                                <div className="text-4xl font-black text-navy mb-1">₹7,999</div>
-                                <p className="text-xs text-slate-400 mb-6">+ Govt Fees</p>
-                                <p className="text-xs text-gray-500 mb-4 italic">*If Plan is already approved</p>
-                                <ul className="space-y-3 mb-8 flex-1">
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Application Filing</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Document Verification</li>
-                                    <li className="flex gap-3 text-sm text-gray-600"><CheckCircle size={16} className="text-bronze shrink-0" /> Department Liaison</li>
-                                </ul>
-                                <button onClick={() => document.getElementById('pricing-plans').scrollIntoView({ behavior: 'smooth' })} className="w-full py-3 rounded-xl border-2 border-[#2B3446] text-navy font-bold hover:bg-navy hover:text-white transition">Select Basic</button>
                             </div>
                         </div>
                     </section>

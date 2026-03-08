@@ -3,7 +3,7 @@ import {
     MessageSquare, Mail, Bell, Send, Clock, CheckCircle,
     AlertTriangle, Info, X, Trash2, Filter, Search, Inbox,
     FileText, Plus, Edit2, Save, XCircle, ChevronDown, Calendar,
-    Phone, Smartphone, Video, User, MoreVertical, LayoutGrid, List
+    Phone, Smartphone, Video, User, MoreVertical, LayoutGrid, List, Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -47,24 +47,41 @@ const Notifications = () => {
                 try {
                     const data = await getNotifications(user.email);
                     if (data && Array.isArray(data)) {
-                        const mapped = data.map(n => ({
-                            id: n.id,
-                            title: n.title,
-                            type: 'Email', // Defaulting to Email for generic notifications
-                            dueDate: 'N/A',
-                            owner: 'System',
-                            created: new Date(n.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-                            icon: Mail,
-                            color: 'yellow',
-                            isReal: true
-                        }));
-                        // Merge real notifications into activities
-                        // setActivities(prev => [...prev.filter(a => !a.isReal), ...mapped]);
+                        const mapped = data.map(n => {
+                            let icon = Bell;
+                            let color = 'yellow';
+                            if (n.type?.includes('CA_BID')) { icon = Zap; color = 'blue'; }
+                            if (n.type?.includes('CA_ACCEPT')) { icon = CheckCircle; color = 'green'; }
+                            if (n.type?.includes('CA_REJECT')) { icon = XCircle; color = 'pink'; }
+                            if (n.type?.includes('CA_COMPLETE')) { icon = FileText; color = 'purple'; }
+
+                            return {
+                                id: n.id,
+                                title: n.title + ": " + n.message,
+                                type: n.type?.replace('_', ' ') || 'Alert',
+                                dueDate: 'N/A',
+                                owner: 'System',
+                                created: new Date(n.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }),
+                                icon: icon,
+                                color: color,
+                                isReal: true,
+                                isRead: n.isRead
+                            };
+                        });
+                        // Filter out old activities and keep newest notifications at top
+                        setActivities(prev => {
+                            const existingDummy = prev.filter(a => !a.isReal);
+                            return [...mapped, ...existingDummy];
+                        });
                     }
-                } catch (e) { console.error(e); }
+                } catch (e) {
+                    console.error("Failed to fetch notifications in view", e);
+                }
             }
         };
         fetchNotifs();
+        const interval = setInterval(fetchNotifs, 15000);
+        return () => clearInterval(interval);
     }, []);
 
     const toggleSelectAll = (e) => {
@@ -222,6 +239,18 @@ const Notifications = () => {
                                             </td>
                                             <td className="p-4 text-center">
                                                 <div className="flex items-center justify-center gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    {!row.isRead && row.isReal && (
+                                                        <button
+                                                            onClick={async () => {
+                                                                await markNotificationRead(row.id);
+                                                                // The interval will refresh it
+                                                            }}
+                                                            className="p-1.5 text-emerald-500 hover:text-emerald-700 transition-colors"
+                                                            title="Mark as Read"
+                                                        >
+                                                            <CheckCircle size={16} />
+                                                        </button>
+                                                    )}
                                                     <button className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
                                                         <Edit2 size={16} />
                                                     </button>

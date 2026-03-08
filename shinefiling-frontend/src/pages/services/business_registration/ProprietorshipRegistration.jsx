@@ -125,12 +125,16 @@ const ProprietorshipRegistration = ({ isLoggedIn, isModal = false, planProp, onC
         const plan = plans[selectedPlan] || plans.basic;
         const basePrice = plan.price;
 
-        const gst = Math.round(basePrice * 0.18);
+        const platformFee = Math.round(basePrice * 0.03); // 3%
+        const taxVal = Math.round(basePrice * 0.03); // 3%
+        const gst = Math.round(basePrice * 0.09); // 9%
 
         return {
             base: basePrice,
+            platformFn: platformFee,
+            tax: taxVal,
             gst: gst,
-            total: basePrice + gst
+            total: basePrice + platformFee + taxVal + gst
         };
     }, [selectedPlan]);
 
@@ -299,7 +303,9 @@ const ProprietorshipRegistration = ({ isLoggedIn, isModal = false, planProp, onC
                     <h2 className="text-xl font-bold text-navy mb-4">Payment Summary</h2>
                     <div className="bg-slate-50 p-4 rounded-xl mb-6 space-y-2">
                         <div className="flex justify-between text-sm"><span>Base</span><span className="font-bold">₹{billDetails.base.toLocaleString()}</span></div>
-                        <div className="flex justify-between text-sm text-gray-600"><span>GST (18%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Platform Fee</span><span className="font-bold">₹{billDetails.platformFn.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>Tax</span><span className="font-bold">₹{billDetails.tax.toLocaleString()}</span></div>
+                        <div className="flex justify-between text-sm text-gray-600"><span>GST (9%)</span><span className="font-bold">₹{billDetails.gst.toLocaleString()}</span></div>
                         <div className="flex justify-between text-lg font-black text-navy border-t pt-2 mt-2"><span>Total</span><span>₹{billDetails.total.toLocaleString()}</span></div>
                     </div>
                     <label className="flex items-center gap-2 text-xs text-gray-500 mb-6 justify-center"><input type="checkbox" checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} /> I Accept Terms & Conditions</label>

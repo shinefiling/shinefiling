@@ -204,46 +204,96 @@ const ESIFilingPage = ({ isLoggedIn }) => {
 
                     <div className="grid md:grid-cols-3 gap-8 items-center">
                         {/* Basic */}
-                        <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl relative group">
-                            <h3 className="text-xl font-bold text-navy mb-2">NIL Filing</h3>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">NIL Filing</h3>
                             <p className="text-slate-500 text-sm mb-6">For inactive months.</p>
-                            <div className="text-4xl font-black text-navy mb-6">₹299</div>
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Annual NIL Plan</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Prevent Non-Compliance</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Proof of Filing</li>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹299</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">BASIC</span>
+                            </div>
+
+                            <ul className="space-y-3 mb-6 flex-1">
+                                {[
+                                    "Monthly NIL Plan",
+                                    "Prevent Non-Compliance",
+                                    "Proof of Filing"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('nil')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select NIL</button>
-                        </div>
+                            <button onClick={() => handlePlanSelect('nil')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select NIL</button>
+                        </motion.div>
 
                         {/* Standard */}
-                        <div className="bg-[#043E52] rounded-3xl p-8 border border-gray-700 shadow-2xl relative transform md:-translate-y-6 z-10 flex flex-col h-full">
-                            <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-3xl"></div>
-                            <h3 className="text-xl font-bold text-white mb-2 mt-2">Standard</h3>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Recommended</div>
+
+                            <h3 className="text-lg font-bold text-white mb-2 mt-1">Standard</h3>
                             <p className="text-gray-400 text-sm mb-6">Monthly Services.</p>
-                            <div className="text-5xl font-black text-white mb-6">₹499</div>
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Monthly Contribution Filing</li>
-                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> Half-Yearly Return (Req add-on)</li>
-                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> New Employee Registration</li>
-                                <li className="flex items-center gap-3 text-sm text-gray-200"><CheckCircle size={14} className="text-bronze" /> TIC (Temp ID Card) Generation</li>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-3xl font-black text-white">₹499</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase bg-white/10 px-2 py-1 rounded">MONTHLY</span>
+                            </div>
+
+                            <ul className="space-y-3 mb-6 flex-1 text-gray-200">
+                                {[
+                                    "Monthly Contribution Filing",
+                                    "New Employee Registration",
+                                    "TIC Generation",
+                                    "Compliance Support"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <div className="bg-bronze/20 p-1 rounded-full"><CheckCircle size={12} className="text-bronze" /></div> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-4 bg-gradient-to-r from-bronze to-yellow-700 text-white font-bold rounded-xl shadow-lg">Start Filing</button>
-                        </div>
+                            <button onClick={() => handlePlanSelect('standard')} className="w-full py-3 bg-gradient-to-r from-bronze to-yellow-700 hover:scale-105 text-white font-bold rounded-lg shadow-lg transition-all text-sm">Start Filing</button>
+                        </motion.div>
 
                         {/* Premier */}
-                        <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl relative group">
-                            <h3 className="text-xl font-bold text-navy mb-2">PF + ESI Combo</h3>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+                        >
+                            <h3 className="text-lg font-bold text-navy mb-2">PF + ESI Combo</h3>
                             <p className="text-slate-500 text-sm mb-6">Complete peace of mind.</p>
-                            <div className="text-4xl font-black text-navy mb-6">₹899</div>
-                            <ul className="space-y-4 mb-8 flex-1">
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> PF Monthly Filing</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> ESI Monthly Filing</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Payroll Sheet</li>
-                                <li className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle size={16} className="text-green-500" /> Priority Support</li>
+                            <div className="flex items-baseline gap-1 mb-4">
+                                <span className="text-3xl font-black text-navy border-b-2 border-slate-100">₹899</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded ml-2">COMBO</span>
+                            </div>
+
+                            <ul className="space-y-3 mb-6 flex-1">
+                                {[
+                                    "PF Monthly Filing",
+                                    "ESI Monthly Filing",
+                                    "Payroll Sheet",
+                                    "Priority Support"
+                                ].map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm">
+                                        <CheckCircle size={14} className="text-green-500 shrink-0" /> {feat}
+                                    </li>
+                                ))}
                             </ul>
-                            <button onClick={() => handlePlanSelect('combo')} className="w-full py-3 bg-slate-100 text-navy font-bold rounded-xl hover:bg-slate-200 transition-colors">Select Combo</button>
-                        </div>
+                            <button onClick={() => handlePlanSelect('combo')} className="w-full py-2.5 bg-slate-100 text-navy font-bold rounded-lg hover:bg-slate-200 transition-colors text-sm">Select Combo</button>
+                        </motion.div>
                     </div>
                 </div>
             </section>

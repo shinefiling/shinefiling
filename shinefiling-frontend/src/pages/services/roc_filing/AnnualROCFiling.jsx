@@ -241,9 +241,10 @@ const AnnualROCFilingPage = ({ isLoggedIn, onLogout }) => {
                             className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
                             <h3 className="text-lg font-bold text-navy mb-2">Basic</h3>
+                            <p className="text-slate-500 text-sm mb-6">Standard AOC-4 & MGT-7.</p>
                             <div className="flex items-center gap-2 mb-4">
-                                <span className="text-3xl font-black text-navy">₹3,999</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹3,999</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ GOVT FEES</span>
                             </div>
                             <ul className="space-y-3 mb-6 flex-1 text-slate-700">
                                 {[
@@ -271,12 +272,14 @@ const AnnualROCFilingPage = ({ isLoggedIn, onLogout }) => {
                             className="bg-[#043E52] rounded-2xl p-6 border border-gray-700 shadow-2xl relative transform md:-translate-y-4 z-10 flex flex-col h-full"
                         >
                             <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#8B5E3C] via-[#D4AF37] to-[#8B5E3C] rounded-t-2xl"></div>
-                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#ED6E3F] to-[#D4AF37] text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">Recommended</div>
                             <h3 className="text-lg font-bold text-white mb-2 mt-1">Standard</h3>
+                            <p className="text-gray-400 text-sm mb-6">Comprehensive Compliance.</p>
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="text-3xl font-black text-white">₹6,999</span>
-                                <span className="text-xs font-bold text-gray-400 line-through">₹12,000</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase bg-white/10 px-2 py-1 rounded">MOST POPULAR</span>
                             </div>
+
                             <ul className="space-y-3 mb-6 flex-1 text-gray-200">
                                 <li className="text-xs font-bold text-[#D9A55B] uppercase tracking-wider border-b border-white/10 pb-2">Everything in Basic +</li>
                                 {[
@@ -304,9 +307,10 @@ const AnnualROCFilingPage = ({ isLoggedIn, onLogout }) => {
                             className="bg-white rounded-2xl p-6 border mt-4 border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
                         >
                             <h3 className="text-lg font-bold text-navy mb-2">Premium</h3>
+                            <p className="text-slate-500 text-sm mb-6">All-Inclusive Expert Care.</p>
                             <div className="flex items-center gap-2 mb-4">
-                                <span className="text-3xl font-black text-navy">₹11,999</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ Govt Fees</span>
+                                <span className="text-3xl font-black text-navy text-transparent bg-clip-text bg-gradient-to-br from-navy to-slate-600">₹11,999</span>
+                                <span className="text-[10px] font-black text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded">+ GOVT FEES</span>
                             </div>
                             <ul className="space-y-3 mb-6 flex-1 text-slate-700">
                                 <li className="text-xs font-bold text-navy uppercase tracking-wider border-b border-gray-100 pb-2">Everything in Standard +</li>
